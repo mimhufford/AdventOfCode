@@ -30,4 +30,4 @@ const instructions = input.trim().split(",")
 
 const result = instructions.reduce((prev, curr) => move(Object.assign(prev, curr)), { x: 0, y: 0, f: "N" })
 
-console.log(result)
+//////////////////////////////////////////
