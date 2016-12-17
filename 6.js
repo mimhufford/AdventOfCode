@@ -660,4 +660,12 @@ const mostCommon = input => {
     return sortedFreqs[0][0]
 }
 
+const leastCommon = input => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("")
+    const letterFreqs = alphabet.map(c1 => [c1, input.split("").filter(c2 => c1 === c2).length])
+    const sortedFreqs = letterFreqs.sort((a, b) => a[1] < b[1] ? -1 : 1)
+    return sortedFreqs[0][0]
+}
+
 console.log(transposed.map(mostCommon).join(""))
+console.log(transposed.map(leastCommon).join(""))
