@@ -989,6 +989,8 @@ const calculateChecksum = name => {
     return letterOrder.slice(0, 5)
 }
 
+const shift = (text, amount) => text.split("").map(char => String.fromCharCode((char.charCodeAt(0) - 97 + amount % 26) % 26 + 97)).join("")
+
 const rooms = input.split("\n").map(parseInfo)
 
 const validRooms = rooms.filter(r => r.checksum == calculateChecksum(r.encName))
@@ -996,3 +998,12 @@ const validRooms = rooms.filter(r => r.checksum == calculateChecksum(r.encName))
 const sumOfSectorIds = validRooms.map(r => r.sectorId).reduce((prev, cur) => prev + cur)
 
 console.log(sumOfSectorIds)
+
+const decrypted = validRooms.map(r => { 
+    r["name"] = shift(r.encName, r.sectorId) 
+    return r
+})
+
+const room = decrypted.filter(r => r.name.includes("north"))
+
+console.log(room)
