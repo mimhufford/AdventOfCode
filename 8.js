@@ -197,3 +197,4 @@ for (var index = 0; index < instructions.length; index++) {
 }
 
 console.log(grid.map(r => r.filter(c => c === "#").join("")).join("").length)
+console.log(display(grid))
