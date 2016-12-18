@@ -180,7 +180,7 @@ const drwRec = (width, height) => grid => grid.map((row, ri) => ri < height ? ro
 const rotRow = (rowIndex, amount) => grid => grid.map((row, ri) => ri === rowIndex ? rot(amount, row) : row)
 const rotCol = (colIndex, amount) => grid => grid.map((row, ri) => [...row.slice(0, colIndex), rot(amount, grid.map(row => row[colIndex]))[ri], ...row.slice(colIndex + 1, row.length)])
 
-const generateInstruction = ins => {
+const generateInstructionFunction = ins => {
     const recRes = ins.match(/rect (\d+)x(\d+)/)
     const rowRes = ins.match(/row y=(\d+) by (\d+)/)
     const colRes = ins.match(/column x=(\d+) by (\d+)/)
@@ -189,12 +189,7 @@ const generateInstruction = ins => {
     if (colRes) return rotCol(parseInt(colRes[1]), parseInt(colRes[2]))
 }
 
-const instructions = input.split("\n").map(generateInstruction)
+const finalGrid = input.split("\n").map(generateInstructionFunction).reduce((data, fn) => fn(data), generateGrid(6, 50))
 
-let grid = generateGrid(6, 50)
-for (var index = 0; index < instructions.length; index++) {
-    grid = instructions[index](grid)
-}
-
-console.log(grid.map(r => r.filter(c => c === "#").join("")).join("").length)
-console.log(display(grid))
+console.log(finalGrid.map(r => r.filter(c => c === "#").join("")).join("").length)
+console.log(display(finalGrid))
