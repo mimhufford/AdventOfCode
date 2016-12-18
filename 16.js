@@ -1,5 +1,4 @@
 const input = "01111010110010011"
-const diskSize = 272
 
 const evolve = data => data + "0" + data.split("").reverse().join("").replace(/1/g, "2").replace(/0/g, "1").replace(/2/g, "0")
 
@@ -8,4 +7,5 @@ const checksum = data => {
     return cs.length % 2 == 1 ? cs : checksum(cs)
 }
 
-console.log(checksum([...Array(10)].reduce(evolve, input).substr(0, diskSize)))
+console.log(checksum([...Array(10)].reduce(evolve, input).substr(0, 272)))
+console.log(checksum([...Array(22)].reduce(evolve, input).substr(0, 35651584)))
