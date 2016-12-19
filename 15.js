@@ -1,3 +1,5 @@
+'use strict'
+
 const input = `Disc #1 has 13 positions; at time=0, it is at position 11.
                Disc #2 has 5 positions; at time=0, it is at position 0.
                Disc #3 has 17 positions; at time=0, it is at position 11.
@@ -16,14 +18,6 @@ const initialState = input.trim().split("\n").map(disc => disc.match(/has (\d+) 
 // [ [ 13, 12 ], [ 5, 2 ], [ 17, 14 ], [ 3, 1 ], [ 7, 0 ], [ 19, 4 ] ]
 const rotatedDiscs = initialState.map((disc, index) => [disc[0], (disc[1] + index + 1) % disc[0]])
 
+const findAlignment = (discs, count) => isAligned(discs) ? count : findAlignment(rotateOnce(discs), count + 1)
 
-// cant think how to do this without state / blowing the js stack using recursive functions
-let count = 0
-let state = rotatedDiscs
-
-while (isAligned(state) == false) {
-    count++
-    state = rotateOnce(state)
-}
-
-console.log(count)
+console.log(findAlignment(rotatedDiscs, 0))
