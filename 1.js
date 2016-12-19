@@ -15,7 +15,13 @@ const move = (turn, amount) => ({x, y, facing}) => {
 const allPositions = input.trim().split(",")
   .map(s => s.trim())
   .map(s => [s.slice(0, 1), parseInt(s.slice(1))])
-  .map(i => move(i[0], i[1]))
+  .map(i => move(i[0], i[1])) // generate curried move functions for piping data through
   .reduce((data, moveFn) => [...data, ...moveFn(data[data.length - 1])], [{ x: 0, y: 0, facing: "N" }])
+  .map(pos => JSON.stringify({ x: pos.x, y: pos.y })) // make results easy to compare
 
-console.log(allPositions.slice(-1))
+const firstOverlap = allPositions
+  .map(pos => [pos, allPositions.filter(search => search === pos).length]) // count occurences
+  .filter(occ => occ[1] > 1) // only keep places we've been to more than once
+  .shift()
+
+console.log(firstOverlap)
