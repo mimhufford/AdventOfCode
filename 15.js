@@ -18,6 +18,6 @@ const initialState = input.trim().split("\n").map(disc => disc.match(/has (\d+) 
 // [ [ 13, 12 ], [ 5, 2 ], [ 17, 14 ], [ 3, 1 ], [ 7, 0 ], [ 19, 4 ] ]
 const rotatedDiscs = initialState.map((disc, index) => [disc[0], (disc[1] + index + 1) % disc[0]])
 
-const findAlignment = (discs, count) => isAligned(discs) ? count : findAlignment(rotateOnce(discs), count + 1)
+const findAlignment = (discs, count = 0) => isAligned(discs) ? count : findAlignment(rotateOnce(discs), count + 1)
 
-console.log(findAlignment(rotatedDiscs, 0))
+console.log(findAlignment(rotatedDiscs))
