@@ -1,11 +1,11 @@
 const input = require("./data").day1
 
-const data1 = input.split('').map((v, i) => [v, input[(i + 1) % input.length]])
-const result1 = data1.map(pair => pair[0] == pair[1] ? parseInt(pair[0]) : 0).reduce((sum, next) => sum + next)
+const add    = (a, b) => a + b
+const pairs  = (string, offset) => string.split('').map((v, i) => [v, string[(i + offset) % string.length]])
+const valOr0 = pair => pair[0] == pair[1] ? parseInt(pair[0]) : 0
 
-const half = input.length / 2;
-const data2 = input.split('').map((v, i) => [v, input[(i + half) % input.length]])
-const result2 = data2.map(pair => pair[0] == pair[1] ? parseInt(pair[0]) : 0).reduce((sum, next) => sum + next)
+const first  = pairs(input,                1).map(valOr0).reduce(add)
+const second = pairs(input, input.length / 2).map(valOr0).reduce(add)
 
-console.log(result1)
-console.log(result2)
+console.log(first)
+console.log(second)
