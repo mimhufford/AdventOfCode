@@ -1,11 +1,9 @@
 const input = require("./data").day2
 
 const add = (a, b) => a + b
-const min = (a, b) => a < b ? a : b
-const max = (a, b) => a > b ? a : b
 
-const data = input.split('\n').map(line => line.split('\t').map(Number))
-const part1 = data.map(row => row.reduce(max) - row.reduce(min)).reduce(add)
+const data = input.split('\n').map(line => line.split('\t').map(Number).sort((a,b) => a < b ? 1 : -1))
+const part1 = data.map(row => row[0] - row[row.length - 1]).reduce(add)
 const part2 = data
                 .map(row => row
                     .map((v1, i1) => row
