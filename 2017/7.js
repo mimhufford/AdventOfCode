@@ -4,7 +4,20 @@ const input = require("./data").day7
     .map(match => ({
         id: match[1],
         weight: Number(match[2]),
-        below: match[3].replace(" -> ", "").split(",").filter(id => id !== "")
+        aboveMe: match[3].replace(" -> ", "").split(",").map(v => v.trim()).filter(id => id !== "")
     }))
 
-console.log(input)
+const findBottom = data => {
+    const potentialIds = data.map(record => record.id)
+    const aboveIds = []
+    data.forEach(record => aboveIds.push(...record.aboveMe))
+    aboveIds.forEach(id => {
+        const index = potentialIds.indexOf(id)
+        if (index >= 0) {
+            potentialIds.splice(index, 1)
+        }
+    })
+    return potentialIds[0]
+}
+
+console.log(findBottom(input))
