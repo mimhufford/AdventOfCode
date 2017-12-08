@@ -11,6 +11,7 @@ const input = require("./data").day8
     }))
 
 const registers = {}
+let duringMax = Number.NEGATIVE_INFINITY
 
 input.forEach(i => {
     if (!registers[i.r1]) registers[i.r1] = 0
@@ -23,8 +24,10 @@ input.forEach(i => {
         (i.op == '!=' && registers[i.r2] != i.val))
     {
         registers[i.r1] += i.inc
+        duringMax = Math.max(duringMax, registers[i.r1])
     }
 })
 
-const largest = Object.values(registers).reduce((a,b) => Math.max(a,b))
-console.log(largest)
+const finalMax = Object.values(registers).reduce((a,b) => Math.max(a,b))
+console.log(finalMax)
+console.log(duringMax)
