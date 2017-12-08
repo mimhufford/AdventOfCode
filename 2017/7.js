@@ -20,4 +20,29 @@ const findBottom = data => {
     return potentialIds[0]
 }
 
-console.log(findBottom(input))
+const bottom = findBottom(input)
+console.log(bottom)
+
+const allIds = input.map(r => r.id)
+
+const calcWeight = id => {
+    const record = input.filter(r=>r.id==id)[0]
+    if (!record) return id
+    if (record.aboveMe.length == 0) return record.weight
+    return record.weight + record.aboveMe.reduce((a,b)=>calcWeight(a)+calcWeight(b))
+}
+
+const isBalanced = id => {
+    const record = input.filter(r=>r.id==id)[0]
+    const childWeights = record.aboveMe.map(calcWeight).sort()
+    return childWeights.length == 0 || childWeights[0] == childWeights[childWeights.length-1]
+}
+
+const unbalanced = allIds
+    .map(id => [id, isBalanced(id)])
+    .filter(it=>!it[1]).map(it=>[it[0], calcWeight(it[0])])
+    .reduce((a,b) => a[1] < b[1] ? a : b)
+const weights = input.filter(r=>r.id==unbalanced[0])[0].aboveMe.map(id=>[id,calcWeight(id)])
+
+console.log(unbalanced)
+console.log(weights)
