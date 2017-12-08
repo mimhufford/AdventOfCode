@@ -1,6 +1,6 @@
 const input = require("./data").day8
     .split('\n')
-    .map(line => line.match(/(.+) (.+) (-?\d+).+(.+) (.+) (-?\d+)/))
+    .map(line => line.match(/(.+) (.+) (-?\d+) if (.+) (.+) (-?\d+)/))
     .map(match => [match[1], match[2], Number(match[3]), match[4], match[5], Number(match[6])])
     .map(match => ({
          r1: match[0], 
