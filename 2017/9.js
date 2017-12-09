@@ -12,11 +12,8 @@ for (let i = 0; i < input.length; ++i) {
     else if (garbage && c != '>') junk++
     else if (c == '<') garbage = true
     else if (c == '>') garbage = false
-    else if (c == '}') depth -= garbage ? 0 : 1
-    else if (c == '{') {
-        depth += garbage ? 0 : 1
-        score += garbage ? 0 : depth
-    }
+    else if (c == '}') depth--
+    else if (c == '{') score += ++depth
 }
 
 console.log(score, junk)
