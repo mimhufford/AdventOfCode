@@ -15,3 +15,17 @@ const instructions = input.split(',').map(s =>
 const finalState = instructions.reduce((d, i) => i(d), [...robots]).join('')
 
 console.log(finalState)
+
+
+let state = [...robots]
+const seen = []
+for (let i = 0; i < 1000000000; i++) {
+    state = instructions.reduce((d, i) => i(d), state)
+    const s = state.join('')
+    if (seen.indexOf(s) < 0) seen.push(s)
+    else {
+        const cycle = i
+        while (i < 1000000000 - cycle) i += cycle
+    }
+}
+console.log(state.join(''))
