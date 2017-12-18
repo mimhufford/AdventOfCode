@@ -18,6 +18,7 @@
   "homepage": "https://github.com/mimhufford/AdventOfCode#readme",
   "dependencies": {
     "lodash": "^4.17.4",
+    "md5": "^2.2.1",
     "ramda": "^0.25.0"
   }
 }
