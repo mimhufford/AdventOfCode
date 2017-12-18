@@ -6,6 +6,7 @@ const nice1 = str => {
     const badPair = str.match(/ab|cd|pq|xy/)
     return vowels && vowels.length >= 3 && repeat && !badPair
 }
+
 const nice2 = str => {
     const pairRepeat = str.match(/(..).*\1/)
     const sandwich = str.match(/(.).\1/)
