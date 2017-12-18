@@ -1,36 +1,38 @@
 const input = require("./data").day18
 
 const state = {
-    ip: 0,
-    regs: {},
-    latest: undefined,
-    program: input.split('\n')
+    t0: { ip: 0, regs: { p: 0 }, queue: [], sent: 0 },
+    t1: { ip: 0, regs: { p: 1 }, queue: [], sent: 0 },
+    program: input.split('\n'),
 }
 
-const vor = (state, x) => state.regs[x] ? state.regs[x] : Number(x)
+const vor = (thread, x) => thread.regs[x] ? thread.regs[x] : Number(x)
 
 const instructions = {
-    'jgz': state => (x, y) => state.ip += vor(state, x) > 0 ? vor(state, y) - 1 : 0,
-    'set': state => (reg, x) => state.regs[reg] = vor(state, x),
-    'add': state => (reg, x) => state.regs[reg] += vor(state, x),
-    'mul': state => (reg, x) => state.regs[reg] *= vor(state, x),
-    'mod': state => (reg, x) => state.regs[reg] %= vor(state, x),
-    'snd': state => x => state.latest = vor(state, x),
-    'rcv': state => reg => {
-        if (vor(state, reg) > 0) {
-            state.regs[reg] = state.latest
-            state.ip = -Infinity
+    'jgz': (a, _) => (x, y) => a.ip += vor(a, x) > 0 ? vor(a, y) - 1 : 0,
+    'set': (a, _) => (r, x) => a.regs[r] = vor(a, x),
+    'add': (a, _) => (r, x) => a.regs[r] += vor(a, x),
+    'mul': (a, _) => (r, x) => a.regs[r] *= vor(a, x),
+    'mod': (a, _) => (r, x) => a.regs[r] %= vor(a, x),
+    'snd': (a, b) => (x, _) => b.queue.push(vor(a, x)),
+    'rcv': (a, _) => (r, _) => a.regs[r] = a.queue.shift(),
+}
+
+const runProgram = s => {
+    runThread = (ta, tb) => {
+        if (ta.ip >= 0 && ta.ip < s.program.length) {
+            const [i, a, b] = s.program[ta.ip].split(' ')
+            if ((i === 'rcv' && ta.queue.length > 0) || i !== 'rcv') {
+                instructions[i](ta, tb)(a, b)
+                ta.ip++
+                ta.sent += i === 'snd' ? 1 : 0
+                return true
+            }
         }
-    },
-}
-
-const run = state => {
-    while (state.ip >= 0 && state.ip < input.length) {
-        const [i, a, b] = state.program[state.ip].split(' ')
-        instructions[i](state)(a, b)
-        state.ip++
     }
+
+    while (runThread(s.t0, s.t1) || runThread(s.t1, s.t0)) { }
 }
 
-run(state)
-console.log(state.latest)
+runProgram(state)
+console.log(state.t1)
