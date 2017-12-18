@@ -14,16 +14,16 @@ const instructions = {
     'add': a => _ => r => x => a.regs[r] += vor(a, x),
     'mul': a => _ => r => x => a.regs[r] *= vor(a, x),
     'mod': a => _ => r => x => a.regs[r] %= vor(a, x),
-    'snd': a => b => x => _ => b.queue.push(vor(a, x)),
+    'snd': a => q => x => _ => q.push(vor(a, x)),
     'rcv': a => _ => r => _ => a.regs[r] = a.queue.shift(),
 }
 
 const runProgram = s => {
-    runThread = (ta, tb) => {
+    runThread = (ta, q) => {
         if (ta.ip >= 0 && ta.ip < s.program.length) {
             const [i, a, b] = s.program[ta.ip].split(' ')
             if ((i === 'rcv' && ta.queue.length > 0) || i !== 'rcv') {
-                instructions[i](ta)(tb)(a)(b)
+                instructions[i](ta)(q)(a)(b)
                 ta.ip++
                 ta.sent += i === 'snd' ? 1 : 0
                 return true
@@ -31,7 +31,7 @@ const runProgram = s => {
         }
     }
 
-    while (runThread(s.t0, s.t1) || runThread(s.t1, s.t0)) { }
+    while (runThread(s.t0, s.t1.queue) || runThread(s.t1, s.t0.queue)) { }
 }
 
 runProgram(state)
