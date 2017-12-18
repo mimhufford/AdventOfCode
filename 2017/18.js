@@ -9,25 +9,21 @@ const state = {
 const vor = (thread, x) => thread.regs[x] ? thread.regs[x] : Number(x)
 
 const instructions = {
-    'jgz': a => _ => x => y => a.ip += vor(a, x) > 0 ? vor(a, y) - 1 : 0,
-    'set': a => _ => r => x => a.regs[r] = vor(a, x),
-    'add': a => _ => r => x => a.regs[r] += vor(a, x),
-    'mul': a => _ => r => x => a.regs[r] *= vor(a, x),
-    'mod': a => _ => r => x => a.regs[r] %= vor(a, x),
-    'snd': a => q => x => _ => q.push(vor(a, x)),
-    'rcv': a => _ => r => _ => a.regs[r] = a.queue.shift(),
+    'jgz': t => _ => x => y => t.ip += vor(t, x) > 0 ? vor(t, y) - 1 : 0,
+    'set': t => _ => r => x => t.regs[r] = vor(t, x),
+    'add': t => _ => r => x => t.regs[r] += vor(t, x),
+    'mul': t => _ => r => x => t.regs[r] *= vor(t, x),
+    'mod': t => _ => r => x => t.regs[r] %= vor(t, x),
+    'snd': t => q => x => _ => { q.push(vor(t, x)); t.sent++ },
+    'rcv': t => _ => r => _ => t.regs[r] = t.queue.shift(),
 }
 
 const runProgram = s => {
-    runThread = (ta, q) => {
-        if (ta.ip >= 0 && ta.ip < s.program.length) {
-            const [i, a, b] = s.program[ta.ip].split(' ')
-            if ((i === 'rcv' && ta.queue.length > 0) || i !== 'rcv') {
-                instructions[i](ta)(q)(a)(b)
-                ta.ip++
-                ta.sent += i === 'snd' ? 1 : 0
-                return true
-            }
+    const runThread = (t, q) => {
+        if ((t.ip >= 0 && t.ip < s.program.length && (s.program[t.ip][0] === 'r' && t.queue.length > 0) || s.program[t.ip][0] !== 'r')) {
+            const [i, a, b] = s.program[t.ip++].split(' ')
+            instructions[i](t)(q)(a)(b)
+            return true
         }
     }
 
