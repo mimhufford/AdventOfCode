@@ -5,6 +5,7 @@ const state = {
     dir: [0, 1],
     map: input,
     seen: [],
+    moves: -1,
 }
 
 const turnDirs = {
@@ -29,9 +30,10 @@ const move = s => {
         s.dir = vals[0] !== ' ' ? dirs[0] : dirs[1]
     }
     s.pos = offset(s.pos, s.dir)
+    s.moves++
     return val !== ' '
 }
 
 while (move(state)) { }
 
-console.log(state.seen.join(''))
+console.log(state.seen.join(''), state.moves)
