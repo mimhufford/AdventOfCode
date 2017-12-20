@@ -15,10 +15,31 @@ const step = ps => ps.forEach(p => {
     p.x += p.dx; p.y += p.dy; p.z += p.dz
 })
 
-for (let i = 0; i < 100000; i++) {
-    step(particles)
+const collide = ps => {
+    const positions = new Set()
+    const toDelete = new Set()
+    const position = p => p.x + ',' + p.y + ',' + p.z
+    ps.forEach(p => {
+        const pos = position(p)
+        if (positions.has(pos)) toDelete.add(pos)
+        else positions.add(pos)
+    })
+
+    return ps.filter(p => !toDelete.has(position(p)))
 }
 
-const closest = particles.reduce((closest, cur) => distance(closest) > distance(cur) ? cur : closest)
+const findClosest = ps => {
+    for (let i = 0; i < 10000; i++) step(ps)
+    console.log(particles.reduce((res, cur) => distance(res) > distance(cur) ? cur : res).i)
+}
 
-console.log(closest)
+const doCollisions = ps => {
+    for (let i = 0; i < 10000; i++) {
+        ps = collide(ps)
+        step(ps)
+    }
+    console.log(ps.length)
+}
+
+//findClosest(particles)
+doCollisions(particles)
