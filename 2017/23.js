@@ -23,5 +23,20 @@ const runProgram = s => {
     }
 }
 
-runProgram(state)
-console.log(state.muls)
+//runProgram(state)
+//console.log(state.muls)
+
+
+// PART 2
+let d = e = f = h = 0
+
+for (let b = 106500; b < 123500; b += 17) {
+    f = 1
+    for (d = 2; d < b; d++) {
+        for (e = 2; e < b; e++) {
+            if (d * e == b) f = 0
+        }
+    }
+    if (f == 0) h++
+}
+console.log(h)
