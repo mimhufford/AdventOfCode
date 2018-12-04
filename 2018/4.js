@@ -14,7 +14,16 @@ for (const line of input) {
     }
 }
 
-const sleepiest = Object.keys(sleeps).reduce((a, b) => sleeps[a].length > sleeps[b].length ? a : b)
-const minutes = sleeps[sleepiest].reduce((g, c) => { g[c] = g[c] || 0; g[c]++; return g }, {})
-const minute = Object.keys(minutes).reduce((a, b) => minutes[a] > minutes[b] ? a : b)
-console.log("Part 1:", sleepiest * minute)
+const sleepiestMinute = id => {
+    const minutes = sleeps[id].reduce((g, c) => { g[c] = g[c] || 0; g[c]++; return g }, {})
+    const total = Object.values(minutes).reduce((t, c) => t + c, 0)
+    const minute = Object.keys(minutes).reduce((a, b) => minutes[a] > minutes[b] ? a : b)
+    return [Number(minute), minutes[minute], total]
+}
+
+const data = Object.keys(sleeps).map(id => ({ id: Number(id), favMin: sleepiestMinute(id) }))
+
+const sleepiest = data.reduce((a, b) => a.favMin[2] > b.favMin[2] ? a : b)
+const commonest = data.reduce((a, b) => a.favMin[1] > b.favMin[1] ? a : b)
+console.log("Part 1:", sleepiest.id * sleepiest.favMin[0])
+console.log("Part 2:", commonest.id * commonest.favMin[0])
