@@ -1,7 +1,6 @@
 const input = require("./data").day5.split('')
 
 const react = remove => {
-    const match = (a, b) => a && a !== b && a.toUpperCase() === b.toUpperCase()
     const filtered = input.filter(unit => unit.toUpperCase() !== remove)
     const result = [filtered[0]]
 
@@ -9,11 +8,13 @@ const react = remove => {
         const a = result[result.length - 1]
         const b = filtered[i]
 
-        if (match(a, b)) result.pop()
-        else             result.push(b)
+        if (a && a !== b && a.toUpperCase() === b.toUpperCase())
+            result.pop()
+        else
+            result.push(b)
     }
 
-    return (result.join('') + filtered[filtered.length - 1]).length
+    return result.length + 1
 }
 
 console.log("Part 1:", react())
