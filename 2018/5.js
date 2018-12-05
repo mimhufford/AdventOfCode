@@ -1,12 +1,13 @@
-const input = require("./data").day5.split('')
+const input = require("./data").day5
 
 const react = remove => {
-    const filtered = input.filter(unit => unit.toUpperCase() !== remove)
-    const result = [filtered[0]]
+    const result = [input[0]]
 
-    for (let i = 1; i < filtered.length - 1; i++) {
+    for (let i = 1; i < input.length - 1; i++) {
+        const b = input[i]
+        if (b.toUpperCase() == remove) continue
+
         const a = result[result.length - 1]
-        const b = filtered[i]
 
         if (a && a !== b && a.toUpperCase() === b.toUpperCase())
             result.pop()
