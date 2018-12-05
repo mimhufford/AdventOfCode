@@ -16,5 +16,5 @@ const react = remove => {
     return (result.join('') + filtered[filtered.length - 1]).length
 }
 
-console.log("Part 1:", react(''))
-console.log("Part 2:", 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => react(c)).sort()[0])
+console.log("Part 1:", react())
+console.log("Part 2:", 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(react).sort()[0])
