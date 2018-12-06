@@ -5,7 +5,7 @@ const react = remove => {
 
     for (let i = 1; i < input.length - 1; i++) {
         const b = input[i]
-        if (b.toUpperCase() == remove) continue
+        if (b.toUpperCase() === remove) continue
 
         const a = result[result.length - 1]
 
