@@ -2,10 +2,7 @@ const input = require("./data").day6
 
 const coords = input.split('\n').map(l => l.split(', ').map(Number))
 
-const dist = (x, y, coord) => Math.abs(x - coord[0]) + Math.abs(y - coord[1])
-
 const cells = []
-const infinites = new Set()
 let safe = 0
 
 const [x0, x1, y0, y1] = coords.reduce((r, c) =>
@@ -14,36 +11,31 @@ const [x0, x1, y0, y1] = coords.reduce((r, c) =>
 
 for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
-        let lowestIndex = new Set()
+        let lowestIndex = []
         let lowestDistance = Number.MAX_VALUE
         let totalDistance = 0
         for (let i = 0; i < coords.length; i++) {
-            const distance = dist(x, y, coords[i])
+            const distance = Math.abs(x - coords[i][0]) + Math.abs(y - coords[i][1])
             totalDistance += distance
             if (distance < lowestDistance) {
-                lowestIndex.clear()
-                lowestIndex.add(i)
+                lowestIndex = [i]
                 lowestDistance = distance
             } else if (distance === lowestDistance) {
-                lowestIndex.add(i)
+                lowestIndex.push(i)
             }
         }
         if (totalDistance < 10000) safe++
-        if (lowestIndex.size === 1) {
-            const index = Array.from(lowestIndex)[0]
-            cells.push(index)
+        if (lowestIndex.length === 1) {
+            const index = lowestIndex[0]
             if (x === x0 || y === y0 || x === x1 || y === y1)
-                infinites.add(index)
+                cells[index] = Number.POSITIVE_INFINITY
+            else {
+                cells[index] = cells[index] || 0
+                cells[index]++
+            }
         }
     }
 }
 
-const counts = cells.reduce((res, cur) => {
-    if (infinites.has(cur)) return res
-    res[cur] = res[cur] || 0
-    res[cur]++
-    return res
-}, {})
-
-console.log("Part 1:", Object.values(counts).sort((a, b) => a < b ? 1 : -1)[0])
+console.log("Part 1:", cells.filter(d => Number.isFinite(d)).sort((a, b) => a < b ? 1 : -1)[0])
 console.log("Part 2:", safe)
