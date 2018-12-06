@@ -14,12 +14,26 @@ const [x0, x1, y0, y1] = coords.reduce((r, c) =>
 
 for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
-        const distances = coords.map((c, i) => [i, dist(x, y, c)]).sort((a, b) => a[1] > b[1] ? 1 : -1)
-        if (distances.map(d => d[1]).reduce((a, b) => a + b) < 10000) safe++
-        if (distances[0][1] !== distances[1][1]) {
-            cells.push(distances[0][0])
+        let lowestIndex = new Set()
+        let lowestDistance = Number.MAX_VALUE
+        let totalDistance = 0
+        for (let i = 0; i < coords.length; i++) {
+            const distance = dist(x, y, coords[i])
+            totalDistance += distance
+            if (distance < lowestDistance) {
+                lowestIndex.clear()
+                lowestIndex.add(i)
+                lowestDistance = distance
+            } else if (distance === lowestDistance) {
+                lowestIndex.add(i)
+            }
+        }
+        if (totalDistance < 10000) safe++
+        if (lowestIndex.size === 1) {
+            const index = Array.from(lowestIndex)[0]
+            cells.push(index)
             if (x === x0 || y === y0 || x === x1 || y === y1)
-                infinites.add(distances[0][0])
+                infinites.add(index)
         }
     }
 }
