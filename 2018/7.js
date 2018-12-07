@@ -11,7 +11,7 @@ const graph = input.reduce((result, line) => {
 }, {})
 
 const order = (options, result = '', visited = new Set()) => {
-    options = options.filter(id => !visited.has(id) && graph[id].prev.every(id => visited.has(id))).sort()
+    options = options.filter(j => !visited.has(j) && graph[j].prev.every(j => visited.has(j))).sort()
     if (options.length == 0) return result
     const cur = options.shift()
     visited.add(cur)
@@ -21,36 +21,27 @@ const order = (options, result = '', visited = new Set()) => {
 console.log("Part 1:", order(Object.keys(graph).filter(id => graph[id].prev.length == 0)))
 
 const workers = Array(5).fill(0).map(i => ({ cur: 0, started: 0 }))
-const todo = new Set(Object.keys(graph).filter(id => graph[id].prev.length == 0))
+const todo = new Set(Object.keys(graph).filter(j => graph[j].prev.length == 0))
 const done = new Set()
 let second = 0
 
 while (done.size != 26) {
-    const freeWorkers = []
-
-    // finish any jobs and work out who is free
-    for (let i = 0; i < workers.length; i++) {
-        const w = workers[i]
-        if (w.cur === 0) freeWorkers.push(w)
-        else if (w.cur.charCodeAt(0) - 4 + w.started === second) {
-            done.add(w.cur)
-            graph[w.cur].next.forEach(j => todo.add(j))
-            w.cur = 0
-            freeWorkers.push(w)
-        }
+    // finish jobs
+    for (const w of workers) {
+        if (w.cur === 0 || w.cur.charCodeAt(0) - 4 + w.started !== second) continue
+        done.add(w.cur)
+        graph[w.cur].next.forEach(j => todo.add(j))
+        w.cur = 0
     }
-
-    // if there are workers then find and allocate jobs
-    for (let i = 0; i < freeWorkers.length; i++) {
-        const w = freeWorkers[i]
+    // allocate new jobs
+    for (const w of workers) {
+        if (w.cur !== 0) continue
         const job = Array.from(todo).filter(j => !done.has(j) && graph[j].prev.every(j => done.has(j))).sort()[0]
-        if (job) {
-            w.cur = job
-            w.started = second
-            todo.delete(job)
-        }
+        if (!job) continue
+        w.cur = job
+        w.started = second
+        todo.delete(job)
     }
-
     second += 1
 }
 
