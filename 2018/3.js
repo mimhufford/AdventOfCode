@@ -1,4 +1,3 @@
-console.time()
 const input = require("./data").day3.split('\n')
 
 const grid = []
@@ -30,4 +29,3 @@ for (const id of IDs) if (!overlapIDs.has(id)) {
     console.log("Part 2:", id)
     break
 }
-console.timeEnd()
