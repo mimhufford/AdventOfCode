@@ -8,25 +8,13 @@ const build = data => {
     const children = Array(numChildren).fill().map(() => build(data))
     const metadata = Array(numMetadata).fill().map(() => data.shift())
     const sum = metadata.reduce(add) + children.map(c => c.sum).reduce(add, 0)
-    return { children, metadata, sum }
-}
-
-const calcValues = node => {
-    if (node.children.length === 0)
-        node.value = node.metadata.reduce(add)
-    else {
-        let value = 0
-        for (const i of node.metadata) {
-            const child = node.children[i - 1]
-            if (child) value += calcValues(child)
-        }
-        node.value = value
-    }
-    return node.value
+    const value = children.length ?
+        metadata.map(i => children[i - 1] ? children[i - 1].value : 0).reduce(add) :
+        metadata.reduce(add)
+    return { children, metadata, sum, value }
 }
 
 const tree = build(input)
-calcValues(tree)
 
 console.log("Part 1:", tree.sum)
 console.log("Part 2:", tree.value)
