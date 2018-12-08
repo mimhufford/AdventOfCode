@@ -1,19 +1,19 @@
 const input = require("./data").day8.split(' ').map(Number)
 
-const sum = (a, b) => a + b
+const add = (a, b) => a + b
 
 const build = data => {
     const numChildren = data.shift()
     const numMetadata = data.shift()
-    return {
-        children: Array(numChildren).fill().map(() => build(data)),
-        metadata: Array(numMetadata).fill().map(() => data.shift())
-    }
+    const children = Array(numChildren).fill().map(() => build(data))
+    const metadata = Array(numMetadata).fill().map(() => data.shift())
+    const sum = metadata.reduce(add) + children.map(c => c.sum).reduce(add, 0)
+    return { children, metadata, sum }
 }
 
 const calcValues = node => {
     if (node.children.length === 0)
-        node.value = node.metadata.reduce(sum)
+        node.value = node.metadata.reduce(add)
     else {
         let value = 0
         for (const i of node.metadata) {
@@ -25,10 +25,8 @@ const calcValues = node => {
     return node.value
 }
 
-const metasum = node => node.metadata.reduce(sum) + node.children.map(metasum).reduce(sum, 0)
-
 const tree = build(input)
 calcValues(tree)
 
-console.log("Part 1:", metasum(tree))
+console.log("Part 1:", tree.sum)
 console.log("Part 2:", tree.value)
