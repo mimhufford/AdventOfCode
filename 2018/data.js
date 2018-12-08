@@ -3729,3 +3729,4 @@ Step H must be finished before step G can begin.
 Step U must be finished before step O can begin.
 Step W must be finished before step P can begin.
 Step A must be finished before step D can begin.`
+module.exports.day8 = `2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2`
