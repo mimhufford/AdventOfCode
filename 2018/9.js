@@ -1,19 +1,21 @@
 const highscore = (players, marbles) => {
     const score = Array(players).fill(0)
-    const board = [0]
-    for (let cur = 0, player = 1, marble = 1; marble <= marbles; marble++) {
+    let board = { val: 0 }
+    board.next = board.prev = board
+    for (let marble = 1; marble <= marbles; marble++) {
         if (marble % 23 === 0) {
-            score[player] += marble
-            cur = (cur - 7) % board.length
-            cur = cur < 0 ? cur + board.length : cur
-            score[player] += board.splice(cur, 1)[0]
+            const remove = board.prev.prev.prev.prev.prev.prev.prev
+            board = remove.prev.next = remove.next
+            score[marble % players] += marble + remove.val
         } else {
-            cur = ((cur + 1) % board.length) + 1
-            board.splice(cur, 0, marble)
+            const first = board.next
+            const second = first.next
+            board = { val: marble, prev: first, next: second }
+            first.next = second.prev = board
         }
-        player = (player + 1) % players
     }
-    return score.reduce((a, b) => a > b ? a : b)
+    return Math.max(...score)
 }
 
 console.log("Part 1:", highscore(424, 71482))
+console.log("Part 2:", highscore(424, 7148200))
