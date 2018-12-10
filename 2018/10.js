@@ -1,3 +1,4 @@
+console.time()
 const input = require("./data").day10.split('\n')
 
 const stars = input.map(line => line.match(/(-?\d+)/g).map(Number)).map(line => ({
@@ -5,11 +6,15 @@ const stars = input.map(line => line.match(/(-?\d+)/g).map(Number)).map(line => 
 }))
 
 const calcBounds = stars => {
-    const x0 = Math.min(...stars.map(s => s.x))
-    const x1 = Math.max(...stars.map(s => s.x)) - x0
-    const y0 = Math.min(...stars.map(s => s.y))
-    const y1 = Math.max(...stars.map(s => s.y)) - y0
-    return { x0, x1, y0, y1 }
+    let x0 = Number.POSITIVE_INFINITY, y0 = Number.POSITIVE_INFINITY
+    let x1 = Number.NEGATIVE_INFINITY, y1 = Number.NEGATIVE_INFINITY
+    for (const star of stars) {
+        x0 = x0 > star.x ? star.x : x0
+        y0 = y0 > star.y ? star.y : y0
+        x1 = x1 < star.x ? star.x : x1
+        y1 = y1 < star.y ? star.y : y1
+    }
+    return { x0, x1: x1 - x0, y0, y1: y1 - y0 }
 }
 
 const findSmallestBounds = stars => {
@@ -46,3 +51,4 @@ const second = findSmallestBounds(stars.map(s => Object.assign({}, s)))
 console.log("Part 1:")
 drawAfterSeconds(stars, second)
 console.log("Part 2:", second)
+console.timeEnd() // 126ms
