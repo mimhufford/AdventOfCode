@@ -12,17 +12,18 @@ const calcBounds = stars => {
     return { x0, x1, y0, y1 }
 }
 
-const findSmallestBounds = (stars, times) => {
-    const smallest = []
-    for (let i = 0; i < times; i++) {
+const findSmallestBounds = stars => {
+    let prevBounds = Number.POSITIVE_INFINITY
+    for (let i = 0; ; i++) {
         const bounds = calcBounds(stars)
-        smallest.push([i, bounds.x1 * bounds.y1])
+        const curBounds = bounds.x1 * bounds.y1
+        if (curBounds > prevBounds) return i - 1
+        else prevBounds = curBounds
         for (const star of stars) {
             star.x += star.dx
             star.y += star.dy
         }
     }
-    return smallest.reduce((a, b) => a[1] < b[1] ? a : b)[0]
 }
 
 const drawAfterSeconds = (stars, second) => {
@@ -41,7 +42,7 @@ const drawAfterSeconds = (stars, second) => {
     }
 }
 
-const second = findSmallestBounds(stars.map(s => Object.assign({}, s)), 15000)
+const second = findSmallestBounds(stars.map(s => Object.assign({}, s)))
 console.log("Part 1:")
 drawAfterSeconds(stars, second)
 console.log("Part 2:", second)
