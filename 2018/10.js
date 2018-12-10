@@ -1,26 +1,22 @@
-const input = require("./data").day10.split('\n')
-
-const stars = input.map(line => line.match(/(-?\d+)/g).map(Number)).map(line => ({
-    x: line[0], y: line[1], dx: line[2], dy: line[3]
-}))
+const stars = require("./data").day10.split('\n')
+    .map(line => line.match(/(-?\d+)/g).map(Number))
+    .map(line => ({ x: line[0], y: line[1], dx: line[2], dy: line[3] }))
 
 for (let prev = {}, i = 0; true; i++) {
-    let l = t = Number.POSITIVE_INFINITY, r = b = Number.NEGATIVE_INFINITY
+    let left = top = Number.POSITIVE_INFINITY, right = bottom = Number.NEGATIVE_INFINITY
 
     for (const star of stars) {
         star.x += star.dx
         star.y += star.dy
-        l = l > star.x ? star.x : l
-        t = t > star.y ? star.y : t
-        r = r < star.x ? star.x : r
-        b = b < star.y ? star.y : b
+        if (left > star.x) left = star.x; else if (right < star.x) right = star.x
+        if (top > star.y) top = star.y; else if (bottom < star.y) bottom = star.y
     }
 
-    const cur = { l, w: r - l, t, h: b - t }
+    const cur = { left, width: right - left, top, height: bottom - top }
 
-    if (cur.w * cur.h > prev.w * prev.h) {
-        const sky = Array(prev.h + 1).fill().map(_ => Array(prev.w).fill(' '))
-        stars.forEach(s => sky[s.y - s.dy - prev.t][s.x - s.dx - prev.l] = '#')
+    if (cur.width * cur.height > prev.width * prev.height) {
+        const sky = Array(prev.height + 1).fill().map(_ => Array(prev.width).fill(' '))
+        stars.forEach(s => sky[s.y - s.dy - prev.top][s.x - s.dx - prev.left] = '#')
         console.log("Part 1:"); sky.forEach(line => console.log(line.join('')))
         console.log("Part 2:", i)
         break
