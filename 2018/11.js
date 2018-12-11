@@ -12,8 +12,8 @@ const findLargestPosition = serial => {
     for (let y = 1; y <= 298; y++) {
         for (let x = 1; x <= 298; x++) {
             cumlative = 0
-            for (gy = y; gy < y + 3; gy++)
-                for (gx = x; gx < x + 3; gx++)
+            for (let gy = y; gy < y + 3; gy++)
+                for (let gx = x; gx < x + 3; gx++)
                     cumlative += grid[gy][gx]
             if (cumlative > largest) {
                 largest = cumlative
