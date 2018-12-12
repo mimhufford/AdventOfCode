@@ -1,13 +1,13 @@
-const input = require("./data").day12.split('\n')
+const input = require("./data").day12
 
-const pots = input.shift().substring(15).split('').reduce((result, val, index) => {
-    result[index] = val === '#'
-    return result
-}, {})
+const pots = _ => input.split('\n').shift().substring(15).split('')
+    .reduce((result, val, index) => {
+        result[index] = val === '#'
+        return result
+    }, {})
 
-input.shift()
 
-const rules = input
+const rules = input.split('\n').slice(2)
     .filter(rule => rule[9] === '#')
     .map(rule => rule.split(' => ')[0].split('').map(c => c === '#'))
 
@@ -35,11 +35,23 @@ const step = pots => {
     return result
 }
 
-const evolve = (pots, steps) => {
+const evolveForSteps = (pots, steps) => {
     for (let i = 1; i <= steps; i++) pots = step(pots)
     let sum = 0
     for (const pot in pots) if (pots[pot]) sum += Number(pot)
     return sum
 }
 
-console.log("Part 1:", evolve(pots, 20))
+const calculateSumAt = (pots, steps) => {
+    const stepsBeforeStable = 200
+    for (let i = 1; i < stepsBeforeStable; i++) pots = step(pots)
+    let before = 0; for (const pot in pots) if (pots[pot]) before += Number(pot)
+    pots = step(pots)
+    let after = 0; for (const pot in pots) if (pots[pot]) after += Number(pot)
+    const diff = after - before
+    const toAdd = (steps - stepsBeforeStable) * diff
+    return after + toAdd
+}
+
+console.log("Part 1:", evolveForSteps(pots(), 20))
+console.log("Part 2:", calculateSumAt(pots(), 50000000000))
