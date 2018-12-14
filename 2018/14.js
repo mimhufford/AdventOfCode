@@ -14,15 +14,13 @@ const scoresAfter = limit => {
 const recipesUntil = sequence => {
     const scores = [3, 7], elves = [0, 1]
     sequence = sequence.toString()
-    const length = -sequence.length
+    const length = -sequence.length - 1
     while (true) {
         generate(scores, elves)
-        const pos = scores.slice(length - 1).join('').indexOf(sequence)
-        if (pos >= 0) return scores.length + length - 1 + pos
+        const pos = scores.slice(length).join('').indexOf(sequence)
+        if (pos >= 0) return scores.length + length + pos
     }
 }
 
-console.time()
 console.log("Part 1:", scoresAfter(110201))
 console.log("Part 2:", recipesUntil(110201))
-console.timeEnd()
