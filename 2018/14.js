@@ -5,10 +5,24 @@ const generate = (scores, elves) => {
     elves[1] = (elves[1] + e2 + 1) % scores.length
 }
 
-const getScoresAfter = limit => {
+const scoresAfter = limit => {
     const scores = [3, 7], elves = [0, 1]
     while (scores.length <= limit + 10) generate(scores, elves)
     return scores.slice(limit, limit + 10).join('')
 }
 
-console.log("Part 1:", getScoresAfter(110201))
+const recipesUntil = sequence => {
+    const scores = [3, 7], elves = [0, 1]
+    sequence = sequence.toString()
+    const length = -sequence.length
+    while (true) {
+        generate(scores, elves)
+        if (scores.slice(length).join('') === sequence)
+            return scores.length + length
+        if (scores.slice(length - 1, -1).join('') === sequence)
+            return scores.length + length - 1
+    }
+}
+
+console.log("Part 1:", scoresAfter(110201))
+console.log("Part 2:", recipesUntil(110201))
