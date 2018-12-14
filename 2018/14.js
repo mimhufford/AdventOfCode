@@ -17,12 +17,12 @@ const recipesUntil = sequence => {
     const length = -sequence.length
     while (true) {
         generate(scores, elves)
-        if (scores.slice(length).join('') === sequence)
-            return scores.length + length
-        if (scores.slice(length - 1, -1).join('') === sequence)
-            return scores.length + length - 1
+        const pos = scores.slice(length - 1).join('').indexOf(sequence)
+        if (pos >= 0) return scores.length + length - 1 + pos
     }
 }
 
+console.time()
 console.log("Part 1:", scoresAfter(110201))
 console.log("Part 2:", recipesUntil(110201))
+console.timeEnd()
