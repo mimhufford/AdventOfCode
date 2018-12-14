@@ -7,6 +7,16 @@ for (let y = 1; y <= 300; y++) {
         grid[y][x] = Math.floor(((x + 10) * y + serial) * (x + 10) / 100) % 10 - 5
 }
 
+const cumlative = []
+for (let y = 1; y <= 300; y++) {
+    cumlative[y] = []
+    for (let x = 1; x <= 300; x++) {
+        cumlative[y][x] = Math.floor(((x + 10) * y + serial) * (x + 10) / 100) % 10 - 5
+        if (x === 1 || y === 1) continue
+        cumlative[y][x] += cumlative[y][x - 1] + cumlative[y - 1][x] + cumlative[y - 1][x - 1]
+    }
+}
+
 const largestForSize = (min, max) => {
     let largest = Number.NEGATIVE_INFINITY
     let largestPos = []
