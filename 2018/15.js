@@ -85,6 +85,7 @@ const doBattle = (startingGrid, elfPower) => {
                 const weakestEnemies = adjAfterMove.filter(e => e.hp === weakest)
                 const adjEnemy = playOrder(weakestEnemies)[0]
                 adjEnemy.hp -= curChr.ap
+                if (adjEnemy.ap > 3 && adjEnemy.hp < 1) return [0, false]                
             }
         }
     }
