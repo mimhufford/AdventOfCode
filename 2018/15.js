@@ -1,65 +1,14 @@
 const input = require("./data").day15.split('\n').map(line => line.split(''))
 
-const input0 = `#######
-#.G...#
-#...EG#
-#.#.#G#
-#..G#E#
-#.....#
-#######`.split('\n').map(line => line.split(''))
-
-const input2 = `#######
-#G..#E#
-#E#E.E#
-#G.##.#
-#...#E#
-#...E.#
-#######`.split('\n').map(line => line.split(''))
-
-const input1 = `#########
-#G......#
-#.E.#...#
-#..##..G#
-#...##..#
-#...#...#
-#.G...G.#
-#.....G.#
-#########`.split('\n').map(line => line.split(''))
-
-const input3 = `#######
-#E..EG#
-#.#G.E#
-#E.##E#
-#G..#.#
-#..E#.#
-#######`.split('\n').map(line => line.split(''))
-
-const input4 = `#######
-#E.G#.#
-#.#G..#
-#G.#.G#
-#G..#.#
-#...E.#
-#######`.split('\n').map(line => line.split(''))
-
-const input5 = `#######
-#.E...#
-#.#..G#
-#.###.#
-#E#G#G#
-#...#G#
-#######`.split('\n').map(line => line.split(''))
-
-const doBattle = startingGrid => {
+const doBattle = (startingGrid, elfPower) => {
     const map = startingGrid.map(cells => cells.map(cell => cell === '#' ? '#' : '.'))
     const chrs = [
         ...startingGrid.flatMap((cells, y) => cells.map((cell, x) =>
-            cell === 'E' ? ({ elf: true, y, x, hp: 200, ap: 3 }) : null)),
+            cell === 'E' ? ({ elf: true, y, x, hp: 200, ap: elfPower }) : null)),
         ...startingGrid.flatMap((cells, y) => cells.map((cell, x) =>
             cell === 'G' ? ({ gob: true, y, x, hp: 200, ap: 3 }) : null))
     ].filter(c => c)
 
-    // utility functions
     const battleFinished = () => chrs.filter(c => c.elf && c.hp > 0).length < 1 || chrs.filter(c => c.gob && c.hp > 0).length < 1
     const elfAt = (x, y) => chrs.filter(e => e.elf && e.hp > 0 && e.x === x && e.y === y)[0]
     const gobAt = (x, y) => chrs.filter(g => g.gob && g.hp > 0 && g.x === x && g.y === y)[0]
@@ -74,45 +23,27 @@ const doBattle = startingGrid => {
     const sCoord = (x, y) => `${x},${y}`
     const iCoord = xy => xy.split(',').map(Number)
     const result = () => chrs.reduce((sum, c) => sum + (c.hp > 0 ? c.hp : 0), 0)
+    const numElves = () => chrs.filter(c => c.elf && c.hp > 0).length
 
-    const draw = () => {
-        const d = map.map(y => y.map(x => x))
-        for (const c of chrs) if (c.hp > 0) d[c.y][c.x] = c.elf ? 'E' : 'G'
-        console.log(round)
-        d.forEach((row, y) => {
-            let line = row.join('') + '   '
-            for (const c of chrs) if (c.hp > 0 && c.y === y) {
-                line += c.elf ? 'E' : 'G'
-                line += `(${c.hp}) `
-            }
-            console.log(line)
-        })
-    }
+    const numStartingElves = numElves()
 
-    let round = 0
-    while (true) {
+    for (let round = 0; true; round++) {
         playOrder(chrs)
-        //draw(round)
         for (const curChr of chrs) {
-            if (battleFinished()) return [round, result(), round * result()]
+            if (battleFinished()) return [round * result(), numStartingElves === numElves()]
             if (curChr.hp <= 0) continue
             const adjBeforeMove = adjEnemies(curChr)
             if (adjBeforeMove.length === 0) {
                 const enemies = findEnemies(curChr)
                 if (enemies.length > 0) {
-
                     const enemyRoutes = []
-
                     for (const enemy of enemies) {
                         for (const adjEnemyTarget of neighbours(enemy.x, enemy.y)) {
                             if (!walkable(...adjEnemyTarget)) continue
-
-                            // pathfind to enemy
                             const frontier = [sCoord(curChr.x, curChr.y)]
                             const path = {}
                             path[frontier[0]] = null
                             const target = sCoord(...adjEnemyTarget)
-
                             while (frontier.length > 0) {
                                 const current = frontier.shift()
                                 if (current === target) break
@@ -125,8 +56,6 @@ const doBattle = startingGrid => {
                                     }
                                 }
                             }
-
-                            // get route
                             let t = target
                             const route = [t]
                             while (t) {
@@ -137,8 +66,6 @@ const doBattle = startingGrid => {
                             enemyRoutes.push(route)
                         }
                     }
-
-                    // find closest
                     const reachable = enemyRoutes.filter(r => r.length > 0)
                     if (reachable.length > 0) {
                         reachable.sort((a, b) => a.length - b.length)
@@ -160,14 +87,15 @@ const doBattle = startingGrid => {
                 adjEnemy.hp -= curChr.ap
             }
         }
-        round++
     }
 }
 
-console.log(doBattle(input0), 47, 590)
-console.log(doBattle(input1), 20, 937)
-console.log(doBattle(input2), 37, 982)
-console.log(doBattle(input3), 46, 859)
-console.log(doBattle(input4), 35, 793)
-console.log(doBattle(input5), 54, 536)
-console.log(doBattle(input))
+console.log("Part 1:", doBattle(input, 3)[0])
+
+for (let ap = 4; true; ap++) {
+    const outcome = doBattle(input, ap)
+    if (outcome[1]) {
+        console.log("Part 2:", outcome[0])
+        break
+    }
+}
