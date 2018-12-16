@@ -1,24 +1,26 @@
 const input = require("./data").day16.split('\n')
 
-const addr = (r, a, b, c) => r[c] = r[a] + r[b]
-const addi = (r, a, b, c) => r[c] = r[a] + b
-const mulr = (r, a, b, c) => r[c] = r[a] * r[b]
-const muli = (r, a, b, c) => r[c] = r[a] * b
-const banr = (r, a, b, c) => r[c] = r[a] & r[b]
-const bani = (r, a, b, c) => r[c] = r[a] & b
-const borr = (r, a, b, c) => r[c] = r[a] | r[b]
-const bori = (r, a, b, c) => r[c] = r[a] | b
-const setr = (r, a, _, c) => r[c] = r[a]
-const seti = (r, a, _, c) => r[c] = a
-const gtir = (r, a, b, c) => r[c] = a > r[b] ? 1 : 0
-const gtri = (r, a, b, c) => r[c] = r[a] > b ? 1 : 0
-const gtrr = (r, a, b, c) => r[c] = r[a] > r[b] ? 1 : 0
-const eqir = (r, a, b, c) => r[c] = a == r[b] ? 1 : 0
-const eqri = (r, a, b, c) => r[c] = r[a] == b ? 1 : 0
-const eqrr = (r, a, b, c) => r[c] = r[a] == r[b] ? 1 : 0
+const ops = [
+    addr = (r, a, b, c) => r[c] = r[a] + r[b],
+    addi = (r, a, b, c) => r[c] = r[a] + b,
+    mulr = (r, a, b, c) => r[c] = r[a] * r[b],
+    muli = (r, a, b, c) => r[c] = r[a] * b,
+    banr = (r, a, b, c) => r[c] = r[a] & r[b],
+    bani = (r, a, b, c) => r[c] = r[a] & b,
+    borr = (r, a, b, c) => r[c] = r[a] | r[b],
+    bori = (r, a, b, c) => r[c] = r[a] | b,
+    setr = (r, a, _, c) => r[c] = r[a],
+    seti = (r, a, _, c) => r[c] = a,
+    gtir = (r, a, b, c) => r[c] = a > r[b] ? 1 : 0,
+    gtri = (r, a, b, c) => r[c] = r[a] > b ? 1 : 0,
+    gtrr = (r, a, b, c) => r[c] = r[a] > r[b] ? 1 : 0,
+    eqir = (r, a, b, c) => r[c] = a == r[b] ? 1 : 0,
+    eqri = (r, a, b, c) => r[c] = r[a] == b ? 1 : 0,
+    eqrr = (r, a, b, c) => r[c] = r[a] == r[b] ? 1 : 0,
+]
 
 const analyseSamples = () => {
-    ops = [addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir, gtri, gtrr, eqir, eqri, eqrr]
+    const idToOp = []
     let threeOrMore = 0
     for (let line = 0; line < input.length; line++) {
         if (input[line][0] === 'B') {
@@ -28,14 +30,29 @@ const analyseSamples = () => {
             let matches = 0
             for (const op of ops) {
                 const result = [...before]
-                const [_, a, b, c] = instruction
+                const [i, a, b, c] = instruction
                 op(result, a, b, c)
-                if (result.every((_, i) => result[i] === after[i])) matches++
+                if (result.every((_, i) => result[i] === after[i])) {
+                    matches++
+                    idToOp[i] = idToOp[i] || new Set()
+                    idToOp[i].add(op)
+                }
             }
             if (matches >= 3) threeOrMore++
         }
     }
-    return threeOrMore
+
+    while (!idToOp.every(s => s.size === 1)) {
+        const solvedOps = idToOp.filter(s => s.size === 1).map(s => Array.from(s)[0])
+        for (const unsolvedOp of idToOp)
+            if (unsolvedOp.size > 1)
+                for (const op of solvedOps)
+                    unsolvedOp.delete(op)
+    }
+
+    const sortedOps = idToOp.map(set => Array.from(set)[0])
+    return { threeOrMore, sortedOps }
 }
 
-console.log("Part 1:", analyseSamples())
+const result = analyseSamples()
+console.log("Part 1:", result.threeOrMore)
