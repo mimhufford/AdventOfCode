@@ -9,18 +9,13 @@ const grid = []
 input.forEach(line => {
     const data = line.match(/(.)=(\d+), .=(\d+)..(\d+)/).slice(1)
     const [val, start, end] = data.slice(1).map(Number)
-    if (data[0] == 'y') {
-        grid[val] = grid[val] || []
-        for (let x = start; x <= end; x++)
-            grid[val][x] = '#'
-    } else {
-        for (let y = start; y <= end; y++) {
-            grid[y] = grid[y] || []
-            grid[y][val] = '#'
-        }
+    grid[val] = grid[val] || []
+    for (let i = start; i <= end; i++) {
+        grid[i] = grid[i] || []
+        grid[data[0] == 'y' ? val : i][data[0] == 'y' ? i : val] = '#'
     }
-    xMin = Math.min(xMin, data[0] == 'y' ? start - 5 : val - 5)
-    xMax = Math.max(xMax, data[0] == 'y' ? end + 5 : val + 5)
+    xMin = Math.min(xMin, data[0] == 'y' ? start - 1 : val - 1)
+    xMax = Math.max(xMax, data[0] == 'y' ? end + 1 : val + 1)
     yMin = Math.min(yMin, data[0] == 'y' ? val : start)
     yMax = Math.max(yMax, data[0] == 'y' ? val : end)
 })
