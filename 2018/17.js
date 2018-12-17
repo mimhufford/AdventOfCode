@@ -48,7 +48,7 @@ const fill = (x, y) => {
 }
 
 const flood = (x, y, dx) => {
-    if (y >= yMax) return true
+    if (y > yMax) return true
     if (grid[y][x] != '.') return grid[y][x] == '|'
     grid[y][x] = '|'
     if (flood(x, y + 1, 0)) return true
