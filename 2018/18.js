@@ -34,5 +34,20 @@ doMinutes = (g, minutes) => {
     return counts.tree * counts.yard
 }
 
+calculateMinutes = (g, minutes) => {
+    for (let i = 500; i > 0; i--) g = doOneMinute(g)
+    const after500 = count(g.map(line => line.join('')).join('').split(''))
+    for (let cycle = 1; true; cycle++) {
+        g = doOneMinute(g)
+        const counts = count(g.map(line => line.join('')).join('').split(''))
+        if (counts.open != after500.open) continue
+        if (counts.tree != after500.tree) continue
+        if (counts.yard != after500.yard) continue
+        minutes -= 500
+        while (minutes > cycle) minutes -= cycle
+        return doMinutes(g, minutes)
+    }
+}
+
 console.log("Part 1:", doMinutes(grid, 10))
-console.log("Part 2:", doMinutes(grid, 1000000000))
+console.log("Part 2:", calculateMinutes(grid, 1000000000))
