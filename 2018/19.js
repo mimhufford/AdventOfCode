@@ -26,16 +26,31 @@ const run = input => {
 
     while (reg[ipr] >= 0 && reg[ipr] < ins.length) {
         const ip = reg[ipr]
-        //let log = `ip=${ip} ${reg} ${ins[ip]} `
         ops[ins[ip][0]](reg, ins[ip][1], ins[ip][2], ins[ip][3])
-        //log += `${reg}`
-        //console.log(log)
         reg[ipr]++
     }
 
     return reg[0]
 }
 
-console.time()
 console.log("Part 1:", run(input))
-console.timeEnd()
+console.log("Part 2:", 30481920)
+
+/*
+
+// this is the result of hand converting my input
+// it's finding the factors of 10551288 and summing them
+
+d = 10551288
+a = 0
+for (e = 1; e <= d; e++) {
+    for (b = 1; b <= d; b++) {
+        if (b * e == d) {
+            a += e
+        }
+    }
+}
+
+console.log("Part 2:", a)
+
+*/
