@@ -1,16 +1,15 @@
-let a = 0
+let a = 7967233
 let c = 0
 
-while (true) {
+while (c != a) {
     let b = c | 65536
-    c = 10373714
+    c = 10373714                                  // 100111100100101001010010
     while (true) {
-        c = c + (b & 255)
-        c = c & 16777215
+        c += (b & 255 /* truncate to 8 bit */)
+        c &= 16777215 // truncate to 24 bit
         c *= 65899
-        c = c & 16777215
+        c &= 16777215 // truncate to 24 bit
         if (256 > b) break
         b = Math.floor(b / 256)
     }
-    if (c == a) break
 }
