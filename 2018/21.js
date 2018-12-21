@@ -1,18 +1,14 @@
-let a = 7967233
-let c = 0
+let c = 0, s = new Set(), lastSeen
 
-while (c != a) {
+while (true) {
     let b = c | 65536
+    if (lastSeen == 0) console.log("Part 1:", c)
+    if (s.has(c)) { console.log("Part 2:", lastSeen); break }
+    s.add(c)
+    lastSeen = c
     c = 10373714
-    while (true) {
-        // add last 8 bits of b onto c
-        // increase c keeping to 24 bits
-        // shift b right 8 bits
-        c += (b & 255)
-        c &= 16777215
-        c *= 65899
-        c &= 16777215
-        if (b < 256) break
+    while (b > 0) {
+        c = (((c + (b % 2 ** 8)) % 2 ** 24) * 65899) % 2 ** 24
         b >>= 8
     }
 }
