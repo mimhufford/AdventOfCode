@@ -45,7 +45,7 @@ while (true) {
     for (const cur of chooseOrder) {
         const targets = groups.filter(g => g.units && g.team != cur.team && g.nextDefend == null)
         for (const t of targets)
-            t.dmg = t.immune.includes(cur.type) ? 0 : t.weak.includes(cur.type) ? cur.ep * 2 : cur.ep
+            t.dmg = t.immune.includes(cur.type) ? 0 : cur.ep * (t.weak.includes(cur.type) ? 2 : 1)
         const t = targets.sort((a, b) =>
             a.dmg == b.dmg ? a.ep == b.ep ? b.init - a.init : b.ep - a.ep : b.dmg - a.dmg
         )[0]
@@ -63,10 +63,10 @@ while (true) {
     const attackOrder = groups.filter(g => g.units).sort((a, b) => b.init - a.init)
     // phase 2: do attack
     for (const cur of attackOrder) {
-        if (!cur.units || !cur.nextAttack) continue
+        if (!cur.nextAttack) continue
         cur.ep = cur.units * cur.ap
         const t = cur.nextAttack
-        t.dmg = t.immune.includes(cur.type) ? 0 : t.weak.includes(cur.type) ? cur.ep * 2 : cur.ep
+        t.dmg = t.immune.includes(cur.type) ? 0 : cur.ep * (t.weak.includes(cur.type) ? 2 : 1)
         const unitsKilled = Math.min(Math.floor(t.dmg / t.hp), t.units)
         t.units -= unitsKilled
         console.log(`${cur.team ? 'infect' : 'immune'}:${cur.group} kills ${unitsKilled} from ${t.group}`)
