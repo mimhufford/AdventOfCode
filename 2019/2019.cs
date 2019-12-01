@@ -15,14 +15,8 @@ class Program
 
         int FuelRequiredAccountingForWeightOfFuel(int mass)
         {
-            int total = 0;
-            do
-            {
-                mass = FuelRequired(mass);
-                total += mass;
-            } while (mass > 0);
-
-            return total;
+            var f = FuelRequired(mass);
+            return f > 0 ? f + FuelRequiredAccountingForWeightOfFuel(f) : 0;
         }
 
         var lines = File.ReadLines("1.txt").Select(m => Convert.ToInt32(m));
