@@ -17,8 +17,8 @@ namespace AoC
                 return f > 0 ? f + FuelRequiredAccountingForWeightOfFuel(f) : 0;
             }
 
-            part1 = Ints.Select(FuelRequired).Sum().ToString();
-            part2 = Ints.Select(FuelRequiredAccountingForWeightOfFuel).Sum().ToString();
+            Part1 = Ints.Select(FuelRequired).Sum().ToString();
+            Part2 = Ints.Select(FuelRequiredAccountingForWeightOfFuel).Sum().ToString();
         }
     }
 }

@@ -9,22 +9,23 @@ namespace AoC
     public abstract class Day
     {
         private int day;
-        protected long time;
-        protected string part1;
-        protected string part2;
+
+        protected string Part1;
+        protected string Part2;
 
         public Day(int day)
         {
+            this.day = day;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            this.day = day;
             Solve();
             sw.Stop();
-            time = sw.ElapsedMilliseconds;
-            Console.WriteLine($"Day {day} - Time: {time}ms\n- Part 1: {part1}\n- Part 2: {part2}");
+            Console.WriteLine($"Day {day} - Time: {sw.ElapsedMilliseconds}ms\n- Part 1: {Part1}\n- Part 2: {Part2}");
         }
 
         protected abstract void Solve();
+
+        // Helper Utils
         protected IEnumerable<int> Ints { get => File.ReadAllLines(day + ".txt").Select(int.Parse); }
     }
 }
