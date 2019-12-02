@@ -26,6 +26,7 @@ namespace AoC
         protected abstract void Solve();
 
         // Helper Utils
-        protected IEnumerable<int> Ints { get => File.ReadAllLines(day + ".txt").Select(int.Parse); }
+        protected IEnumerable<int> IntLines { get => File.ReadAllLines(day + ".txt").Select(int.Parse); }
+        protected IEnumerable<int> IntCSV { get => File.ReadAllText(day + ".txt").Split(',').Select(int.Parse); }
     }
 }

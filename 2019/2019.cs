@@ -5,6 +5,7 @@
         static void Main()
         {
             new Day1();
+            new Day2();
         }
     }
 }
