@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AoC
 {
@@ -32,17 +33,12 @@ namespace AoC
         {
             Part1 = Run(12, 2).ToString();
 
-            for (int noun = 0; noun < 100; noun++)
-            {
-                for (int verb = 0; verb < 100; verb++)
-                {
-                    if (Run(noun, verb) == 19690720)
-                    {
+            Parallel.For(0, 100, (int noun) => {
+                Parallel.For(0, 100, (int verb) => {
+                    if (Part2 == null && Run(noun, verb) == 19690720)
                         Part2 = (100 * noun + verb).ToString();
-                        noun = verb = 100; // break loops
-                    }
-                }
-            }
+                });
+            });
         }
     }
 }
