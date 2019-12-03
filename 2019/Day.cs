@@ -28,5 +28,6 @@ namespace AoC
         // Helper Utils
         protected IEnumerable<int> IntLines { get => File.ReadAllLines(day + ".txt").Select(int.Parse); }
         protected IEnumerable<int> IntCSV { get => File.ReadAllText(day + ".txt").Split(',').Select(int.Parse); }
+        protected IEnumerable<string> Lines { get => File.ReadAllLines(day + ".txt"); }
     }
 }
