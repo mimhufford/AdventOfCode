@@ -37,11 +37,22 @@ namespace AoC
                 return n1 == n2 || n2 == n3 | n3 == n4 || n4 == n5 || n5 == n6;
             }
 
-            int next(int i)
+            bool hasPair(int i)
+            {
+                var n1 = d1(i); var n2 = d2(i); var n3 = d3(i);
+                var n4 = d4(i); var n5 = d5(i); var n6 = d6(i);
+                return (n1 == n2 && n2 != n3) ||
+                       (n1 != n2 && n2 == n3 && n3 != n4) ||
+                       (n2 != n3 && n3 == n4 && n4 != n5) ||
+                       (n3 != n4 && n4 == n5 && n5 != n6) ||
+                       (n4 != n5 && n5 == n6);
+            }
+
+            int next(int i, Predicate<int> f)
             {
                 i++;
                 i = ascend(i);
-                if (!hasDup(i)) return next(i);
+                if (!f(i)) return next(i, f);
                 return i;
             }
 
@@ -49,10 +60,13 @@ namespace AoC
             var min = range.First();
             var max = range.Last();
 
-            var count = hasDup(min) ? 1 : 0;
-            for (var i = next(min); i < max; i = next(i)) count++;
+            var part1 = hasDup(min) ? 1 : 0;
+            for (var i = next(min, hasDup); i < max; i = next(i, hasDup)) part1++;
+            Part1 = part1.ToString();
 
-            Part1 = count.ToString();
+            var part2 = hasPair(min) ? 1 : 0;
+            for (var i = next(min, hasPair); i < max; i = next(i, hasPair)) part2++;
+            Part2 = part2.ToString();
         }
     }
 }
