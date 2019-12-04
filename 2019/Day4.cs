@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace AoC
@@ -34,7 +32,7 @@ namespace AoC
             {
                 var n1 = d1(i); var n2 = d2(i); var n3 = d3(i);
                 var n4 = d4(i); var n5 = d5(i); var n6 = d6(i);
-                return n1 == n2 || n2 == n3 | n3 == n4 || n4 == n5 || n5 == n6;
+                return n1 == n2 || n2 == n3 || n3 == n4 || n4 == n5 || n5 == n6;
             }
 
             bool hasPair(int i)
@@ -50,10 +48,8 @@ namespace AoC
 
             int next(int i, Predicate<int> f)
             {
-                i++;
-                i = ascend(i);
-                if (!f(i)) return next(i, f);
-                return i;
+                i = ascend(i + 1);
+                return f(i) ? i : next(i, f);
             }
 
             var range = Input.Split('-').Select(int.Parse);
