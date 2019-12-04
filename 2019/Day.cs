@@ -8,14 +8,14 @@ namespace AoC
 {
     public abstract class Day
     {
-        private int day;
+        private string file;
 
         protected string Part1;
         protected string Part2;
 
         public Day(int day)
         {
-            this.day = day;
+            file = $"input/{day}.txt";
             Stopwatch sw = new Stopwatch();
             sw.Start();
             Solve();
@@ -26,9 +26,9 @@ namespace AoC
         protected abstract void Solve();
 
         // Helper Utils
-        protected IEnumerable<int> IntLines { get => File.ReadAllLines(day + ".txt").Select(int.Parse); }
-        protected IEnumerable<int> IntCSV { get => File.ReadAllText(day + ".txt").Split(',').Select(int.Parse); }
-        protected IEnumerable<string> Lines { get => File.ReadAllLines(day + ".txt"); }
-        protected string Input { get => File.ReadAllText(day + ".txt"); }
+        protected IEnumerable<int> IntLines { get => File.ReadAllLines(file).Select(int.Parse); }
+        protected IEnumerable<int> IntCSV { get => File.ReadAllText(file).Split(',').Select(int.Parse); }
+        protected IEnumerable<string> Lines { get => File.ReadAllLines(file); }
+        protected string Input { get => File.ReadAllText(file); }
     }
 }
