@@ -8,9 +8,8 @@ namespace AoC
     {
         public Day2() : base(2) { }
 
-        int Run(int noun, int verb)
+        int Run(int noun, int verb, int[] memory)
         {
-            var memory = IntCSV.ToArray();
             var ip = 0;
 
             memory[1] = noun;
@@ -31,11 +30,13 @@ namespace AoC
 
         protected override void Solve()
         {
-            Part1 = Run(12, 2).ToString();
+            var memory = IntCSV.ToArray();
+
+            Part1 = Run(12, 2, memory.ToArray()).ToString();
 
             Parallel.For(0, 100, (int noun) => {
                 Parallel.For(0, 100, (int verb) => {
-                    if (Part2 == null && Run(noun, verb) == 19690720)
+                    if (Part2 == null && Run(noun, verb, memory.ToArray()) == 19690720)
                         Part2 = (100 * noun + verb).ToString();
                 });
             });
