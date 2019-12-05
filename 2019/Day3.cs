@@ -9,9 +9,9 @@ namespace AoC
     {
         public Day3() : base(3) { }
 
-        List<Tuple<int, int>> GeneratePath(IEnumerable<string> instructions)
+        List<(int, int)> GeneratePath(IEnumerable<string> instructions)
         {
-            var path = new List<Tuple<int, int>>();
+            var path = new List<(int, int)>();
             var x = 0;
             var y = 0;
 
@@ -25,7 +25,7 @@ namespace AoC
                     else if (dir == 'D') y++;
                     else if (dir == 'L') x--;
                     else if (dir == 'R') x++;
-                    path.Add(new Tuple<int, int>(x, y));
+                    path.Add((x, y));
                 }
             }
 
