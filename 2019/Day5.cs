@@ -18,10 +18,11 @@ namespace AoC
             return (op, mode);
         }
 
-        protected override void Solve()
+        int Run(int input)
         {
             var memory = IntCSV.ToArray();
             var ip = 0;
+            var result = 0;
 
             while (memory[ip] != 99)
             {
@@ -45,16 +46,53 @@ namespace AoC
                 else if (op == 3)
                 {
                     var dest = memory[ip + 1];
-                    memory[dest] = 1;
+                    memory[dest] = input;
                     ip += 2;
                 }
                 else if (op == 4)
                 {
-                    var p1 = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
-                    if (p1 != 0) Part1 = p1.ToString();
+                    result = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
                     ip += 2;
                 }
+                else if (op == 5)
+                {
+                    var p1 = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
+                    var p2 = mode[1] == 0 ? memory[memory[ip + 2]] : memory[ip + 2];
+                    if (p1 != 0) ip = p2;
+                    else ip += 3;
+                }
+                else if (op == 6)
+                {
+                    var p1 = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
+                    var p2 = mode[1] == 0 ? memory[memory[ip + 2]] : memory[ip + 2];
+                    if (p1 == 0) ip = p2;
+                    else ip += 3;
+                }
+                else if (op == 7)
+                {
+                    var p1 = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
+                    var p2 = mode[1] == 0 ? memory[memory[ip + 2]] : memory[ip + 2];
+                    var dest = memory[ip + 3];
+                    memory[dest] = p1 < p2 ? 1 : 0;
+                    ip += 4;
+                }
+                else if (op == 8)
+                {
+                    var p1 = mode[0] == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
+                    var p2 = mode[1] == 0 ? memory[memory[ip + 2]] : memory[ip + 2];
+                    var dest = memory[ip + 3];
+                    memory[dest] = p1 == p2 ? 1 : 0;
+                    ip += 4;
+                }
             }
+
+            return result;
+        }
+
+        protected override void Solve()
+        {
+            Part1 = Run(1).ToString();
+            Part2 = Run(5).ToString();
         }
     }
 }
