@@ -6,21 +6,24 @@ namespace AoC
 {
     public class IntCodeComputer
     {
+        public bool done = false;
         private int[] memory;
-        private int result;
+        public Queue<int> outputs = new Queue<int>();
         private int ip = 0;
         private Queue<int> inputs = new Queue<int>();
 
         public void Flash(int[] memory)
         {
             this.memory = memory.ToArray();
+            done = false;
             ip = 0;
             inputs = new Queue<int>();
+            outputs = new Queue<int>();
         }
 
-        public (int result, bool complete) Run(int input)
+        public bool Run(params int[] inputs)
         {
-            inputs.Enqueue(input);
+            foreach (var i in inputs) this.inputs.Enqueue(i);
 
             while (memory[ip] != 99)
             {
@@ -47,15 +50,14 @@ namespace AoC
                 else if (op == 3)
                 {
                     var dest = memory[ip + 1];
-                    if (inputs.Count == 0) return (result, false);
-                    memory[dest] = inputs.Dequeue();
+                    if (this.inputs.Count == 0) return false;
+                    memory[dest] = this.inputs.Dequeue();
                     ip += 2;
                 }
                 else if (op == 4)
                 {
-                    result = mode0 == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
+                    outputs.Enqueue(mode0 == 0 ? memory[memory[ip + 1]] : memory[ip + 1]);
                     ip += 2;
-                    return (result, false);
                 }
                 else if (op == 5)
                 {
@@ -88,7 +90,9 @@ namespace AoC
                     ip += 4;
                 }
             }
-            return (result, true);
+
+            done = true;
+            return true;
         }
     }
 
@@ -100,43 +104,94 @@ namespace AoC
         {
             var memory = IntCSV.ToArray();
 
-            var best = int.MinValue;
-
-            for (var aIn = 0; aIn < 5; aIn++)
             {
-                for (var bIn = 0; bIn < 5; bIn++)
+                var best = int.MinValue;
+
+                for (var aIn = 0; aIn < 5; aIn++)
                 {
-                    if (bIn == aIn) continue;
-                    for (var cIn = 0; cIn < 5; cIn++)
+                    for (var bIn = 0; bIn < 5; bIn++)
                     {
-                        if (cIn == bIn || cIn == aIn) continue;
-                        for (var dIn = 0; dIn < 5; dIn++)
+                        if (bIn == aIn) continue;
+                        for (var cIn = 0; cIn < 5; cIn++)
                         {
-                            if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
-                            for (var eIn = 0; eIn < 5; eIn++)
+                            if (cIn == bIn || cIn == aIn) continue;
+                            for (var dIn = 0; dIn < 5; dIn++)
                             {
-                                if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
+                                if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
+                                for (var eIn = 0; eIn < 5; eIn++)
+                                {
+                                    if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
 
-                                var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(aIn);
-                                var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(bIn);
-                                var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(cIn);
-                                var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(dIn);
-                                var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(eIn);
+                                    var c1 = new IntCodeComputer(); c1.Flash(memory);
+                                    var c2 = new IntCodeComputer(); c2.Flash(memory);
+                                    var c3 = new IntCodeComputer(); c3.Flash(memory);
+                                    var c4 = new IntCodeComputer(); c4.Flash(memory);
+                                    var c5 = new IntCodeComputer(); c5.Flash(memory);
 
-                                var a = 0; while (true) { var r = c1.Run(0); a = r.result; if (r.complete) break; }
-                                var b = 0; while (true) { var r = c2.Run(a); b = r.result; if (r.complete) break; }
-                                var c = 0; while (true) { var r = c3.Run(b); c = r.result; if (r.complete) break; }
-                                var d = 0; while (true) { var r = c4.Run(c); d = r.result; if (r.complete) break; }
-                                var e = 0; while (true) { var r = c5.Run(d); e = r.result; if (r.complete) break; }
+                                    c1.Run(aIn); c1.Run(0); var a = c1.outputs.Dequeue();
+                                    c2.Run(bIn); c2.Run(a); var b = c2.outputs.Dequeue();
+                                    c3.Run(cIn); c3.Run(b); var c = c3.outputs.Dequeue();
+                                    c4.Run(dIn); c4.Run(c); var d = c4.outputs.Dequeue();
+                                    c5.Run(eIn); c5.Run(d); var e = c5.outputs.Dequeue();
 
-                                if (e > best) best = e;
+                                    if (e > best) best = e;
+                                }
                             }
                         }
                     }
                 }
+
+                Part1 = best.ToString();
             }
 
-            Part1 = best.ToString();
+            {
+                var best = int.MinValue;
+
+                for (var aIn = 5; aIn < 10; aIn++)
+                {
+                    for (var bIn = 5; bIn < 10; bIn++)
+                    {
+                        if (bIn == aIn) continue;
+                        for (var cIn = 5; cIn < 10; cIn++)
+                        {
+                            if (cIn == bIn || cIn == aIn) continue;
+                            for (var dIn = 5; dIn < 10; dIn++)
+                            {
+                                if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
+                                for (var eIn = 5; eIn < 10; eIn++)
+                                {
+                                    if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
+
+                                    var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(aIn);
+                                    var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(bIn);
+                                    var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(cIn);
+                                    var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(dIn);
+                                    var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(eIn);
+
+                                    c1.Run(0);
+
+                                    var e = 0;
+                                    while (!c5.done)
+                                    {
+                                        while (c1.outputs.Count > 0) c2.Run(c1.outputs.Dequeue());
+                                        while (c2.outputs.Count > 0) c3.Run(c2.outputs.Dequeue());
+                                        while (c3.outputs.Count > 0) c4.Run(c3.outputs.Dequeue());
+                                        while (c4.outputs.Count > 0) c5.Run(c4.outputs.Dequeue());
+                                        while (c5.outputs.Count > 0)
+                                        {
+                                            e = c5.outputs.Dequeue();
+                                            if (e > best) best = e;
+                                            c1.Run(e);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Part2 = best.ToString();
+            }
         }
     }
 }
