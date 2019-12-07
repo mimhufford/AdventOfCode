@@ -4,14 +4,23 @@ using System.Collections.Generic;
 
 namespace AoC
 {
-    public class Day7 : Day
+    public class IntCodeComputer
     {
-        public Day7() : base(7) { }
+        private int[] memory;
+        private int result;
+        private int ip = 0;
+        private Queue<int> inputs = new Queue<int>();
 
-        int Run(int[] memory, Queue<int> input)
+        public void Flash(int[] memory)
         {
-            var ip = 0;
-            var result = 0;
+            this.memory = memory.ToArray();
+            ip = 0;
+            inputs = new Queue<int>();
+        }
+
+        public (int result, bool complete) Run(int input)
+        {
+            inputs.Enqueue(input);
 
             while (memory[ip] != 99)
             {
@@ -38,13 +47,15 @@ namespace AoC
                 else if (op == 3)
                 {
                     var dest = memory[ip + 1];
-                    memory[dest] = input.Dequeue();
+                    if (inputs.Count == 0) return (result, false);
+                    memory[dest] = inputs.Dequeue();
                     ip += 2;
                 }
                 else if (op == 4)
                 {
                     result = mode0 == 0 ? memory[memory[ip + 1]] : memory[ip + 1];
                     ip += 2;
+                    return (result, false);
                 }
                 else if (op == 5)
                 {
@@ -77,9 +88,13 @@ namespace AoC
                     ip += 4;
                 }
             }
-
-            return result;
+            return (result, true);
         }
+    }
+
+    public class Day7 : Day
+    {
+        public Day7() : base(7) { }
 
         protected override void Solve()
         {
@@ -102,11 +117,17 @@ namespace AoC
                             {
                                 if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
 
-                                var a = Run(memory.ToArray(), new Queue<int>(new int[] { aIn, 0 }));
-                                var b = Run(memory.ToArray(), new Queue<int>(new int[] { bIn, a }));
-                                var c = Run(memory.ToArray(), new Queue<int>(new int[] { cIn, b }));
-                                var d = Run(memory.ToArray(), new Queue<int>(new int[] { dIn, c }));
-                                var e = Run(memory.ToArray(), new Queue<int>(new int[] { eIn, d }));
+                                var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(aIn);
+                                var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(bIn);
+                                var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(cIn);
+                                var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(dIn);
+                                var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(eIn);
+
+                                var a = 0; while (true) { var r = c1.Run(0); a = r.result; if (r.complete) break; }
+                                var b = 0; while (true) { var r = c2.Run(a); b = r.result; if (r.complete) break; }
+                                var c = 0; while (true) { var r = c3.Run(b); c = r.result; if (r.complete) break; }
+                                var d = 0; while (true) { var r = c4.Run(c); d = r.result; if (r.complete) break; }
+                                var e = 0; while (true) { var r = c5.Run(d); e = r.result; if (r.complete) break; }
 
                                 if (e > best) best = e;
                             }
