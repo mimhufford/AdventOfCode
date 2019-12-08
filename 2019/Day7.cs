@@ -100,6 +100,30 @@ namespace AoC
     {
         public Day7() : base(7) { }
 
+        IEnumerable<(int, int, int, int, int)> Permutations(int i)
+        {
+            for (var aIn = i; aIn < i + 5; aIn++)
+            {
+                for (var bIn = i; bIn < i + 5; bIn++)
+                {
+                    if (bIn == aIn) continue;
+                    for (var cIn = i; cIn < i + 5; cIn++)
+                    {
+                        if (cIn == bIn || cIn == aIn) continue;
+                        for (var dIn = i; dIn < i + 5; dIn++)
+                        {
+                            if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
+                            for (var eIn = i; eIn < i + 5; eIn++)
+                            {
+                                if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
+                                yield return (aIn, bIn, cIn, dIn, eIn);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected override void Solve()
         {
             var memory = IntCSV.ToArray();
@@ -107,38 +131,21 @@ namespace AoC
             {
                 var best = int.MinValue;
 
-                for (var aIn = 0; aIn < 5; aIn++)
+                foreach (var p in Permutations(0))
                 {
-                    for (var bIn = 0; bIn < 5; bIn++)
-                    {
-                        if (bIn == aIn) continue;
-                        for (var cIn = 0; cIn < 5; cIn++)
-                        {
-                            if (cIn == bIn || cIn == aIn) continue;
-                            for (var dIn = 0; dIn < 5; dIn++)
-                            {
-                                if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
-                                for (var eIn = 0; eIn < 5; eIn++)
-                                {
-                                    if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
+                    var c1 = new IntCodeComputer(); c1.Flash(memory);
+                    var c2 = new IntCodeComputer(); c2.Flash(memory);
+                    var c3 = new IntCodeComputer(); c3.Flash(memory);
+                    var c4 = new IntCodeComputer(); c4.Flash(memory);
+                    var c5 = new IntCodeComputer(); c5.Flash(memory);
 
-                                    var c1 = new IntCodeComputer(); c1.Flash(memory);
-                                    var c2 = new IntCodeComputer(); c2.Flash(memory);
-                                    var c3 = new IntCodeComputer(); c3.Flash(memory);
-                                    var c4 = new IntCodeComputer(); c4.Flash(memory);
-                                    var c5 = new IntCodeComputer(); c5.Flash(memory);
+                    c1.Run(p.Item1); c1.Run(0); var a = c1.outputs.Dequeue();
+                    c2.Run(p.Item2); c2.Run(a); var b = c2.outputs.Dequeue();
+                    c3.Run(p.Item3); c3.Run(b); var c = c3.outputs.Dequeue();
+                    c4.Run(p.Item4); c4.Run(c); var d = c4.outputs.Dequeue();
+                    c5.Run(p.Item5); c5.Run(d); var e = c5.outputs.Dequeue();
 
-                                    c1.Run(aIn); c1.Run(0); var a = c1.outputs.Dequeue();
-                                    c2.Run(bIn); c2.Run(a); var b = c2.outputs.Dequeue();
-                                    c3.Run(cIn); c3.Run(b); var c = c3.outputs.Dequeue();
-                                    c4.Run(dIn); c4.Run(c); var d = c4.outputs.Dequeue();
-                                    c5.Run(eIn); c5.Run(d); var e = c5.outputs.Dequeue();
-
-                                    if (e > best) best = e;
-                                }
-                            }
-                        }
-                    }
+                    if (e > best) best = e;
                 }
 
                 Part1 = best.ToString();
@@ -147,45 +154,27 @@ namespace AoC
             {
                 var best = int.MinValue;
 
-                for (var aIn = 5; aIn < 10; aIn++)
+                foreach (var p in Permutations(5))
                 {
-                    for (var bIn = 5; bIn < 10; bIn++)
+                    var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(p.Item1);
+                    var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(p.Item2);
+                    var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(p.Item3);
+                    var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(p.Item4);
+                    var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(p.Item5);
+
+                    c1.Run(0);
+
+                    while (!c5.done)
                     {
-                        if (bIn == aIn) continue;
-                        for (var cIn = 5; cIn < 10; cIn++)
+                        while (c1.outputs.Count > 0) c2.Run(c1.outputs.Dequeue());
+                        while (c2.outputs.Count > 0) c3.Run(c2.outputs.Dequeue());
+                        while (c3.outputs.Count > 0) c4.Run(c3.outputs.Dequeue());
+                        while (c4.outputs.Count > 0) c5.Run(c4.outputs.Dequeue());
+                        while (c5.outputs.Count > 0)
                         {
-                            if (cIn == bIn || cIn == aIn) continue;
-                            for (var dIn = 5; dIn < 10; dIn++)
-                            {
-                                if (dIn == cIn || dIn == bIn || dIn == aIn) continue;
-                                for (var eIn = 5; eIn < 10; eIn++)
-                                {
-                                    if (eIn == dIn || eIn == cIn || eIn == bIn || eIn == aIn) continue;
-
-                                    var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(aIn);
-                                    var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(bIn);
-                                    var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(cIn);
-                                    var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(dIn);
-                                    var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(eIn);
-
-                                    c1.Run(0);
-
-                                    var e = 0;
-                                    while (!c5.done)
-                                    {
-                                        while (c1.outputs.Count > 0) c2.Run(c1.outputs.Dequeue());
-                                        while (c2.outputs.Count > 0) c3.Run(c2.outputs.Dequeue());
-                                        while (c3.outputs.Count > 0) c4.Run(c3.outputs.Dequeue());
-                                        while (c4.outputs.Count > 0) c5.Run(c4.outputs.Dequeue());
-                                        while (c5.outputs.Count > 0)
-                                        {
-                                            e = c5.outputs.Dequeue();
-                                            if (e > best) best = e;
-                                            c1.Run(e);
-                                        }
-                                    }
-                                }
-                            }
+                            var output = c5.outputs.Dequeue();
+                            if (output > best) best = output;
+                            c1.Run(output);
                         }
                     }
                 }
