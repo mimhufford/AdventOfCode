@@ -12,6 +12,7 @@
             new Day6();
             new Day7();
             new Day8();
+            new Day9();
         }
     }
 }
