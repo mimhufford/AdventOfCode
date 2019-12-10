@@ -60,18 +60,12 @@ namespace AoC
                 var target = (b.x, b.y, angle, dist);
                 targets.Add(target);
             }
-            targets.Sort((a, b) =>
-            {
-                if (a.angle < b.angle) return -1;
-                if (a.angle > b.angle) return 1;
-                if (a.dist < b.dist) return -1;
-                return 1;
-            });
+
+            targets.Sort((a, b) => a.angle < b.angle ? -1 : a.angle > b.angle ? 1 : a.dist < b.dist ? -1 : 1);
 
             var ts = new Queue<(int x, int y, double angle, int dist)>(targets);
-            var destroyed = 0;
 
-            while (true)
+            for (var destroyed = 0; ;)
             {
                 var hit = ts.Dequeue();
                 if (++destroyed == 200)
