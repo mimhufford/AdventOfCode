@@ -15,10 +15,9 @@ namespace AoC
             var map = Lines.ToList();
             for (int y = 0; y < map.Count; y++)
             {
-                var row = map[y];
-                for (int x = 0; x < row.Length; x++)
+                for (int x = 0; x < map[y].Length; x++)
                 {
-                    if (row[x] == '#')
+                    if (map[y][x] == '#')
                     {
                         asteroids.Add((x, y));
                     }
@@ -26,25 +25,65 @@ namespace AoC
             }
 
             var mostVisible = 0;
-            for (int ai = 0; ai < asteroids.Count; ai++)
+            (int x, int y) best = (0, 0);
+
+            foreach (var a in asteroids)
             {
-                var a = asteroids[ai];
                 var visible = 0;
                 var angles = new HashSet<double>();
 
-                for (int bi = 0; bi < asteroids.Count; bi++)
+                foreach (var b in asteroids)
                 {
-                    if (ai == bi) continue;
-                    var b = asteroids[bi];
+                    if (a == b) continue;
                     var angle = Math.Atan2(a.x - b.x, a.y - b.y);
                     if (angles.Contains(angle)) continue;
                     visible += 1;
                     angles.Add(angle);
                 }
-                mostVisible = Math.Max(mostVisible, visible);
+
+                if (visible > mostVisible)
+                {
+                    mostVisible = visible;
+                    best = a;
+                }
             }
 
             Part1 = mostVisible.ToString();
+
+            var targets = new List<(int x, int y, double angle, int dist)>();
+            foreach (var b in asteroids)
+            {
+                if (best == b) continue;
+                var angle = -Math.Atan2(best.x - b.x, best.y - b.y);
+                if (angle < 0) angle += Math.PI * 2;
+                var dist = (best.x - b.x) * (best.x - b.x) + (best.y - b.y) * (best.y - b.y);
+                var target = (b.x, b.y, angle, dist);
+                targets.Add(target);
+            }
+            targets.Sort((a, b) =>
+            {
+                if (a.angle < b.angle) return -1;
+                if (a.angle > b.angle) return 1;
+                if (a.dist < b.dist) return -1;
+                return 1;
+            });
+
+            var ts = new Queue<(int x, int y, double angle, int dist)>(targets);
+            var destroyed = 0;
+
+            while (true)
+            {
+                var hit = ts.Dequeue();
+                if (++destroyed == 200)
+                {
+                    Part2 = (hit.x * 100 + hit.y).ToString();
+                    break;
+                }
+                while (ts.Peek().angle == hit.angle)
+                {
+                    ts.Enqueue(ts.Dequeue());
+                }
+            }
         }
     }
 }
