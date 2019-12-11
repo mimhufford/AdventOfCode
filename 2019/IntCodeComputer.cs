@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AoC
 {
@@ -94,6 +96,47 @@ namespace AoC
             done = true;
             return true;
         }
-    }
 
+        public void OutputAssembly()
+        {
+            var i = 0;
+
+            string Param(int p)
+            {
+                var mode = (int)(mem[i] / System.Math.Pow(10, p + 1) % 10);
+                var val = mem[i + p];
+                if (mode == 0) return $"[{val}] ";
+                if (mode == 1) return $"{val} ";
+                if (mode == 2) return $"({val}) ";
+                Debug.Assert(false);
+                return "ERROR";
+            }
+
+            void Print(string op, int numParams = 0)
+            {
+                string output = i.ToString("D4") + " " + op + " ";
+                for (int p = 1; p <= numParams; p++) output += Param(p);
+                Console.WriteLine(output);
+                i += numParams + 1;
+            }
+
+            while (i < mem.Length)
+            {
+                var op = mem[i] % 100;
+
+                if      (op == 1)    Print("ADD", 3);
+                else if (op == 2)    Print("MUL", 3);
+                else if (op == 3)    Print("INP", 1);
+                else if (op == 4)    Print("OUT", 1);
+                else if (op == 5)    Print("JNZ", 2);
+                else if (op == 6)    Print("JEZ", 2);
+                else if (op == 7)    Print("CLT", 3);
+                else if (op == 8)    Print("CEQ", 3);
+                else if (op == 9)    Print("SRB", 1);
+                else if (op == 99)   Print("HLT");
+                else if (op == 0)    i += 1;
+                else                 Debug.Assert(false);
+            }
+        }
+    }
 }
