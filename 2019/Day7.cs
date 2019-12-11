@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace AoC
 {
-    public class IntCodeComputer
+    class Day7IntCodeComputer
     {
         public bool done = false;
         private int[] memory;
-        public Queue<int> outputs = new Queue<int>();
         private int ip = 0;
         private Queue<int> inputs = new Queue<int>();
+        public Queue<int> outputs = new Queue<int>();
 
         public void Flash(int[] memory)
         {
@@ -133,11 +133,11 @@ namespace AoC
 
                 foreach (var p in Permutations(0))
                 {
-                    var c1 = new IntCodeComputer(); c1.Flash(memory);
-                    var c2 = new IntCodeComputer(); c2.Flash(memory);
-                    var c3 = new IntCodeComputer(); c3.Flash(memory);
-                    var c4 = new IntCodeComputer(); c4.Flash(memory);
-                    var c5 = new IntCodeComputer(); c5.Flash(memory);
+                    var c1 = new Day7IntCodeComputer(); c1.Flash(memory);
+                    var c2 = new Day7IntCodeComputer(); c2.Flash(memory);
+                    var c3 = new Day7IntCodeComputer(); c3.Flash(memory);
+                    var c4 = new Day7IntCodeComputer(); c4.Flash(memory);
+                    var c5 = new Day7IntCodeComputer(); c5.Flash(memory);
 
                     c1.Run(p.Item1); c1.Run(0); var a = c1.outputs.Dequeue();
                     c2.Run(p.Item2); c2.Run(a); var b = c2.outputs.Dequeue();
@@ -156,11 +156,11 @@ namespace AoC
 
                 foreach (var p in Permutations(5))
                 {
-                    var c1 = new IntCodeComputer(); c1.Flash(memory); c1.Run(p.Item1);
-                    var c2 = new IntCodeComputer(); c2.Flash(memory); c2.Run(p.Item2);
-                    var c3 = new IntCodeComputer(); c3.Flash(memory); c3.Run(p.Item3);
-                    var c4 = new IntCodeComputer(); c4.Flash(memory); c4.Run(p.Item4);
-                    var c5 = new IntCodeComputer(); c5.Flash(memory); c5.Run(p.Item5);
+                    var c1 = new Day7IntCodeComputer(); c1.Flash(memory); c1.Run(p.Item1);
+                    var c2 = new Day7IntCodeComputer(); c2.Flash(memory); c2.Run(p.Item2);
+                    var c3 = new Day7IntCodeComputer(); c3.Flash(memory); c3.Run(p.Item3);
+                    var c4 = new Day7IntCodeComputer(); c4.Flash(memory); c4.Run(p.Item4);
+                    var c5 = new Day7IntCodeComputer(); c5.Flash(memory); c5.Run(p.Item5);
 
                     c1.Run(0);
 

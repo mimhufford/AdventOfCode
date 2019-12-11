@@ -18,7 +18,7 @@ namespace AoC
             var y = 0;
             var dir = U;
             var visited = new Dictionary<(int x, int y), int>();
-            var brain = new LongIntCodeComputer();
+            var brain = new IntCodeComputer();
             var memory = LongCSV.ToArray();
             brain.Flash(memory);
 
