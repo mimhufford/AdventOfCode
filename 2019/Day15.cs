@@ -162,6 +162,29 @@ namespace AoC
                 Go(EAST, WEST, 1, 0);
                 Go(WEST, EAST, -1, 0);
             }
+
+            var q1 = new Queue<(int x, int y)>(); q1.Enqueue(oxygen);
+            var minutes = 0;
+            while (map.Count > 0)
+            {
+                var q2 = new Queue<(int x, int y)>();
+                while (q1.Count > 0)
+                {
+                    var pos = q1.Dequeue(); map.Remove(pos);
+                    var neighbour = (pos.x + 1, pos.y);
+                    if (map.Contains(neighbour)) { map.Remove(neighbour); q2.Enqueue(neighbour); }
+                    neighbour = (pos.x - 1, pos.y);
+                    if (map.Contains(neighbour)) { map.Remove(neighbour); q2.Enqueue(neighbour); }
+                    neighbour = (pos.x, pos.y - 1);
+                    if (map.Contains(neighbour)) { map.Remove(neighbour); q2.Enqueue(neighbour); }
+                    neighbour = (pos.x, pos.y + 1);
+                    if (map.Contains(neighbour)) { map.Remove(neighbour); q2.Enqueue(neighbour); }
+                }
+                q1 = q2;
+                minutes += 1;
+            }
+
+            Part2 = minutes.ToString();
         }
     }
 }
