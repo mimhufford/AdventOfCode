@@ -87,14 +87,16 @@ namespace AoC
         class Bot
         {
             public Computer c = new Computer();
+            public (int x, int y) pos;
             public int dist;
             public int cameFrom; // don't go back this way
 
-            public Bot(int[] memory, int dist, int cameFrom)
+            public Bot(int[] memory, int dist, int cameFrom, (int x, int y) pos)
             {
                 c.Flash(memory);
                 this.dist = dist;
                 this.cameFrom = cameFrom;
+                this.pos = pos;
             }
 
             public void Move(int dir)
@@ -121,36 +123,44 @@ namespace AoC
             var NORTH = 1; var SOUTH = 2; var WEST = 3; var EAST = 4;
             var FLOOR = 1; var OXYGEN = 2;
 
-            var bots = new Queue<Bot>();
-            bots.Enqueue(new Bot(IntCSV.ToArray(), 0, 0));
+            var map = new HashSet<(int x, int y)>() { { (0, 0) } };
+            var oxygen = (0, 0);
 
-            while (true)
+            var bots = new Queue<Bot>();
+            bots.Enqueue(new Bot(IntCSV.ToArray(), 0, 0, (0, 0)));
+
+            while (bots.Count > 0)
             {
                 var b = bots.Dequeue();
-                if (b.cameFrom != NORTH)
+
+                void Go(int dir, int reverseDir, int dx, int dy)
                 {
-                    var n = b.Probe(NORTH);
-                    if (n == OXYGEN) { Part1 = (b.dist + 1).ToString(); break; }
-                    else if (n == FLOOR) { var nb = new Bot(b.c.mem, b.dist + 1, SOUTH); nb.Move(NORTH); bots.Enqueue(nb); }
+                    if (b.cameFrom != dir)
+                    {
+                        var tile = b.Probe(dir);
+                        var pos = (b.pos.x + dx, b.pos.y + dy);
+                        if (tile != 0)
+                        {
+                            map.Add(pos);
+                            if (tile == OXYGEN)
+                            {
+                                oxygen = pos;
+                                Part1 = (b.dist + 1).ToString();
+                            }
+                            else if (tile == FLOOR)
+                            {
+                                var nb = new Bot(b.c.mem, b.dist + 1, reverseDir, pos);
+                                nb.Move(dir);
+                                bots.Enqueue(nb);
+                            }
+                        }
+                    }
                 }
-                if (b.cameFrom != SOUTH)
-                {
-                    var n = b.Probe(SOUTH);
-                    if (n == OXYGEN) { Part1 = (b.dist + 1).ToString(); break; }
-                    else if (n == FLOOR) { var nb = new Bot(b.c.mem, b.dist + 1, NORTH); nb.Move(SOUTH); bots.Enqueue(nb); }
-                }
-                if (b.cameFrom != EAST)
-                {
-                    var n = b.Probe(EAST);
-                    if (n == OXYGEN) { Part1 = (b.dist + 1).ToString(); break; }
-                    else if (n == FLOOR) { var nb = new Bot(b.c.mem, b.dist + 1, WEST); nb.Move(EAST); bots.Enqueue(nb); }
-                }
-                if (b.cameFrom != WEST)
-                {
-                    var n = b.Probe(WEST);
-                    if (n == OXYGEN) { Part1 = (b.dist + 1).ToString(); break; }
-                    else if (n == FLOOR) { var nb = new Bot(b.c.mem, b.dist + 1, EAST); nb.Move(WEST); bots.Enqueue(nb); }
-                }
+
+                Go(NORTH, SOUTH, 0, -1);
+                Go(SOUTH, NORTH, 0, 1);
+                Go(EAST, WEST, 1, 0);
+                Go(WEST, EAST, -1, 0);
             }
         }
     }
