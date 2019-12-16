@@ -33,11 +33,30 @@ namespace AoC
                 }
             }
 
-            var signal = Input.ToCharArray().Select(c => (int)(c - '0')).ToArray();
+            void LastHalf(int[] signal)
+            {
+                for (int i = signal.Length - 2; i >= 0; i--)
+                {
+                    signal[i] += signal[i + 1];
+                    signal[i] %= 10;
+                }
+            }
 
-            for (int i = 0; i < 100; i++) FFS(signal);
+            var input = Input;
+            var signal = new int[input.Length];
+            for (int i = 0; i < input.Length; i++) signal[i] = (int)(input[i] - '0');
 
-            Part1 = string.Join("", signal.Take(8));
+            var p1 = signal.ToArray();
+            for (int i = 0; i < 100; i++) FFS(p1);
+            Part1 = string.Join("", p1.Take(8));
+
+            var offset = int.Parse(string.Join("", signal.Take(7)));
+            var p2 = new List<int>(signal.Length * 10000);
+            for (int i = 0; i < 10000; i++) p2.AddRange(signal);
+            p2.RemoveRange(0, offset);
+            var p2a = p2.ToArray();
+            for (int i = 0; i < 100; i++) LastHalf(p2a);
+            Part2 = string.Join("", p2a.Take(8));
         }
     }
 }
