@@ -20,13 +20,12 @@ namespace AoC
 
                     while (j < signal.Length)
                     {
-                        var patInd = (j + 1) % patternLength / (i + 1);
-                        if (patInd == 1) // add on the next run
-                            for (int a = j; a <= j + i && a < signal.Length; a++)
-                                signal[i] += signal[a];
-                        else if (patInd == 3) // subtract the next run
-                            for (int a = j; a <= j + i && a < signal.Length; a++)
-                                signal[i] -= signal[a];
+                        var run = (j + 1) % patternLength / (i + 1);
+                        var end = Math.Min(j + i, signal.Length - 1);
+                        if (run == 1) // add on the next run
+                            for (int k = j; k <= end; k++) signal[i] += signal[k];
+                        else if (run == 3) // subtract the next run
+                            for (int k = j; k <= end; k++) signal[i] -= signal[k];
                         j += i + 1; // jump to the next run
                     }
 
