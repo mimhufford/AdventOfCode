@@ -16,8 +16,9 @@ namespace AoC
                 {
                     var patternLength = (i + 1) * 4;
                     var orig = signal[i];
+                    var j = i;
 
-                    for (int j = i; j < signal.Length; j++)
+                    while (j < signal.Length)
                     {
                         var patInd = (j + 1) % patternLength / (i + 1);
                         if (patInd == 1) // add on the next run
@@ -26,7 +27,7 @@ namespace AoC
                         else if (patInd == 3) // subtract the next run
                             for (int a = j; a <= j + i && a < signal.Length; a++)
                                 signal[i] -= signal[a];
-                        j += i; // jump to the next run
+                        j += i + 1; // jump to the next run
                     }
 
                     signal[i] = Math.Abs((signal[i] - orig) % 10);
