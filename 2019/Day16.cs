@@ -10,35 +10,32 @@ namespace AoC
 
         protected override void Solve()
         {
-            int[] FFS(int[] input)
+            void FFS(int[] signal)
             {
-                var result = new int[input.Length];
-
-                for (int i = 0; i < input.Length; i++)
+                for (int i = 0; i < signal.Length; i++)
                 {
                     var patternLength = (i + 1) * 4;
+                    var orig = signal[i];
 
-                    for (int j = i; j < input.Length; j++)
+                    for (int j = i; j < signal.Length; j++)
                     {
                         var patInd = (j + 1) % patternLength / (i + 1);
                         if (patInd == 1) // add on the next run
-                            for (int a = j; a <= j + i && a < input.Length; a++)
-                                result[i] += input[a];
+                            for (int a = j; a <= j + i && a < signal.Length; a++)
+                                signal[i] += signal[a];
                         else if (patInd == 3) // subtract the next run
-                            for (int a = j; a <= j + i && a < input.Length; a++)
-                                result[i] -= input[a];
+                            for (int a = j; a <= j + i && a < signal.Length; a++)
+                                signal[i] -= signal[a];
                         j += i; // jump to the next run
                     }
 
-                    result[i] = Math.Abs(result[i] % 10);
+                    signal[i] = Math.Abs((signal[i] - orig) % 10);
                 }
-
-                return result;
             }
 
             var signal = Input.ToCharArray().Select(c => (int)(c - '0')).ToArray();
 
-            for (int i = 0; i < 100; i++) signal = FFS(signal);
+            for (int i = 0; i < 100; i++) FFS(signal);
 
             Part1 = string.Join("", signal.Take(8));
         }
