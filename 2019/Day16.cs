@@ -13,6 +13,7 @@ namespace AoC
             int[] FFS(int[] input)
             {
                 var result = new int[input.Length];
+                var pattern = new int[] { 0, 1, 0, -1 };
 
                 for (int i = 0; i < input.Length; i++)
                 {
@@ -20,15 +21,11 @@ namespace AoC
 
                     for (int j = 0; j < input.Length; j++)
                     {
-                        var pa = (j + 1) % patternLength / (i + 1);
-                        var multiple = pa == 2 ? 0 : pa == 3 ? -1 : pa;
-                        var a = input[j];
-                        var b = multiple;
-                        result[i] += (int)(a * b);
+                        var patInd = (j + 1) % patternLength / (i + 1);
+                        result[i] += input[j] * pattern[patInd];
                     }
 
-                    result[i] %= 10;
-                    result[i] = Math.Abs(result[i]);
+                    result[i] = Math.Abs(result[i] % 10);
                 }
 
                 return result;
