@@ -53,8 +53,7 @@ namespace AoC
             var offset = int.Parse(string.Join("", signal.Take(7)));
             var p2 = new List<int>(signal.Length * 10000);
             for (int i = 0; i < 10000; i++) p2.AddRange(signal);
-            p2.RemoveRange(0, offset);
-            var p2a = p2.ToArray();
+            var p2a = p2.Skip(offset).ToArray();
             for (int i = 0; i < 100; i++) LastHalf(p2a);
             Part2 = string.Join("", p2a.Take(8));
         }
