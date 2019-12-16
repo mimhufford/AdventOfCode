@@ -21,8 +21,13 @@ namespace AoC
                     for (int j = i; j < input.Length; j++)
                     {
                         var patInd = (j + 1) % patternLength / (i + 1);
-                        if (patInd == 1) result[i] += input[j];
-                        else if (patInd == 3) result[i] -= input[j];
+                        if (patInd == 1) // add on the next run
+                            for (int a = j; a <= j + i && a < input.Length; a++)
+                                result[i] += input[a];
+                        else if (patInd == 3) // subtract the next run
+                            for (int a = j; a <= j + i && a < input.Length; a++)
+                                result[i] -= input[a];
+                        j += i; // jump to the next run
                     }
 
                     result[i] = Math.Abs(result[i] % 10);
