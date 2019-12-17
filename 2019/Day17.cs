@@ -10,8 +10,9 @@ namespace AoC
 
         protected override void Solve()
         {
+            var mem = LongCSV.ToArray();
             var c = new IntCodeComputer();
-            c.Flash(LongCSV.ToArray());
+            c.Flash(mem);
             c.Run();
 
             var x = 0; var y = 0;
@@ -48,6 +49,17 @@ namespace AoC
             }
 
             Part1 = intersections.ToString();
+
+            c.Flash(mem);
+            c.mem[0] = 2;
+            c.Run(
+                'A', ',', 'B', ',', 'A', ',', 'B', ',', 'C', ',', 'C', ',', 'B', ',', 'A', ',', 'B', ',', 'C', '\n',
+                'L', ',', '8', ',', 'R', ',', '1', '2', ',', 'R', ',', '1', '2', ',', 'R', ',', '1', '0', '\n',
+                'R', ',', '1', '0', ',', 'R', ',', '1', '2', ',', 'R', ',', '1', '0', '\n',
+                'L', ',', '1', '0', ',', 'R', ',', '1', '0', ',', 'L', ',', '6', '\n',
+                'n', '\n');
+
+            Part2 = c.outputs.Last().ToString();
         }
     }
 }
