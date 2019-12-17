@@ -50,14 +50,12 @@ namespace AoC
             for (int i = 0; i < 100; i++) FFS(p1);
             Part1 = string.Join("", p1.Take(8));
 
-            // I can reduce the amount of memcpys by working out
-            // how many times to copy it based on the offset
-            //var s = new System.Diagnostics.Stopwatch(); s.Start();
             var offset = int.Parse(string.Join("", signal.Take(7)));
-            var p2 = new List<int>(signal.Length * 10000);
-            for (int i = 0; i < 10000; i++) p2.AddRange(signal);
+            var repeats = 10000 - offset / signal.Length;
+            offset %= signal.Length;
+            var p2 = new List<int>(signal.Length * repeats);
+            for (int i = 0; i < repeats; i++) p2.AddRange(signal);
             var p2a = p2.Skip(offset).ToArray();
-            //s.Stop(); Console.WriteLine(s.ElapsedMilliseconds);
             for (int i = 0; i < 100; i++) LastHalf(p2a);
             Part2 = string.Join("", p2a.Take(8));
         }
