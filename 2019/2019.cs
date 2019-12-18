@@ -4,6 +4,7 @@
     {
         static void Main()
         {
+            /*
             new Day1();
             new Day2();
             new Day3();
@@ -21,6 +22,8 @@
             new Day15();
             new Day16();
             new Day17();
+            */
+            new Day18();
         }
     }
 }
