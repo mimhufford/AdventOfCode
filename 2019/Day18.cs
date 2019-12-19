@@ -45,6 +45,7 @@ namespace AoC
 
             CalcInfoFor('@', bot.x, bot.y);
             foreach (var key in keyToPos.Keys) CalcInfoFor(key, keyToPos[key].x, keyToPos[key].y);
+            posToKey.Add((bot.x, bot.y), '@');
         }
 
         void set(ref int n, int bit) { n |= 1 << bit; }
@@ -72,7 +73,7 @@ namespace AoC
                 }
                 else seenStates.Add(state, i.dist);
 
-                var cur = posToKey.ContainsKey((i.x, i.y)) ? posToKey[(i.x, i.y)] : '@';
+                var cur = posToKey[(i.x, i.y)];
 
                 foreach (var key in keyToPos.Keys)
                 {
