@@ -11,10 +11,15 @@ namespace AoC
         protected override void Solve()
         {
             var map = new HashSet<(int x, int y)>();
-            var keys = new Dictionary<char, (int x, int y)>();
-            var doors = new Dictionary<char, (int x, int y)>();
+            var keyToPos = new Dictionary<char, (int x, int y)>();
+            var posToKey = new Dictionary<(int x, int y), char>();
+            var doorToPos = new Dictionary<char, (int x, int y)>();
+            var posToDoor = new Dictionary<(int x, int y), char>();
             (int x, int y) start = (0, 0);
 
+            //
+            // Phase 1: Build map info and fast lookup structures
+            //
             var input = Lines.ToArray();
             for (var y = 0; y < input.Length; y += 1)
             {
@@ -27,48 +32,73 @@ namespace AoC
                         case '.': map.Add((x, y)); break;
                         case '@': start = (x, y); map.Add((x, y)); break;
                         default:
-                            if (tile >= 'A' && tile <= 'Z') doors.Add(tile, (x, y));
-                            else keys.Add(tile, (x, y));
+                            if (char.IsUpper(tile))
+                            {
+                                doorToPos.Add(tile, (x, y));
+                                posToDoor.Add((x, y), tile);
+                            }
+                            else
+                            {
+                                keyToPos.Add(tile, (x, y));
+                                posToKey.Add((x, y), tile);
+                            }
                             map.Add((x, y));
                             break;
                     }
                 }
             }
 
-            var q = new Queue<(int x, int y, int distance)>();
-            q.Enqueue((start.x, start.y, 0));
-            var m = new Dictionary<(int x, int y), int>();
-            while (q.Count > 0)
+            //
+            // Phase 2: Build a map of shortest distances between pairs
+            //          This includes which doors are in between them
+            //
+
+            //                         origin            dest  dist  doors in the way
+            var routes = new Dictionary<char, Dictionary<char, (int, List<char>)>>();
+
+            void CalcInfoFor(char c, int x, int y)
             {
-                var p = q.Dequeue();
+                var q = new Queue<(int x, int y, int distance, List<char> doors)>();
+                q.Enqueue((x, y, 0, new List<char>()));
+                var m = new Dictionary<(int x, int y), int>();
+                while (q.Count > 0)
+                {
+                    var p = q.Dequeue();
 
-                (int x, int y) e = (p.x + 1, p.y);
-                (int x, int y) w = (p.x - 1, p.y);
-                (int x, int y) n = (p.x, p.y - 1);
-                (int x, int y) s = (p.x, p.y + 1);
+                    if (posToKey.ContainsKey((p.x, p.y)) && posToKey[(p.x, p.y)] != c)
+                    {
+                        if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, List<char>)>());
+                        routes[c].Add(posToKey[(p.x, p.y)], (p.distance, p.doors));
+                    }
 
-                if (map.Contains(n) && !m.ContainsKey(n))
-                {
-                    m.Add(n, p.distance + 1);
-                    q.Enqueue((n.x, n.y, p.distance + 1));
-                }
-                if (map.Contains(e) && !m.ContainsKey(e))
-                {
-                    m.Add(e, p.distance + 1);
-                    q.Enqueue((e.x, e.y, p.distance + 1));
-                }
-                if (map.Contains(s) && !m.ContainsKey(s))
-                {
-                    m.Add(s, p.distance + 1);
-                    q.Enqueue((s.x, s.y, p.distance + 1));
-                }
-                if (map.Contains(w) && !m.ContainsKey(w))
-                {
-                    m.Add(w, p.distance + 1);
-                    q.Enqueue((w.x, w.y, p.distance + 1));
+                    if (posToDoor.ContainsKey((p.x, p.y)))
+                    {
+                        p.doors.Add(posToDoor[(p.x, p.y)]);
+                    }
+
+                    void Check(int x, int y)
+                    {
+                        if (map.Contains((x, y)) && !m.ContainsKey((x, y)))
+                        {
+                            m.Add((x, y), p.distance + 1);
+                            q.Enqueue((x, y, p.distance + 1, p.doors.ToList()));
+                        }
+                    }
+
+                    Check(p.x, p.y - 1);
+                    Check(p.x, p.y + 1);
+                    Check(p.x + 1, p.y);
+                    Check(p.x - 1, p.y);
                 }
             }
 
+            CalcInfoFor('@', start.x, start.y);
+            foreach (var key in keyToPos.Keys) CalcInfoFor(key, keyToPos[key].x, keyToPos[key].y);
+
+
+            //
+            // Phase 3: ???
+            //
         }
     }
 }
