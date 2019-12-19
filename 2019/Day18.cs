@@ -14,7 +14,7 @@ namespace AoC
         public List<(int x, int y)> bots = new List<(int x, int y)>();
         public Dictionary<char, Dictionary<char, (int dist, List<char> doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, List<char> doors)>>();
 
-        public MapInfo(string[] input)
+        public MapInfo(char[][] input)
         {
             for (var y = 0; y < input.Length; y += 1)
             {
@@ -104,16 +104,17 @@ namespace AoC
             while (q.Count > 0)
             {
                 var p = q.Dequeue();
+                var pos = (p.x, p.y);
 
-                if (posToKey.ContainsKey((p.x, p.y)) && posToKey[(p.x, p.y)] != c)
+                if (posToKey.ContainsKey(pos) && posToKey[pos] != c)
                 {
                     if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, List<char>)>());
-                    routes[c].Add(posToKey[(p.x, p.y)], (p.distance, p.doors));
+                    routes[c].Add(posToKey[pos], (p.distance, p.doors));
                 }
 
-                if (posToDoor.ContainsKey((p.x, p.y)))
+                if (posToDoor.ContainsKey(pos) && keyToPos.ContainsKey(char.ToLower(posToDoor[pos])))
                 {
-                    p.doors.Add(posToDoor[(p.x, p.y)]);
+                    p.doors.Add(posToDoor[pos]);
                 }
 
                 void Check(int x, int y)
@@ -139,11 +140,30 @@ namespace AoC
 
         protected override void Solve()
         {
-            var input = Lines.ToArray();
+            var input = Lines.Select(l => l.ToCharArray()).ToArray();
 
-            var mi = new MapInfo(input);
+            var mi1 = new MapInfo(input);
+            Part1 = mi1.CalculateShortestPath().ToString();
 
-            Part1 = mi.CalculateShortestPath().ToString();
+            input[mi1.bots[0].x + 0][mi1.bots[0].y + 0] = '#';
+            input[mi1.bots[0].x + 1][mi1.bots[0].y + 0] = '#';
+            input[mi1.bots[0].x - 1][mi1.bots[0].y + 0] = '#';
+            input[mi1.bots[0].x + 0][mi1.bots[0].y + 1] = '#';
+            input[mi1.bots[0].x + 0][mi1.bots[0].y - 1] = '#';
+            input[mi1.bots[0].x + 1][mi1.bots[0].y + 1] = '@';
+            input[mi1.bots[0].x - 1][mi1.bots[0].y + 1] = '@';
+            input[mi1.bots[0].x + 1][mi1.bots[0].y - 1] = '@';
+            input[mi1.bots[0].x - 1][mi1.bots[0].y - 1] = '@';
+
+            var q1 = input.Take(input.Count() / 2).Select(row => row.Take(row.Count() / 2).ToArray()).ToArray();
+            var q2 = input.Skip(input.Count() / 2).Select(row => row.Take(row.Count() / 2).ToArray()).ToArray();
+            var q3 = input.Take(input.Count() / 2).Select(row => row.Skip(row.Count() / 2).ToArray()).ToArray();
+            var q4 = input.Skip(input.Count() / 2).Select(row => row.Skip(row.Count() / 2).ToArray()).ToArray();
+            var q1c = new MapInfo(q1).CalculateShortestPath();
+            var q2c = new MapInfo(q2).CalculateShortestPath();
+            var q3c = new MapInfo(q3).CalculateShortestPath();
+            var q4c = new MapInfo(q4).CalculateShortestPath();
+            Part2 = (q1c + q2c + q3c + q4c).ToString();
         }
     }
 }
