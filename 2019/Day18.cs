@@ -53,8 +53,8 @@ namespace AoC
             //          This includes which doors are in between them
             //
 
-            //                         origin            dest  dist  doors in the way
-            var routes = new Dictionary<char, Dictionary<char, (int, List<char>)>>();
+            //                         origin            dest    dist      doors in the way
+            var routes = new Dictionary<char, Dictionary<char, (int dist, List<char> doors)>>();
 
             void CalcInfoFor(char c, int x, int y)
             {
@@ -97,8 +97,48 @@ namespace AoC
 
 
             //
-            // Phase 3: ???
+            // Phase 3: Run all possible combinations rom starting point
             //
+
+            var q = new Queue<(int x, int y, HashSet<char> have, HashSet<char> need, int dist)>();
+            q.Enqueue((start.x, start.y, new HashSet<char>(), new HashSet<char>(keyToPos.Keys), 0));
+
+            var steps = int.MaxValue;
+            var seenStates = new Dictionary<(int x, int y, string have), int>();
+
+            while (q.Count > 0)
+            {
+                var i = q.Dequeue();
+
+                // @TEMP: need to optimise this into a bit field or something
+                var test = i.have.ToList(); test.Sort();
+                var test1 = string.Join("", test);
+                var test2 = (i.x, i.y, test1);
+                if (seenStates.ContainsKey(test2))
+                {
+                    if (seenStates[test2] <= i.dist) continue;
+                    else seenStates[test2] = i.dist;
+                }
+                else seenStates.Add(test2, i.dist);
+
+                var cur = posToKey.ContainsKey((i.x, i.y)) ? posToKey[(i.x, i.y)] : '@';
+
+                // list of keys which you can get to with your current set of keys
+                var keys = i.need.Where(k => routes[cur][k].doors.Where(d => !i.have.Contains(char.ToLower(d))).Count() == 0);
+
+                foreach (var key in keys)
+                {
+                    var pos = keyToPos[key];
+                    var have = new HashSet<char>(i.have); have.Add(key);
+                    var need = new HashSet<char>(i.need); need.Remove(key);
+                    var dist = i.dist + routes[cur][key].dist;
+
+                    if (need.Count == 0) steps = Math.Min(steps, dist);
+                    else q.Enqueue((pos.x, pos.y, have, need, dist));
+                }
+            }
+
+            Part1 = steps.ToString();
         }
     }
 }
