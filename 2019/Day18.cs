@@ -11,7 +11,7 @@ namespace AoC
         public Dictionary<(int x, int y), char> posToKey = new Dictionary<(int x, int y), char>();
         public Dictionary<char, (int x, int y)> doorToPos = new Dictionary<char, (int x, int y)>();
         public Dictionary<(int x, int y), char> posToDoor = new Dictionary<(int x, int y), char>();
-        public List<(int x, int y)> bots = new List<(int x, int y)>();
+        public (int x, int y) bot;
         public Dictionary<char, Dictionary<char, (int dist, List<char> doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, List<char> doors)>>();
 
         public MapInfo(char[][] input)
@@ -25,7 +25,7 @@ namespace AoC
                     {
                         case '#': break;
                         case '.': map.Add((x, y)); break;
-                        case '@': bots.Add((x, y)); map.Add((x, y)); break;
+                        case '@': bot = (x, y); map.Add((x, y)); break;
                         default:
                             if (char.IsUpper(tile))
                             {
@@ -43,7 +43,7 @@ namespace AoC
                 }
             }
 
-            CalcInfoFor('@', bots[0].x, bots[0].y);
+            CalcInfoFor('@', bot.x, bot.y);
             foreach (var key in keyToPos.Keys) CalcInfoFor(key, keyToPos[key].x, keyToPos[key].y);
         }
 
@@ -55,7 +55,7 @@ namespace AoC
 
             var q = new Queue<(int x, int y, int have, int need, int dist)>();
             var notGot = 0; foreach (var key in keyToPos.Keys) set(ref notGot, key - 'a');
-            q.Enqueue((bots[0].x, bots[0].y, 0, notGot, 0));
+            q.Enqueue((bot.x, bot.y, 0, notGot, 0));
 
             var steps = int.MaxValue;
             var seenStates = new Dictionary<(int x, int y, int have), int>();
@@ -145,15 +145,15 @@ namespace AoC
             var mi1 = new MapInfo(input);
             Part1 = mi1.CalculateShortestPath().ToString();
 
-            input[mi1.bots[0].x + 0][mi1.bots[0].y + 0] = '#';
-            input[mi1.bots[0].x + 1][mi1.bots[0].y + 0] = '#';
-            input[mi1.bots[0].x - 1][mi1.bots[0].y + 0] = '#';
-            input[mi1.bots[0].x + 0][mi1.bots[0].y + 1] = '#';
-            input[mi1.bots[0].x + 0][mi1.bots[0].y - 1] = '#';
-            input[mi1.bots[0].x + 1][mi1.bots[0].y + 1] = '@';
-            input[mi1.bots[0].x - 1][mi1.bots[0].y + 1] = '@';
-            input[mi1.bots[0].x + 1][mi1.bots[0].y - 1] = '@';
-            input[mi1.bots[0].x - 1][mi1.bots[0].y - 1] = '@';
+            input[mi1.bot.x + 0][mi1.bot.y + 0] = '#';
+            input[mi1.bot.x + 1][mi1.bot.y + 0] = '#';
+            input[mi1.bot.x - 1][mi1.bot.y + 0] = '#';
+            input[mi1.bot.x + 0][mi1.bot.y + 1] = '#';
+            input[mi1.bot.x + 0][mi1.bot.y - 1] = '#';
+            input[mi1.bot.x + 1][mi1.bot.y + 1] = '@';
+            input[mi1.bot.x - 1][mi1.bot.y + 1] = '@';
+            input[mi1.bot.x + 1][mi1.bot.y - 1] = '@';
+            input[mi1.bot.x - 1][mi1.bot.y - 1] = '@';
 
             var q1 = input.Take(input.Count() / 2).Select(row => row.Take(row.Count() / 2).ToArray()).ToArray();
             var q2 = input.Skip(input.Count() / 2).Select(row => row.Take(row.Count() / 2).ToArray()).ToArray();
