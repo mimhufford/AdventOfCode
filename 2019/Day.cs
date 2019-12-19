@@ -32,4 +32,11 @@ namespace AoC
         protected IEnumerable<string> Lines => File.ReadAllLines(file);
         protected string Input => File.ReadAllText(file);
     }
+
+    public class Timed : IDisposable
+    {
+        Stopwatch s = new Stopwatch();
+        public Timed() { s.Start(); }
+        public void Dispose() { s.Stop(); Console.WriteLine(s.ElapsedMilliseconds); }
+    }
 }
