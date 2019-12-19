@@ -99,6 +99,7 @@ namespace AoC
 
         void CalcInfoFor(char c, int x, int y)
         {
+            var numDoors = 0;
             var q = new Queue<(int x, int y, int distance, int doors)>();
             q.Enqueue((x, y, 0, 0));
             var m = new Dictionary<(int x, int y), int>();
@@ -116,6 +117,7 @@ namespace AoC
                 if (posToDoor.ContainsKey(pos) && keyToPos.ContainsKey(char.ToLower(posToDoor[pos])))
                 {
                     set(ref p.doors, posToDoor[pos] - 'A');
+                    if (numDoors++ == 20) break;
                 }
 
                 void Check(int x, int y)
