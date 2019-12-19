@@ -12,7 +12,7 @@ namespace AoC
         public Dictionary<char, (int x, int y)> doorToPos = new Dictionary<char, (int x, int y)>();
         public Dictionary<(int x, int y), char> posToDoor = new Dictionary<(int x, int y), char>();
         public (int x, int y) bot;
-        public Dictionary<char, Dictionary<char, (int dist, char[] doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, char[] doors)>>();
+        public Dictionary<char, Dictionary<char, (int dist, int doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, int doors)>>();
 
         public MapInfo(char[][] input)
         {
@@ -47,12 +47,12 @@ namespace AoC
             foreach (var key in keyToPos.Keys) CalcInfoFor(key, keyToPos[key].x, keyToPos[key].y);
         }
 
+        void set(ref int n, int bit) { n |= 1 << bit; }
+        void clear(ref int n, int bit) { n &= ~(1 << bit); }
+        bool check(int n, int bit) => ((n >> bit) & 1) == 1;
+
         public int CalculateShortestPath()
         {
-            void set(ref int n, int bit) { n |= 1 << bit; }
-            void clear(ref int n, int bit) { n &= ~(1 << bit); }
-            bool check(int n, int bit) => ((n >> bit) & 1) == 1;
-
             var keys = int.MaxValue; foreach (var key in keyToPos.Keys) clear(ref keys, key - 'a');
             var q = new Queue<(int x, int y, int keys, int dist)>();
             q.Enqueue((bot.x, bot.y, keys, 0));
@@ -80,7 +80,8 @@ namespace AoC
                     if (check(i.keys, key - 'a') == true) continue;
 
                     // we do need it, can we get to it?
-                    if (routes[cur][key].doors.Any(d => !check(i.keys, d - 'A'))) continue;
+                    var required = routes[cur][key].doors;
+                    if ((required & i.keys) != required) continue;
 
                     // we can get to it
                     var pos = keyToPos[key];
@@ -97,8 +98,8 @@ namespace AoC
 
         void CalcInfoFor(char c, int x, int y)
         {
-            var q = new Queue<(int x, int y, int distance, List<char> doors)>();
-            q.Enqueue((x, y, 0, new List<char>()));
+            var q = new Queue<(int x, int y, int distance, int doors)>();
+            q.Enqueue((x, y, 0, 0));
             var m = new Dictionary<(int x, int y), int>();
             while (q.Count > 0)
             {
@@ -107,13 +108,13 @@ namespace AoC
 
                 if (posToKey.ContainsKey(pos) && posToKey[pos] != c)
                 {
-                    if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, char[])>());
-                    routes[c].Add(posToKey[pos], (p.distance, p.doors.ToArray()));
+                    if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, int)>());
+                    routes[c].Add(posToKey[pos], (p.distance, p.doors));
                 }
 
                 if (posToDoor.ContainsKey(pos) && keyToPos.ContainsKey(char.ToLower(posToDoor[pos])))
                 {
-                    p.doors.Add(posToDoor[pos]);
+                    set(ref p.doors, posToDoor[pos] - 'A');
                 }
 
                 void Check(int x, int y)
@@ -121,7 +122,7 @@ namespace AoC
                     if (map.Contains((x, y)) && !m.ContainsKey((x, y)))
                     {
                         m.Add((x, y), p.distance + 1);
-                        q.Enqueue((x, y, p.distance + 1, p.doors.ToList()));
+                        q.Enqueue((x, y, p.distance + 1, p.doors));
                     }
                 }
 
