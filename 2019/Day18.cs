@@ -58,13 +58,13 @@ namespace AoC
             q.Enqueue((bot.x, bot.y, keys, 0));
 
             var steps = int.MaxValue;
-            var seenStates = new Dictionary<(int x, int y, int have), int>();
+            var seenStates = new Dictionary<long, int>();
 
             while (q.Count > 0)
             {
                 var i = q.Dequeue();
 
-                var state = (i.x, i.y, i.keys);
+                var state = ((long)i.x << 50) + ((long)i.y << 40) + i.keys;
                 if (seenStates.ContainsKey(state))
                 {
                     if (seenStates[state] <= i.dist) continue;
