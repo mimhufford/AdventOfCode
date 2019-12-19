@@ -12,7 +12,7 @@ namespace AoC
         public Dictionary<char, (int x, int y)> doorToPos = new Dictionary<char, (int x, int y)>();
         public Dictionary<(int x, int y), char> posToDoor = new Dictionary<(int x, int y), char>();
         public (int x, int y) bot;
-        public Dictionary<char, Dictionary<char, (int dist, List<char> doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, List<char> doors)>>();
+        public Dictionary<char, Dictionary<char, (int dist, char[] doors)>> routes = new Dictionary<char, Dictionary<char, (int dist, char[] doors)>>();
 
         public MapInfo(char[][] input)
         {
@@ -80,7 +80,7 @@ namespace AoC
                     if (check(i.keys, key - 'a') == true) continue;
 
                     // we do need it, can we get to it?
-                    if (routes[cur][key].doors.Any(d => !check(i.keys, char.ToLower(d) - 'a'))) continue;
+                    if (routes[cur][key].doors.Any(d => !check(i.keys, d - 'A'))) continue;
 
                     // we can get to it
                     var pos = keyToPos[key];
@@ -107,8 +107,8 @@ namespace AoC
 
                 if (posToKey.ContainsKey(pos) && posToKey[pos] != c)
                 {
-                    if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, List<char>)>());
-                    routes[c].Add(posToKey[pos], (p.distance, p.doors));
+                    if (!routes.ContainsKey(c)) routes.Add(c, new Dictionary<char, (int, char[])>());
+                    routes[c].Add(posToKey[pos], (p.distance, p.doors.ToArray()));
                 }
 
                 if (posToDoor.ContainsKey(pos) && keyToPos.ContainsKey(char.ToLower(posToDoor[pos])))
