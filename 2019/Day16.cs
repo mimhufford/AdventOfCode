@@ -37,8 +37,7 @@ namespace AoC
             {
                 for (int i = signal.Length - 2; i >= 0; i--)
                 {
-                    signal[i] += signal[i + 1];
-                    signal[i] %= 10;
+                    signal[i] = (signal[i] + signal[i + 1]) % 10;
                 }
             }
 
