@@ -75,7 +75,7 @@ namespace AoC
 
                 var cur = posToKey[(i.x, i.y)];
 
-                foreach (var key in keyToPos.Keys)
+                foreach (var key in routes[cur].Keys)
                 {
                     // check if we need it
                     if (check(i.keys, key - 'a') == true) continue;
