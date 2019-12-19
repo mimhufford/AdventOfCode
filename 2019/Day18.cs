@@ -53,9 +53,9 @@ namespace AoC
             void clear(ref int n, int bit) { n &= ~(1 << bit); }
             bool check(int n, int bit) => ((n >> bit) & 1) == 1;
 
-            var q = new Queue<(int x, int y, int have, int need, int dist)>();
-            var notGot = 0; foreach (var key in keyToPos.Keys) set(ref notGot, key - 'a');
-            q.Enqueue((bot.x, bot.y, 0, notGot, 0));
+            var keys = int.MaxValue; foreach (var key in keyToPos.Keys) clear(ref keys, key - 'a');
+            var q = new Queue<(int x, int y, int keys, int dist)>();
+            q.Enqueue((bot.x, bot.y, keys, 0));
 
             var steps = int.MaxValue;
             var seenStates = new Dictionary<(int x, int y, int have), int>();
@@ -64,7 +64,7 @@ namespace AoC
             {
                 var i = q.Dequeue();
 
-                var state = (i.x, i.y, i.have);
+                var state = (i.x, i.y, i.keys);
                 if (seenStates.ContainsKey(state))
                 {
                     if (seenStates[state] <= i.dist) continue;
@@ -77,19 +77,18 @@ namespace AoC
                 foreach (var key in keyToPos.Keys)
                 {
                     // check if we need it
-                    if (check(i.need, key - 'a') == false) continue;
+                    if (check(i.keys, key - 'a') == true) continue;
 
                     // we do need it, can we get to it?
-                    if (routes[cur][key].doors.Any(d => !check(i.have, char.ToLower(d) - 'a'))) continue;
+                    if (routes[cur][key].doors.Any(d => !check(i.keys, char.ToLower(d) - 'a'))) continue;
 
                     // we can get to it
                     var pos = keyToPos[key];
-                    var have = i.have; set(ref have, key - 'a');
-                    var need = i.need; clear(ref need, key - 'a');
+                    var nKys = i.keys; set(ref nKys, key - 'a');
                     var dist = i.dist + routes[cur][key].dist;
 
-                    if (need == 0) steps = Math.Min(steps, dist);
-                    else q.Enqueue((pos.x, pos.y, have, need, dist));
+                    if (nKys == int.MaxValue) steps = Math.Min(steps, dist);
+                    else q.Enqueue((pos.x, pos.y, nKys, dist));
                 }
             }
 
