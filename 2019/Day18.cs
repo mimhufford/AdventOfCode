@@ -131,7 +131,7 @@ namespace AoC
                     if (check(i.need, key - 'a') == false) continue;
 
                     // we do need it, can we get to it?
-                    if (routes[cur][key].doors.Where(d => !check(i.have, char.ToLower(d) - 'a')).Count() > 0) continue;
+                    if (routes[cur][key].doors.Any(d => !check(i.have, char.ToLower(d) - 'a'))) continue;
 
                     // we can get to it
                     var pos = keyToPos[key];
