@@ -20,7 +20,7 @@ namespace AoC
             sw.Start();
             Solve();
             sw.Stop();
-            Console.WriteLine($"Day {day} - Time: {sw.ElapsedMilliseconds}ms\n- Part 1: {Part1}\n- Part 2: {Part2}");
+            Console.WriteLine($"Day {day} - {sw.ElapsedMilliseconds}ms\n- Part 1: {Part1}\n- Part 2: {Part2}");
         }
 
         protected abstract void Solve();
