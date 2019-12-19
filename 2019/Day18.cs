@@ -100,40 +100,46 @@ namespace AoC
             // Phase 3: Run all possible combinations rom starting point
             //
 
-            var q = new Queue<(int x, int y, HashSet<char> have, HashSet<char> need, int dist)>();
-            q.Enqueue((start.x, start.y, new HashSet<char>(), new HashSet<char>(keyToPos.Keys), 0));
+            void set(ref int n, int bit) { n |= 1 << bit; }
+            void clear(ref int n, int bit) { n &= ~(1 << bit); }
+            bool check(int n, int bit) => ((n >> bit) & 1) == 1;
+
+            var q = new Queue<(int x, int y, int have, int need, int dist)>();
+            var notGot = 0; foreach (var key in keyToPos.Keys) set(ref notGot, key - 'a');
+            q.Enqueue((start.x, start.y, 0, notGot, 0));
 
             var steps = int.MaxValue;
-            var seenStates = new Dictionary<(int x, int y, string have), int>();
+            var seenStates = new Dictionary<(int x, int y, int have), int>();
 
             while (q.Count > 0)
             {
                 var i = q.Dequeue();
 
-                // @TEMP: need to optimise this into a bit field or something
-                var test = i.have.ToList(); test.Sort();
-                var test1 = string.Join("", test);
-                var test2 = (i.x, i.y, test1);
-                if (seenStates.ContainsKey(test2))
+                var state = (i.x, i.y, i.have);
+                if (seenStates.ContainsKey(state))
                 {
-                    if (seenStates[test2] <= i.dist) continue;
-                    else seenStates[test2] = i.dist;
+                    if (seenStates[state] <= i.dist) continue;
+                    else seenStates[state] = i.dist;
                 }
-                else seenStates.Add(test2, i.dist);
+                else seenStates.Add(state, i.dist);
 
                 var cur = posToKey.ContainsKey((i.x, i.y)) ? posToKey[(i.x, i.y)] : '@';
 
-                // list of keys which you can get to with your current set of keys
-                var keys = i.need.Where(k => routes[cur][k].doors.Where(d => !i.have.Contains(char.ToLower(d))).Count() == 0);
-
-                foreach (var key in keys)
+                foreach (var key in keyToPos.Keys)
                 {
+                    // check if we need it
+                    if (check(i.need, key - 'a') == false) continue;
+
+                    // we do need it, can we get to it?
+                    if (routes[cur][key].doors.Where(d => !check(i.have, char.ToLower(d) - 'a')).Count() > 0) continue;
+
+                    // we can get to it
                     var pos = keyToPos[key];
-                    var have = new HashSet<char>(i.have); have.Add(key);
-                    var need = new HashSet<char>(i.need); need.Remove(key);
+                    var have = i.have; set(ref have, key - 'a');
+                    var need = i.need; clear(ref need, key - 'a');
                     var dist = i.dist + routes[cur][key].dist;
 
-                    if (need.Count == 0) steps = Math.Min(steps, dist);
+                    if (need == 0) steps = Math.Min(steps, dist);
                     else q.Enqueue((pos.x, pos.y, have, need, dist));
                 }
             }
