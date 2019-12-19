@@ -9,7 +9,7 @@ namespace AoC
     {
         public Day3() : base(3) { }
 
-        List<(int, int)> GeneratePath(IEnumerable<string> instructions)
+        List<(int x, int y)> GeneratePath(IEnumerable<string> instructions)
         {
             var path = new List<(int, int)>();
             var x = 0;
@@ -39,7 +39,7 @@ namespace AoC
 
             var intersections = w1.Intersect(w2);
 
-            Part1 = intersections.Select(i => Math.Abs(i.Item1) + Math.Abs(i.Item2)).Min().ToString();
+            Part1 = intersections.Select(i => Math.Abs(i.x) + Math.Abs(i.y)).Min().ToString();
             Part2 = intersections.Select(i => w1.IndexOf(i) + w2.IndexOf(i) + 2).Min().ToString();
         }
     }
