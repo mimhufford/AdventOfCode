@@ -100,30 +100,33 @@ namespace AoC
             var c = new BeamComputer();
             var mem = IntCSV.ToArray();
 
-            var beamed = 0L;
+            bool Inside(int x, int y)
+            {
+                c.Flash(mem);
+                return c.Run(x, y) == 1;
+            }
 
             {
+                var beamed = 0L;
                 var xMin = 0; // so we don't have to search from 0 every time
-                var minLength = 0; // so we can skip ones we know are in the ray
+                var length = 0; // so we can skip ones we know are in the ray
 
                 for (int y = 0; y < 50; y++)
                 {
                     for (int x = xMin; x < 50; x++)
                     {
-                        c.Flash(mem);
-                        if (c.Run(x, y) == 1)
+                        if (Inside(x, y))
                         {
                             beamed += 1;
                             xMin = x;
-                            x += minLength;
-                            beamed += minLength;
+                            x += length;
+                            beamed += length;
 
                             while (true)
                             {
-                                c.Flash(mem);
-                                if (c.Run(++x, y) == 0)
+                                if (!Inside(++x, y))
                                 {
-                                    minLength = x - xMin - 2;
+                                    length = x - xMin - 2;
                                     x = int.MaxValue - 1;
                                     break;
                                 }
@@ -132,9 +135,29 @@ namespace AoC
                         }
                     }
                 }
+
+                Part1 = beamed.ToString();
             }
 
-            Part1 = beamed.ToString();
+            {
+                int FindFirst(int startX, int y)
+                {
+                    while (!Inside(startX, y)) startX += 1;
+                    return startX;
+                }
+
+                var x = 0;
+
+                for (int y = 1000; true; y++)
+                {
+                    x = FindFirst(x, y);
+                    if (Inside(x + 99, y - 99))
+                    {
+                        Part2 = ((x * 10000) + y - 99).ToString();
+                        break;
+                    }
+                }
+            }
         }
     }
 }
