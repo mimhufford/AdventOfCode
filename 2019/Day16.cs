@@ -35,9 +35,11 @@ namespace AoC
 
             void LastHalf(int[] signal)
             {
-                for (int i = signal.Length - 2; i >= 0; i--)
+                var sum = 0;
+                for (int i = signal.Length - 1; i >= 0; i--)
                 {
-                    signal[i] = (signal[i] + signal[i + 1]) % 10;
+                    sum += signal[i];
+                    signal[i] = sum % 10;
                 }
             }
 
