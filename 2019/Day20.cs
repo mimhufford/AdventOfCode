@@ -74,9 +74,53 @@ namespace AoC
                 }
             }
 
-            // 
-            // Phase 2: BFS from a to z with recursive depth
             //
+            // Phase 2: Simplify the graph
+            //
+
+            var nodes = new Dictionary<(int x, int y), Dictionary<(int x, int y), int>>();
+
+            {
+                var seen = new HashSet<((int x, int y), (int x, int y))>();
+                var points = new HashSet<(int x, int y)>(portals.Keys);
+                points.Add((ax, ay)); points.Add((zx, zy));
+                var q = new Queue<(int x1, int y1, int x2, int y2, int dist)>();
+                points.ToList().ForEach(k => q.Enqueue((k.x, k.y, k.x, k.y, 0)));
+
+                while (q.Count > 0)
+                {
+                    (var x1, var y1, var x2, var y2, var dist) = q.Dequeue();
+                    var start = (x1, y1);
+                    var current = (x2, y2);
+
+                    if (seen.Contains((start, current))) continue;
+
+                    if (dist > 0 && points.Contains(current))
+                    {
+                        if (!nodes.ContainsKey(start))
+                            nodes.Add(start, new Dictionary<(int x, int y), int>());
+                        nodes[start][current] = dist;
+                    }
+
+                    seen.Add((start, current));
+
+                    void CheckNeighbour((int x, int y) n)
+                    {
+                        if (!map.Contains(n)) return;
+                        q.Enqueue((x1, y1, n.x, n.y, dist + 1));
+                    }
+
+                    CheckNeighbour((x2 + 1, y2));
+                    CheckNeighbour((x2 - 1, y2));
+                    CheckNeighbour((x2, y2 + 1));
+                    CheckNeighbour((x2, y2 - 1));
+                }
+            }
+
+            // 
+            // Phase 3: BFS from a to z with recursive depth
+            //
+
             {
                 var seen = new HashSet<(int x, int y, int depth)>();
                 var q = new Queue<(int x, int y, int depth, int steps)>();
@@ -85,6 +129,8 @@ namespace AoC
                 while (q.Count > 0)
                 {
                     (var x, var y, var depth, var steps) = q.Dequeue();
+
+                    if (seen.Contains((x, y, depth))) continue;
 
                     seen.Add((x, y, depth));
 
@@ -95,23 +141,20 @@ namespace AoC
                         if (Part1 != null && Part2 != null) break;
                     }
 
-                    void CheckNeighbour((int x, int y) n)
+                    if (nodes.ContainsKey((x, y)))
                     {
-                        if (seen.Contains((n.x, n.y, depth))) return;
-                        if (portals.ContainsKey(n))
+                        foreach (var n in nodes[(x, y)].Keys)
                         {
-                            var dd = (n.x == lf || n.x == rg || n.y == tp || n.y == bt) ? -1 : 1;
-                            if (dd == -1 && depth == 0) return;
-                            q.Enqueue((portals[n].x, portals[n].y, depth + dd, steps + 2));
+                            q.Enqueue((n.x, n.y, depth, steps + nodes[(x, y)][n]));
                         }
-                        else if (map.Contains(n))
-                            q.Enqueue((n.x, n.y, depth, steps + 1));
                     }
 
-                    CheckNeighbour((x + 1, y));
-                    CheckNeighbour((x - 1, y));
-                    CheckNeighbour((x, y + 1));
-                    CheckNeighbour((x, y - 1));
+                    if (portals.ContainsKey((x, y)))
+                    {
+                        var dd = (x == lf || x == rg || y == tp || y == bt) ? -1 : 1;
+                        if (dd == -1 && depth == 0) continue;
+                        q.Enqueue((portals[(x, y)].x, portals[(x, y)].y, depth + dd, steps + 1));
+                    }
                 }
             }
         }
