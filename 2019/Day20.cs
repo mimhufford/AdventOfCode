@@ -12,8 +12,8 @@ namespace AoC
         {
             var portals = new Dictionary<(int x, int y), (int x, int y)>();
             var map = new HashSet<(int x, int y)>();
-            var ax = 0; var ay = 0;
-            var zx = 0; var zy = 0;
+            var ax = 0; var ay = 0; var zx = 0; var zy = 0;
+            var lf = 2; var rg = 0; var tp = 2; var bt = 0;
 
             //
             // Phase 1: Build map info
@@ -21,6 +21,8 @@ namespace AoC
             {
                 var input = Lines.ToArray();
                 var portalPos = new Dictionary<string, List<(int x, int y)>>();
+                bt = input.Length - 3; rg = input[0].Length - 3;
+
                 for (int y = 1; y < input.Length - 1; y++)
                 {
                     for (int x = 1; x < input[y].Length - 1; x++)
@@ -73,32 +75,37 @@ namespace AoC
             }
 
             // 
-            // Phase 2: BFS from a to z
+            // Phase 2: BFS from a to z with recursive depth
             //
             {
-                var seen = new HashSet<(int x, int y)>();
-                var q = new Queue<(int x, int y, int steps)>();
-                q.Enqueue((ax, ay, 0));
+                var seen = new HashSet<(int x, int y, int depth)>();
+                var q = new Queue<(int x, int y, int depth, int steps)>();
+                q.Enqueue((ax, ay, 0, 0));
 
                 while (q.Count > 0)
                 {
-                    (var x, var y, var steps) = q.Dequeue();
-                    var pos = (x, y);
-                    seen.Add(pos);
+                    (var x, var y, var depth, var steps) = q.Dequeue();
+
+                    seen.Add((x, y, depth));
 
                     if (x == zx && y == zy)
                     {
-                        Part1 = steps.ToString();
-                        break;
+                        if (Part1 == null) Part1 = steps.ToString();
+                        if (depth == 0000) Part2 = steps.ToString();
+                        if (Part1 != null && Part2 != null) break;
                     }
 
-                    void CheckNeighbour((int x, int y) neighbour)
+                    void CheckNeighbour((int x, int y) n)
                     {
-                        if (seen.Contains(neighbour)) return;
-                        if (map.Contains(neighbour))
-                            q.Enqueue((neighbour.x, neighbour.y, steps + 1));
-                        if (portals.ContainsKey(neighbour))
-                            q.Enqueue((portals[neighbour].x, portals[neighbour].y, steps + 2));
+                        if (seen.Contains((n.x, n.y, depth))) return;
+                        if (portals.ContainsKey(n))
+                        {
+                            var dd = (n.x == lf || n.x == rg || n.y == tp || n.y == bt) ? -1 : 1;
+                            if (dd == -1 && depth == 0) return;
+                            q.Enqueue((portals[n].x, portals[n].y, depth + dd, steps + 2));
+                        }
+                        else if (map.Contains(n))
+                            q.Enqueue((n.x, n.y, depth, steps + 1));
                     }
 
                     CheckNeighbour((x + 1, y));
