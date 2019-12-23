@@ -26,11 +26,14 @@ namespace AoC
 
             while (Part2 == null)
             {
+                var idle = true;
+
                 for (int i = 0; i < 50; i++)
                 {
                     var c = net[i];
                     if (c.outputs.Count > 0)
                     {
+                        idle = false;
                         var si = c.outputs.Dequeue();
                         if (si != 255)
                         {
@@ -47,7 +50,7 @@ namespace AoC
                     }
                 }
 
-                if (sig.All(s => s.Count == 0))
+                if (idle)
                 {
                     sig[0].Enqueue(nat.Item1);
                     sig[0].Enqueue(nat.Item2);
