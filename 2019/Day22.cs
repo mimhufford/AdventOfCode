@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace AoC
 {
@@ -10,27 +11,50 @@ namespace AoC
 
         protected override void Solve()
         {
-            long Cut(long card, long deck, long cut) => (card - cut + deck) % deck;
-            long Inc(long card, long deck, long inc) => (card * inc % deck);
-            long Rev(long card, long deck) => (deck - card - 1);
+            var card = 2019L;
+            var deck = 10007;
 
+            foreach (string l in Lines)
             {
-                // Part 1
-                var card = 2019L;
-                var deck = 10007;
-
-                foreach (string l in Lines)
+                if (l[0] == 'c')
                 {
-                    if (l[0] == 'c')
-                        card = Cut(card, deck, (int.Parse(l.Substring(4)) + deck) % deck);
-                    else if (l[10] == 'i')
-                        card = Inc(card, deck, int.Parse(l.Substring(20)));
-                    else
-                        card = Rev(card, deck);
+                    var cut = (int.Parse(l.Substring(4)) + deck) % deck;
+                    card = (card - cut + deck) % deck;
                 }
-
-                Part1 = card.ToString();
+                else if (l[10] == 'i')
+                {
+                    var inc = int.Parse(l.Substring(20));
+                    card = card * inc % deck;
+                }
+                else
+                {
+                    card = deck - card - 1;
+                }
             }
+
+            Part1 = card.ToString();
+
+            var pos = new BigInteger(2604);
+
+            foreach (string l in Lines.Reverse())
+            {
+                if (l[0] == 'c')
+                {
+                    var cut = (int.Parse(l.Substring(4)) + deck) % deck;
+                    pos = (pos + cut + deck) % deck;
+                }
+                else if (l[10] == 'i')
+                {
+                    var inc = int.Parse(l.Substring(20));
+                    pos = (BigInteger.ModPow(inc, deck - 2, deck) * pos) % deck;
+                }
+                else
+                {
+                    pos = deck - pos - 1;
+                }
+            }
+
+            Part2 = pos.ToString();
         }
     }
 }
