@@ -8,28 +8,18 @@ namespace AoC
     {
         public Day24() : base(24) { }
 
-        int neighbours(int map, int x, int y)
-        {
-            int result = 0;
-            if (bug(map, x + 1, y + 0)) result += 1;
-            if (bug(map, x + 0, y + 1)) result += 1;
-            if (bug(map, x - 1, y + 0)) result += 1;
-            if (bug(map, x + 0, y - 1)) result += 1;
-            return result;
-        }
-
-        bool bug(int map, int x, int y)
-        {
-            if (x < 0) return false;
-            if (x > 4) return false;
-            if (y < 0) return false;
-            if (y > 4) return false;
-            int bit = y * 5 + x;
-            return ((map >> bit) & 1) == 1;
-        }
-
         int Step(int map)
         {
+            bool bug(int map, int x, int y)
+            {
+                if (x < 0) return false;
+                if (x > 4) return false;
+                if (y < 0) return false;
+                if (y > 4) return false;
+                int bit = y * 5 + x;
+                return ((map >> bit) & 1) == 1;
+            }
+
             var result = 0;
 
             for (int y = 0; y < 5; y++)
@@ -37,22 +27,20 @@ namespace AoC
                 for (int x = 0; x < 5; x++)
                 {
                     int i = y * 5 + x;
+                    var neighbours = 0;
 
-                    var n = neighbours(map, x, y);
+                    if (bug(map, x + 1, y)) neighbours += 1;
+                    if (bug(map, x, y + 1)) neighbours += 1;
+                    if (bug(map, x - 1, y)) neighbours += 1;
+                    if (bug(map, x, y - 1)) neighbours += 1;
 
                     if (bug(map, x, y))
                     {
-                        if (n == 1)
-                        {
-                            result |= 1 << i;
-                        }
+                        if (neighbours == 1) result |= 1 << i;
                     }
                     else
                     {
-                        if (n == 1 || n == 2)
-                        {
-                            result |= 1 << i;
-                        }
+                        if (neighbours == 1 || neighbours == 2) result |= 1 << i;
                     }
                 }
             }
@@ -60,66 +48,66 @@ namespace AoC
             return result;
         }
 
-        int neighbours(int level, Dictionary<int, int> map, int x, int y)
-        {
-            int result = 0;
-
-            if (x == 1 && y == 2)
-            {
-                if (bug(level + 1, map, 0, 0)) result += 1;
-                if (bug(level + 1, map, 0, 1)) result += 1;
-                if (bug(level + 1, map, 0, 2)) result += 1;
-                if (bug(level + 1, map, 0, 3)) result += 1;
-                if (bug(level + 1, map, 0, 4)) result += 1;
-            }
-            else if (bug(level, map, x + 1, y)) result += 1;
-
-            if (x == 3 && y == 2)
-            {
-                if (bug(level + 1, map, 4, 0)) result += 1;
-                if (bug(level + 1, map, 4, 1)) result += 1;
-                if (bug(level + 1, map, 4, 2)) result += 1;
-                if (bug(level + 1, map, 4, 3)) result += 1;
-                if (bug(level + 1, map, 4, 4)) result += 1;
-            }
-            else if (bug(level, map, x - 1, y)) result += 1;
-
-            if (y == 1 && x == 2)
-            {
-                if (bug(level + 1, map, 0, 0)) result += 1;
-                if (bug(level + 1, map, 1, 0)) result += 1;
-                if (bug(level + 1, map, 2, 0)) result += 1;
-                if (bug(level + 1, map, 3, 0)) result += 1;
-                if (bug(level + 1, map, 4, 0)) result += 1;
-            }
-            else if (bug(level, map, x, y + 1)) result += 1;
-
-            if (y == 3 && x == 2)
-            {
-                if (bug(level + 1, map, 0, 4)) result += 1;
-                if (bug(level + 1, map, 1, 4)) result += 1;
-                if (bug(level + 1, map, 2, 4)) result += 1;
-                if (bug(level + 1, map, 3, 4)) result += 1;
-                if (bug(level + 1, map, 4, 4)) result += 1;
-            }
-            else if (bug(level, map, x, y - 1)) result += 1;
-
-            return result;
-        }
-
-        bool bug(int level, Dictionary<int, int> map, int x, int y)
-        {
-            if (x < 0) return bug(level - 1, map, 1, 2);
-            if (x > 4) return bug(level - 1, map, 3, 2);
-            if (y < 0) return bug(level - 1, map, 2, 1);
-            if (y > 4) return bug(level - 1, map, 2, 3);
-            int bit = y * 5 + x;
-            if (!map.ContainsKey(level)) return false;
-            return ((map[level] >> bit) & 1) == 1;
-        }
-
         Dictionary<int, int> Step(Dictionary<int, int> map)
         {
+            int neighbours(int level, Dictionary<int, int> map, int x, int y)
+            {
+                int result = 0;
+
+                if (x == 1 && y == 2)
+                {
+                    if (bug(level + 1, map, 0, 0)) result += 1;
+                    if (bug(level + 1, map, 0, 1)) result += 1;
+                    if (bug(level + 1, map, 0, 2)) result += 1;
+                    if (bug(level + 1, map, 0, 3)) result += 1;
+                    if (bug(level + 1, map, 0, 4)) result += 1;
+                }
+                else if (bug(level, map, x + 1, y)) result += 1;
+
+                if (x == 3 && y == 2)
+                {
+                    if (bug(level + 1, map, 4, 0)) result += 1;
+                    if (bug(level + 1, map, 4, 1)) result += 1;
+                    if (bug(level + 1, map, 4, 2)) result += 1;
+                    if (bug(level + 1, map, 4, 3)) result += 1;
+                    if (bug(level + 1, map, 4, 4)) result += 1;
+                }
+                else if (bug(level, map, x - 1, y)) result += 1;
+
+                if (y == 1 && x == 2)
+                {
+                    if (bug(level + 1, map, 0, 0)) result += 1;
+                    if (bug(level + 1, map, 1, 0)) result += 1;
+                    if (bug(level + 1, map, 2, 0)) result += 1;
+                    if (bug(level + 1, map, 3, 0)) result += 1;
+                    if (bug(level + 1, map, 4, 0)) result += 1;
+                }
+                else if (bug(level, map, x, y + 1)) result += 1;
+
+                if (y == 3 && x == 2)
+                {
+                    if (bug(level + 1, map, 0, 4)) result += 1;
+                    if (bug(level + 1, map, 1, 4)) result += 1;
+                    if (bug(level + 1, map, 2, 4)) result += 1;
+                    if (bug(level + 1, map, 3, 4)) result += 1;
+                    if (bug(level + 1, map, 4, 4)) result += 1;
+                }
+                else if (bug(level, map, x, y - 1)) result += 1;
+
+                return result;
+            }
+
+            bool bug(int level, Dictionary<int, int> map, int x, int y)
+            {
+                if (x < 0) return bug(level - 1, map, 1, 2);
+                if (x > 4) return bug(level - 1, map, 3, 2);
+                if (y < 0) return bug(level - 1, map, 2, 1);
+                if (y > 4) return bug(level - 1, map, 2, 3);
+                int bit = y * 5 + x;
+                if (!map.ContainsKey(level)) return false;
+                return ((map[level] >> bit) & 1) == 1;
+            }
+
             var result = new Dictionary<int, int>();
             foreach (var level in map.Keys) result.Add(level, 0);
 
