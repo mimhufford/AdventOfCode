@@ -53,15 +53,14 @@ namespace AoC
             }
 
             var range = Input.Split('-').Select(int.Parse);
-            var min = range.First();
-            var max = range.Last();
+            var min = range.First(); var max = range.Last();
 
-            var part1 = hasDup(min) ? 1 : 0;
-            for (var i = next(min, hasDup); i < max; i = next(i, hasDup)) part1++;
+            var part1 = 0;
+            for (var i = next(min - 1, hasDup); i < max; i = next(i, hasDup)) part1++;
             Part1 = part1.ToString();
 
-            var part2 = hasPair(min) ? 1 : 0;
-            for (var i = next(min, hasPair); i < max; i = next(i, hasPair)) part2++;
+            var part2 = 0;
+            for (var i = next(min - 1, hasPair); i < max; i = next(i, hasPair)) part2++;
             Part2 = part2.ToString();
         }
     }
