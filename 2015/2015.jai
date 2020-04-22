@@ -7,9 +7,13 @@
 #load "1.jai";
 #load "2.jai";
 #load "3.jai";
+#load "4.jai";
+#load "5.jai";
 
 main :: () {
     Day1();
     Day2();
     Day3();
+    Day4();
+    Day5();
 }
