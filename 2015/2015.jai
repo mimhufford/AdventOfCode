@@ -9,6 +9,7 @@
 #load "3.jai";
 #load "4.jai";
 #load "5.jai";
+#load "6.jai";
 
 main :: () {
     Day1();
@@ -16,4 +17,5 @@ main :: () {
     Day3();
     Day4();
     Day5();
+    Day6();
 }
