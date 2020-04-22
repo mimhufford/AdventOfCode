@@ -1,12 +1,14 @@
 Day3 :: () {
     input := read_entire_file("input/3.txt");
 
-    year_1_houses : Table(Vector2, int, hash_v2, compare_v2);
-    year_2_houses : Table(Vector2, int, hash_v2, compare_v2);
-
     year_1_santa : Vector2;
     year_2_santa : Vector2;
     year_2_robot : Vector2;
+
+    compare_v2 :: #procedure_of_call(operator==(year_1_santa, year_1_santa));
+
+    year_1_houses : Table(Vector2, int, hash_v2, compare_v2);
+    year_2_houses : Table(Vector2, int, hash_v2, compare_v2);
 
     table_add(*year_1_houses, year_1_santa, 0);
     table_add(*year_2_houses, year_2_santa, 0);
@@ -47,8 +49,4 @@ Day3 :: () {
 hash_v2 :: (v2 : Vector2) -> u32 {
     // crap - but good enough for this
     return xx (v2.x * 10000 + v2.y);
-}
-
-compare_v2 :: (a: Vector2, b: Vector2) -> bool {
-    return a.x == b.x && a.y == b.y;
 }
