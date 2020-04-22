@@ -1,4 +1,5 @@
 hash_v2 :: (v2 : Vector2) -> u32 {
+    // crap - but good enough for this
     return xx (v2.x * 10000 + v2.y);
 }
 
@@ -9,22 +10,43 @@ compare_v2 :: (a: Vector2, b: Vector2) -> bool {
 Day3 :: () {
     input := read_entire_file("input/3.txt");
 
-    houses : Table(Vector2, int, hash_v2, compare_v2);
+    year_1_houses : Table(Vector2, int, hash_v2, compare_v2);
+    year_2_houses : Table(Vector2, int, hash_v2, compare_v2);
 
-    pos : Vector2;
+    year_1_santa : Vector2;
+    year_2_santa : Vector2;
+    year_2_robot : Vector2;
 
-    table_add(*houses, pos, 1);
+    table_add(*year_1_houses, year_1_santa, 0);
+    table_add(*year_2_houses, year_2_santa, 0);
 
     for 0..input.count-1 {
-        if      input[it] == #char "^"  pos.y += 1;
-        else if input[it] == #char "<"  pos.x -= 1;
-        else if input[it] == #char ">"  pos.x += 1;
-        else                            pos.y -= 1;
+        if input[it] == #char "^" {
+            if it % 2 year_2_santa.y += 1;
+            else      year_2_robot.y += 1;
+            year_1_santa.y += 1;
+        } 
+        else if input[it] == #char "<" {
+            if it % 2 year_2_santa.x -= 1;
+            else      year_2_robot.x -= 1;
+            year_1_santa.x -= 1;
+        }
+        else if input[it] == #char ">" {
+            if it % 2 year_2_santa.x += 1;
+            else      year_2_robot.x += 1;
+            year_1_santa.x += 1;
+        }
+        else {
+            if it % 2 year_2_santa.y -= 1;
+            else      year_2_robot.y -= 1;
+            year_1_santa.y -= 1;
+        }   
 
-        visits := table_find_pointer(houses, pos);
-        if visits table_set(*houses, pos, <<visits + 1);
-        else      table_add(*houses, pos, 1);
+        table_set(*year_1_houses, year_1_santa, 0);
+        table_set(*year_2_houses, year_2_santa, 0);
+        table_set(*year_2_houses, year_2_robot, 0);
     }
 
-    print("Day 03: Part 1: %\n", houses.count);
+    print("Day 03: Part 1: %\n", year_1_houses.count);
+    print("Day 03: Part 2: %\n", year_2_houses.count);
 }
