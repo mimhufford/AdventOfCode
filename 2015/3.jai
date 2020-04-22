@@ -5,6 +5,8 @@ Day3 :: () {
     year_2_santa : Vector2;
     year_2_robot : Vector2;
 
+    // @WORKAROUND
+    // Jon confirmed this as the workaround until better support for overloaded procedures
     compare_v2 :: #procedure_of_call(operator==(year_1_santa, year_1_santa));
 
     year_1_houses : Table(Vector2, int, hash_v2, compare_v2);
