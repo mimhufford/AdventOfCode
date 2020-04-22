@@ -1,12 +1,3 @@
-hash_v2 :: (v2 : Vector2) -> u32 {
-    // crap - but good enough for this
-    return xx (v2.x * 10000 + v2.y);
-}
-
-compare_v2 :: (a: Vector2, b: Vector2) -> bool {
-    return a.x == b.x && a.y == b.y;
-}
-
 Day3 :: () {
     input := read_entire_file("input/3.txt");
 
@@ -49,4 +40,15 @@ Day3 :: () {
 
     print("Day 03: Part 1: %\n", year_1_houses.count);
     print("Day 03: Part 2: %\n", year_2_houses.count);
+}
+
+#scope_file
+
+hash_v2 :: (v2 : Vector2) -> u32 {
+    // crap - but good enough for this
+    return xx (v2.x * 10000 + v2.y);
+}
+
+compare_v2 :: (a: Vector2, b: Vector2) -> bool {
+    return a.x == b.x && a.y == b.y;
 }
