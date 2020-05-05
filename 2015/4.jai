@@ -1,8 +1,22 @@
 Day4 :: () {
     input := read_entire_file("input/4.txt");
 
-    // TODO: md5 hash
+    #import "md5";
 
-    print("Day 04: Part 1: %\n", 0);
-    print("Day 04: Part 2: %\n", 0);
+    index   := 0;
+    found_5 := 0;
+    found_6 := 0;
+
+    // @TODO: very slow and leaky
+    while !found_6 {
+        index += 1;
+        in := join(input, tprint("%", index));
+        out := md5(in);
+        if !starts_with(out, "00000") continue;
+        if !found_5                   found_5 = index;
+        if starts_with(out, "000000") found_6 = index;
+    }
+
+    print("Day 04: Part 1: %\n", found_5);
+    print("Day 04: Part 2: %\n", found_6);
 }
