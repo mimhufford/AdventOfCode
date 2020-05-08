@@ -10,7 +10,7 @@ Day4 :: () {
     // @TODO: very slow and leaky
     while !found_6 {
         index += 1;
-        in := join(input, tprint("%", index));
+        in := tprint("%1%2", input, index);
         out := md5(in);
         if !starts_with(out, "00000") continue;
         if !found_5                   found_5 = index;
