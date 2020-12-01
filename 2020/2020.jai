@@ -34,9 +34,10 @@ day1 :: () -> string, string
 
     for i1 : 0..last_index
     {
+        e1 := entries[i1];
+
         for i2 : i1+1..last_index
         {
-            e1 := entries[i1];
             e2 := entries[i2];
 
             if e1 + e2 == 2020
