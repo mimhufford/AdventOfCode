@@ -66,10 +66,9 @@ day1 :: () -> string, string
 
 day2 :: () -> string, string
 {
-    part1, part2 : string;
-
     valid_passwords_rule_1 := 0;
     valid_passwords_rule_2 := 0;
+
     passwords := string_lines(2);
 
     for passwords
@@ -90,10 +89,7 @@ day2 :: () -> string, string
         if (password[min-1] == chr) ^ (password[max-1] == chr) valid_passwords_rule_2 += 1;
     }
 
-    part1 = tprint("%", valid_passwords_rule_1);
-    part2 = tprint("%", valid_passwords_rule_2);
-
-    return part1, part2;
+    return tprint("%", valid_passwords_rule_1), tprint("%", valid_passwords_rule_2);
 }
 
 // Input utilities
