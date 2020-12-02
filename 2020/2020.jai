@@ -8,7 +8,7 @@ main :: ()
 
     total_time : float64;
 
-    days : [] () -> (string, string) = .[ day1 ];
+    days : [] () -> (string, string) = .[ day1, day2 ];
 
     for days
     {
@@ -60,6 +60,38 @@ day1 :: () -> string, string
             }
         }
     }
+
+    return part1, part2;
+}
+
+day2 :: () -> string, string
+{
+    part1, part2 : string;
+
+    valid_passwords_rule_1 := 0;
+    valid_passwords_rule_2 := 0;
+    passwords := string_lines(2);
+
+    for passwords
+    {
+        parts := split(it, "-");
+        min := parse_int(*parts[0]);
+        max := parse_int(*parts[1]);
+        advance(*parts[1], 1);
+        chr := parts[1][0];
+        advance(*parts[1], 3);
+        password := parts[1];
+
+        count := 0;
+        for i : 0..password.count-1 if chr == password[i] count += 1;
+
+        if min <= count && count <= max valid_passwords_rule_1 += 1;
+
+        if (password[min-1] == chr) ^ (password[max-1] == chr) valid_passwords_rule_2 += 1;
+    }
+
+    part1 = tprint("%", valid_passwords_rule_1);
+    part2 = tprint("%", valid_passwords_rule_2);
 
     return part1, part2;
 }
