@@ -1,28 +1,18 @@
 day3 :: () -> string, string
 {
-    lines := string_lines(3);
-    map : [..]Bit_Array;
-    for line : lines
-    {
-        row := make_bit_array(line.count);
-        for i : 0..line.count-1
-        {
-            if line[i] == #char "#" set_bit(*row, i);
-        }
-        array_add(*map, row);
-    }
+    map := string_lines(3);
 
-    check_slope :: (map: []Bit_Array, dx : int, dy : int) -> int
+    check_slope :: (map: []string, dx : int, dy : int) -> int
     {
-        x, y := 0, 0;
-        count := 0;
+        height := map.count;
+        width := map[0].count;
+        x, y, count := 0, 0, 0;
 
-        while y < map.count-1
+        while y < height-1
         {
-            x += dx;
-            x %= map[0].count;
+            x = (x + dx) % width;
             y += dy;
-            if map[y][x] count += 1;
+            if map[y][x] == #char "#" count += 1;
         }
 
         return count;
