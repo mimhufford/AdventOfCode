@@ -17,65 +17,51 @@ day4 :: () -> string, string
             {
                 case "byr";
                     keys |= 1<<7;
-                    value := 0;
                     i += 4;
-                    for 1..4
-                    {
-                        value *= 10;
-                        value += data[i] - #char "0";
-                        i += 1;
-                    }
+                    value, digits := read_number(data, i);
+                    i += digits;
                     if 1920 <= value && value <= 2002 values |= 1<<7;
+                    while i < data.count && data[i] != #char " " && data[i] != #char "\n" i += 1;
                 case "iyr";
                     keys |= 1<<6;
-                    value := 0;
                     i += 4;
-                    for 1..4
-                    {
-                        value *= 10;
-                        value += data[i] - #char "0";
-                        i += 1;
-                    }
+                    value, digits := read_number(data, i);
+                    i += digits;
                     if 2010 <= value && value <= 2020 values |= 1<<6;
+                    while i < data.count && data[i] != #char " " && data[i] != #char "\n" i += 1;
                 case "eyr";
                     keys |= 1<<5;
-                    value := 0;
                     i += 4;
-                    for 1..4
-                    {
-                        value *= 10;
-                        value += data[i] - #char "0";
-                        i += 1;
-                    }
+                    value, digits := read_number(data, i);
+                    i += digits;
                     if 2020 <= value && value <= 2030 values |= 1<<5;
+                    while i < data.count && data[i] != #char " " && data[i] != #char "\n" i += 1;
                 case "hgt";
                     keys |= 1<<4;
-                    value := 0;
-                    unit : string;
                     i += 4;
-                    while #char "0" <= data[i] && data[i] <= #char "9"
-                    {
-                        value *= 10;
-                        value += data[i] - #char "0";
-                        i += 1;
-                    }
-                    if data[i] == #char "c" && 150 <= value && value <= 193 values |= 1<<4;
-                    if data[i] == #char "i" && 59 <= value && value <= 76 values |= 1<<4;
+                    value, digits := read_number(data, i);
+                    i += digits;
+                    unit: string = ---;
+                    unit.count = 2;
+                    unit.data = *data[i];
+                    if unit == "cm" && 150 <= value && value <= 193 values |= 1<<4;
+                    if unit == "in" &&  59 <= value && value <=  76 values |= 1<<4;
                     while i < data.count && data[i] != #char " " && data[i] != #char "\n" i += 1;
                 case "hcl";
                     keys |= 1<<3;
                     i += 4;
-                    if data[i] == #char "#"
+                    value: string = ---;
+                    value.count = 7;
+                    value.data = *data[i];
+                    if value[0] == #char "#"
                     {
-                        i += 1;
                         problem := false;
 
                         for 1..6
                         {
-                            if !(#char "0" <= data[i] && data[i] <= #char "9" ||
-                                 #char "a" <= data[i] && data[i] <= #char "f")
+                            if !(#char "0" <= value[it] && value[it] <= #char "9" ||
+                                 #char "a" <= value[it] && value[it] <= #char "f")
                                 problem = true;
-                            i += 1;
                         }
 
                         if !problem values |= 1<<3;
@@ -119,7 +105,6 @@ day4 :: () -> string, string
             if (i >= data.count || data[i] == #char "\n") // end of passport
             {
                 if keys >= 254 part1 += 1;
-                // TODO: part2 too high
                 if values >= 254 part2 += 1;
                 break;
             }
@@ -127,4 +112,21 @@ day4 :: () -> string, string
     }
 
     return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+read_number :: (data: string, i: int) -> int, int
+{
+    value, digits := 0, 0;
+
+    while i < data.count && #char "0" <= data[i] && data[i] <= #char "9"
+    {
+        value *= 10;
+        value += data[i] - #char "0";
+        i += 1;
+        digits += 1;
+    }
+
+    return value, digits;
 }
