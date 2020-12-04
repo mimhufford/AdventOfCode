@@ -88,12 +88,9 @@ day4 :: () -> string, string
                 case "pid";
                     keys |= 1<<1;
                     i += 4;
-                    value: string = ---;
-                    value.count = 9;
-                    value.data = *data[i];
-                    problem := false;
-                    for 0..8 if #char "0" > value[it] || value[it] > #char "9" problem = true;
-                    if !problem values |= 1<<1;
+                    value, digits := read_number(data, i);
+                    if digits == 9 values |= 1<<1;
+                    i += digits;
                     while i < data.count && data[i] != #char " " && data[i] != #char "\n" i += 1;
                 case "cid"; 
                     i += 4;
