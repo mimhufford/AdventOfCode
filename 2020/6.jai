@@ -23,10 +23,9 @@ day6 :: () -> string, string
 
             all_answered &= one_answered;
 
-            if i == data.count break;
-            if data[i] == #char "\n" && data[i+1] == #char "\n" { i += 1; break; }
-
             i += 1;
+            if i >= data.count break;
+            if data[i] == #char "\n" break;
         }
 
         part1 += bit_count(any_answered);
