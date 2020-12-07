@@ -1,24 +1,18 @@
 day7 :: () -> string, string
 {
     data := input(7);
-
     bags : [..]*Bag;
 
     while data.count
     {
         id, contents := parse_line(*data);
-
-        found, bag := find_or_make_bag(bags, id);
-        if !found array_add(*bags, bag);
-
+        bag := find_or_make_bag(*bags, id);
         if contents[0] == #char "n" continue; // skip "no other bags"
-
         while true
         {
             ok, inner_count, inner_id := parse_bag(*contents);
             if !ok break;
-            found, inner_bag := find_or_make_bag(bags, inner_id);
-            if !found array_add(*bags, inner_bag);
+            inner_bag := find_or_make_bag(*bags, inner_id);
             array_add(*bag.inner_count, inner_count);
             array_add(*bag.inner_bags, inner_bag);
         }
@@ -27,8 +21,7 @@ day7 :: () -> string, string
     part1 := -1; // to account for idenity bag
     for bags if does_bag_contain_other_bag(it, "shiny gold") part1 += 1;
     
-    found, shiny_gold_bag := find_or_make_bag(bags, "shiny gold");
-    part2 := count_contents(shiny_gold_bag);
+    part2 := count_contents(find_or_make_bag(*bags, "shiny gold"));
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -56,12 +49,13 @@ count_contents :: (bag: *Bag) -> u64
     return count;
 }
 
-find_or_make_bag :: (bags: []*Bag, id: string) -> bool, *Bag
+find_or_make_bag :: (bags: *[..]*Bag, id: string) -> *Bag
 {
-    for bags if it.id == id return true, it;
+    for <<bags if it.id == id return it;
     bag := New(Bag);
     bag.id = id;
-    return false, bag;
+    array_add(bags, bag);
+    return bag;
 }
 
 read_number :: (s: *string) -> u64
