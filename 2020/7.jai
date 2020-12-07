@@ -6,19 +6,13 @@ day7 :: () -> string, string
 
     for line: data
     {
-        parts := split(line, " contain ");
+        id, contents := parse_line(*line);
 
-        // get current bag
-        id := parts[0];
-        id.count -= 5;
         found, bag := find_or_make_bag(bags, id);
         if !found array_add(*bags, bag);
 
-        // add contents of bag
-        contents := parts[1];
-        // skip "no other bags"
-        if contents[0] == #char "n" continue;
-        contents.count -= 1; // remove the .
+        if contents[0] == #char "n" continue; // skip "no other bags"
+
         inner_bags := split(contents, ", ");
         for inner_bags
         {
@@ -85,4 +79,22 @@ read_number :: (s: *string) -> u64
     } 
 
     return result;
+}
+
+parse_line :: (s: *string) -> string, string
+{
+    id : string = ---;
+    id.count = 0;
+    id.data = s.data;
+
+    while !(s.data[0] == #char " " && s.data[1] == #char "b" && s.data[2] == #char "a")
+    {
+        id.count += 1;
+        advance(s);
+    }
+
+    advance(s, 14);
+    s.count -= 1; // remove the .
+
+    return id, <<s;
 }
