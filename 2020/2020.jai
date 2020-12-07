@@ -8,7 +8,7 @@ main :: ()
 
     total_time : float64;
 
-    days : [] () -> (string, string) = .[ day1, day2, day3, day4, day5, day6 ];
+    days : [] () -> (string, string) = .[ day1, day2, day3, day4, day5, day6, day7 ];
 
     for days
     {
@@ -31,6 +31,7 @@ main :: ()
 #load "4.jai";
 #load "5.jai";
 #load "6.jai";
+#load "7.jai";
 
 // Input utilities
 input :: (day : int) -> string
