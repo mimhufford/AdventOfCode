@@ -23,27 +23,46 @@ day7 :: () -> string, string
         for inner_bags
         {
             inner_bag_id := it;
-            while inner_bag_id[0] >= #char "0" && inner_bag_id[0] <= #char "9" advance(*inner_bag_id);
+            count := read_number(*inner_bag_id);
             inner_bag_id.count -= 4;
             inner_bag_id = trim(inner_bag_id);
-
             found, inner_bag := find_or_make_bag(bags, inner_bag_id);
             if !found array_add(*bags, inner_bag);
-            array_add(*bag.contains, inner_bag);
+            array_add(*bag.inner_count, count);
+            array_add(*bag.inner_bags, inner_bag);
         }
     }
 
     part1 := -1; // to account for idenity bag
     for bags if does_bag_contain_other_bag(it, "shiny gold") part1 += 1;
+    
+    found, shiny_gold_bag := find_or_make_bag(bags, "shiny gold");
+    part2 := count_contents(shiny_gold_bag);
 
-    return tprint("%", part1), "";
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+Bag :: struct
+{
+    id: string;
+    inner_count: [..]u64;
+    inner_bags:  [..]*Bag;
 }
 
 does_bag_contain_other_bag :: (bag: *Bag, id: string) -> bool
 {
     if bag.id == id return true;
-    for bag.contains if does_bag_contain_other_bag(it, id) return true;
+    for bag.inner_bags if does_bag_contain_other_bag(it, id) return true;
     return false;
+}
+
+count_contents :: (bag: *Bag) -> u64
+{
+    count : u64;
+    for b, i: bag.inner_bags count += bag.inner_count[i] + bag.inner_count[i] * count_contents(b);
+    return count;
 }
 
 find_or_make_bag :: (bags: []*Bag, id: string) -> bool, *Bag
@@ -54,8 +73,16 @@ find_or_make_bag :: (bags: []*Bag, id: string) -> bool, *Bag
     return false, bag;
 }
 
-Bag :: struct
+read_number :: (s: *string) -> u64
 {
-    id: string;
-    contains: [..]*Bag;
+    result : u64;
+
+    while s.data[0] >= #char "0" && s.data[0] <= #char "9"
+    {
+        result *= 10;
+        result += s.data[0] - #char "0";
+        advance(s);
+    } 
+
+    return result;
 }
