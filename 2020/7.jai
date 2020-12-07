@@ -1,28 +1,25 @@
 day7 :: () -> string, string
 {
-    data := string_lines(7);
+    data := input(7);
 
     bags : [..]*Bag;
 
-    for line: data
+    while data.count
     {
-        id, contents := parse_line(*line);
+        id, contents := parse_line(*data);
 
         found, bag := find_or_make_bag(bags, id);
         if !found array_add(*bags, bag);
 
         if contents[0] == #char "n" continue; // skip "no other bags"
 
-        inner_bags := split(contents, ", ");
-        for inner_bags
+        while true
         {
-            inner_bag_id := it;
-            count := read_number(*inner_bag_id);
-            inner_bag_id.count -= 4;
-            inner_bag_id = trim(inner_bag_id);
-            found, inner_bag := find_or_make_bag(bags, inner_bag_id);
+            ok, inner_count, inner_id := parse_bag(*contents);
+            if !ok break;
+            found, inner_bag := find_or_make_bag(bags, inner_id);
             if !found array_add(*bags, inner_bag);
-            array_add(*bag.inner_count, count);
+            array_add(*bag.inner_count, inner_count);
             array_add(*bag.inner_bags, inner_bag);
         }
     }
@@ -78,6 +75,8 @@ read_number :: (s: *string) -> u64
         advance(s);
     } 
 
+    advance(s);
+
     return result;
 }
 
@@ -93,8 +92,46 @@ parse_line :: (s: *string) -> string, string
         advance(s);
     }
 
-    advance(s, 14);
-    s.count -= 1; // remove the .
+    advance(s, 14); // eat the contains bit
 
-    return id, <<s;
+    contents : string = ---;
+    contents.count = 0;
+    contents.data = s.data;
+
+    while s.count && s.data[0] != #char "."
+    {
+        advance(s, 1);
+        contents.count += 1;
+    } 
+
+    advance(s, 1);            // eat the .
+    if s.count advance(s, 1); // eat the \n
+
+    return id, contents;
+}
+
+parse_bag :: (s: *string) -> bool, u64, string
+{
+    if !s.count return false, 0, "";
+
+    count := read_number(s);
+
+    id : string = ---;
+    id.count = 0;
+    id.data = s.data;
+
+    while !(s.data[0] == #char " " && s.data[1] == #char "b" && s.data[2] == #char "a")
+    {
+        id.count += 1;
+        advance(s);
+    }
+
+    advance(s, 4); // eat " bag"
+
+    // eat any leftover junk
+    if s.count && s.data[0] == #char "s" advance(s, 1);
+    if s.count && s.data[0] == #char "," advance(s, 1);
+    if s.count && s.data[0] == #char " " advance(s, 1);
+
+    return true, count, id;
 }
