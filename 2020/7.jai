@@ -1,7 +1,7 @@
 day7 :: () -> string, string
 {
     data := input(7);
-    bags : [..]*Bag;
+    bags : Table(string, *Bag);
 
     while data.count
     {
@@ -27,6 +27,7 @@ day7 :: () -> string, string
 }
 
 #scope_file
+#import "Hash_Table";
 
 Bag :: struct
 {
@@ -49,12 +50,13 @@ count_contents :: (bag: *Bag) -> u64
     return count;
 }
 
-find_or_make_bag :: (bags: *[..]*Bag, id: string) -> *Bag
+find_or_make_bag :: (bags: *Table(string, *Bag), id: string) -> *Bag
 {
-    for <<bags if it.id == id return it;
+    found_bag := table_find_pointer(<<bags, id);
+    if found_bag return <<found_bag;
     bag := New(Bag);
     bag.id = id;
-    array_add(bags, bag);
+    table_add(bags, id, bag);
     return bag;
 }
 
