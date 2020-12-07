@@ -1,6 +1,5 @@
-day7 :: () -> string, string
+day7 :: (data: string) -> string, string
 {
-    data := input(7);
     bags : Table(string, *Bag);
 
     while data.count
@@ -27,7 +26,6 @@ day7 :: () -> string, string
 }
 
 #scope_file
-#import "Hash_Table";
 
 Bag :: struct
 {

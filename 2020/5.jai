@@ -1,7 +1,5 @@
-day5 :: () -> string, string
+day5 :: (data: string) -> string, string
 {
-    data := input(5);
-
     highest_seat_id := 0;
     seats : [1024]u8;
 

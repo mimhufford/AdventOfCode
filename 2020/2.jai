@@ -1,9 +1,7 @@
-day2 :: () -> string, string
+day2 :: (data: string) -> string, string
 {
     valid_passwords_rule_1 := 0;
     valid_passwords_rule_2 := 0;
-
-    data := input(2);
 
     for i : 0..data.count-1
     {

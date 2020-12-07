@@ -1,6 +1,5 @@
-day3 :: () -> string, string
+day3 :: (data: string) -> string, string
 {
-    data := input(3);
     width, height := 0, 0;
     for 0..data.count-1
     {

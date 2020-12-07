@@ -1,6 +1,5 @@
-day4 :: () -> string, string
+day4 :: (data: string) -> string, string
 {
-    data := input(4);
     part1, part2 := 0, 0;
 
     for i: 0..data.count-1

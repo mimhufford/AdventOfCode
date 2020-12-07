@@ -1,8 +1,10 @@
-day1 :: () -> string, string
+day1 :: (data: string) -> string, string
 {
     part1, part2 : string;
 
-    entries := int_lines(1);
+    entries : [..]int;
+    nums := split(data, "\n");
+    for nums array_add(*entries, string_to_int(it));
     last_index := entries.count - 1;
 
     for i1 : 0..last_index
