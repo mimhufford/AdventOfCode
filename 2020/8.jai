@@ -1,21 +1,28 @@
 day8 :: (program: string) -> string, string
 {
-    computer := create_computer(program);
+    original_computer := create_computer(program);
 
-    visited : [1000]u8;
-    part1 := 0;
-    while true
+    part1_computer := original_computer;
+    run(*part1_computer);
+    part1 := part1_computer.acc;
+
+    part2 := 0;
+    for i: 0..original_computer.ins_count
     {
-        if visited[computer.ip]
+        ins := original_computer.program[i];
+        if ins.key != .NOP && ins.key != .JMP continue;
+        if ins.key == .NOP && ins.value == 0  continue;
+        part2_computer := original_computer;
+        if ins.key == .NOP part2_computer.program[i].key = .JMP;
+        else               part2_computer.program[i].key = .NOP;
+        if run(*part2_computer) == .TERMINATED
         {
-            part1 = computer.acc;
+            part2 = part2_computer.acc;
             break;
         }
-        visited[computer.ip] = 1;
-        tick(*computer);
     }
 
-    return tprint("%", part1), "";
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -24,6 +31,7 @@ Computer :: struct
 {
     ip  : s16 = 0;
     acc : s64 = 0;
+    ins_count := 0;
     program : [1000]Instruction;
 }
 
@@ -40,7 +48,29 @@ Key :: enum u8
     JMP;
 }
 
-tick :: (c: *Computer)
+End_Reason :: enum u8
+{
+    TERMINATED;
+    INFINITE_LOOP;
+}
+
+run :: (c: *Computer) -> End_Reason
+{
+    visited : [1000]u8;
+
+    while true
+    {
+        if visited[c.ip] return .INFINITE_LOOP;
+        visited[c.ip] = 1;
+        still_running := tick(c);
+        if !still_running return .TERMINATED;
+    }
+
+    assert(false);
+    return .INFINITE_LOOP;
+}
+
+tick :: (c: *Computer) -> still_running: bool
 {
     i := c.program[c.ip];
     if i.key == .ACC
@@ -56,6 +86,8 @@ tick :: (c: *Computer)
     {
         c.ip += xx i.value;
     }
+
+    return c.ip != c.ins_count;
 }
 
 create_computer :: (program: string) -> Computer
@@ -69,6 +101,7 @@ create_computer :: (program: string) -> Computer
         i += 1;
     }
 
+    computer.ins_count = i;
     return computer;
 }
 
