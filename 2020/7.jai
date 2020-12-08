@@ -12,8 +12,7 @@ day7 :: (data: string) -> string, string
             ok, inner_count, inner_id := parse_bag(*contents);
             if !ok break;
             inner_bag := find_or_make_bag(*bags, inner_id);
-            array_add(*bag.inner_count, inner_count);
-            array_add(*bag.inner_bags, inner_bag);
+            add_inner(bag, inner_count, inner_bag);
         }
     }
 
@@ -30,21 +29,51 @@ day7 :: (data: string) -> string, string
 Bag :: struct
 {
     id: string;
-    inner_count: [..]u64;
-    inner_bags:  [..]*Bag;
+    contains_shiny_gold: bool;
+    contents_count : s16 = -1;
+    used_inner := 0;
+    inner_count: [4]s16;
+    inner_bags:  [4]*Bag;
+}
+
+add_inner :: (bag: *Bag, inner_count: s16, inner_bag: *Bag)
+{
+    bag.inner_count[bag.used_inner] = inner_count;
+    bag.inner_bags [bag.used_inner] = inner_bag;
+    bag.used_inner += 1;
 }
 
 does_bag_contain_other_bag :: (bag: *Bag, id: string) -> bool
 {
-    if bag.id == id return true;
-    for bag.inner_bags if does_bag_contain_other_bag(it, id) return true;
+    if bag.id == id || bag.contains_shiny_gold return true;
+    for i: 0..bag.used_inner-1
+    {
+        it := bag.inner_bags[i];
+        if it.contains_shiny_gold || does_bag_contain_other_bag(it, id)
+        {
+            bag.contains_shiny_gold = true;
+            return true;
+        }
+    }
     return false;
 }
 
-count_contents :: (bag: *Bag) -> u64
+count_contents :: (bag: *Bag) -> s16
 {
-    count : u64;
-    for b, i: bag.inner_bags count += bag.inner_count[i] + bag.inner_count[i] * count_contents(b);
+    count : s16;
+    for i: 0..bag.used_inner-1
+    {
+        b := bag.inner_bags[i];
+        if b.contents_count != -1
+        {
+            count += bag.inner_count[i] + bag.inner_count[i] * b.contents_count;
+        }
+        else
+        {
+            count += bag.inner_count[i] + bag.inner_count[i] * count_contents(b);
+        }
+    }
+    bag.contents_count = count;
     return count;
 }
 
@@ -58,9 +87,9 @@ find_or_make_bag :: (bags: *Table(string, *Bag), id: string) -> *Bag
     return bag;
 }
 
-read_number :: (s: *string) -> u64
+read_number :: (s: *string) -> s16
 {
-    result : u64;
+    result : s16;
 
     while s.data[0] >= #char "0" && s.data[0] <= #char "9"
     {
@@ -104,7 +133,7 @@ parse_line :: (s: *string) -> string, string
     return id, contents;
 }
 
-parse_bag :: (s: *string) -> bool, u64, string
+parse_bag :: (s: *string) -> bool, s16, string
 {
     if !s.count return false, 0, "";
 
