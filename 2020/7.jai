@@ -1,11 +1,13 @@
 day7 :: (data: string) -> string, string
 {
     bags : Table(string, *Bag);
+    shiny_gold_bag : *Bag;
 
     while data.count
     {
         id, contents := parse_line(*data);
         bag := find_or_make_bag(*bags, id);
+        if !shiny_gold_bag && id == "shiny gold" shiny_gold_bag = bag;
         if contents[0] == #char "n" continue; // skip "no other bags"
         while true
         {
@@ -17,9 +19,9 @@ day7 :: (data: string) -> string, string
     }
 
     part1 := -1; // to account for idenity bag
-    for bags if does_bag_contain_other_bag(it, "shiny gold") part1 += 1;
+    for bags if does_bag_contain_other_bag(it, shiny_gold_bag) part1 += 1;
     
-    part2 := count_contents(find_or_make_bag(*bags, "shiny gold"));
+    part2 := count_contents(shiny_gold_bag);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -28,10 +30,9 @@ day7 :: (data: string) -> string, string
 
 Bag :: struct
 {
-    id: string;
-    contains_shiny_gold: bool;
     contents_count : s16 = -1;
-    used_inner := 0;
+    contains_shiny_gold: s8;
+    used_inner : s8 = 0;
     inner_count: [4]s16;
     inner_bags:  [4]*Bag;
 }
@@ -43,15 +44,15 @@ add_inner :: (bag: *Bag, inner_count: s16, inner_bag: *Bag)
     bag.used_inner += 1;
 }
 
-does_bag_contain_other_bag :: (bag: *Bag, id: string) -> bool
+does_bag_contain_other_bag :: (bag: *Bag, other: *Bag) -> bool
 {
-    if bag.id == id || bag.contains_shiny_gold return true;
+    if bag == other || bag.contains_shiny_gold return true;
     for i: 0..bag.used_inner-1
     {
         it := bag.inner_bags[i];
-        if it.contains_shiny_gold || does_bag_contain_other_bag(it, id)
+        if it.contains_shiny_gold || does_bag_contain_other_bag(it, other)
         {
-            bag.contains_shiny_gold = true;
+            bag.contains_shiny_gold = 1;
             return true;
         }
     }
@@ -82,7 +83,6 @@ find_or_make_bag :: (bags: *Table(string, *Bag), id: string) -> *Bag
     found_bag := table_find_pointer(<<bags, id);
     if found_bag return <<found_bag;
     bag := New(Bag);
-    bag.id = id;
     table_add(bags, id, bag);
     return bag;
 }
