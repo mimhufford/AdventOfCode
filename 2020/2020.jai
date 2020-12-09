@@ -9,9 +9,7 @@ main :: ()
 
     total_time : float64;
 
-    days : [] (string) -> (string, string) = .[ day1, day2, day3, day4, day5, day6, day7, day8, day9 ];
-
-    for days
+    for days // days array generated in build.jai
     {
         TIMES :: 1;
         input := read_entire_file(tprint("input/%.txt", it_index + 1));
@@ -27,14 +25,3 @@ main :: ()
 
     print("\nTotal time: %s", total_time);
 }
-
-// Solutions
-#load "1.jai";
-#load "2.jai";
-#load "3.jai";
-#load "4.jai";
-#load "5.jai";
-#load "6.jai";
-#load "7.jai";
-#load "8.jai";
-#load "9.jai";

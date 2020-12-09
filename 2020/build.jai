@@ -1,7 +1,8 @@
+#import "Basic";
 #import "Compiler";
+#import "File_Utilities";
 
-build :: ()
-{
+#run {
     // Configure this workspace
     opts := get_build_options();
     opts.output_type = .NO_OUTPUT;
@@ -15,17 +16,25 @@ build :: ()
     compiler_begin_intercept(w);
     set_build_options(opts, w);
     add_build_file("2020.jai", w);
-    
-    // Wait for COMPLETE message
-    while true
-    {
-        message := compiler_wait_for_message();
-        if !message continue;
-        if message.workspace != w continue;
-        if message.kind == .COMPLETE break;
+
+    // Include day files and generate days procedure array
+    day_funcs : String_Builder;
+    append(*day_funcs, "days := #type (string) -> (string, string).[");
+    for 1..25 {
+        file := tprint("%.jai", it);
+        if !file_exists(file) continue;
+        append(*day_funcs, tprint("day%,", it));
+        add_build_file(file, w);
     }
+    append(*day_funcs, "];");
+    add_build_string(builder_to_string(*day_funcs), w);
 
-    compiler_end_intercept(w);
-}
-
-#run build();
+    // Wait for COMPLETE message
+    while true {
+        using compiler_wait_for_message();
+        if workspace == w && kind == .COMPLETE {
+            compiler_end_intercept(w);
+            break;
+        }
+    }
+};
