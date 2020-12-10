@@ -31,10 +31,10 @@
 
     // Wait for COMPLETE message
     while true {
-        using compiler_wait_for_message();
-        if workspace == w && kind == .COMPLETE {
-            compiler_end_intercept(w);
-            break;
-        }
+        msg := compiler_wait_for_message();
+        if !msg continue;
+        if msg.workspace == w && msg.kind == .COMPLETE break;
     }
+
+    compiler_end_intercept(w);
 };
