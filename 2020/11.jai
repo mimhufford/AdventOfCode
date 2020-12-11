@@ -3,7 +3,6 @@ day11 :: (input: string) -> string, string
     seats1, seats2 := read_map(*input);
 
     while tick(*seats1, 4) {}
-    which_go = false;
     while tick(*seats2, 5) {}
 
     part1 := 0; for seats1 if it.occupied_a part1 += 1;
