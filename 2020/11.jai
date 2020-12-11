@@ -22,8 +22,8 @@ Seat :: struct
 }
 
 which_go : bool;
-w : s64;
-h : s64;
+width    : s64;
+height   : s64;
 
 tick :: (seats: *Table, limit := 0) -> bool
 {
@@ -55,21 +55,21 @@ tick :: (seats: *Table, limit := 0) -> bool
 
 read_map :: (input: *string) -> Table(s64, Seat), Table(s64, Seat)
 {
-    w = 0;
-    h = 1;
+    width  = 0;
+    height = 1;
     map : [..]u8;
 
     while input.count
     {
         if input.data[0] == #char "\n"
         {
-            w = 0;
-            h += 1;
+            width = 0;
+            height += 1;
             advance(input, 1);
             continue;
         }
 
-        w += 1;
+        width += 1;
         array_add(*map, input.data[0]);
         if input.count advance(input, 1);
     }
@@ -104,16 +104,16 @@ read_map :: (input: *string) -> Table(s64, Seat), Table(s64, Seat)
 
 neighbour :: (seats1: Table(s64, Seat), seats2: Table(s64, Seat), index: s64, dx: s64, dy: s64) -> *Seat, *Seat
 {
-    x := index % w + dx;
-    y := index / w + dy;
+    x := index % width + dx;
+    y := index / width + dy;
     i := 0;
 
-    while x >= 0 && x < w && y >= 0 && y < h
+    while x >= 0 && x < width && y >= 0 && y < height
     {
-        sp1 := table_find_pointer(seats1, y*w+x);
+        sp1 := table_find_pointer(seats1, y*width+x);
         if sp1 
         {
-            sp2 := table_find_pointer(seats2, y*w+x);
+            sp2 := table_find_pointer(seats2, y*width+x);
             if i == 0 return sp1,  sp2;
             else      return null, sp2;
         }
