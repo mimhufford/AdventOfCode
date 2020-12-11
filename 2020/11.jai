@@ -82,49 +82,46 @@ read_map :: (input: *string) -> Table(s64, Seat), Table(s64, Seat)
         table_add(*seats2, it_index, .{});
     } 
 
-    for map
+    for char, i: map
     {
-        if it != #char "L" continue;
+        if char != #char "L" continue;
 
-        sp : *Seat;
+        n1, n2 : *Seat;
+        s1 := table_find_pointer(seats1, i);
+        s2 := table_find_pointer(seats2, i);
 
-        s1 := table_find_pointer(seats1, it_index);
-        sp = find_neighbour(*seats1, it_index, +1, +0, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, +1, +1, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, +1, -1, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, -1, +0, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, -1, +1, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, -1, -1, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, +0, -1, true); if sp array_add(*s1.neighbours, sp);
-        sp = find_neighbour(*seats1, it_index, +0, +1, true); if sp array_add(*s1.neighbours, sp);
-
-        s2 := table_find_pointer(seats2, it_index);
-        sp = find_neighbour(*seats2, it_index, +1, +0, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, +1, +1, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, +1, -1, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, -1, +0, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, -1, +1, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, -1, -1, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, +0, -1, false); if sp array_add(*s2.neighbours, sp);
-        sp = find_neighbour(*seats2, it_index, +0, +1, false); if sp array_add(*s2.neighbours, sp);
+        n1, n2 = neighbour(seats1, seats2, i, +1, +0); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, +1, +1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, +1, -1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, -1, +0); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, -1, +1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, -1, -1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, +0, -1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
+        n1, n2 = neighbour(seats1, seats2, i, +0, +1); if n1 array_add(*s1.neighbours, n1); if n2 array_add(*s2.neighbours, n2);
     }
 
     return seats1, seats2;
 }
 
-find_neighbour :: (seats: *Table(s64, Seat), index: s64, dx: s64, dy: s64, once: bool) -> *Seat
+neighbour :: (seats1: Table(s64, Seat), seats2: Table(s64, Seat), index: s64, dx: s64, dy: s64) -> *Seat, *Seat
 {
     x := index % w + dx;
     y := index / w + dy;
+    i := 0;
 
     while x >= 0 && x < w && y >= 0 && y < h
     {
-        sp := table_find_pointer(<<seats, y*w+x);
-        if sp return sp;
-        if once return null;
+        sp1 := table_find_pointer(seats1, y*w+x);
+        if sp1 
+        {
+            sp2 := table_find_pointer(seats2, y*w+x);
+            if i == 0 return sp1,  sp2;
+            else      return null, sp2;
+        }
         x += dx;
         y += dy;
+        i += 1;
     }
 
-    return null;
+    return null, null;
 }
