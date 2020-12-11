@@ -1,6 +1,7 @@
 day11 :: (input: string) -> string, string
 {
-    width, height, a, b := read_map(*input);
+    width, height, a := read_map(*input);
+    b := array_copy(a);
     c := array_copy(a);
     d := array_copy(a);
 
@@ -99,12 +100,11 @@ tick_immediate :: (a: []u8, b: []u8, w: s64, h: s64)
     }
 }
 
-read_map :: (input: *string) -> s64, s64, []u8, []u8
+read_map :: (input: *string) -> s64, s64, []u8
 {
     width  := 0;
     height := 1;
-    a : [..]u8;
-    b : [..]u8;
+    map : [..]u8;
 
     while input.count
     {
@@ -117,10 +117,9 @@ read_map :: (input: *string) -> s64, s64, []u8, []u8
         }
 
         width += 1;
-        array_add(*a, input.data[0]);
-        array_add(*b, input.data[0]);
+        array_add(*map, input.data[0]);
         if input.count advance(input, 1);
     }
 
-    return width, height, a, b;
+    return width, height, map;
 }
