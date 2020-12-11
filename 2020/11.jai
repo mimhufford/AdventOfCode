@@ -7,14 +7,14 @@ day11 :: (input: string) -> string, string
 
     while true
     {
-        if tick_immediate(a, b) break;
-        if tick_immediate(b, a) break;
+        if tick(a, b, 4, immediate_neighbours) break;
+        if tick(b, a, 4, immediate_neighbours) break;
     }
 
     while true
     {
-        if tick_visible(c, d) break;
-        if tick_visible(d, c) break;
+        if tick(c, d, 5, visible_neighbours) break;
+        if tick(d, c, 5, visible_neighbours) break;
     }
 
     part1 := 0; for a if it == #char "#" part1 += 1;
@@ -81,24 +81,12 @@ immediate_neighbours :: (a: []u8, index: s64) -> u8
     return count;
 }
 
-tick_visible :: (a: []u8, b: []u8) -> bool
+tick :: (a: []u8, b: []u8, limit: u8, neighbours: ([]u8, s64) -> u8) -> bool
 {
     for 0..a.count-1
     {
-        if a.data[it] == #char "L" && visible_neighbours(a, it) == 0 b.data[it] = #char "#";
-        else if a.data[it] == #char "#" && visible_neighbours(a, it) >= 5 b.data[it] = #char "L";
-        else b.data[it] = a.data[it];
-    }
-
-    return memcmp(a.data, b.data, a.count) == 0;
-}
-
-tick_immediate :: (a: []u8, b: []u8) -> bool
-{
-    for 0..a.count-1
-    {
-        if a.data[it] == #char "L" && immediate_neighbours(a, it) == 0 b.data[it] = #char "#";
-        else if a.data[it] == #char "#" && immediate_neighbours(a, it) >= 4 b.data[it] = #char "L";
+        if a.data[it] == #char "L" && neighbours(a, it) == 0 b.data[it] = #char "#";
+        else if a.data[it] == #char "#" && neighbours(a, it) >= limit b.data[it] = #char "L";
         else b.data[it] = a.data[it];
     }
 
