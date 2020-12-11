@@ -1,22 +1,32 @@
 day11 :: (input: string) -> string, string
 {
     width, height, a, b := read_map(*input);
+    c := array_copy(a);
+    d := array_copy(a);
 
     while true
     {
-        tick(*a, *b, width, height);
+        tick_immediate(*a, *b, width, height);
         if memcmp(a.data, b.data, a.count) == 0 break;
-        tick(*b, *a, width, height);
+        tick_immediate(*b, *a, width, height);
         if memcmp(a.data, b.data, a.count) == 0 break;
     }
 
-    count := 0;
-    for a if it == #char "#" count += 1;
+    while true
+    {
+        tick_visible(*c, *d, width, height);
+        if memcmp(c.data, d.data, c.count) == 0 break;
+        tick_visible(*d, *c, width, height);
+        if memcmp(c.data, d.data, c.count) == 0 break;
+    }
+
+    part1 := 0; for a if it == #char "#" part1 += 1;
+    part2 := 0; for c if it == #char "#" part2 += 1;
     
-    return tprint("%", count), "";
+    return tprint("%", part1), tprint("%", part2);
 }
 
-print :: (a: *[..]u8, w: s64, h: s64)
+print :: (a: *[]u8, w: s64, h: s64)
 {
     for y: 0..h-1
     {
@@ -31,7 +41,41 @@ print :: (a: *[..]u8, w: s64, h: s64)
     print("\n");
 }
 
-occupied_neighbours :: (a: *[..]u8, index: s64, w: s64, h: s64) -> u8
+visible_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
+{
+    // TODO accelerate this with a lookup
+    find_first :: (a: *[]u8, index: s64, w: s64, h: s64, dx: s64, dy: s64) -> u8
+    {
+        x := index % w;
+        y := index / w;
+
+        x += dx;
+        y += dy;
+
+        while x >= 0 && x < w && y >= 0 && y < h
+        {
+            if a.data[y*w+x] == #char "#" return 1;
+            if a.data[y*w+x] == #char "L" return 0;
+            x += dx;
+            y += dy;
+        }
+
+        return 0;
+    }
+
+    count: u8;
+    count += find_first(a, index, w, h, +1, +0);
+    count += find_first(a, index, w, h, +1, +1);
+    count += find_first(a, index, w, h, +1, -1);
+    count += find_first(a, index, w, h, -1, +0);
+    count += find_first(a, index, w, h, -1, +1);
+    count += find_first(a, index, w, h, -1, -1);
+    count += find_first(a, index, w, h, +0, -1);
+    count += find_first(a, index, w, h, +0, +1);
+    return count;
+}
+
+immediate_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
 {
     count: u8;
 
@@ -50,17 +94,27 @@ occupied_neighbours :: (a: *[..]u8, index: s64, w: s64, h: s64) -> u8
     return count;
 }
 
-tick :: (a: *[..]u8, b: *[..]u8, w: s64, h: s64)
+tick_visible :: (a: *[]u8, b: *[]u8, w: s64, h: s64)
 {
     for 0..a.count-1
     {
-        if a.data[it] == #char "L" && occupied_neighbours(a, it, w, h) == 0 b.data[it] = #char "#";
-        else if a.data[it] == #char "#" && occupied_neighbours(a, it, w, h) >= 4 b.data[it] = #char "L";
+        if a.data[it] == #char "L" && visible_neighbours(a, it, w, h) == 0 b.data[it] = #char "#";
+        else if a.data[it] == #char "#" && visible_neighbours(a, it, w, h) >= 5 b.data[it] = #char "L";
         else b.data[it] = a.data[it];
     }
 }
 
-read_map :: (input: *string) -> s64, s64, [..]u8, [..]u8
+tick_immediate :: (a: *[]u8, b: *[]u8, w: s64, h: s64)
+{
+    for 0..a.count-1
+    {
+        if a.data[it] == #char "L" && immediate_neighbours(a, it, w, h) == 0 b.data[it] = #char "#";
+        else if a.data[it] == #char "#" && immediate_neighbours(a, it, w, h) >= 4 b.data[it] = #char "L";
+        else b.data[it] = a.data[it];
+    }
+}
+
+read_map :: (input: *string) -> s64, s64, []u8, []u8
 {
     width  := 0;
     height := 1;
