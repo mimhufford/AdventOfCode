@@ -6,17 +6,17 @@ day11 :: (input: string) -> string, string
 
     while true
     {
-        tick_immediate(*a, *b, width, height);
+        tick_immediate(a, b, width, height);
         if memcmp(a.data, b.data, a.count) == 0 break;
-        tick_immediate(*b, *a, width, height);
+        tick_immediate(b, a, width, height);
         if memcmp(a.data, b.data, a.count) == 0 break;
     }
 
     while true
     {
-        tick_visible(*c, *d, width, height);
+        tick_visible(c, d, width, height);
         if memcmp(c.data, d.data, c.count) == 0 break;
-        tick_visible(*d, *c, width, height);
+        tick_visible(d, c, width, height);
         if memcmp(c.data, d.data, c.count) == 0 break;
     }
 
@@ -26,25 +26,10 @@ day11 :: (input: string) -> string, string
     return tprint("%", part1), tprint("%", part2);
 }
 
-print :: (a: *[]u8, w: s64, h: s64)
-{
-    for y: 0..h-1
-    {
-        for x: 0..w-1
-        {
-            if a.data[y*w+x] == #char "L" print("L");
-            else if a.data[y*w+x] == #char "#" print("#");
-            else print(".");
-        }
-        print("\n");
-    }
-    print("\n");
-}
-
-visible_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
+visible_neighbours :: (a: []u8, index: s64, w: s64, h: s64) -> u8
 {
     // TODO accelerate this with a lookup
-    find_first :: (a: *[]u8, index: s64, w: s64, h: s64, dx: s64, dy: s64) -> u8
+    find_first :: (a: []u8, index: s64, w: s64, h: s64, dx: s64, dy: s64) -> u8
     {
         x := index % w;
         y := index / w;
@@ -75,7 +60,7 @@ visible_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
     return count;
 }
 
-immediate_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
+immediate_neighbours :: (a: []u8, index: s64, w: s64, h: s64) -> u8
 {
     count: u8;
 
@@ -94,7 +79,7 @@ immediate_neighbours :: (a: *[]u8, index: s64, w: s64, h: s64) -> u8
     return count;
 }
 
-tick_visible :: (a: *[]u8, b: *[]u8, w: s64, h: s64)
+tick_visible :: (a: []u8, b: []u8, w: s64, h: s64)
 {
     for 0..a.count-1
     {
@@ -104,7 +89,7 @@ tick_visible :: (a: *[]u8, b: *[]u8, w: s64, h: s64)
     }
 }
 
-tick_immediate :: (a: *[]u8, b: *[]u8, w: s64, h: s64)
+tick_immediate :: (a: []u8, b: []u8, w: s64, h: s64)
 {
     for 0..a.count-1
     {
