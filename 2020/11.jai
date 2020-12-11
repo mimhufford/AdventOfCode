@@ -1,99 +1,60 @@
 day11 :: (input: string) -> string, string
 {
-    a := read_map(*input);
-    b := array_copy(a);
-    c := array_copy(a);
-    d := array_copy(a);
+    seats1, seats2 := read_map(*input);
 
-    while true
-    {
-        if tick(a, b, 4, immediate_neighbours) break;
-        if tick(b, a, 4, immediate_neighbours) break;
-    }
+    while tick(*seats1, 4) {}
+    which_go = false;
+    while tick(*seats2, 5) {}
 
-    while true
-    {
-        if tick(c, d, 5, visible_neighbours) break;
-        if tick(d, c, 5, visible_neighbours) break;
-    }
-
-    part1 := 0; for a if it == #char "#" part1 += 1;
-    part2 := 0; for c if it == #char "#" part2 += 1;
+    part1 := 0; for seats1 if it.occupied_a part1 += 1;
+    part2 := 0; for seats2 if it.occupied_a part2 += 1;
     
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
+Seat :: struct
+{
+    // TODO collapse into a packed u8
+    occupied_a : bool;
+    occupied_b : bool;
+    neighbours : [..]*Seat;
+}
+
+which_go : bool;
 w : s64;
 h : s64;
 
-visible_neighbours :: (a: []u8, index: s64) -> u8
+tick :: (seats: *Table, limit := 0) -> bool
 {
-    // TODO accelerate this with a lookup
-    find_first :: (a: []u8, index: s64, dx: s64, dy: s64) -> u8
+    which_go = !which_go;
+
+    work_left := false;
+
+    for * seats
     {
-        x := index % w;
-        y := index / w;
-
-        x += dx;
-        y += dy;
-
-        while x >= 0 && x < w && y >= 0 && y < h
+        count := 0;
+        if which_go
         {
-            if a.data[y*w+x] == #char "#" return 1;
-            if a.data[y*w+x] == #char "L" return 0;
-            x += dx;
-            y += dy;
+            for n: it.neighbours if n.occupied_a count += 1;
+            if      !it.occupied_a && count == 0     { it.occupied_b = true;  work_left = true; }
+            else if  it.occupied_a && count >= limit { it.occupied_b = false; work_left = true; }
+            else it.occupied_b = it.occupied_a;
         }
-
-        return 0;
+        else
+        {
+            for n: it.neighbours if n.occupied_b count += 1;
+            if      !it.occupied_b && count == 0     { it.occupied_a = true;  work_left = true; }
+            else if  it.occupied_b && count >= limit { it.occupied_a = false; work_left = true; }
+            else it.occupied_a = it.occupied_b;
+        }
     }
 
-    count: u8;
-    count += find_first(a, index, +1, +0);
-    count += find_first(a, index, +1, +1);
-    count += find_first(a, index, +1, -1);
-    count += find_first(a, index, -1, +0);
-    count += find_first(a, index, -1, +1);
-    count += find_first(a, index, -1, -1);
-    count += find_first(a, index, +0, -1);
-    count += find_first(a, index, +0, +1);
-    return count;
+    return work_left;
 }
 
-immediate_neighbours :: (a: []u8, index: s64) -> u8
-{
-    count: u8;
-
-    x := index % w;
-    y := index / w;
-
-    if x > 0               && a.data[(y+0)*w + x-1] == #char "#" count += 1; // L
-    if x < w-1             && a.data[(y+0)*w + x+1] == #char "#" count += 1; // R
-    if y > 0               && a.data[(y-1)*w + x+0] == #char "#" count += 1; // U
-    if y < h-1             && a.data[(y+1)*w + x+0] == #char "#" count += 1; // D
-    if x < w-1 && y > 0    && a.data[(y-1)*w + x+1] == #char "#" count += 1; // RU
-    if x > 0   && y > 0    && a.data[(y-1)*w + x-1] == #char "#" count += 1; // LU
-    if x < w-1 && y < h-1  && a.data[(y+1)*w + x+1] == #char "#" count += 1; // RD
-    if x > 0   && y < h-1  && a.data[(y+1)*w + x-1] == #char "#" count += 1; // LD
-
-    return count;
-}
-
-tick :: (a: []u8, b: []u8, limit: u8, neighbours: ([]u8, s64) -> u8) -> bool
-{
-    for 0..a.count-1
-    {
-        if a.data[it] == #char "L" && neighbours(a, it) == 0 b.data[it] = #char "#";
-        else if a.data[it] == #char "#" && neighbours(a, it) >= limit b.data[it] = #char "L";
-        else b.data[it] = a.data[it];
-    }
-
-    return memcmp(a.data, b.data, a.count) == 0;
-}
-
-read_map :: (input: *string) -> []u8
+read_map :: (input: *string) -> Table(s64, Seat), Table(s64, Seat)
 {
     w = 0;
     h = 1;
@@ -114,5 +75,56 @@ read_map :: (input: *string) -> []u8
         if input.count advance(input, 1);
     }
 
-    return map;
+    seats1, seats2: Table(s64, Seat);
+
+    for map if it == #char "L" {
+        table_add(*seats1, it_index, .{});
+        table_add(*seats2, it_index, .{});
+    } 
+
+    for map
+    {
+        if it != #char "L" continue;
+
+        sp : *Seat;
+
+        s1 := table_find_pointer(seats1, it_index);
+        sp = find_neighbour(*seats1, it_index, +1, +0, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, +1, +1, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, +1, -1, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, -1, +0, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, -1, +1, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, -1, -1, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, +0, -1, true); if sp array_add(*s1.neighbours, sp);
+        sp = find_neighbour(*seats1, it_index, +0, +1, true); if sp array_add(*s1.neighbours, sp);
+
+        s2 := table_find_pointer(seats2, it_index);
+        sp = find_neighbour(*seats2, it_index, +1, +0, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, +1, +1, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, +1, -1, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, -1, +0, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, -1, +1, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, -1, -1, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, +0, -1, false); if sp array_add(*s2.neighbours, sp);
+        sp = find_neighbour(*seats2, it_index, +0, +1, false); if sp array_add(*s2.neighbours, sp);
+    }
+
+    return seats1, seats2;
+}
+
+find_neighbour :: (seats: *Table(s64, Seat), index: s64, dx: s64, dy: s64, once: bool) -> *Seat
+{
+    x := index % w + dx;
+    y := index / w + dy;
+
+    while x >= 0 && x < w && y >= 0 && y < h
+    {
+        sp := table_find_pointer(<<seats, y*w+x);
+        if sp return sp;
+        if once return null;
+        x += dx;
+        y += dy;
+    }
+
+    return null;
 }
