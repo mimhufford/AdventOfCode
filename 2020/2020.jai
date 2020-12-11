@@ -2,6 +2,7 @@
 #import "File";
 #import "Hash_Table";
 #import "String";
+#import "Thread";
 
 main :: ()
 {
