@@ -64,6 +64,7 @@ read_map :: inline (input: *string) -> Table(s16, Seat), Table(s16, Seat)
     width  = 0;
     height = 1;
     map : [..]u8;
+    array_reserve(*map, 100*100);
 
     while input.count
     {
