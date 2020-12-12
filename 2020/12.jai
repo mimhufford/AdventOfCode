@@ -12,20 +12,8 @@ day12 :: (input: string) -> string, string
             case #char "E"; ship1.x += val;
             case #char "S"; ship1.y += val;
             case #char "W"; ship1.x -= val;
-            case #char "R"; if ship1.dir ==
-            {
-                case .NORTH; if val == 90 ship1.dir = .EAST;  else if val == 180 ship1.dir = .SOUTH; else ship1.dir = .WEST;
-                case .EAST;  if val == 90 ship1.dir = .SOUTH; else if val == 180 ship1.dir = .WEST;  else ship1.dir = .NORTH;
-                case .SOUTH; if val == 90 ship1.dir = .WEST;  else if val == 180 ship1.dir = .NORTH; else ship1.dir = .EAST;
-                case .WEST;  if val == 90 ship1.dir = .NORTH; else if val == 180 ship1.dir = .EAST;  else ship1.dir = .SOUTH;
-            }
-            case #char "L"; if ship1.dir ==
-            {
-                case .NORTH; if val == 90 ship1.dir = .WEST;  else if val == 180 ship1.dir = .SOUTH; else ship1.dir = .EAST;
-                case .EAST;  if val == 90 ship1.dir = .NORTH; else if val == 180 ship1.dir = .WEST;  else ship1.dir = .SOUTH;
-                case .SOUTH; if val == 90 ship1.dir = .EAST;  else if val == 180 ship1.dir = .NORTH; else ship1.dir = .WEST;
-                case .WEST;  if val == 90 ship1.dir = .SOUTH; else if val == 180 ship1.dir = .EAST;  else ship1.dir = .NORTH;
-            }
+            case #char "R"; ship1.dir = cast(Direction)((cast(u8)(ship1.dir) + 4 + (val/90)) % 4);
+            case #char "L"; ship1.dir = cast(Direction)((cast(u8)(ship1.dir) + 4 - (val/90)) % 4);
             case #char "F"; if ship1.dir == 
             {
                 case .NORTH; ship1.y -= val;
