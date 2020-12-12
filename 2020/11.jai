@@ -27,48 +27,39 @@ thread_runner :: (thread: *Thread) -> s64
 {
     data : *Thread_Data = thread.data;
     while tick(data.seats, data.limit, data.which) { data.which = !data.which; }
-    for data.seats if it.occupied_a data.result += 1;
+    for data.seats if it.occupied[0] data.result += 1;
     return 0;
 }
 
 Seat :: struct
 {
     // TODO collapse into a packed u8
-    occupied_a : bool;
-    occupied_b : bool;
+    occupied   : [2]bool;
     neighbours : [..]*Seat;
 }
 
 width    : s16;
 height   : s16;
 
-tick :: (seats: *Table, limit := 0, which_go: bool) -> bool
+tick :: inline (seats: *Table, limit := 0, which_go: bool) -> bool
 {
     work_left := false;
 
     for * seats
     {
         count := 0;
-        if which_go
-        {
-            for n: it.neighbours if n.occupied_a count += 1;
-            if      !it.occupied_a && count == 0     { it.occupied_b = true;  work_left = true; }
-            else if  it.occupied_a && count >= limit { it.occupied_b = false; work_left = true; }
-            else it.occupied_b = it.occupied_a;
-        }
-        else
-        {
-            for n: it.neighbours if n.occupied_b count += 1;
-            if      !it.occupied_b && count == 0     { it.occupied_a = true;  work_left = true; }
-            else if  it.occupied_b && count >= limit { it.occupied_a = false; work_left = true; }
-            else it.occupied_a = it.occupied_b;
-        }
+        a := ifx which_go then 0 else 1;
+        b := 1 - a;
+        for n: it.neighbours if n.occupied[a] count += 1;
+        if      !it.occupied[a] && count == 0     { it.occupied[b] = true;  work_left = true; }
+        else if  it.occupied[a] && count >= limit { it.occupied[b] = false; work_left = true; }
+        else it.occupied[b] = it.occupied[a];
     }
 
     return work_left;
 }
 
-read_map :: (input: *string) -> Table(s16, Seat), Table(s16, Seat)
+read_map :: inline (input: *string) -> Table(s16, Seat), Table(s16, Seat)
 {
     width  = 0;
     height = 1;
@@ -117,7 +108,7 @@ read_map :: (input: *string) -> Table(s16, Seat), Table(s16, Seat)
     return seats1, seats2;
 }
 
-neighbour :: (seats1: Table(s16, Seat), seats2: Table(s16, Seat), index: s16, dx: s8, dy: s8) -> *Seat, *Seat
+neighbour :: inline (seats1: Table(s16, Seat), seats2: Table(s16, Seat), index: s16, dx: s8, dy: s8) -> *Seat, *Seat
 {
     x := index % width + dx;
     y := index / width + dy;
