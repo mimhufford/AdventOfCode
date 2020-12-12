@@ -1,6 +1,7 @@
 day7 :: (data: string) -> string, string
 {
     bags : Table(string, *Bag);
+    init(*bags, 1000);
     shiny_gold_bag : *Bag;
 
     while data.count
