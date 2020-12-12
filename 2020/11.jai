@@ -82,6 +82,8 @@ read_map :: inline (input: *string) -> Table(s16, Seat), Table(s16, Seat)
     }
 
     seats1, seats2: Table(s16, Seat);
+    init(*seats1, map.count);
+    init(*seats2, map.count);
 
     for map if it == #char "L" {
         table_add(*seats1, xx it_index, .{});
