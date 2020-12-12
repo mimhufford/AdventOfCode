@@ -36,18 +36,8 @@ day12 :: (input: string) -> string, string
             case #char "E"; ship2.wx += val;
             case #char "S"; ship2.wy += val;
             case #char "W"; ship2.wx -= val;
-            case #char "R"; if val ==
-            {
-                case 90;  y := -ship2.wy; ship2.wy = ship2.wx; ship2.wx = y;
-                case 180; ship2.wx *= -1; ship2.wy *= -1;
-                case 270; x := -ship2.wx; ship2.wx = ship2.wy; ship2.wy = x;
-            }
-            case #char "L"; if val ==
-            {
-                case 90;  x := -ship2.wx; ship2.wx = ship2.wy; ship2.wy = x;
-                case 180; ship2.wx *= -1; ship2.wy *= -1;
-                case 270; y := -ship2.wy; ship2.wy = ship2.wx; ship2.wx = y;
-            }
+            case #char "R"; for 1..val/90 { y := -ship2.wy; ship2.wy = ship2.wx; ship2.wx = y; }
+            case #char "L"; for 1..val/90 { x := -ship2.wx; ship2.wx = ship2.wy; ship2.wy = x; }
             case #char "F"; for 1..val { ship2.x += ship2.wx; ship2.y += ship2.wy; }
         }
     }
