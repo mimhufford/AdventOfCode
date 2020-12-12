@@ -44,12 +44,12 @@ height   : s16;
 tick :: inline (seats: *Table, limit := 0, which_go: bool) -> bool
 {
     work_left := false;
+    a := ifx which_go then 0 else 1;
+    b := 1 - a;
 
     for * seats
     {
         count := 0;
-        a := ifx which_go then 0 else 1;
-        b := 1 - a;
         for n: it.neighbours if n.occupied[a] count += 1;
         if      !it.occupied[a] && count == 0     { it.occupied[b] = true;  work_left = true; }
         else if  it.occupied[a] && count >= limit { it.occupied[b] = false; work_left = true; }
