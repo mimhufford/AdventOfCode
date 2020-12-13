@@ -16,7 +16,7 @@ day13 :: (input: string) -> string, string
 find_sequence :: (schedule: []u64) -> u64
 {
     start : u64 = 0;
-    skip  : u64 = start;
+    skip  : u64 = schedule[0];
 
     while true
     {
@@ -25,8 +25,8 @@ find_sequence :: (schedule: []u64) -> u64
         {
             if (start + cast(u64)it_index) % it != 0
             { 
-                skip = 1;
-                for i: 0..it_index-1 skip *= schedule[i];
+                skip = schedule[0];
+                for i: 1..it_index-1 skip *= schedule[i];
                 found = false;
                 break;
             }
