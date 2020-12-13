@@ -21,6 +21,7 @@ find_sequence :: (schedule: []u64) -> u64
     {
         found := true;
         skip := schedule[0];
+
         for schedule
         {
             if (start + cast(u64)it_index) % it == 0 continue;
