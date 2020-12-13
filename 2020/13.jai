@@ -23,13 +23,12 @@ find_sequence :: (schedule: []u64) -> u64
         found := true;
         for schedule
         {
-            if (start + cast(u64)it_index) % it != 0
-            { 
-                skip = schedule[0];
-                for i: 1..it_index-1 skip *= schedule[i];
-                found = false;
-                break;
-            }
+            if (start + cast(u64)it_index) % it == 0 continue;
+
+            skip = schedule[0];
+            for i: 1..it_index-1 skip *= schedule[i];
+            found = false;
+            break;
         }
 
         if found return start;
