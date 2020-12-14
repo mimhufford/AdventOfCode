@@ -50,19 +50,19 @@ day14 :: (input: string) -> string, string
 
 #scope_file
 
-permute :: (mem: *Table(u64, u64), address: u64, mask: u64, value: u64)
+permute :: (mem: *Table(u64, u64), address: u64, mask: u64, value: u64, start: u8 = 0)
 {
     if !mask { table_set(mem, address, value); return; }
 
-    for 0..35
+    for start..35
     {
         bit := cast(u64)1 << it;
         if mask & bit == 0 continue;
         m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
         m1 : u64 = 0x0000_0000_0000_0000 |  bit;
         mask &= ~bit;
-        permute(mem, address & m0, mask, value);
-        permute(mem, address | m1, mask, value);
+        permute(mem, address & m0, mask, value, start + 1);
+        permute(mem, address | m1, mask, value, start + 1);
         return;
     }
 }
