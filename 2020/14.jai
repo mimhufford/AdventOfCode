@@ -50,9 +50,6 @@ day14 :: (input: string) -> string, string
 
 #scope_file
 
-one  : [36]u64;
-zero : [36]u64;
-
 permute :: (mem: *Table(u64, u64), address: u64, mask: u64, value: u64)
 {
     if !mask { table_set(mem, address, value); return; }
