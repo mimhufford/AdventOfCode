@@ -1,8 +1,8 @@
 day14 :: (input: string) -> string, string
 {
     mask0, mask1, maskX, address, value : u64;
-    memory1 : Table(u64, u64);
-    memory2 : Table(u64, u64);
+    memory1 : Table(u64, u64); init(*memory1, 1000);
+    memory2 : Table(u64, u64); init(*memory2, 100000);
     
     while input.count
     {
