@@ -47,11 +47,10 @@ day14 :: (input: string) -> string, string
 
                 if maskX & bit == 0 continue;
 
-                permutations := addresses.count;
                 m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
                 m1 : u64 = 0x0000_0000_0000_0000 |  bit;
 
-                for 1..permutations
+                for 1..addresses.count
                 {
                     base := addresses[0];
                     array_ordered_remove_by_index(*addresses, 0);
