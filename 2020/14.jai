@@ -3,7 +3,7 @@ day14 :: (input: string) -> string, string
     mask0, mask1, maskX, address, value : u64;
     memory1 : Table(u64, u64); init(*memory1, 1000);
     memory2 : Table(u64, u64); init(*memory2, 100000);
-    
+
     while input.count
     {
         assert(input[0] == #char "m");
@@ -38,28 +38,7 @@ day14 :: (input: string) -> string, string
             table_set(*memory1, address, modified_value);
 
             // part 2
-            addresses : [..]u64;
-            array_add(*addresses, address | mask1);
-
-            for 0..35
-            {
-                bit := cast(u64)1 << it;
-
-                if maskX & bit == 0 continue;
-
-                m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
-                m1 : u64 = 0x0000_0000_0000_0000 |  bit;
-
-                for 1..addresses.count
-                {
-                    base := addresses[0];
-                    array_ordered_remove_by_index(*addresses, 0);
-                    array_add(*addresses, base & m0);
-                    array_add(*addresses, base | m1);
-                } 
-            }
-
-            for addresses table_set(*memory2, it, value);
+            permute(*memory2, address | mask1, maskX, value);
         }
     }
 
@@ -70,6 +49,26 @@ day14 :: (input: string) -> string, string
 }
 
 #scope_file
+
+one  : [36]u64;
+zero : [36]u64;
+
+permute :: (mem: *Table(u64, u64), address: u64, mask: u64, value: u64)
+{
+    if !mask { table_set(mem, address, value); return; }
+
+    for 0..35
+    {
+        bit := cast(u64)1 << it;
+        if mask & bit == 0 continue;
+        m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
+        m1 : u64 = 0x0000_0000_0000_0000 |  bit;
+        mask &= ~bit;
+        permute(mem, address & m0, mask, value);
+        permute(mem, address | m1, mask, value);
+        return;
+    }
+}
 
 read_number :: (s: *string) -> u64
 {
