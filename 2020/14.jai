@@ -60,10 +60,7 @@ day14 :: (input: string) -> string, string
                 } 
             }
 
-            for addresses
-            {
-                table_set(*memory2, it, value);
-            }
+            for addresses table_set(*memory2, it, value);
         }
     }
 
