@@ -45,19 +45,18 @@ day14 :: (input: string) -> string, string
             {
                 bit := cast(u64)1 << it;
 
-                if maskX & bit
-                {
-                    permutations := addresses.count;
-                    m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
-                    m1 : u64 = 0x0000_0000_0000_0000 |  bit;
+                if maskX & bit == 0 continue;
 
-                    for 1..permutations
-                    {
-                        base := addresses[0];
-                        array_ordered_remove_by_index(*addresses, 0);
-                        array_add(*addresses, base & m0);
-                        array_add(*addresses, base | m1);
-                    }
+                permutations := addresses.count;
+                m0 : u64 = 0xFFFF_FFFF_FFFF_FFFF & ~bit;
+                m1 : u64 = 0x0000_0000_0000_0000 |  bit;
+
+                for 1..permutations
+                {
+                    base := addresses[0];
+                    array_ordered_remove_by_index(*addresses, 0);
+                    array_add(*addresses, base & m0);
+                    array_add(*addresses, base | m1);
                 } 
             }
 
