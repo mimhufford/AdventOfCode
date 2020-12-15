@@ -1,8 +1,8 @@
 day15 :: (input: string) -> string, string
 {
-    memory: [..]int;       array_reserve(*memory, 30000000);
-    seen: Table(int, int); init(*seen, 30000000);
-    part1, part2: int;
+    memory: [..]u32;       array_reserve(*memory, 30000000);
+    seen: Table(u32, u32); init(*seen, 30000000);
+    part1, part2: u32;
 
     while input.count array_add(*memory, read_number(*input));
 
@@ -19,18 +19,18 @@ day15 :: (input: string) -> string, string
 
 #scope_file
 
-handle_last :: inline (memory: *[..]int, seen: Table)
+handle_last :: inline (memory: *[..]u32, seen: Table)
 {
     last := memory.data[memory.count - 1];
     when_seen, have_seen := table_find(seen, last);
-    table_set(*seen, last, memory.count - 1);
-    if have_seen array_add(memory, memory.count - 1 - when_seen);
+    table_set(*seen, last, xx (memory.count - 1));
+    if have_seen array_add(memory, xx (memory.count - 1 - when_seen));
     else array_add(memory, 0);
 }
 
-read_number :: (s: *string) -> int
+read_number :: (s: *string) -> u32
 {
-    num: int;
+    num: u32;
 
     while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
     {
