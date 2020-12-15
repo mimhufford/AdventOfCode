@@ -1,44 +1,36 @@
 day15 :: (input: string) -> string, string
 {
-    memory: [2020]u16;
-    count : [2020]u16;
-    index: u16;
+    memory: [..]int;       array_reserve(*memory, 30000000);
+    seen: Table(int, int); init(*seen, 30000000);
+    part1, part2: int;
 
-    while input.count
-    {
-        num := read_number(*input);
-        memory[index] = num;
-        count[num] += 1;
-        index += 1;
-    }
+    while input.count array_add(*memory, read_number(*input));
 
-    while index < 2020
-    {
-        last := memory[index-1];
-        if count[last] == 1
-        {
-            memory[index] = 0;
-            count[0] += 1;
-        } 
-        else
-        {
-            gap : u16 = 2;
-            while memory[index - gap] != last gap += 1;
-            gap -= 1;
-            memory[index] = gap;
-            count[gap] += 1;
-        } 
-        index += 1;
-    }
+    for 0..memory.count-2 table_set(*seen, memory[it], xx it);
 
-    return tprint("%", memory[2020-1]), "";
+    while memory.count < 2020 handle_last(*memory, seen);
+    part1 = memory[memory.count - 1];
+
+    while memory.count < 30000000 handle_last(*memory, seen);
+    part2 = memory[memory.count - 1];
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-read_number :: (s: *string) -> u16
+handle_last :: inline (memory: *[..]int, seen: Table)
 {
-    num: u16;
+    last := memory.data[memory.count - 1];
+    when_seen, have_seen := table_find(seen, last);
+    table_set(*seen, last, memory.count - 1);
+    if have_seen array_add(memory, memory.count - 1 - when_seen);
+    else array_add(memory, 0);
+}
+
+read_number :: (s: *string) -> int
+{
+    num: int;
 
     while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
     {
