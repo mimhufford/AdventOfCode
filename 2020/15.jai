@@ -1,35 +1,36 @@
 day15 :: (input: string) -> string, string
 { 
-    for * seen { <<it = -1; }
-    part1, part2: u32;
+    while input.count
+    {
+        last = read_number(*input);
+        seen[last] = index;
+        index += 1;
+    }
 
-    while input.count { memory[index] = read_number(*input); index += 1; }
+    seen[last] = 0;
 
-    for 0..index-2 seen[memory[it]] = xx it;
+    while index <= 2020 handle_last();
+    part1 := last;
 
-    while index < 2020 handle_last();
-    part1 = memory[index - 1];
-
-    while index < 30000000 handle_last();
-    part2 = memory[index - 1];
+    while index <= 30000000 handle_last();
+    part2 := last;
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-index: u32;
-memory: [30000000]u32;
-seen:   [30000000]s32;
+last: u32;
+index: u32 = 1;
+seen: [30000000]u32;
 
 handle_last :: inline ()
 {
-    last := memory[index - 1];
     when_seen := seen[last];
-    seen[last] = xx (index - 1);
-    if when_seen == -1 memory[index] = 0;
-    else memory[index] = xx (index - cast(s64)1 - when_seen);
+    next := ifx when_seen == 0 then 0 else index - when_seen - 1;
+    seen[last] = index - 1;
     index += 1;
+    last = next;
 }
 
 read_number :: (s: *string) -> u32
