@@ -9,11 +9,18 @@ day15 :: (input: string) -> string, string
 
     seen[last] = 0;
 
-    while index <= 2020 handle_last();
-    part1 := last;
+    part1, part2 : u32;
 
-    while index <= 30000000 handle_last();
-    part2 := last;
+    while index <= 30000000
+    {
+        when_seen := seen[last];
+        next := ifx when_seen == 0 then 0 else index - when_seen - 1;
+        seen[last] = index - 1;
+        if index == 30000000  part2 = next;
+        else if index == 2020 part1 = next;
+        index += 1;
+        last = next;
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -23,15 +30,6 @@ day15 :: (input: string) -> string, string
 last: u32;
 index: u32 = 1;
 seen: [30000000]u32;
-
-handle_last :: inline ()
-{
-    when_seen := seen[last];
-    next := ifx when_seen == 0 then 0 else index - when_seen - 1;
-    seen[last] = index - 1;
-    index += 1;
-    last = next;
-}
 
 read_number :: (s: *string) -> u32
 {
