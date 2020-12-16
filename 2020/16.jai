@@ -10,12 +10,7 @@ day16 :: (input: string) -> string, string
     while input[0] != #char "\n"
     {
         f: Field;
-        f.name.data = input.data;
-        while input[0] != #char ":"
-        {
-            f.name.count += 1;
-            advance(*input);
-        }
+        while input[0] != #char ":" advance(*input);
         advance(*input, 2); // skip ": "
         f.lo1 = read_number(*input);
         advance(*input); // skip "-"
@@ -138,7 +133,6 @@ Ticket :: struct
 
 Field :: struct
 {
-    name: string;
     lo1, hi1: u16;
     lo2, hi2: u16;
 }
