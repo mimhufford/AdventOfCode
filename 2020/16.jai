@@ -63,26 +63,21 @@ day16 :: (input: string) -> string, string
         if valid array_add(*others, t);
     }
 
-    potential_matches : [..][..]s64;
-    
-    for 0..ticket.count-1
-    {
-        array_add(*potential_matches, fields_matched_by_index(it, fields, others));
-    }
+    matches := fields_matched_by_index(fields, others);
 
     while true
     {
         reduced := true;
-        for potential_matches if it.count > 0 { reduced = false; break; }
+        for matches if it.count > 0 { reduced = false; break; }
         if reduced break;
 
-        index := -1;
-        loner := -1;
-        for potential_matches if it.count == 1 { loner = it[0]; index = it_index; break; }
-
-        if loner < 6 part2 *= ticket[index];
-
-        for * potential_matches array_unordered_remove_by_value(it, loner);
+        for matches
+        {
+            if it.count != 1 continue;
+            if it[0] < 6 part2 *= ticket[it_index];
+            for * m: matches array_unordered_remove_by_value(m, it[0]);
+            break;
+        }
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -96,29 +91,36 @@ Field :: struct
     lo2, hi2: u16;
 }
 
-fields_matched_by_index :: (index: s64, fields: []Field, tickets: [..][..]u16) -> [..]s64
+fields_matched_by_index :: (fields: []Field, tickets: [..][..]u16) -> [..][..]s64
 {
-    matching_field_indices : [..]s64;
+    matches : [..][..]s64;
 
-    for f, fi: fields
+    for index: 0..tickets[0].count
     {
-        all_match := true;
+        matching_field_indices : [..]s64;
 
-        for t: tickets
+        for f, fi: fields
         {
-            v := t[index];
+            all_match := true;
 
-            if ! ((v >= f.lo1 && v <= f.hi1) || (v >= f.lo2 && v <= f.hi2))
+            for t: tickets
             {
-                all_match = false;
-                break;
+                v := t[index];
+
+                if ! ((v >= f.lo1 && v <= f.hi1) || (v >= f.lo2 && v <= f.hi2))
+                {
+                    all_match = false;
+                    break;
+                }
             }
+
+            if all_match array_add(*matching_field_indices, fi);
         }
 
-        if all_match array_add(*matching_field_indices, fi);
+        array_add(*matches, matching_field_indices);
     }
 
-    return matching_field_indices;
+    return matches;
 }
 
 is_valid :: (value: u16, fields: []Field) -> bool
