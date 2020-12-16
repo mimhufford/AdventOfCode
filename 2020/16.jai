@@ -4,7 +4,7 @@ day16 :: (input: string) -> string, string
     ticket : Ticket;
     others : [..]Ticket;
     part1  := 0;
-    part2  := 0;
+    part2  := 1;
 
     // read fields
     while input[0] != #char "\n"
@@ -68,11 +68,57 @@ day16 :: (input: string) -> string, string
         if valid array_add(*others, t);
     }
 
-    // TODO part 2
-    return tprint("%", part1), "";
+    potential_matches : [..][..]s64;
+    
+    for 0..ticket.values.count-1
+    {
+        array_add(*potential_matches, fields_matched_by_index(it, fields, others));
+    }
+
+    while true
+    {
+        reduced := true;
+        for potential_matches if it.count > 0 { reduced = false; break; }
+        if reduced break;
+
+        index := -1;
+        loner := -1;
+        for potential_matches if it.count == 1 { loner = it[0]; index = it_index; break; }
+
+        if loner < 6 part2 *= ticket.values[index];
+
+        for * potential_matches array_unordered_remove_by_value(it, loner);
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
+
+fields_matched_by_index :: (index: s64, fields: []Field, tickets: []Ticket) -> [..]s64
+{
+    matching_field_indices : [..]s64;
+
+    for f, fi: fields
+    {
+        all_match := true;
+
+        for t: tickets
+        {
+            v := t.values[index];
+
+            if ! ((v >= f.lo1 && v <= f.hi1) || (v >= f.lo2 && v <= f.hi2))
+            {
+                all_match = false;
+                break;
+            }
+        }
+
+        if all_match array_add(*matching_field_indices, fi);
+    }
+
+    return matching_field_indices;
+}
 
 is_valid :: (value: u16, fields: []Field) -> bool
 {
