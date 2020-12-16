@@ -2,7 +2,7 @@ day16 :: (input: string) -> string, string
 {
     fields : [..]Field;
     ticket : [..]u16;
-    others : [..]Ticket;
+    others : [..][..]u16;
     part1  := 0;
     part2  := 1;
 
@@ -38,7 +38,7 @@ day16 :: (input: string) -> string, string
     // read "nearby tickets"
     while input.count
     {
-        t: Ticket;
+        t: [..]u16;
         valid := true;
         while true
         {
@@ -50,7 +50,7 @@ day16 :: (input: string) -> string, string
             }
             else
             {
-                array_add(*t.values, value);
+                array_add(*t, value);
             }
             if !input.count break;
             if input[0] == #char "\n"
@@ -90,7 +90,7 @@ day16 :: (input: string) -> string, string
 
 #scope_file
 
-fields_matched_by_index :: (index: s64, fields: []Field, tickets: []Ticket) -> [..]s64
+fields_matched_by_index :: (index: s64, fields: []Field, tickets: [..][..]u16) -> [..]s64
 {
     matching_field_indices : [..]s64;
 
@@ -100,7 +100,7 @@ fields_matched_by_index :: (index: s64, fields: []Field, tickets: []Ticket) -> [
 
         for t: tickets
         {
-            v := t.values[index];
+            v := t[index];
 
             if ! ((v >= f.lo1 && v <= f.hi1) || (v >= f.lo2 && v <= f.hi2))
             {
@@ -124,11 +124,6 @@ is_valid :: (value: u16, fields: []Field) -> bool
     }
 
     return false;
-}
-
-Ticket :: struct
-{
-    values: [..]u16;
 }
 
 Field :: struct
