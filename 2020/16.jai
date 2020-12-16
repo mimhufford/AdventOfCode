@@ -91,13 +91,13 @@ Field :: struct
     lo2, hi2: u16;
 }
 
-fields_matched_by_index :: (fields: []Field, tickets: [..][..]u16) -> [..][..]s64
+fields_matched_by_index :: (fields: []Field, tickets: [..][..]u16) -> [..][..]u8
 {
-    matches : [..][..]s64;
+    matches : [..][..]u8;
 
-    for index: 0..tickets[0].count
+    for index: 0..tickets[0].count-1
     {
-        matching_field_indices : [..]s64;
+        matching_field_indices : [..]u8;
 
         for f, fi: fields
         {
@@ -114,7 +114,7 @@ fields_matched_by_index :: (fields: []Field, tickets: [..][..]u16) -> [..][..]s6
                 }
             }
 
-            if all_match array_add(*matching_field_indices, fi);
+            if all_match array_add(*matching_field_indices, xx fi);
         }
 
         array_add(*matches, matching_field_indices);
