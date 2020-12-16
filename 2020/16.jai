@@ -90,6 +90,12 @@ day16 :: (input: string) -> string, string
 
 #scope_file
 
+Field :: struct
+{
+    lo1, hi1: u16;
+    lo2, hi2: u16;
+}
+
 fields_matched_by_index :: (index: s64, fields: []Field, tickets: [..][..]u16) -> [..]s64
 {
     matching_field_indices : [..]s64;
@@ -124,12 +130,6 @@ is_valid :: (value: u16, fields: []Field) -> bool
     }
 
     return false;
-}
-
-Field :: struct
-{
-    lo1, hi1: u16;
-    lo2, hi2: u16;
 }
 
 read_number :: (s: *string) -> u16
