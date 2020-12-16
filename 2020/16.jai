@@ -1,7 +1,7 @@
 day16 :: (input: string) -> string, string
 {
     fields : [..]Field;
-    ticket : Ticket;
+    ticket : [..]u16;
     others : [..]Ticket;
     part1  := 0;
     part2  := 1;
@@ -28,7 +28,7 @@ day16 :: (input: string) -> string, string
     // read "your ticket"
     while true
     {
-        array_add(*ticket.values, read_number(*input));
+        array_add(*ticket, read_number(*input));
         if input[0] == #char "\n" { advance(*input); break; }
         else advance(*input);
     }
@@ -65,7 +65,7 @@ day16 :: (input: string) -> string, string
 
     potential_matches : [..][..]s64;
     
-    for 0..ticket.values.count-1
+    for 0..ticket.count-1
     {
         array_add(*potential_matches, fields_matched_by_index(it, fields, others));
     }
@@ -80,7 +80,7 @@ day16 :: (input: string) -> string, string
         loner := -1;
         for potential_matches if it.count == 1 { loner = it[0]; index = it_index; break; }
 
-        if loner < 6 part2 *= ticket.values[index];
+        if loner < 6 part2 *= ticket[index];
 
         for * potential_matches array_unordered_remove_by_value(it, loner);
     }
