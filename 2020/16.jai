@@ -1,0 +1,112 @@
+day16 :: (input: string) -> string, string
+{
+    fields : [..]Field;
+    ticket : Ticket;
+    others : [..]Ticket;
+    part1  := 0;
+    part2  := 0;
+
+    // read fields
+    while input[0] != #char "\n"
+    {
+        f: Field;
+        f.name.data = input.data;
+        while input[0] != #char ":"
+        {
+            f.name.count += 1;
+            advance(*input);
+        }
+        advance(*input, 2); // skip ": "
+        f.lo1 = read_number(*input);
+        advance(*input); // skip "-"
+        f.hi1 = read_number(*input);
+        advance(*input, 4); // skip " or "
+        f.lo2 = read_number(*input);
+        advance(*input); // skip "-"
+        f.hi2 = read_number(*input);
+        advance(*input); // skip "\n"
+        array_add(*fields, f);
+    }
+
+    advance(*input, 14); // skip "\nyour ticket:\n"
+
+    // read "your ticket"
+    while true
+    {
+        array_add(*ticket.values, read_number(*input));
+        if input[0] == #char "\n" { advance(*input); break; }
+        else advance(*input);
+    }
+
+    advance(*input, 17); // skip "\nnearby tickets:\n"
+
+    // read "nearby tickets"
+    while input.count
+    {
+        t: Ticket;
+        valid := true;
+        while true
+        {
+            value := read_number(*input);
+            if !is_valid(value, fields)
+            {
+                part1 += value;
+                valid = false;
+            }
+            else
+            {
+                array_add(*t.values, value);
+            }
+            if !input.count break;
+            if input[0] == #char "\n"
+            {
+                advance(*input);
+                break;
+            }
+            advance(*input);
+        }
+        if valid array_add(*others, t);
+    }
+
+    // TODO part 2
+    return tprint("%", part1), "";
+}
+
+#scope_file
+
+is_valid :: (value: u16, fields: []Field) -> bool
+{
+    for fields
+    {
+        if value >= it.lo1 && value <= it.hi1 return true;
+        if value >= it.lo2 && value <= it.hi2 return true;
+    }
+
+    return false;
+}
+
+Ticket :: struct
+{
+    values: [..]u16;
+}
+
+Field :: struct
+{
+    name: string;
+    lo1, hi1: u16;
+    lo2, hi2: u16;
+}
+
+read_number :: (s: *string) -> u16
+{
+    num: u16;
+
+    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
+    {
+        num *= 10;
+        num += s.data[0] - #char "0";
+        advance(s);
+    }
+
+    return num;
+}
