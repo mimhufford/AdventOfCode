@@ -67,7 +67,7 @@ day17 :: (input: string) -> string, string
     return tprint("%", count_active(grid3D)), tprint("%", count_active(grid4D));
 }
 
-DIM :: 24;
+DIM :: 22; // 8x8 start can only grow out 6 steps
 
 Grid3D :: struct
 {
