@@ -4,10 +4,7 @@ day17 :: (input: string) -> string, string
     grid4D := *grid4D1; dest4D := *grid4D2;
 
     {
-        x := DIM/2-4;
-        y := DIM/2-4;
-        z := DIM/2-4;
-        w := DIM/2-4;
+        x := DIM/2-4; y := DIM/2-4; z := DIM/2-4; w := DIM/2-4;
 
         while input.count
         {
@@ -24,7 +21,9 @@ day17 :: (input: string) -> string, string
 
     for 1..6
     {
-        for z: 1..DIM-2 { for y: 1..DIM-2 { for x: 1..DIM-2
+        // expand search bounds by 1 each generation
+        min := 7-it; max := DIM-min-1; 
+        for z: min..max { for y: min..max { for x: min..max
         {
             neighbours := 0;
 
@@ -45,7 +44,9 @@ day17 :: (input: string) -> string, string
 
     for 1..6
     {
-        for w: 1..DIM-2 { for z: 1..DIM-2 { for y: 1..DIM-2 { for x: 1..DIM-2
+        // expand search bounds by 1 each generation
+        min := 7-it; max := DIM-min-1; 
+        for w: min..max { for z: min..max { for y: min..max { for x: min..max
         {
             neighbours := 0;
 
@@ -66,6 +67,8 @@ day17 :: (input: string) -> string, string
 
     return tprint("%", count_active(grid3D)), tprint("%", count_active(grid4D));
 }
+
+#scope_file
 
 DIM :: 22; // 8x8 start can only grow out 6 steps
 
