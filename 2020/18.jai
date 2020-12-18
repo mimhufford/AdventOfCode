@@ -20,25 +20,16 @@ evaluate :: (s: *string) -> u64
             if add num += read_number(s);
             else   num *= read_number(s);
         }
-        else
+        else if is_open(s)
         {
-            assert(is_open(s));
             if add num += evaluate(s);
             else   num *= evaluate(s);
         }
+        else assert(false);
 
-        if is_add(s)
-        {
-            add = true;
-        }
-        else if is_mul(s)
-        {
-            add = false;
-        }
-        else if is_close(s)
-        {
-            return num;
-        }
+        if is_add(s) add = true;
+        else if is_mul(s) add = false;
+        else if is_close(s) return num;
     }
 
     assert(false);
