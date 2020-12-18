@@ -44,6 +44,16 @@ evaluate2 :: (s: *string) -> u64
     numbers : [..]u64;
     tokens  : [..]u8;
 
+    maybe_resolve_add :: inline (numbers: *[..]u64, tokens: *[..]u8)
+    {
+        if tokens.count && tokens.data[tokens.count-1] == #char "+"
+        {
+            numbers.data[numbers.count-2] += numbers.data[numbers.count-1];
+            numbers.count -= 1;
+            tokens.count -= 1;
+        }
+    }
+
     while true
     {
         if s.count == 0 break;
@@ -60,26 +70,13 @@ evaluate2 :: (s: *string) -> u64
                 numbers.count -= 1;
                 tokens.count -= 1;
             }
-
             tokens.count -= 1; // remove the ( token
-
-            if tokens.count && tokens[tokens.count-1] == #char "+"
-            {
-                numbers[numbers.count-2] += numbers[numbers.count-1];
-                numbers.count -= 1;
-                tokens.count -= 1;
-            }
+            maybe_resolve_add(*numbers, *tokens);
         }
         else if is_num(s)
         {
             array_add(*numbers, read_number(s));
-
-            if tokens.count && tokens[tokens.count-1] == #char "+"
-            {
-                numbers[numbers.count-2] += numbers[numbers.count-1];
-                numbers.count -= 1;
-                tokens.count -= 1;
-            }
+            maybe_resolve_add(*numbers, *tokens);
         }
     }
 
