@@ -41,44 +41,86 @@ evaluate1 :: (s: *string) -> u64
 
 evaluate2 :: (s: *string) -> u64
 {
-    advance(s);
-    return 0;
+    numbers : [..]u64;
+    tokens  : [..]u8;
+
+    while true
+    {
+        if s.count == 0 break;
+        if s.data[0] == #char "\n" { advance(s); break; }
+
+        if      is_open(s)  array_add(*tokens, #char "(");
+        else if is_add(s)   array_add(*tokens, #char "+");
+        else if is_mul(s)   array_add(*tokens, #char "*");
+        else if is_close(s)
+        {
+            while tokens[tokens.count-1] != #char "("
+            {
+                numbers[numbers.count-2] *= numbers[numbers.count-1];
+                numbers.count -= 1;
+                tokens.count -= 1;
+            }
+
+            tokens.count -= 1; // remove the ( token
+
+            if tokens.count && tokens[tokens.count-1] == #char "+"
+            {
+                numbers[numbers.count-2] += numbers[numbers.count-1];
+                numbers.count -= 1;
+                tokens.count -= 1;
+            }
+        }
+        else if is_num(s)
+        {
+            array_add(*numbers, read_number(s));
+
+            if tokens.count && tokens[tokens.count-1] == #char "+"
+            {
+                numbers[numbers.count-2] += numbers[numbers.count-1];
+                numbers.count -= 1;
+                tokens.count -= 1;
+            }
+        }
+    }
+
+    for 0..numbers.count-2 numbers[it+1] *= numbers[it];
+    return numbers[numbers.count-1];
 }
 
-is_add :: (s: *string) -> bool {
+is_add :: inline (s: *string) -> bool {
     result := s.data[0] == #char "+";
     if result advance(s, 2);
     return result;
 }
 
-is_mul :: (s: *string) -> bool {
+is_mul :: inline (s: *string) -> bool {
     result := s.data[0] == #char "*";
     if result advance(s, 2);
     return result;
 }
 
-is_open :: (s: *string) -> bool {
+is_open :: inline (s: *string) -> bool {
     result := s.data[0] == #char "(";
     if result advance(s);
     return result;
 }
 
-is_close :: (s: *string) -> bool {
+is_close :: inline (s: *string) -> bool {
     result := s.count == 0 || s.data[0] == #char "\n" || s.data[0] == #char ")";
     if s.count && result advance(s);
     eat_space(s);
     return result;
 }
 
-is_num :: (s: *string) -> bool {
+is_num :: inline (s: *string) -> bool {
     return s.data[0] >= #char "0" && s.data[0] <= #char "9";
 }
 
-eat_space :: (s: *string) {
+eat_space :: inline (s: *string) {
     if s.count && s.data[0] == #char " " advance(s);
 }
 
-read_number :: (s: *string) -> u64 {
+read_number :: inline (s: *string) -> u64 {
     num := s.data[0] - #char "0";
     advance(s); eat_space(s);
     return num;
