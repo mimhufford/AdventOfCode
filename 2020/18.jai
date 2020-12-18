@@ -1,14 +1,17 @@
 day18 :: (input: string) -> string, string
 {
-    part1 : u64;
-    while input.count part1 += evaluate(*input);
+    input1 := input;  part1 : u64;
+    while input1.count part1 += evaluate1(*input1);
 
-    return tprint("%", part1), "";
+    input2 := input;  part2 : u64;
+    while input2.count part2 += evaluate2(*input2);
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-evaluate :: (s: *string) -> u64
+evaluate1 :: (s: *string) -> u64
 {
     num : u64;
     add := true;
@@ -22,8 +25,8 @@ evaluate :: (s: *string) -> u64
         }
         else if is_open(s)
         {
-            if add num += evaluate(s);
-            else   num *= evaluate(s);
+            if add num += evaluate1(s);
+            else   num *= evaluate1(s);
         }
         else assert(false);
 
@@ -33,6 +36,12 @@ evaluate :: (s: *string) -> u64
     }
 
     assert(false);
+    return 0;
+}
+
+evaluate2 :: (s: *string) -> u64
+{
+    advance(s);
     return 0;
 }
 
