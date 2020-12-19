@@ -51,27 +51,50 @@ day19 :: (input: string) -> string, string
     }
 
     advance(*input);
+    messages1 := input;
+    messages2 := input;
 
     options_for(0);
     part1 := 0;
 
-    while input.count
+    while messages1.count
     {
         str : string = ---;
         str.count = 0;
-        str.data = input.data;
-        while input.count && input[0] != #char "\n"
+        str.data = messages1.data;
+        while messages1.count && messages1[0] != #char "\n"
         {
-            advance(*input);
+            advance(*messages1);
             str.count += 1;
         }
 
-        if input.count advance(*input);
+        if messages1.count advance(*messages1);
 
-        for nodes[0].str if it == str { part1 += 1; break; }
+        for nodes[0].str if strings_are_equal(it, str) { part1 += 1; break; }
     }
 
-    return tprint("%", part1), "";
+    // part 2 is if it matches any number of 42s then a bunch of 31s
+    part2 := 0;
+
+    while messages2.count
+    {
+        str : string = ---;
+        str.count = 0;
+        str.data = messages2.data;
+        while messages2.count && messages2[0] != #char "\n"
+        {
+            advance(*messages2);
+            str.count += 1;
+        }
+        if messages2.count advance(*messages2);
+
+        r42 := match_as_many_as_possible(42, *str);
+        r31 := match_as_many_as_possible(31, *str);
+
+        if r42 && r31 && r42 > r31 && !str.count part2 += 1;
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -83,6 +106,20 @@ Node :: struct
     rules  : [4]u8;
     done   : bool;
     str    : [..]string;
+}
+
+match_as_many_as_possible :: (rule: u8, s: *string, count: u8 = 0) -> u8
+{
+    for nodes[rule].str
+    {
+        if begins_with(<<s, it)
+        {
+            advance(s, it.count);
+            return match_as_many_as_possible(rule, s, count + 1);
+        }
+    }
+
+    return count;
 }
 
 options_for :: (index: u8)
