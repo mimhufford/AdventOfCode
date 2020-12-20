@@ -43,22 +43,22 @@ day20 :: (input: string) -> string, string
         {
             if a == b continue;
 
-            if      !a.t_used && !b.t_used && is_match(a, b, a.t, b.t) { a.t_used = true; b.t_used = true; }
-            else if !a.t_used && !b.b_used && is_match(a, b, a.t, b.b) { a.t_used = true; b.b_used = true; }
-            else if !a.t_used && !b.r_used && is_match(a, b, a.t, b.r) { a.t_used = true; b.r_used = true; }
-            else if !a.t_used && !b.l_used && is_match(a, b, a.t, b.l) { a.t_used = true; b.l_used = true; }
-            else if !a.b_used && !b.t_used && is_match(a, b, a.b, b.t) { a.b_used = true; b.t_used = true; }
-            else if !a.b_used && !b.b_used && is_match(a, b, a.b, b.b) { a.b_used = true; b.b_used = true; }
-            else if !a.b_used && !b.r_used && is_match(a, b, a.b, b.r) { a.b_used = true; b.r_used = true; }
-            else if !a.b_used && !b.l_used && is_match(a, b, a.b, b.l) { a.b_used = true; b.l_used = true; }
-            else if !a.r_used && !b.t_used && is_match(a, b, a.r, b.t) { a.r_used = true; b.t_used = true; }
-            else if !a.r_used && !b.b_used && is_match(a, b, a.r, b.b) { a.r_used = true; b.b_used = true; }
-            else if !a.r_used && !b.r_used && is_match(a, b, a.r, b.r) { a.r_used = true; b.r_used = true; }
-            else if !a.r_used && !b.l_used && is_match(a, b, a.r, b.l) { a.r_used = true; b.l_used = true; }
-            else if !a.l_used && !b.t_used && is_match(a, b, a.l, b.t) { a.l_used = true; b.t_used = true; }
-            else if !a.l_used && !b.b_used && is_match(a, b, a.l, b.b) { a.l_used = true; b.b_used = true; }
-            else if !a.l_used && !b.r_used && is_match(a, b, a.l, b.r) { a.l_used = true; b.r_used = true; }
-            else if !a.l_used && !b.l_used && is_match(a, b, a.l, b.l) { a.l_used = true; b.l_used = true; }
+            if      !a.t_used && !b.t_used && is_match(a, b, .TOP, .TOP) {}
+            else if !a.t_used && !b.b_used && is_match(a, b, .TOP, .BOT) {}
+            else if !a.t_used && !b.r_used && is_match(a, b, .TOP, .RGT) {}
+            else if !a.t_used && !b.l_used && is_match(a, b, .TOP, .LFT) {}
+            else if !a.b_used && !b.t_used && is_match(a, b, .BOT, .TOP) {}
+            else if !a.b_used && !b.b_used && is_match(a, b, .BOT, .BOT) {}
+            else if !a.b_used && !b.r_used && is_match(a, b, .BOT, .RGT) {}
+            else if !a.b_used && !b.l_used && is_match(a, b, .BOT, .LFT) {}
+            else if !a.r_used && !b.t_used && is_match(a, b, .RGT, .TOP) {}
+            else if !a.r_used && !b.b_used && is_match(a, b, .RGT, .BOT) {}
+            else if !a.r_used && !b.r_used && is_match(a, b, .RGT, .RGT) {}
+            else if !a.r_used && !b.l_used && is_match(a, b, .RGT, .LFT) {}
+            else if !a.l_used && !b.t_used && is_match(a, b, .LFT, .TOP) {}
+            else if !a.l_used && !b.b_used && is_match(a, b, .LFT, .BOT) {}
+            else if !a.l_used && !b.r_used && is_match(a, b, .LFT, .RGT) {}
+            else if !a.l_used && !b.l_used && is_match(a, b, .LFT, .LFT) {}
         }
     }
 
@@ -88,14 +88,29 @@ Tile :: struct
     neighbours: [..]*Tile;
 }
 
-is_match :: (a: *Tile, b: *Tile, a_edge: []bool, b_edge: []bool) -> bool
+Edge :: enum u8 { TOP; BOT; LFT; RGT; }
+
+is_match :: (a: *Tile, b: *Tile, ae: Edge, be: Edge) -> bool
 {
+    a_edge, b_edge : []bool;
+    a_used, b_used : *bool;
+    if      ae == .TOP { a_edge = a.t; a_used = *a.t_used; }
+    else if ae == .BOT { a_edge = a.b; a_used = *a.b_used; }
+    else if ae == .LFT { a_edge = a.l; a_used = *a.l_used; }
+    else if ae == .RGT { a_edge = a.r; a_used = *a.r_used; }
+    if      be == .TOP { b_edge = b.t; b_used = *b.t_used; }
+    else if be == .BOT { b_edge = b.b; b_used = *b.b_used; }
+    else if be == .LFT { b_edge = b.l; b_used = *b.l_used; }
+    else if be == .RGT { b_edge = b.r; b_used = *b.r_used; }
+    
     match := true;
     for 0..9 if a_edge[it] != b_edge[it] { match = false; break; }
     if match
     {
         array_add(*a.neighbours, b);
         array_add(*b.neighbours, a);
+        <<a_used = true;
+        <<b_used = true;
         return true;
     }
     match = true;
@@ -104,6 +119,8 @@ is_match :: (a: *Tile, b: *Tile, a_edge: []bool, b_edge: []bool) -> bool
     {
         array_add(*a.neighbours, b);
         array_add(*b.neighbours, a);
+        <<a_used = true;
+        <<b_used = true;
         return true;
     }
     return false;
