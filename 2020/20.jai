@@ -2,8 +2,7 @@ day20 :: (input: string) -> string, string
 {
     tiles: [..]Tile;
 
-    while input.count
-    {
+    while input.count {
         tile: Tile;
         advance(*input, 5); // "Tile "
         tile.id = read_number(*input);
@@ -17,8 +16,7 @@ day20 :: (input: string) -> string, string
         advance(*input, 2);
 
         // left and right rows except bottom bits
-        for y: 1..8
-        {
+        for y: 1..8 {
             tile.l[y] = input[0] == #char "#";
             advance(*input);
             for x: 0..7 { tile.image[y-1][x] = input[0] == #char "#"; advance(*input); } 
@@ -37,10 +35,8 @@ day20 :: (input: string) -> string, string
         array_add(*tiles, tile);
     }
 
-    for * a: tiles
-    {
-        for * b: tiles
-        {
+    for * a: tiles {
+        for * b: tiles {
             if a == b continue;
 
             if      !a.t_used && !b.t_used && is_match(a, b, .TOP, .TOP) {}
@@ -63,18 +59,119 @@ day20 :: (input: string) -> string, string
     }
 
     part1 : u64 = 1;
+    for * tiles if it.neighbours.count == 2 part1 *= it.id;
 
-    for tiles
-    {
-        used_edges : u8;
-        if it.t_used used_edges += 1;
-        if it.b_used used_edges += 1;
-        if it.r_used used_edges += 1;
-        if it.l_used used_edges += 1;
-        if used_edges == 2 part1 *= it.id;
+    image : [12][12]*Tile;
+
+    // find and orient top left tile
+    top_left: *Tile;
+    for * tiles if it.neighbours.count == 2 { top_left = it; break; }
+    while top_left.t_used || top_left.l_used rotate_90_cw(top_left);
+    image[0][0] = top_left;
+
+    // fill in the top row based on the one to the left
+    for x: 1..image.count-1 {
+        a := image[0][x-1];
+        for b: a.neighbours {
+            if is_match(a, b, .RGT, .TOP) { image[0][x] = b; rotate_90_ccw(b); break; }
+            if is_match(a, b, .RGT, .RGT) { image[0][x] = b; flip_left_and_right(b); break; }
+            if is_match(a, b, .RGT, .BOT) { image[0][x] = b; rotate_90_cw(b); break; }
+            if is_match(a, b, .RGT, .LFT) { image[0][x] = b; break; }
+        }
+        b := image[0][x]; assert(!!b);
+        needs_flip := false;
+        for 0..9 if a.r[it] != b.l[it] { needs_flip = true; break; }
+        if needs_flip flip_top_and_bottom(b);
     }
 
-    return tprint("%", part1), "";
+    // fill in the rest based on ones above
+    for y: 1..image.count-1 {
+        for x: 0..image.count-1 {
+            a := image[y-1][x];
+            for b: a.neighbours {
+                if is_match(a, b, .BOT, .TOP) { image[y][x] = b; break; }
+                if is_match(a, b, .BOT, .RGT) { image[y][x] = b; rotate_90_ccw(b); break; }
+                if is_match(a, b, .BOT, .BOT) { image[y][x] = b; flip_top_and_bottom(b); break; }
+                if is_match(a, b, .BOT, .LFT) { image[y][x] = b; rotate_90_cw(b); break; }
+            }
+            b := image[y][x]; assert(!!b);
+            needs_flip := false;
+            for 0..9 if a.b[it] != b.t[it] { needs_flip = true; break; }
+            if needs_flip flip_left_and_right(b);
+        }
+    }
+
+    pixels : [12*8][12*8]bool;
+
+    for iy: 0..image.count-1 {
+        for ix: 0..image.count-1 {
+            for y: 0..7 {
+                for x: 0..7 {
+                    pixels[iy*8+y][ix*8+x] = image[iy][ix].image[y][x];
+                }
+            }
+        }
+    }
+
+    /*
+         01234567890123456789
+        0..................#.
+        1#....##....##....###
+        2.#..#..#..#..#..#...
+    */
+
+    monster : [3][20]bool;
+    monster[0][18] = true; monster[1][ 0] = true; monster[1][ 5] = true;
+    monster[1][ 6] = true; monster[1][11] = true; monster[1][12] = true;
+    monster[1][17] = true; monster[1][18] = true; monster[1][19] = true;
+    monster[2][ 1] = true; monster[2][ 4] = true; monster[2][ 7] = true;
+    monster[2][10] = true; monster[2][13] = true; monster[2][16] = true;
+
+    done := false;
+
+    for 1..8 {
+        for y: 0..pixels.count-3 {
+            for x: 0..pixels.count-20 {
+                found := true;
+
+                for my: 0..2 {
+                    for mx: 0..19 {
+                        if monster[my][mx] && !pixels[y+my][x+mx] {
+                            found = false;
+                            my = 99;
+                            break;
+                        }
+                    }
+                }
+
+                if found done = true;
+                if found for my: 0..2 for mx: 0..19 if monster[my][mx] pixels[y+my][x+mx] = false;
+            }
+        }
+
+        if done break;
+
+        // didn't find any so rotate
+        r := pixels;
+        for y: 0..r.count-1 for x: 0..r.count-1 r[y][x] = pixels[r.count - 1 - x][y];
+        pixels = r;
+
+        // on turn 4 we've rotated without finding, so do a flip
+        if it == 4 {
+            for y: 0..pixels.count-1 {
+                for x: 0..pixels.count/2-1 {
+                    temp := pixels[y][x];
+                    pixels[y][x] = pixels[y][pixels.count-1-x];
+                    pixels[y][pixels.count-1-x] = temp;
+                }
+            }
+        }
+    }
+
+    part2 : u64;
+    for row: pixels for pixel: row if pixel part2 += 1;
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -103,67 +200,16 @@ is_match :: (a: *Tile, b: *Tile, ae: Edge, be: Edge) -> bool
     else if be == .LFT { b_edge = b.l; b_used = *b.l_used; }
     else if be == .RGT { b_edge = b.r; b_used = *b.r_used; }
     
-    match_no_flip := true;
-    for 0..9 if a_edge[it] != b_edge[it] { match_no_flip = false; break; }
-    if match_no_flip
-    {
-        array_add(*a.neighbours, b);
-        array_add(*b.neighbours, a);
-        <<a_used = true;
-        <<b_used = true;
-
-        // orient b with a
-        if      ae == .TOP && be == .BOT return true; // nothing to do
-        else if ae == .BOT && be == .TOP return true; // nothing to do
-        else if ae == .LFT && be == .RGT return true; // nothing to do
-        else if ae == .RGT && be == .LFT return true; // nothing to do
-        else if ae == .TOP && be == .TOP flip_top_and_bottom(b);
-        else if ae == .BOT && be == .BOT flip_top_and_bottom(b);
-        else if ae == .LFT && be == .LFT flip_left_and_right(b);
-        else if ae == .RGT && be == .RGT flip_left_and_right(b);
-        else if ae == .TOP && be == .RGT rotate_90_cw(b);
-        else if ae == .BOT && be == .LFT rotate_90_cw(b);
-        else if ae == .LFT && be == .TOP rotate_90_cw(b);
-        else if ae == .RGT && be == .BOT rotate_90_cw(b);
-        else if ae == .TOP && be == .LFT rotate_90_ccw(b);
-        else if ae == .BOT && be == .RGT rotate_90_ccw(b);
-        else if ae == .LFT && be == .BOT rotate_90_ccw(b);
-        else if ae == .RGT && be == .TOP rotate_90_ccw(b);
-
-        return true;
-    }
-
-    match_with_flip := true;
-    for 0..9 if a_edge[it] != b_edge[9-it] { match_with_flip = false; break; }
-    if match_with_flip
-    {
-        array_add(*a.neighbours, b);
-        array_add(*b.neighbours, a);
-        <<a_used = true;
-        <<b_used = true;
-
-        // orient b with a
-        if      ae == .TOP && be == .BOT flip_left_and_right(b);
-        else if ae == .BOT && be == .TOP flip_left_and_right(b);
-        else if ae == .LFT && be == .RGT flip_top_and_bottom(b);
-        else if ae == .RGT && be == .LFT flip_top_and_bottom(b);
-        else if ae == .TOP && be == .TOP { rotate_90_cw(b); rotate_90_cw(b); }
-        else if ae == .BOT && be == .BOT { rotate_90_cw(b); rotate_90_cw(b); }
-        else if ae == .LFT && be == .LFT { rotate_90_cw(b); rotate_90_cw(b); }
-        else if ae == .RGT && be == .RGT { rotate_90_cw(b); rotate_90_cw(b); }
-        else if ae == .TOP && be == .RGT rotate_90_cw(b);
-        else if ae == .BOT && be == .LFT rotate_90_cw(b);
-        else if ae == .LFT && be == .TOP { rotate_90_cw(b); flip_top_and_bottom(b); }
-        else if ae == .RGT && be == .BOT { rotate_90_cw(b); flip_top_and_bottom(b); }
-        else if ae == .TOP && be == .LFT { rotate_90_cw(b); flip_top_and_bottom(b); }
-        else if ae == .BOT && be == .RGT { rotate_90_cw(b); flip_top_and_bottom(b); }
-        else if ae == .LFT && be == .BOT rotate_90_ccw(b);
-        else if ae == .RGT && be == .TOP rotate_90_ccw(b);
-
-        return true;
-    }
-
-    return false;
+    match := true;
+    for 0..9 if a_edge[it] != b_edge[it] { match = false; break; }
+    if !match { match = true; for 0..9 if a_edge[it] != b_edge[9-it] { match = false; break; } }
+    if !match return false;
+    
+    array_add(*a.neighbours, b);
+    array_add(*b.neighbours, a);
+    <<a_used = true;
+    <<b_used = true;
+    return true;
 }
 
 flip_top_and_bottom :: (t: *Tile)
