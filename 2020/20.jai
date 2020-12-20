@@ -17,14 +17,16 @@ day20 :: (input: string) -> string, string
         advance(*input, 2);
 
         // left and right rows except bottom bits
-        for 1..8
+        for y: 1..8
         {
-            tile.l[it] = input[0] == #char "#";
-            advance(*input, 9);
-            tile.r[it] = input[0] == #char "#";
+            tile.l[y] = input[0] == #char "#";
+            advance(*input);
+            for x: 0..7 { tile.image[y-1][x] = input[0] == #char "#"; advance(*input); } 
+            tile.r[y] = input[0] == #char "#";
             advance(*input, 2);
         }
 
+        // bottom row and last one of left and right
         tile.l[9] = input[0] == #char "#";
         for 0..8 { tile.b[it] = input[0] == #char "#"; advance(*input); }
         tile.r[9] = input[0] == #char "#";
@@ -37,154 +39,26 @@ day20 :: (input: string) -> string, string
 
     for * a: tiles
     {
-        if a.t_used continue;
-
         for * b: tiles
         {
             if a == b continue;
 
-            if is_match(a.t, b.t)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.t_used = true;
-                b.t_used = true;
-            }
-            else if is_match(a.t, b.b)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.t_used = true;
-                b.b_used = true;
-            }
-            else if is_match(a.t, b.r)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.t_used = true;
-                b.r_used = true;
-            }
-            else if is_match(a.t, b.l)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.t_used = true;
-                b.l_used = true;
-            }
-        }
-    }
-    for * a: tiles
-    {
-        if a.b_used continue;
-
-        for * b: tiles
-        {
-            if a == b continue;
-
-            if is_match(a.b, b.t)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.b_used = true;
-                b.t_used = true;
-            }
-            else if is_match(a.b, b.b)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.b_used = true;
-                b.b_used = true;
-            }
-            else if is_match(a.b, b.r)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.b_used = true;
-                b.r_used = true;
-            }
-            else if is_match(a.b, b.l)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.b_used = true;
-                b.l_used = true;
-            }
-        }
-    }
-    for * a: tiles
-    {
-        if a.r_used continue;
-
-        for * b: tiles
-        {
-            if a == b continue;
-
-            if is_match(a.r, b.t)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.r_used = true;
-                b.t_used = true;
-            }
-            else if is_match(a.r, b.b)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.r_used = true;
-                b.b_used = true;
-            }
-            else if is_match(a.r, b.r)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.r_used = true;
-                b.r_used = true;
-            }
-            else if is_match(a.r, b.l)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.r_used = true;
-                b.l_used = true;
-            }
-        }
-    }
-    for * a: tiles
-    {
-        if a.l_used continue;
-
-        for * b: tiles
-        {
-            if a == b continue;
-
-            if is_match(a.l, b.t)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.l_used = true;
-                b.t_used = true;
-            }
-            else if is_match(a.l, b.b)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.l_used = true;
-                b.b_used = true;
-            }
-            else if is_match(a.l, b.r)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.l_used = true;
-                b.r_used = true;
-            }
-            else if is_match(a.l, b.l)
-            {
-                array_add(*a.neighbours, b);
-                array_add(*b.neighbours, a);
-                a.l_used = true;
-                b.l_used = true;
-            }
+            if      !a.t_used && !b.t_used && is_match(a, b, a.t, b.t) { a.t_used = true; b.t_used = true; }
+            else if !a.t_used && !b.b_used && is_match(a, b, a.t, b.b) { a.t_used = true; b.b_used = true; }
+            else if !a.t_used && !b.r_used && is_match(a, b, a.t, b.r) { a.t_used = true; b.r_used = true; }
+            else if !a.t_used && !b.l_used && is_match(a, b, a.t, b.l) { a.t_used = true; b.l_used = true; }
+            else if !a.b_used && !b.t_used && is_match(a, b, a.b, b.t) { a.b_used = true; b.t_used = true; }
+            else if !a.b_used && !b.b_used && is_match(a, b, a.b, b.b) { a.b_used = true; b.b_used = true; }
+            else if !a.b_used && !b.r_used && is_match(a, b, a.b, b.r) { a.b_used = true; b.r_used = true; }
+            else if !a.b_used && !b.l_used && is_match(a, b, a.b, b.l) { a.b_used = true; b.l_used = true; }
+            else if !a.r_used && !b.t_used && is_match(a, b, a.r, b.t) { a.r_used = true; b.t_used = true; }
+            else if !a.r_used && !b.b_used && is_match(a, b, a.r, b.b) { a.r_used = true; b.b_used = true; }
+            else if !a.r_used && !b.r_used && is_match(a, b, a.r, b.r) { a.r_used = true; b.r_used = true; }
+            else if !a.r_used && !b.l_used && is_match(a, b, a.r, b.l) { a.r_used = true; b.l_used = true; }
+            else if !a.l_used && !b.t_used && is_match(a, b, a.l, b.t) { a.l_used = true; b.t_used = true; }
+            else if !a.l_used && !b.b_used && is_match(a, b, a.l, b.b) { a.l_used = true; b.b_used = true; }
+            else if !a.l_used && !b.r_used && is_match(a, b, a.l, b.r) { a.l_used = true; b.r_used = true; }
+            else if !a.l_used && !b.l_used && is_match(a, b, a.l, b.l) { a.l_used = true; b.l_used = true; }
         }
     }
 
@@ -209,18 +83,30 @@ Tile :: struct
 {
     id: u16;
     t, b, l, r: [10]bool;
+    image: [8][8]bool;
     t_used, b_used, l_used, r_used: bool;
     neighbours: [..]*Tile;
 }
 
-is_match :: (a: []bool, b: []bool) -> bool
+is_match :: (a: *Tile, b: *Tile, a_edge: []bool, b_edge: []bool) -> bool
 {
     match := true;
-    for 0..9 if a[it] != b[it] { match = false; break; }
-    if match return true;
+    for 0..9 if a_edge[it] != b_edge[it] { match = false; break; }
+    if match
+    {
+        array_add(*a.neighbours, b);
+        array_add(*b.neighbours, a);
+        return true;
+    }
     match = true;
-    for 0..9 if a[it] != b[9-it] { match = false; break; }
-    return match;
+    for 0..9 if a_edge[it] != b_edge[9-it] { match = false; break; }
+    if match
+    {
+        array_add(*a.neighbours, b);
+        array_add(*b.neighbours, a);
+        return true;
+    }
+    return false;
 }
 
 read_number :: (s: *string) -> u16
