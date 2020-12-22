@@ -47,8 +47,7 @@ day22 :: (input: string) -> string, string
 
 play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
 {
-    history : [..][..]u8;
-    array_reserve(*history, 4000);
+    history : Table(u64, bool); // bool not used, just want a hash set
 
     while true
     {
@@ -94,15 +93,14 @@ play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
         if p2.count == 0 return 1, p1;
 
         // check if seen state before
-        state : [..]u8;
-        array_reserve(*state, p1.count + p2.count + 1);
-        for p1 array_add(*state, it);
-        array_add(*state, 0);
-        for p2 array_add(*state, it);
-        for history if memcmp(state.data, it.data, it.count) == 0 return 1, p1; // player 1 wins
+        state : u64;
+        for p1 state = (state << 16) + (state << 6) - state + it;
+        state = (state << 16) + (state << 6) - state; // divide decks
+        for p2 state = (state << 16) + (state << 6) - state + it;
+        if table_find_pointer(history, state) return 1, p1; // player 1 wins
 
         // didn't see it before, so record it
-        array_add(*history, state);
+        table_add(*history, state, true);
     }
 
     shh_compiler : [..]u8;
