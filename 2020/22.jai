@@ -47,7 +47,7 @@ day22 :: (input: string) -> string, string
 
 play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
 {
-    history : [..][51]u8;
+    history : [..][..]u8;
 
     while true
     {
@@ -93,11 +93,10 @@ play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
         if p2.count == 0 return 1, p1;
 
         // check if seen state before
-        state : [51]u8;
-        i := 0;
-        for p1 { state[i] = it; i += 1; }
-        state[i] = 0; i += 1;
-        for p2 { state[i] = it; i += 1; }
+        state : [..]u8;
+        for p1 array_add(*state, it);
+        array_add(*state, 0);
+        for p2 array_add(*state, it);
         for history if memcmp(state.data, it.data, it.count) == 0 return 1, p1; // player 1 wins
 
         // didn't see it before, so record it
