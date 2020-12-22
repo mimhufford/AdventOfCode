@@ -47,7 +47,7 @@ day22 :: (input: string) -> string, string
 
 play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
 {
-    history : [..]string;
+    history : [..][51]u8;
 
     while true
     {
@@ -93,12 +93,12 @@ play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
         if p2.count == 0 return 1, p1;
 
         // check if seen state before
-        current_state : String_Builder;
-        for p1 append(*current_state, tprint("%", it));
-        append(*current_state, "-");
-        for p2 append(*current_state, tprint("%", it));
-        state := builder_to_string(*current_state);
-        for history if strings_are_equal(it, state) return 1, p1; // player 1 wins
+        state : [51]u8;
+        i := 0;
+        for p1 { state[i] = it; i += 1; }
+        state[i] = 0; i += 1;
+        for p2 { state[i] = it; i += 1; }
+        for history if memcmp(state.data, it.data, it.count) == 0 return 1, p1; // player 1 wins
 
         // didn't see it before, so record it
         array_add(*history, state);
