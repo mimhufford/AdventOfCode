@@ -48,6 +48,7 @@ day22 :: (input: string) -> string, string
 play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
 {
     history : [..][..]u8;
+    array_reserve(*history, 4000);
 
     while true
     {
@@ -94,6 +95,7 @@ play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
 
         // check if seen state before
         state : [..]u8;
+        array_reserve(*state, p1.count + p2.count + 1);
         for p1 array_add(*state, it);
         array_add(*state, 0);
         for p2 array_add(*state, it);
