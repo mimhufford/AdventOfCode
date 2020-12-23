@@ -1,14 +1,23 @@
 day23 :: (input: string) -> string, string
 {
-    cups : [9]Cup;
+    cups1 : [9]Cup;
 
     for 0..8
     {
-        cups[it].n = *cups[(it+1)%cups.count];
-        cups[it].i = input[it] - #char "0";
+        cups1[it].i = input[it] - #char "0";
+        cups1[it].n = *cups1[(it+1)%cups1.count];
+        cups2[it].i = cups1[it].i;
+        cups2[it].n = *cups2[it+1];
+        i2i[cups2[it].i] = *cups2[it];
+    }
+    for 9..999999
+    {
+        cups2[it].i = xx (it + 1);
+        cups2[it].n = *cups2[(it+1)%cups2.count];
+        i2i[cups2[it].i] = *cups2[it];
     }
 
-    c := *cups[0];
+    c := *cups1[0];
 
     for 1..100
     {
@@ -27,15 +36,33 @@ day23 :: (input: string) -> string, string
     part1 : u64;
     for 1..8 { c = c.n; part1 *= 10; part1 += c.i; }
 
-    return tprint("%", part1), "";
+    i21 : Table(u32, u32);
+    c = *cups2[0];
+
+    for 1..10000000
+    {
+        di := c.i - 1; if !di di = 1000000;
+        while di == c.n.i || di == c.n.n.i || di == c.n.n.n.i { di -= 1; if !di di = 1000000; }
+        d := i2i[di];
+        t := c.n.n.n.n;
+        c.n.n.n.n = d.n;
+        d.n = c.n;
+        c.n = t;
+        c = t;
+    }
+
+    part2 := cast(u64)i2i[1].n.i * cast(u64)i2i[1].n.n.i;
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-print :: (cup : *Cup) { c := cup; for 1..9 { print("% ", c.i); c = c.n; } print("\n"); }
+cups2 : [1000000]Cup;
+i2i   : [1000000]*Cup;
 
 Cup :: struct
 {
-    i : u8;
+    i : u32;
     n : *Cup;
 }
