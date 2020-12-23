@@ -1,54 +1,57 @@
 day23 :: (input: string) -> string, string
 {
-    for 0..8
+    for 0..7
     {
-        cups1[it].i = input[it] - #char "0";
-        cups1[it].n = *cups1[(it+1)%cups1.count];
-        i2i[cups1[it].i] = *cups1[it];
+        i := input[it  ] - #char "0";
+        n := input[it+1] - #char "0";
+        if it == 0 cups1[0] = i;
+        cups1[i] = n;
+        if it == 7 cups1[n] = cups1[0];
     }
 
     play(cups1, 100);
-    c := i2i[1]; part1: u64; for 1..8 { c = c.n; part1 *= 10; part1 += c.i; }
+    p1: [8]u32;
+    p1[0] = cups1[1];
+    for 1..7 p1[it] = cups1[p1[it-1]];
+    part1: u64;
+    for p1 part1 = part1 * 10 + it;
 
-    for 0..999999
+    for 0..999998
     {
-        cups2[it].i = ifx it < 9 then input[it] - #char "0" else cast(u32)(it + 1);
-        cups2[it].n = *cups2[(it+1)%cups2.count];
-        i2i[cups2[it].i] = *cups2[it];
+        i := ifx it < 9 then input[it  ] - #char "0" else cast(u32)(it+1);
+        n := ifx it < 8 then input[it+1] - #char "0" else cast(u32)(it+2);
+        if it == 0 cups2[0] = i;
+        cups2[i] = n;
+        if it == 999998 cups2[n] = cups2[0];
     }
 
     play(cups2, 10000000);
-    part2 := cast(u64)i2i[1].n.i * cast(u64)i2i[1].n.n.i;
+    part2 := cast(u64)cups2[1] * cast(u64)cups2[cups2[1]];
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-play :: (cups: []Cup, rounds: u32)
+play :: (cups: []u32, rounds: u32)
 {
-    c := *cups[0];
-    max_id : u32 = xx cups.count;
+    c : u32 = cups[0];
+    max : u32 = xx (cups.count-1);
 
     for 1..rounds
     {
-        di := c.i - 1; if !di di = max_id;
-        while di == c.n.i || di == c.n.n.i || di == c.n.n.n.i { di -= 1; if !di di = max_id; }
-        d := i2i[di];
-        t := c.n.n.n.n;
-        c.n.n.n.n = d.n;
-        d.n = c.n;
-        c.n = t;
-        c = t;
+        d := c - 1; if !d d = max;
+        n := cups[c];
+        nn := cups[n];
+        nnn := cups[nn];
+        while d == n || d == nn || d == nnn { d -= 1; if !d d = max; }
+        nnnn := cups[nnn];
+        cups[nnn] = cups[d];
+        cups[d] = n;
+        cups[c] = nnnn;
+        c = nnnn;
     }
 }
 
-cups1 : [9]Cup;
-cups2 : [1000000]Cup;
-i2i   : [1000001]*Cup;
-
-Cup :: struct
-{
-    i : u32;
-    n : *Cup;
-}
+cups1 : [10]u32;      // pos 0 tells us first cup id, otherwise index is cup id and value is next cup
+cups2 : [1000001]u32; // pos 0 tells us first cup id, otherwise index is cup id and value is next cup
