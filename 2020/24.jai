@@ -40,46 +40,63 @@ day24 :: (input: string) -> string, string
             if map1[y][x]
             {
                 part1 += 1;
-                if x < min_x min_x = x;
-                if y < min_y min_y = y;
-                if x > max_x max_x = x;
-                if y > max_y max_y = y;
+                if      x < min_x min_x = x-1;
+                else if x > max_x max_x = x+1;
+                if      y < min_y min_y = y-1;
+                else if y > max_y max_y = y+1;
             }
         }
     }
 
+    part2 := part1;
     a := *map1;
     b := *map2;
 
     for 1..100
     {
-        min_x -= 1;
-        min_y -= 1;
-        max_x += 1;
-        max_y += 1;
-
         for x: min_x..max_x
         {
             for y: min_y..max_y
             {
-                black := a.data[y][x];
-                neighbours := 0;
-                if a.data[y+0][x+1] neighbours += 1;
-                if a.data[y+0][x-1] neighbours += 1;
-                if a.data[y-1][x+1] neighbours += 1;
-                if a.data[y+1][x-1] neighbours += 1;
-                if a.data[y+1][x+0] neighbours += 1;
-                if a.data[y-1][x+0] neighbours += 1;
-                if black
+                n := 0;
+                if a.data[y+0][x+1] n += 1;
+                if a.data[y+0][x-1] n += 1;
+                if a.data[y-1][x+1] n += 1;
+                if a.data[y+1][x-1] n += 1;
+                if a.data[y+1][x+0] n += 1;
+                if a.data[y-1][x+0] n += 1;
+                
+                if a.data[y][x]
                 {
-                    if      neighbours == 0 b.data[y][x] = false;
-                    else if neighbours >= 3 b.data[y][x] = false;
-                    else                    b.data[y][x] = true;
+                    if n == 0 || n > 2
+                    {
+                        b.data[y][x] = false;
+                        part2 -= 1;
+                    }
+                    else
+                    {
+                        b.data[y][x] = true;
+                        if      x == min_x min_x -= 1;
+                        else if x == max_x max_x += 1;
+                        if      y == min_y min_y -= 1;
+                        else if y == max_y max_y += 1;
+                    }
                 }
                 else
                 {
-                    if neighbours == 2 b.data[y][x] = true;
-                    else               b.data[y][x] = false;
+                    if n != 2
+                    {
+                        b.data[y][x] = false;
+                    }
+                    else
+                    {
+                        b.data[y][x] = true;
+                        if      x == min_x min_x -= 1;
+                        else if x == max_x max_x += 1;
+                        if      y == min_y min_y -= 1;
+                        else if y == max_y max_y += 1;
+                        part2 += 1;
+                    }
                 }
             }
         }
@@ -88,9 +105,6 @@ day24 :: (input: string) -> string, string
         a = b;
         b = c;
     }
-
-    part2 := 0;
-    for y: 0..299 for x: 0..299 if map1[y][x] part2 += 1;
 
     return tprint("%", part1), tprint("%", part2);
 }
