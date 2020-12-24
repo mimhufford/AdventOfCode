@@ -1,18 +1,17 @@
 day24 :: (input: string) -> string, string
 {
-    x : u32 = 1000;
-    y : u32 = 1000;
-    black : Table(u32, bool); init(*black);
-    black2 : Table(u32, bool);
+    x : u32 = 150;
+    y : u32 = 150;
+    map1 : [300][300]bool;
+    map2 : [300][300]bool;
 
     while true
     {
         if !input.count || input[0] == #char "\n"
         {
-            key := (x << 16) | y;
-            if !table_remove(*black, key) table_add(*black, key, true);
-            x = 1000;
-            y = 1000;
+            map1[y][x] = !map1[y][x];
+            x = 150;
+            y = 150;
             if !input.count break; else advance(*input);
         }
         else
@@ -28,29 +27,32 @@ day24 :: (input: string) -> string, string
         }
     }
 
-    part1 := black.count;
-
-    a := *black;
-    b := *black2;
-
-    min_x : u32 = 99999999;
+    part1 := 0;
+    min_x : u32 = 299;
     max_x : u32 = 0;
-    min_y : u32 = 99999999;
+    min_y : u32 = 299;
     max_y : u32 = 0;
 
-    for a
+    for y: 0..cast(u32) 299
     {
-        x := it_index >> 16;
-        y := it_index & 0xFFFF;
-        if x < min_x min_x = x;
-        if y < min_y min_y = y;
-        if x > max_x max_x = x;
-        if y > max_y max_y = y;
+        for x: 0..cast(u32) 299
+        {
+            if map1[y][x]
+            {
+                part1 += 1;
+                if x < min_x min_x = x;
+                if y < min_y min_y = y;
+                if x > max_x max_x = x;
+                if y > max_y max_y = y;
+            }
+        }
     }
+
+    a := *map1;
+    b := *map2;
 
     for 1..100
     {
-        table_reset(b);
         min_x -= 1;
         min_y -= 1;
         max_x += 1;
@@ -60,18 +62,25 @@ day24 :: (input: string) -> string, string
         {
             for y: min_y..max_y
             {
-                key := (x << 16) | y;
-                black := table_find_pointer(<<a, key) != null;
+                black := a.data[y][x];
                 neighbours := 0;
-                if table_find_pointer(<<a, ((x+1) << 16) | (y+0)) != null neighbours += 1;
-                if table_find_pointer(<<a, ((x-1) << 16) | (y+0)) != null neighbours += 1;
-                if table_find_pointer(<<a, ((x+1) << 16) | (y-1)) != null neighbours += 1;
-                if table_find_pointer(<<a, ((x-1) << 16) | (y+1)) != null neighbours += 1;
-                if table_find_pointer(<<a, ((x+0) << 16) | (y+1)) != null neighbours += 1;
-                if table_find_pointer(<<a, ((x+0) << 16) | (y-1)) != null neighbours += 1;
-                if  black && neighbours == 1 table_add(b, key, true);
-                if  black && neighbours == 2 table_add(b, key, true);
-                if !black && neighbours == 2 table_add(b, key, true);
+                if a.data[y+0][x+1] neighbours += 1;
+                if a.data[y+0][x-1] neighbours += 1;
+                if a.data[y-1][x+1] neighbours += 1;
+                if a.data[y+1][x-1] neighbours += 1;
+                if a.data[y+1][x+0] neighbours += 1;
+                if a.data[y-1][x+0] neighbours += 1;
+                if black
+                {
+                    if      neighbours == 0 b.data[y][x] = false;
+                    else if neighbours >= 3 b.data[y][x] = false;
+                    else                    b.data[y][x] = true;
+                }
+                else
+                {
+                    if neighbours == 2 b.data[y][x] = true;
+                    else               b.data[y][x] = false;
+                }
             }
         }
 
@@ -80,5 +89,8 @@ day24 :: (input: string) -> string, string
         b = c;
     }
 
-    return tprint("%", part1), tprint("%", a.count);
+    part2 := 0;
+    for y: 0..299 for x: 0..299 if map1[y][x] part2 += 1;
+
+    return tprint("%", part1), tprint("%", part2);
 }
