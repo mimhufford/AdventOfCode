@@ -18,15 +18,13 @@ find_secret :: (i: u64) -> u64
     s : u64 = 0;
     n : u64 = 1;
 
-    while true
+    while n != i
     {
-        n *= 7;
-        n %= 20201227;
+        n = (n * 7) % 20201227;
         s += 1;
-        if n == i return s;
     }
 
-    return 0;
+    return s;
 }
 
 read_number :: (s: *string) -> u64
