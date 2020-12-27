@@ -25,18 +25,9 @@ day6 :: (data: string) -> string, string
             if i >= data.count || data[i] == #char "\n" break;
         }
 
-        part1 += bit_count(any_answered);
-        part2 += bit_count(all_answered);
+        part1 += popcount(any_answered);
+        part2 += popcount(all_answered);
     }
 
     return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-bit_count :: (i: int) -> int
-{
-    count := 0;
-    for 0..63 if i & (1<<it) count += 1;
-    return count;
 }
