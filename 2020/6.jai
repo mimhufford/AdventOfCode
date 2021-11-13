@@ -31,3 +31,5 @@ day6 :: (data: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
+
+#import "Bit_Operations";
