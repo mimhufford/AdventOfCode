@@ -1,7 +1,6 @@
 day1 :: (data: string) -> string, string
 {
-    part1 := 0;
-    part2 := 0;
+    part1, part2 : u32;
 
     a := next_u32(*data);
     b := next_u32(*data);
@@ -14,15 +13,10 @@ day1 :: (data: string) -> string, string
     {
         d := next_u32(*data);
 
-        prev := a + b + c;
-        curr := b + c + d;
+        if d > c  part1 += 1;
+        if d > a  part2 += 1;
 
-        if    d > c     part1 += 1;
-        if curr > prev  part2 += 1;
-
-        a = b;
-        b = c;
-        c = d;
+        a, b, c = b, c, d;
     }
 
     return tprint("%", part1), tprint("%", part2);
