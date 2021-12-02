@@ -2,7 +2,7 @@ day2 :: (data: string) -> string, string
 {
     horizontal, depth1, depth2, aim : u32;
 
-    while data.count
+    while data
     {
         dir, amt := next_instruction(*data);
         
