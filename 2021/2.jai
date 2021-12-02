@@ -1,19 +1,19 @@
 day2 :: (data: string) -> string, string
 {
-    horizontal, depth1, depth2, aim : u32;
+    horizontal, depth, aim : u32;
 
     while data.count
     {
         dir, amt := next_instruction(*data);
         
         if dir == {
-            case #char "u"; depth1 -= amt; aim -= amt;
-            case #char "d"; depth1 += amt; aim += amt;
-            case #char "f"; horizontal += amt; depth2 += aim * amt;
+            case #char "u"; aim -= amt;
+            case #char "d"; aim += amt;
+            case #char "f"; horizontal += amt; depth += aim * amt;
         }
     }
 
-    return tprint("%", horizontal * depth1), tprint("%", horizontal * depth2);
+    return tprint("%", horizontal * aim), tprint("%", horizontal * depth);
 }
 
 next_instruction :: (s: *string) -> dir: u8, amt: u8
