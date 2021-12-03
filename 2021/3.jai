@@ -40,7 +40,7 @@ day3 :: (data: string) -> string, string
         }
     }
 
-    return tprint("%", gamma * epsilon), tprint("%", oxy[0] * co2[0]);
+    return tprint("%", gamma * epsilon), tprint("%", cast(u32)oxy[0] * cast(u32)co2[0]);
 }
 
 most_common_bit :: (src : []u16, bit : u8) -> u16
