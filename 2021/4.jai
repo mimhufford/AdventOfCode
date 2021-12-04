@@ -1,15 +1,7 @@
 day4 :: (data : string) -> string, string
 {
-    numbers : [..]u8;
-    boards  : [..]Board;
-
-    while data.data[0] != #char "\n"
-        array_add(*numbers, next_u8(*data));
-
-    advance(*data, 1);
-
-    while data.count
-        array_add(*boards, next_board(*data));
+    numbers := parse_numbers(*data);
+    boards  := parse_boards(*data);
 
     first, last : u64;
 
@@ -21,14 +13,8 @@ day4 :: (data : string) -> string, string
             won, score := check_for_win(b);
             if won
             {
-                if !first
-                {
-                    first = score * n;
-                }
-                else
-                {
-                    last = score * n;
-                }
+                if !first  first = score * n;
+                else        last = score * n;
 
                 remove b;
             }
@@ -114,39 +100,54 @@ check_for_win :: (b: *Board) -> bool, u64
     return false, 0;
 }
 
-next_u8 :: (s: *string) -> u8
+parse_numbers :: (s: *string) -> [..]u8
 {
-    num : u8;
+    numbers : [..]u8;
 
-    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
+    while s.data[0] != #char "\n"
     {
-        num *= 10;
-        num += s.data[0] - #char "0";
+        num : u8;
+
+        while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
+        {
+            num *= 10;
+            num += s.data[0] - #char "0";
+            advance(s, 1);
+        }
+
         advance(s, 1);
+
+        array_add(*numbers, num);
     }
 
     advance(s, 1);
-
-    return num;
+    return numbers;
 }
 
-next_board :: (s: *string) -> Board
+parse_boards :: (s: *string) -> [..]Board
 {
-    board : Board;
+    boards : [..]Board;
 
-    for row : 0..4
+    while s.count
     {
-        for col : 0..4
+        board : Board;
+
+        for row : 0..4
         {
-            ten := s.data[0];
-            num := s.data[1] - #char "0";
-            advance(s, 3);
-            if ten != #char " " num += (ten - #char "0") * 10;
-            board.board[row][col] = num;
+            for col : 0..4
+            {
+                ten := s.data[0];
+                num := s.data[1] - #char "0";
+                advance(s, 3);
+                if ten != #char " " num += (ten - #char "0") * 10;
+                board.board[row][col] = num;
+            }
         }
+
+        if s.count  advance(s, 1);
+
+        array_add(*boards, board);
     }
 
-    if s.count  advance(s, 1);
-
-    return board;
+    return boards;
 }
