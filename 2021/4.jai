@@ -23,36 +23,33 @@ day4 :: (data : string) -> string, string
     return tprint("%", first), tprint("%", last);
 }
 
-Board :: struct
-{
-    board  : [25]u8;
-    marked : [25]bool;
-}
+Board :: struct { board : [25]u8; }
 
-mark_and_check_win :: (b: *Board, n: u8) -> u64
+mark_and_check_win :: (using b: *Board, n: u8) -> u64
 {
-    for 0..24
+    mark   :: (b: *Board, n: u8)         #expand {        b.board[n] |= 0b1000_0000; }
+    marked :: (b: *Board, n: u8) -> bool #expand { return b.board[n] &  0b1000_0000 != 0; }
+
+    for 0..cast(u8)24
     {
-        if b.board[it] == n
-        {
-            b.marked[it] = true;
-            break;
-        }
+        if board[it] != n continue;
+        mark(b, it);
+        break;
     }
 
-    if b.marked[ 0] && b.marked[ 1] && b.marked[ 2] && b.marked[ 3] && b.marked[ 4] ||
-       b.marked[ 5] && b.marked[ 6] && b.marked[ 7] && b.marked[ 8] && b.marked[ 9] ||
-       b.marked[10] && b.marked[11] && b.marked[12] && b.marked[13] && b.marked[14] ||
-       b.marked[15] && b.marked[16] && b.marked[17] && b.marked[18] && b.marked[19] ||
-       b.marked[20] && b.marked[21] && b.marked[22] && b.marked[23] && b.marked[24] ||
-       b.marked[ 0] && b.marked[ 5] && b.marked[10] && b.marked[15] && b.marked[20] ||
-       b.marked[ 1] && b.marked[ 6] && b.marked[11] && b.marked[16] && b.marked[21] ||
-       b.marked[ 2] && b.marked[ 7] && b.marked[12] && b.marked[17] && b.marked[22] ||
-       b.marked[ 3] && b.marked[ 8] && b.marked[13] && b.marked[18] && b.marked[23] ||
-       b.marked[ 4] && b.marked[ 9] && b.marked[14] && b.marked[19] && b.marked[24]
+    if marked(b,  0) && marked(b,  1) && marked(b,  2) && marked(b,  3) && marked(b,  4) ||
+       marked(b,  5) && marked(b,  6) && marked(b,  7) && marked(b,  8) && marked(b,  9) ||
+       marked(b, 10) && marked(b, 11) && marked(b, 12) && marked(b, 13) && marked(b, 14) ||
+       marked(b, 15) && marked(b, 16) && marked(b, 17) && marked(b, 18) && marked(b, 19) ||
+       marked(b, 20) && marked(b, 21) && marked(b, 22) && marked(b, 23) && marked(b, 24) ||
+       marked(b,  0) && marked(b,  5) && marked(b, 10) && marked(b, 15) && marked(b, 20) ||
+       marked(b,  1) && marked(b,  6) && marked(b, 11) && marked(b, 16) && marked(b, 21) ||
+       marked(b,  2) && marked(b,  7) && marked(b, 12) && marked(b, 17) && marked(b, 22) ||
+       marked(b,  3) && marked(b,  8) && marked(b, 13) && marked(b, 18) && marked(b, 23) ||
+       marked(b,  4) && marked(b,  9) && marked(b, 14) && marked(b, 19) && marked(b, 24)
     {
         unmarked_total : u64;
-        for 0..24  if !b.marked[it]  unmarked_total += b.board[it];
+        for 0..cast(u8)24  if !marked(b, it)  unmarked_total += board[it];
         return n * unmarked_total;
     }
 
