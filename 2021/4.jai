@@ -9,12 +9,11 @@ day4 :: (data : string) -> string, string
     {
         for * b : boards
         {
-            mark_board(b, n);
-            won, score := check_for_win(b);
-            if won
+            score := mark_and_check_win(b, n);
+            if score
             {
-                if !first  first = score * n;
-                else        last = score * n;
+                if !first  first = score;
+                else        last = score;
 
                 remove b;
             }
@@ -30,48 +29,34 @@ Board :: struct
     marked : [25]bool;
 }
 
-mark_board :: (b: *Board, n: u8)
+mark_and_check_win :: (b: *Board, n: u8) -> u64
 {
     for 0..24
     {
         if b.board[it] == n
         {
             b.marked[it] = true;
-            return;
+            break;
         }
     }
-}
 
-unmarked_total :: (b: *Board) -> u64
-{
-    total : u64;
-
-    for 0..24
+    if b.marked[ 0] && b.marked[ 1] && b.marked[ 2] && b.marked[ 3] && b.marked[ 4] ||
+       b.marked[ 5] && b.marked[ 6] && b.marked[ 7] && b.marked[ 8] && b.marked[ 9] ||
+       b.marked[10] && b.marked[11] && b.marked[12] && b.marked[13] && b.marked[14] ||
+       b.marked[15] && b.marked[16] && b.marked[17] && b.marked[18] && b.marked[19] ||
+       b.marked[20] && b.marked[21] && b.marked[22] && b.marked[23] && b.marked[24] ||
+       b.marked[ 0] && b.marked[ 5] && b.marked[10] && b.marked[15] && b.marked[20] ||
+       b.marked[ 1] && b.marked[ 6] && b.marked[11] && b.marked[16] && b.marked[21] ||
+       b.marked[ 2] && b.marked[ 7] && b.marked[12] && b.marked[17] && b.marked[22] ||
+       b.marked[ 3] && b.marked[ 8] && b.marked[13] && b.marked[18] && b.marked[23] ||
+       b.marked[ 4] && b.marked[ 9] && b.marked[14] && b.marked[19] && b.marked[24]
     {
-        if !b.marked[it]
-        {
-            total += b.board[it];
-        }
+        unmarked_total : u64;
+        for 0..24  if !b.marked[it]  unmarked_total += b.board[it];
+        return n * unmarked_total;
     }
 
-    return total;
-}
-
-check_for_win :: (b: *Board) -> bool, u64
-{
-    if b.marked[ 0] && b.marked[ 1] && b.marked[ 2] && b.marked[ 3] && b.marked[ 4] return true, unmarked_total(b);
-    if b.marked[ 5] && b.marked[ 6] && b.marked[ 7] && b.marked[ 8] && b.marked[ 9] return true, unmarked_total(b);
-    if b.marked[10] && b.marked[11] && b.marked[12] && b.marked[13] && b.marked[14] return true, unmarked_total(b);
-    if b.marked[15] && b.marked[16] && b.marked[17] && b.marked[18] && b.marked[19] return true, unmarked_total(b);
-    if b.marked[20] && b.marked[21] && b.marked[22] && b.marked[23] && b.marked[24] return true, unmarked_total(b);
-
-    if b.marked[ 0] && b.marked[ 5] && b.marked[10] && b.marked[15] && b.marked[20] return true, unmarked_total(b);
-    if b.marked[ 1] && b.marked[ 6] && b.marked[11] && b.marked[16] && b.marked[21] return true, unmarked_total(b);
-    if b.marked[ 2] && b.marked[ 7] && b.marked[12] && b.marked[17] && b.marked[22] return true, unmarked_total(b);
-    if b.marked[ 3] && b.marked[ 8] && b.marked[13] && b.marked[18] && b.marked[23] return true, unmarked_total(b);
-    if b.marked[ 4] && b.marked[ 9] && b.marked[14] && b.marked[19] && b.marked[24] return true, unmarked_total(b);
-
-    return false, 0;
+    return 0;
 }
 
 parse_numbers :: (s: *string) -> [..]u8
