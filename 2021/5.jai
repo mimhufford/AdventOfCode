@@ -5,7 +5,7 @@ day5 :: (data : string) -> string, string
 
     map : []u8 = ---;
     map.count = 999<<10 + 999;
-    map.data  = alloc(999<<10 + 999);
+    map.data  = alloc(map.count);
     memset(map.data, 0, map.count);
 
     while data.count
