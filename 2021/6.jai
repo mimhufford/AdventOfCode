@@ -19,8 +19,8 @@ day6 :: (data : string) -> string, string
 
 do_one_day :: () #expand
 {
-    new_counts : [9]u64 = ---;
-    for 0..8 new_counts[it] = `counts[(it+1)%9];
-    new_counts[6] += `counts[0];
-    memcpy(`counts.data, new_counts.data, new_counts.count * size_of(u64));
+    new := `counts[0];
+    memcpy(`counts.data, `counts.data+1, (`counts.count-1)*size_of(u64));
+    `counts[6] += new;
+    `counts[8]  = new;
 }
