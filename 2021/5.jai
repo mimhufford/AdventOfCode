@@ -35,10 +35,8 @@ draw_and_count :: (map: []u8, lines: []Line) -> s64
 
     for * l : lines
     {
-         x,  y := l.x0, l.y0;
-        dx, dy := delta(x, l.x1), delta(y, l.y1);
-
-        map[x*1000+y] += 1;
+        dx, dy := delta(l.x0, l.x1), delta(l.y0, l.y1);
+         x,  y := l.x0 - dx, l.y0 - dy;
 
         while x != l.x1 || y != l.y1
         {
