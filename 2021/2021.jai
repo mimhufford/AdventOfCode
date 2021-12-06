@@ -18,7 +18,7 @@ main :: ()
         print("- Part 2: %\n", part2);
     }
 
-    print("\nTotal time: %s", total_time);
+    print("\nTotal time: %s\n", total_time);
 }
 
 generate_days :: () -> string
