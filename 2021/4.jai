@@ -88,16 +88,7 @@ parse_boards :: (s: *string) -> [..]Board
     {
         board : Board;
 
-        for 0..24
-        {
-            ten := s.data[0];
-            num := s.data[1] - #char "0";
-            advance(s, 3);
-            if ten != #char " " num += (ten - #char "0") * 10;
-            board.board[it] = num;
-        }
-
-        if s.count  advance(s, 1);
+        for 0..24  board.board[it] = next_u8(s);
 
         array_add(*boards, board);
     }
