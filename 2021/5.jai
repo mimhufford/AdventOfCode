@@ -49,19 +49,3 @@ draw_and_count :: (map: []u8, lines: []Line) -> s64
     for map if it > 1  count += 1;
     return count;
 }
-
-next_s64 :: (s: *string) -> s64
-{
-    num : s64;
-
-    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
-    {
-        num *= 10;
-        num += s.data[0] - #char "0";
-        advance(s, 1);
-    }
-
-    while s.count && (s.data[0] < #char "0" || s.data[0] > #char "9") advance(s, 1);
-
-    return num;
-}
