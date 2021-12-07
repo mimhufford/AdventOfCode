@@ -43,6 +43,8 @@ generate_days :: () -> string
 }
 
 #import "File";
+#import "Sort";
+#import "Math";
 #import "Basic";
 #import "String";
 #import "Thread";
