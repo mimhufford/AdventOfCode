@@ -1,7 +1,7 @@
 day7 :: (data : string) -> string, string
 {
     nums : [..]s16;
-    total : float;
+    total : s64;
 
     while data.count
     {
@@ -24,7 +24,7 @@ day7 :: (data : string) -> string, string
     for nums  part1 += abs(it - median);
 
     part2 : s64;
-    mean := cast(s64)(total / nums.count);
+    mean := (total / nums.count);
     for nums  part2 += abs(it - mean) * (abs(it - mean) + 1) / 2; // gauss in tha hauss
 
     return tprint("%", part1), tprint("%", part2);
