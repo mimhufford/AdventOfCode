@@ -21,19 +21,3 @@ day1 :: (data: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
-
-next_u32 :: (s: *string) -> u32
-{
-    num : u32;
-
-    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
-    {
-        num *= 10;
-        num += s.data[0] - #char "0";
-        advance(s, 1);
-    }
-
-    while s.count && (s.data[0] < #char "0" || s.data[0] > #char "9") advance(s, 1);
-
-    return num;
-}
