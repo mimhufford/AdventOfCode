@@ -50,3 +50,31 @@ generate_days :: () -> string
 #import "Thread";
 #import "Hash_Table";
 #import "File_Utilities";
+
+next_num :: (s: *string, $T: Type) -> T
+{
+    num : T;
+    
+    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
+    {
+        num *= 10;
+        num += s.data[0] - #char "0";
+        advance(s, 1);
+    }
+
+    while s.count && (s.data[0] < #char "0" || s.data[0] > #char "9")
+    {
+        advance(s, 1);
+    }
+
+    return num;
+}
+
+next_u8  :: s => next_num(s, u8 );
+next_u16 :: s => next_num(s, u16);
+next_u32 :: s => next_num(s, u32);
+next_u64 :: s => next_num(s, u64);
+next_s8  :: s => next_num(s, s8 );
+next_s16 :: s => next_num(s, s16);
+next_s32 :: s => next_num(s, s32);
+next_s64 :: s => next_num(s, s64);
