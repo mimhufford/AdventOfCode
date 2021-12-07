@@ -5,16 +5,9 @@ day7 :: (data : string) -> string, string
 
     while data.count
     {
-        num : s16;
-        while data.count && data[0] >= #char "0" && data[0] <= #char "9"
-        {
-            num *= 10;
-            num += data[0] - #char "0";
-            advance(*data, 1);
-        }
+        num := next_s16(*data);
         array_add(*nums, num);
         total += num;
-        advance(*data, 1);
     }
 
     quick_sort(nums, (a, b) => a - b);
