@@ -51,7 +51,7 @@ generate_days :: () -> string
 #import "Hash_Table";
 #import "File_Utilities";
 
-next_num :: (s: *string, $T: Type) -> T
+next_num :: (s: *string, $T: Type) -> T #expand
 {
     num : T;
     
