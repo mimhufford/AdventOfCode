@@ -27,93 +27,12 @@ day8 :: (data : string) -> string, string
             }
         }
 
-        for * segment: signal.input  // find 6
-        {
-            if segment.count == 6
-            {
-                for digits[1].bits
-                {
-                    if it && !segment.bits[it_index]
-                    {
-                        segment.value = 6;
-                        digits[6] = segment;
-                        break segment;
-                    }
-                }
-            }
-        }
-
-        for * segment: signal.input // find 0
-        {
-            if segment.count == 6 && segment.value < 0
-            {
-                for digits[4].bits
-                {
-                    if it && !segment.bits[it_index]
-                    {
-                        segment.value = 0;
-                        digits[0] = segment;
-                        break segment;
-                    }
-                }
-            }
-        }
-
-        for * segment: signal.input // find 9
-        {
-            if segment.count == 6 && segment.value < 0
-            {
-                segment.value = 9;
-                digits[9] = segment;
-                break segment;
-            }
-        }
-
-        for * segment: signal.input // find 5
-        {
-            if segment.count == 5
-            {
-                for segment.bits
-                {
-                    if it && !digits[6].bits[it_index]
-                    {
-                        continue segment;
-                    }
-                }
-
-                segment.value = 5;
-                digits[5] = segment;
-                break segment;
-            }
-        }
-        
-        for * segment: signal.input // find 3
-        {
-            if segment.count == 5 && segment.value < 0
-            {
-                for segment.bits
-                {
-                    if it && !digits[9].bits[it_index]
-                    {
-                        continue segment;
-                    }
-                }
-
-                segment.value = 3;
-                digits[3] = segment;
-                break segment;
-            }
-        }
-
-        for *segment: signal.input // find 2
-        {
-            if segment.value < 0
-            {
-                segment.value = 2;
-                digits[2] = segment;
-                break segment;
-            }
-        }
+        find_by_comparing(target=6, compare_to=1,   target_seg_count=6);
+        find_by_comparing(target=0, compare_to=4,   target_seg_count=6);
+        find_by_last_left(target=9,                 target_seg_count=6);
+        find_by_overlap  (target=5, overlap_with=6, target_seg_count=5);
+        find_by_overlap  (target=3, overlap_with=9, target_seg_count=5);
+        find_by_last_left(target=2, target_seg_count=5);
 
         output_value := 0;
 
@@ -155,7 +74,7 @@ Signal :: struct
 Segment :: struct
 {
     bits:  [7]bool;
-    count: u8;
+    count: s8;
     value: s8 = -1;
 }
 
@@ -170,5 +89,58 @@ read_segment :: (n: int, segment: []Segment) #expand
             advance(*`data, 1);
         }
         advance(*`data, 1);
+    }
+}
+
+find_by_comparing :: (target: s8, compare_to: s8, target_seg_count: s8) #expand
+{
+    for * segment: `signal.input
+    {
+        if segment.count == target_seg_count && segment.value < 0
+        {
+            for `digits[compare_to].bits
+            {
+                if it && !segment.bits[it_index]
+                {
+                    segment.value = target;
+                    `digits[target] = segment;
+                    break segment;
+                }
+            }
+        }
+    }
+}
+
+find_by_last_left :: (target: s8, target_seg_count: s8) #expand
+{
+    for * segment: `signal.input
+    {
+        if segment.count == target_seg_count && segment.value < 0
+        {
+            segment.value = target;
+            `digits[target] = segment;
+            break segment;
+        }
+    }
+}
+
+find_by_overlap :: (target: s8, overlap_with: s8, target_seg_count: s8) #expand
+{
+    for * segment: `signal.input
+    {
+        if segment.count == target_seg_count && segment.value < 0
+        {
+            for segment.bits
+            {
+                if it && !`digits[overlap_with].bits[it_index]
+                {
+                    continue segment;
+                }
+            }
+
+            segment.value = target;
+            `digits[target] = segment;
+            break segment;
+        }
     }
 }
