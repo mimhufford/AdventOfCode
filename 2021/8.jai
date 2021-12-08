@@ -15,15 +15,15 @@ day8 :: (data : string) -> string, string
 
     for signal: signals
     {
-        digits : [10]Segment;
+        digits : [10]*Segment;
 
         for * segment: signal.input // find 1, 4, 7, 8
         {
             if segment.count == {
-                case 2; segment.value = 1; digits[1] = <<segment; 
-                case 4; segment.value = 4; digits[4] = <<segment; 
-                case 3; segment.value = 7; digits[7] = <<segment; 
-                case 7; segment.value = 8; digits[8] = <<segment; 
+                case 2; segment.value = 1; digits[1] = segment; 
+                case 4; segment.value = 4; digits[4] = segment; 
+                case 3; segment.value = 7; digits[7] = segment; 
+                case 7; segment.value = 8; digits[8] = segment; 
             }
         }
 
@@ -36,7 +36,7 @@ day8 :: (data : string) -> string, string
                     if it && !segment.bits[it_index]
                     {
                         segment.value = 6;
-                        digits[6] = <<segment;
+                        digits[6] = segment;
                         break segment;
                     }
                 }
@@ -52,7 +52,7 @@ day8 :: (data : string) -> string, string
                     if it && !segment.bits[it_index]
                     {
                         segment.value = 0;
-                        digits[0] = <<segment;
+                        digits[0] = segment;
                         break segment;
                     }
                 }
@@ -64,7 +64,7 @@ day8 :: (data : string) -> string, string
             if segment.count == 6 && segment.value < 0
             {
                 segment.value = 9;
-                digits[9] = <<segment;
+                digits[9] = segment;
                 break segment;
             }
         }
@@ -82,7 +82,7 @@ day8 :: (data : string) -> string, string
                 }
 
                 segment.value = 5;
-                digits[5] = <<segment;
+                digits[5] = segment;
                 break segment;
             }
         }
@@ -100,7 +100,7 @@ day8 :: (data : string) -> string, string
                 }
 
                 segment.value = 3;
-                digits[3] = <<segment;
+                digits[3] = segment;
                 break segment;
             }
         }
@@ -110,7 +110,7 @@ day8 :: (data : string) -> string, string
             if segment.value < 0
             {
                 segment.value = 2;
-                digits[2] = <<segment;
+                digits[2] = segment;
                 break segment;
             }
         }
