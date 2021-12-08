@@ -18,7 +18,7 @@ day8 :: (data : string) -> string, string
 
         for * segment: signal.input // find 1, 4, 7, 8
         {
-            if segment.count == {
+            if popcount(segment.bits) == {
                 case 2; segment.value = 1; digits[1] = segment; 
                 case 4; segment.value = 4; digits[4] = segment; 
                 case 3; segment.value = 7; digits[7] = segment; 
@@ -37,10 +37,10 @@ day8 :: (data : string) -> string, string
 
         for segment: signal.output
         {
-                 if segment.count == 2 part1 += 1;
-            else if segment.count == 3 part1 += 1;
-            else if segment.count == 4 part1 += 1;
-            else if segment.count == 7 part1 += 1;
+                 if popcount(segment.bits) == 2 part1 += 1;
+            else if popcount(segment.bits) == 3 part1 += 1;
+            else if popcount(segment.bits) == 4 part1 += 1;
+            else if popcount(segment.bits) == 7 part1 += 1;
 
             for digit, value: digits
             {
@@ -68,7 +68,6 @@ Signal :: struct
 Segment :: struct
 {
     bits:  u8;
-    count: s8;
     value: s8 = -1;
 }
 
@@ -77,7 +76,6 @@ read_segment :: (segment: *Segment) #expand
     while `data[0] >= #char "a" && `data[0] <= #char "g"
     {
         segment.bits |= xx (1 << (`data[0] - #char "a"));
-        segment.count += 1;
         advance(*`data, 1);
     }
 
@@ -91,7 +89,8 @@ find_digit :: (digit: s8, digit_seg_count: s8, compare_to: s8, expected_differen
 {
     for * segment: `signal.input
     {
-        if segment.count != digit_seg_count || segment.value >= 0 continue;
+        if segment.value >= 0 continue;
+        if digit_seg_count != popcount(segment.bits) continue;
         if expected_differences != popcount(`digits[compare_to].bits ^ segment.bits) continue;
 
         segment.value = digit;
