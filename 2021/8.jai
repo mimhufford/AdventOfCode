@@ -44,17 +44,12 @@ day8 :: (data : string) -> string, string
 
             for digit, value: digits
             {
-                for bit, bit_index: digit.bits
+                if segment.bits == digit.bits
                 {
-                    if bit != segment.bits[bit_index]
-                    {
-                        continue digit;
-                    }
+                    output_value *= 10;
+                    output_value += value;
+                    break;
                 }
-
-                output_value *= 10;
-                output_value += value;
-                break digit;
             }
         }
 
@@ -72,7 +67,7 @@ Signal :: struct
 
 Segment :: struct
 {
-    bits:  [7]bool;
+    bits:  u8;
     count: s8;
     value: s8 = -1;
 }
@@ -81,7 +76,7 @@ read_segment :: (segment: *Segment) #expand
 {
     while `data[0] >= #char "a" && `data[0] <= #char "g"
     {
-        segment.bits[`data[0] - #char "a"] = true;
+        segment.bits |= xx (1 << (`data[0] - #char "a"));
         segment.count += 1;
         advance(*`data, 1);
     }
@@ -97,10 +92,7 @@ find_digit :: (digit: s8, digit_seg_count: s8, compare_to: s8, expected_differen
     for * segment: `signal.input
     {
         if segment.count != digit_seg_count || segment.value >= 0 continue;
-
-        differences := 0;
-        for segment.bits if it != `digits[compare_to].bits[it_index] differences += 1;
-        if differences != expected_differences continue;
+        if expected_differences != popcount(`digits[compare_to].bits ^ segment.bits) continue;
 
         segment.value = digit;
         `digits[digit] = segment;
