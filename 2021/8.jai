@@ -27,12 +27,12 @@ day8 :: (data : string) -> string, string
             }
         }
 
-        find_by_comparing(target=6, compare_to=1,   target_seg_count=6);
-        find_by_comparing(target=0, compare_to=4,   target_seg_count=6);
-        find_by_last_left(target=9,                 target_seg_count=6);
-        find_by_overlap  (target=5, overlap_with=6, target_seg_count=5);
-        find_by_overlap  (target=3, overlap_with=9, target_seg_count=5);
-        find_by_last_left(target=2, target_seg_count=5);
+        find_by_comparing(target=6, target_seg_count=6, compare_to=1  );
+        find_by_comparing(target=0, target_seg_count=6, compare_to=4  );
+        find_by_last_left(target=9, target_seg_count=6                );
+        find_by_overlap  (target=5, target_seg_count=5, overlap_with=6);
+        find_by_overlap  (target=3, target_seg_count=5, overlap_with=9);
+        find_by_last_left(target=2, target_seg_count=5                );
 
         output_value := 0;
 
