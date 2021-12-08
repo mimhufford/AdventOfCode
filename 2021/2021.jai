@@ -50,6 +50,7 @@ generate_days :: () -> string
 #import "Thread";
 #import "Hash_Table";
 #import "File_Utilities";
+#import "Bit_Operations";
 
 next_num :: (s: *string, $T: Type) -> T #expand
 {
