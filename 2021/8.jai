@@ -5,9 +5,8 @@ day8 :: (data : string) -> string, string
     while data.count
     {
         signal : Signal;
-        read_segment(10, signal.input);
-        advance(*data, 2);
-        read_segment( 4, signal.output);
+        for 0..9 read_segment(*signal.input[it]);
+        for 0..3 read_segment(*signal.output[it]);
         array_add(*signals, signal);
     }
 
@@ -78,16 +77,17 @@ Segment :: struct
     value: s8 = -1;
 }
 
-read_segment :: (n: int, segment: []Segment) #expand
+read_segment :: (segment: *Segment) #expand
 {
-    for 0..n-1
+    while `data[0] >= #char "a" && `data[0] <= #char "g"
     {
-        while `data[0] >= #char "a" && `data[0] <= #char "g"
-        {
-            segment[it].bits[`data[0] - #char "a"] = true;
-            segment[it].count += 1;
-            advance(*`data, 1);
-        }
+        segment.bits[`data[0] - #char "a"] = true;
+        segment.count += 1;
+        advance(*`data, 1);
+    }
+
+    while `data.count && (`data[0] < #char "a" || `data[0] > #char "g")
+    {
         advance(*`data, 1);
     }
 }
