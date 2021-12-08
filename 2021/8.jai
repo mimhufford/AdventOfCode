@@ -26,12 +26,12 @@ day8 :: (data : string) -> string, string
             }
         }
 
-        find_digit(digit=9, digit_seq_count=6, compare_to=4, expected_differences=2);
-        find_digit(digit=0, digit_seq_count=6, compare_to=1, expected_differences=4);
-        find_digit(digit=6, digit_seq_count=6, compare_to=0, expected_differences=2);
-        find_digit(digit=2, digit_seq_count=5, compare_to=9, expected_differences=3);
-        find_digit(digit=3, digit_seq_count=5, compare_to=2, expected_differences=2);
-        find_digit(digit=5, digit_seq_count=5, compare_to=2, expected_differences=4);
+        find_digit(digit=9, digit_seg_count=6, compare_to=4, expected_differences=2);
+        find_digit(digit=0, digit_seg_count=6, compare_to=1, expected_differences=4);
+        find_digit(digit=6, digit_seg_count=6, compare_to=0, expected_differences=2);
+        find_digit(digit=2, digit_seg_count=5, compare_to=9, expected_differences=3);
+        find_digit(digit=3, digit_seg_count=5, compare_to=2, expected_differences=2);
+        find_digit(digit=5, digit_seg_count=5, compare_to=2, expected_differences=4);
 
         output_value := 0;
 
