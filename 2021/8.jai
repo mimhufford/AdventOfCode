@@ -26,12 +26,12 @@ day8 :: (data : string) -> string, string
             }
         }
 
-        find_by_doesnt_overlap(target=6, target_seg_count=6, cant_overlap_with=1);
-        find_by_doesnt_overlap(target=0, target_seg_count=6, cant_overlap_with=4);
-        find_by_last_seg_count(target=9, target_seg_count=6                     );
-        find_by_entire_overlap(target=5, target_seg_count=5, must_overlap_with=6);
-        find_by_entire_overlap(target=3, target_seg_count=5, must_overlap_with=9);
-        find_by_last_seg_count(target=2, target_seg_count=5                     );
+        find_digit(digit=9, digit_seq_count=6, compare_to=4, expected_differences=2);
+        find_digit(digit=0, digit_seq_count=6, compare_to=1, expected_differences=4);
+        find_digit(digit=6, digit_seq_count=6, compare_to=0, expected_differences=2);
+        find_digit(digit=2, digit_seq_count=5, compare_to=9, expected_differences=3);
+        find_digit(digit=3, digit_seq_count=5, compare_to=2, expected_differences=2);
+        find_digit(digit=5, digit_seq_count=5, compare_to=2, expected_differences=4);
 
         output_value := 0;
 
@@ -92,55 +92,18 @@ read_segment :: (segment: *Segment) #expand
     }
 }
 
-find_by_doesnt_overlap :: (target: s8, cant_overlap_with: s8, target_seg_count: s8) #expand
+find_digit :: (digit: s8, digit_seg_count: s8, compare_to: s8, expected_differences: s8) #expand
 {
     for * segment: `signal.input
     {
-        if segment.count == target_seg_count && segment.value < 0
-        {
-            for `digits[cant_overlap_with].bits
-            {
-                if it && !segment.bits[it_index]
-                {
-                    segment.value = target;
-                    `digits[target] = segment;
-                    break segment;
-                }
-            }
-        }
-    }
-}
+        if segment.count != digit_seg_count || segment.value >= 0 continue;
 
-find_by_last_seg_count :: (target: s8, target_seg_count: s8) #expand
-{
-    for * segment: `signal.input
-    {
-        if segment.count == target_seg_count && segment.value < 0
-        {
-            segment.value = target;
-            `digits[target] = segment;
-            break segment;
-        }
-    }
-}
+        differences := 0;
+        for segment.bits if it != `digits[compare_to].bits[it_index] differences += 1;
+        if differences != expected_differences continue;
 
-find_by_entire_overlap :: (target: s8, must_overlap_with: s8, target_seg_count: s8) #expand
-{
-    for * segment: `signal.input
-    {
-        if segment.count == target_seg_count && segment.value < 0
-        {
-            for segment.bits
-            {
-                if it && !`digits[must_overlap_with].bits[it_index]
-                {
-                    continue segment;
-                }
-            }
-
-            segment.value = target;
-            `digits[target] = segment;
-            break segment;
-        }
+        segment.value = digit;
+        `digits[digit] = segment;
+        break;                
     }
 }
