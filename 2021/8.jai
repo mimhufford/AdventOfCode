@@ -37,10 +37,8 @@ day8 :: (data : string) -> string, string
 
         for segment: signal.output
         {
-                 if popcount(segment.bits) == 2 part1 += 1;
-            else if popcount(segment.bits) == 3 part1 += 1;
-            else if popcount(segment.bits) == 4 part1 += 1;
-            else if popcount(segment.bits) == 7 part1 += 1;
+            count := popcount(segment.bits);
+            if count >= 2 && count <= 4 || count == 7  part1 += 1;
 
             for digit, value: digits
             {
