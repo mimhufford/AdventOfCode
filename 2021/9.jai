@@ -56,13 +56,25 @@ day9 :: (data : string) -> string, string
         {
             p := queue[queue.count-1];
             queue.count -= 1;
-            if map[p.row][p.col] != 9 basin += 1;
+            basin += 1;
             map[p.row][p.col] = 9;
 
-            if map[p.row][p.col+1] != 9 { new_p : Point; new_p.row = p.row; new_p.col = p.col+1; array_add(*queue, new_p); }
-            if map[p.row][p.col-1] != 9 { new_p : Point; new_p.row = p.row; new_p.col = p.col-1; array_add(*queue, new_p); }
-            if map[p.row+1][p.col] != 9 { new_p : Point; new_p.row = p.row+1; new_p.col = p.col; array_add(*queue, new_p); }
-            if map[p.row-1][p.col] != 9 { new_p : Point; new_p.row = p.row-1; new_p.col = p.col; array_add(*queue, new_p); }
+            check_neighbour :: (d_row: s8, d_col: s8) #expand
+            {
+                if `map[`p.row+d_row][`p.col+d_col] != 9
+                {
+                    new_p : Point;
+                    new_p.row = `p.row + d_row;
+                    new_p.col = `p.col + d_col;
+                    `map[new_p.row][new_p.col] = 9;
+                    array_add(*`queue, new_p);
+                }
+            }
+
+            check_neighbour( 0,  1);
+            check_neighbour( 0, -1);
+            check_neighbour( 1,  0);
+            check_neighbour(-1,  0);
         }
         array_add(*basins, basin);
     }
