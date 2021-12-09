@@ -26,7 +26,8 @@ day9 :: (data : string) -> string, string
         array_add(*map[map.count-1], 9);
     }
 
-    low_points := 0;
+    low_points : [..]Point;
+    risk_total := 0;
 
     for row: 1..map.count-2
     {
@@ -36,9 +37,43 @@ day9 :: (data : string) -> string, string
             if map[row][col] >= map[row][col-1] continue;
             if map[row][col] >= map[row+1][col] continue;
             if map[row][col] >= map[row-1][col] continue;
-            low_points += map[row][col] + 1;
+            low_point : Point = ---;
+            low_point.row = row;
+            low_point.col = col;
+            array_add(*low_points, low_point);
+            risk_total += map[row][col] + 1;
         }
     }
 
-    return tprint("%", low_points), tprint("%", "");
+    basins : [..]int;
+
+    for low_points
+    {
+        basin := 0;
+        queue : [..]Point;
+        array_add(*queue, it);
+        while queue.count
+        {
+            p := queue[queue.count-1];
+            queue.count -= 1;
+            if map[p.row][p.col] != 9 basin += 1;
+            map[p.row][p.col] = 9;
+
+            if map[p.row][p.col+1] != 9 { new_p : Point; new_p.row = p.row; new_p.col = p.col+1; array_add(*queue, new_p); }
+            if map[p.row][p.col-1] != 9 { new_p : Point; new_p.row = p.row; new_p.col = p.col-1; array_add(*queue, new_p); }
+            if map[p.row+1][p.col] != 9 { new_p : Point; new_p.row = p.row+1; new_p.col = p.col; array_add(*queue, new_p); }
+            if map[p.row-1][p.col] != 9 { new_p : Point; new_p.row = p.row-1; new_p.col = p.col; array_add(*queue, new_p); }
+        }
+        array_add(*basins, basin);
+    }
+
+    quick_sort(basins, (a, b) => b - a);
+
+    return tprint("%", risk_total), tprint("%", basins[0]*basins[1]*basins[2]);
+}
+
+Point :: struct
+{
+    row : int;
+    col : int;
 }
