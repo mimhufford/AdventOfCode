@@ -2,25 +2,25 @@ day9 :: (data : string) -> string, string
 {
     map : [..][..]u8;
 
-    array_add(*map, <<New([..]u8));     // create top padding row
+    array_add(*map, <<New([..]u8));
 
     while data.count
     {
         y := map.count;
-        array_add(*map, <<New([..]u8)); // create row
-        array_add(*map[y], 9);          // add padding 9 to left
+        array_add(*map, <<New([..]u8));
+        array_add(*map[y], 9);
         while data.count && data[0] != #char "\n"
         {
             array_add(*map[y], data[0] - #char "0");
             advance(*data, 1);
         }
-        array_add(*map[y], 9);          // add padding 9 to right
-        advance(*data, 1);              // skip the newline character
+        array_add(*map[y], 9);
+        advance(*data, 1);
     }
 
-    array_add(*map, <<New([..]u8));     // create bottom padding row
+    array_add(*map, <<New([..]u8));
 
-    for 1..map[1].count                 // fill top and bottom rows with padding 9s
+    for 1..map[1].count
     {
         array_add(*map[0], 9);
         array_add(*map[map.count-1], 9);
