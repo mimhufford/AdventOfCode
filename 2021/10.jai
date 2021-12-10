@@ -1,7 +1,7 @@
 day10 :: (data : string) -> string, string
 {
     corrupt_score : u64;
-    incomplete : [..]u64;
+    incomplete_scores : [..]u64;
 
     while data.count
     {
@@ -9,28 +9,24 @@ day10 :: (data : string) -> string, string
 
         while data.count && data[0] != #char "\n"
         {
-            is_corrupt :: (c : u8, score : u64) -> bool #expand
+            is_corrupt :: (c : u8) -> bool #expand
             {
-                if !stack.count || stack[stack.count-1] != c
+                if !stack.count || pop(*stack) != c
                 {
-                    corrupt_score += score;
                     stack.count = 0;
                     return true;
                 }
-                else
-                {
-                    stack.count -= 1;
-                    return false;
-                }
+
+                return false;
             }
 
             if data[0] == 
             {
-                case #char ")"; if is_corrupt(#char "(", 3)     break;
-                case #char "]"; if is_corrupt(#char "[", 57)    break;
-                case #char "}"; if is_corrupt(#char "{", 1197)  break;
-                case #char ">"; if is_corrupt(#char "<", 25137) break;
-                case;           array_add(*stack, data[0]);
+                case #char ")"; if is_corrupt(#char "(") { corrupt_score += 3;     break; }
+                case #char "]"; if is_corrupt(#char "[") { corrupt_score += 57;    break; }
+                case #char "}"; if is_corrupt(#char "{") { corrupt_score += 1197;  break; }
+                case #char ">"; if is_corrupt(#char "<") { corrupt_score += 25137; break; }
+                case; array_add(*stack, data[0]);
             }
 
             advance(*data, 1);
@@ -46,26 +42,20 @@ day10 :: (data : string) -> string, string
 
             while stack.count
             {
-                incomplete_score *= 5;
-
-                if stack[stack.count-1] ==
+                if pop(*stack) ==
                 {
-                    case #char "("; incomplete_score += 1;
-                    case #char "["; incomplete_score += 2;
-                    case #char "{"; incomplete_score += 3;
-                    case #char "<"; incomplete_score += 4;
+                    case #char "("; incomplete_score = incomplete_score * 5 + 1;
+                    case #char "["; incomplete_score = incomplete_score * 5 + 2;
+                    case #char "{"; incomplete_score = incomplete_score * 5 + 3;
+                    case #char "<"; incomplete_score = incomplete_score * 5 + 4;
                 }
-
-                stack.count -= 1;
             }
 
-            array_add(*incomplete, incomplete_score);
+            array_add(*incomplete_scores, incomplete_score);
         }
     }
 
-    quick_sort(incomplete, x => x);
+    quick_sort(incomplete_scores, x => x);
 
-    incomplete_score := incomplete[(incomplete.count-1)/2];
-
-	return tprint("%", corrupt_score), tprint("%", incomplete_score);
+	return tprint("%", corrupt_score), tprint("%", incomplete_scores[incomplete_scores.count/2]);
 }
