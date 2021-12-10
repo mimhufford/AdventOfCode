@@ -1,6 +1,4 @@
-Day3 :: () {
-    input := read_entire_file("input/3.txt");
-
+day3 :: (input: string) -> string, string {
     year_1_santa : Vector2;
     year_2_santa : Vector2;
     year_2_robot : Vector2;
@@ -42,8 +40,7 @@ Day3 :: () {
         table_set(*year_2_houses, year_2_robot, 0);
     }
 
-    print("Day 03: Part 1: %\n", year_1_houses.count);
-    print("Day 03: Part 2: %\n", year_2_houses.count);
+    return tprint("%", year_1_houses.count), tprint("%", year_2_houses.count);
 }
 
 #scope_file

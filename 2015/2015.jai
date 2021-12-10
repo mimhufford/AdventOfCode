@@ -1,21 +1,81 @@
-#import "Basic";
-#import "File";
-#import "Hash_Table";
-#import "Math";
-#import "String";
+main :: ()
+{
+    #insert #run generate_days();
 
-#load "1.jai";
-#load "2.jai";
-#load "3.jai";
-#load "4.jai";
-#load "5.jai";
-#load "6.jai";
+    init_time();
 
-main :: () {
-    Day1();
-    Day2();
-    Day3();
-    Day4();
-    Day5();
-    Day6();
+    total_time : float64;
+
+    for days
+    {
+        input := read_entire_file(tprint("input/%.txt", it_index+1));
+        day_start := get_time();
+        part1, part2 := it(input);
+        day_time := get_time() - day_start;
+        total_time += day_time;
+        print("\nDay % - %ms\n", it_index+1, day_time*1000);
+        print("- Part 1: %\n", part1);
+        print("- Part 2: %\n", part2);
+    }
+
+    print("\nTotal time: %s\n", total_time);
 }
+
+generate_days :: () -> string
+{
+    code : String_Builder;
+
+    append(*code, "days := #type (string) -> (string, string).[");
+    for 1..25 {
+        file := tprint("%.jai", it);
+        if !file_exists(file) continue;
+        append(*code, tprint("day%,", it));
+    }
+    append(*code, "];");
+
+    for 1..25 {
+        file := tprint("%.jai", it);
+        if !file_exists(file) continue;
+        append(*code, tprint("#load \"%.jai\";", it));
+    }
+
+    return builder_to_string(*code);
+}
+
+#import "File";
+#import "Sort";
+#import "Math";
+#import "Basic";
+#import "String";
+#import "Thread";
+#import "Hash_Table";
+#import "File_Utilities";
+#import "Bit_Operations";
+
+next_num :: (s: *string, $T: Type) -> T #expand
+{
+    num : T;
+    
+    while s.count && s.data[0] >= #char "0" && s.data[0] <= #char "9"
+    {
+        num *= 10;
+        num += s.data[0] - #char "0";
+        advance(s, 1);
+    }
+
+    while s.count && (s.data[0] < #char "0" || s.data[0] > #char "9")
+    {
+        advance(s, 1);
+    }
+
+    return num;
+}
+
+next_u8  :: s => next_num(s, u8 );
+next_u16 :: s => next_num(s, u16);
+next_u32 :: s => next_num(s, u32);
+next_u64 :: s => next_num(s, u64);
+next_s8  :: s => next_num(s, s8 );
+next_s16 :: s => next_num(s, s16);
+next_s32 :: s => next_num(s, s32);
+next_s64 :: s => next_num(s, s64);

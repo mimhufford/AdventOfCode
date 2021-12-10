@@ -1,6 +1,4 @@
-Day1 :: () {
-    input := read_entire_file("input/1.txt");
-
+day1 :: (input: string) -> string, string {
     floor := 0;
     first_basement := 0;
 
@@ -14,6 +12,5 @@ Day1 :: () {
             first_basement = it + 1;
     }
 
-    print("Day 01: Part 1: %\n", floor);
-    print("Day 01: Part 2: %\n", first_basement);
+    return tprint("%", floor), tprint("%", first_basement);
 }

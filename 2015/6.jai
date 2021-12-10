@@ -1,6 +1,4 @@
-Day6 :: () {
-    input := read_entire_file("input/6.txt");
-
+day6 :: (input: string) -> string, string {
     lines := split(input, "\n");
 
     grid1 : * [1000] int = alloc(size_of(int) * 1000 * 1000);
@@ -48,8 +46,7 @@ Day6 :: () {
         }
     }
 
-    print("Day 06: Part 1: %\n", lit);
-    print("Day 06: Part 2: %\n", brightness);
+    return tprint("%", lit), tprint("%", brightness);
 }
 
 #scope_file

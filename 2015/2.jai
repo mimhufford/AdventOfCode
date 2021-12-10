@@ -1,6 +1,5 @@
-Day2 :: () {
-    input := read_entire_file("input/2.txt");
-
+day2 :: (data: string) -> string, string {
+    input := data;
     paper_needed  := 0;
     ribbon_needed := 0;
 
@@ -24,6 +23,5 @@ Day2 :: () {
         ribbon_needed += l*w*h + bow;
     }
 
-    print("Day 02: Part 1: %\n", paper_needed);
-    print("Day 02: Part 2: %\n", ribbon_needed);
+    return tprint("%", paper_needed), tprint("%", ribbon_needed);
 }

@@ -1,6 +1,4 @@
-Day4 :: () {
-    input := read_entire_file("input/4.txt");
-
+day4 :: (input: string) -> string, string {
     index   := 0;
     found_5 := 0;
     found_6 := 0;
@@ -22,8 +20,7 @@ Day4 :: () {
         }
     }
 
-    print("Day 04: Part 1: %\n", found_5);
-    print("Day 04: Part 2: %\n", found_6);
+    return tprint("%", found_5), tprint("%", found_6);
 }
 
 #scope_file

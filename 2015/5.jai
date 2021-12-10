@@ -1,6 +1,4 @@
-Day5 :: () {
-    input := read_entire_file("input/5.txt");
-
+day5 :: (input: string) -> string, string {
     lines := split(input, "\n");
 
     nice_string_v1_count := 0;
@@ -13,8 +11,7 @@ Day5 :: () {
         nice_string_v1_count += 1;
     }
 
-    print("Day 05: Part 1: %\n", nice_string_v1_count);
-    print("Day 05: Part 2: %\n", 0);
+    return tprint("%", nice_string_v1_count), tprint("%", 0);
 }
 
 #scope_file
