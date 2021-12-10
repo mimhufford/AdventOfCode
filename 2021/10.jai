@@ -9,23 +9,14 @@ day10 :: (data : string) -> string, string
 
         while data.count && data[0] != #char "\n"
         {
-            is_corrupt :: (c : u8) -> bool #expand
-            {
-                if !stack.count || pop(*stack) != c
-                {
-                    stack.count = 0;
-                    return true;
-                }
-
-                return false;
-            }
+            is_corrupt :: (c : u8) -> bool #expand { return !stack.count || pop(*stack) != c; }
 
             if data[0] == 
             {
-                case #char ")"; if is_corrupt(#char "(") { corrupt_score += 3;     break; }
-                case #char "]"; if is_corrupt(#char "[") { corrupt_score += 57;    break; }
-                case #char "}"; if is_corrupt(#char "{") { corrupt_score += 1197;  break; }
-                case #char ">"; if is_corrupt(#char "<") { corrupt_score += 25137; break; }
+                case #char ")"; if is_corrupt(#char "(") { stack.count = 0; corrupt_score += 3;     break; }
+                case #char "]"; if is_corrupt(#char "[") { stack.count = 0; corrupt_score += 57;    break; }
+                case #char "}"; if is_corrupt(#char "{") { stack.count = 0; corrupt_score += 1197;  break; }
+                case #char ">"; if is_corrupt(#char "<") { stack.count = 0; corrupt_score += 25137; break; }
                 case; array_add(*stack, data[0]);
             }
 
