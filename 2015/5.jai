@@ -20,7 +20,15 @@ Day5 :: () {
 #scope_file
 
 vowel_count :: (s: string) -> int {
-    return count_any(s, "aeiou");
+    count : int;
+    for 0..s.count-1 {
+             if s[it] == #char "a" count += 1;
+        else if s[it] == #char "e" count += 1;
+        else if s[it] == #char "i" count += 1;
+        else if s[it] == #char "o" count += 1;
+        else if s[it] == #char "u" count += 1;
+    }
+    return count;
 }
 
 contains_bad_pair :: (s: string) -> bool {
