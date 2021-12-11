@@ -34,11 +34,9 @@ day11 :: (data : string) -> string, string
 
     register_flash :: (row: int, col: int) #expand
     {
-        if map[row][col] == 10
-        {
-            map[row][col] = 0;
-            flashes += 1;
-        }
+        if map[row][col] != 10 return;
+        map[row][col] = 0;
+        flashes += 1;
     }
 
     step := 0;
