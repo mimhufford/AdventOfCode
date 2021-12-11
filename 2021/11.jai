@@ -1,6 +1,6 @@
 day11 :: (data : string) -> string, string
 {
-    map : [10][10]u64;
+    map : [10][10]u8;
 
     for row: 0..9
     {
@@ -12,7 +12,7 @@ day11 :: (data : string) -> string, string
         advance(*data, 1);
     }
 
-    increase :: (map: [][10]u64, row: int, col: int)
+    increase :: (map: [][10]u8, row: int, col: int)
     {
         if row < 0 || row > 9 || col < 0 || col > 9 return;
         if map[row][col] == 10 return;
