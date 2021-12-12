@@ -11,14 +11,12 @@ day12 :: (data : string) -> string, string
         {
             cave : Cave;
             cave.name = a_name;
-            cave.small = a_name[0] >= #char "a" && a_name[0] <= #char "z";
             a = table_add(*caves, a_name, cave);
         }
         if !b
         {
             cave : Cave;
             cave.name = b_name;
-            cave.small = b_name[0] >= #char "a" && b_name[0] <= #char "z";
             b = table_add(*caves, b_name, cave);
         }
         array_add(*a.routes, b);
@@ -40,7 +38,7 @@ explore_routes_to_end :: (c: *Cave, twice: bool) -> u64
         if seen && c.name == "start" return 0;
         if seen && done_2            return 0;
         now_done_2 := done_2 || seen;
-        if c.small array_add(*visited, c);
+        if c.name[0] >= #char "a" && c.name[0] <= #char "z" array_add(*visited, c);
         routes : u64;
         for c.routes routes += impl(it, visited, now_done_2);
         return routes;
@@ -53,7 +51,6 @@ explore_routes_to_end :: (c: *Cave, twice: bool) -> u64
 Cave :: struct
 {
     name   : string;
-    small  : bool;
     routes : [..]*Cave;
 }
 
