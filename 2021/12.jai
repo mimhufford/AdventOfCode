@@ -35,14 +35,12 @@ explore_routes_to_end :: (c: *Cave, twice: bool) -> u64
 {
     impl :: (c: *Cave, visited: [..]*Cave, done_2: bool) -> u64
     {
-        if c.name == "end"                             return 1;
-        if c.name == "start" && array_find(visited, c) return 0;
-        if done_2 && array_find(visited, c)            return 0;
-
-        now_done_2 := done_2 || array_find(visited, c);
-
+        if c.name == "end" return 1;
+        seen := array_find(visited, c);
+        if seen && c.name == "start" return 0;
+        if seen && done_2            return 0;
+        now_done_2 := done_2 || seen;
         if c.small array_add(*visited, c);
-
         routes : u64;
         for c.routes routes += impl(it, visited, now_done_2);
         return routes;
