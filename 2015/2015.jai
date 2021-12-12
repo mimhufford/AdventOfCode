@@ -8,17 +8,19 @@ main :: ()
 
     for days
     {
+        if it_index+1 == 4 continue;
         input := read_entire_file(tprint("input/%.txt", it_index+1));
         day_start := get_time();
         part1, part2 := it(input);
         day_time := get_time() - day_start;
         total_time += day_time;
-        print("\nDay % - %ms\n", it_index+1, day_time*1000);
-        print("- Part 1: %\n", part1);
-        print("- Part 2: %\n", part2);
+        print("Day % ", formatInt(it_index+1, minimum_digits=2));
+        print("- %ms ", formatFloat(day_time*1000, width=7, trailing_width=3, zero_removal=.NO));
+        print("- % ", part1);
+        print("- %\n", part2);
     }
 
-    print("\nTotal time: %s\n", total_time);
+    print("\nTotal time: %ms\n", total_time*1000);
 }
 
 generate_days :: () -> string
