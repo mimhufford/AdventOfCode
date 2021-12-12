@@ -1,6 +1,8 @@
 day7 :: (input: string) -> string, string
 {
     gates : [..]Gate;
+    power : Table(string, u64);
+    wires : [..]string;
 
     while input.count
     {
@@ -11,7 +13,7 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "N" // NOT
             {
                 advance(*input, 4);
-                g.op = #char "N";
+                g.op = "NOT";
                 g.src1 = read_wire_name(*input);
                 advance(*input, 4);
                 g.dest = read_wire_name(*input);
@@ -24,13 +26,15 @@ day7 :: (input: string) -> string, string
                 if input[0] == #char "A" // AND
                 {
                     advance(*input, 4);
-                    g.op   = #char "A";
+                    g.op   = "AND";
                     g.src2 = read_wire_name(*input);
+                    advance(*input, 4);
+                    g.dest = read_wire_name(*input);
                 }
                 else // SOURCE
                 {
-                    advance(*input, 4);
-                    g.op   = #char "S";
+                    advance(*input, 3);
+                    g.op   = "SOURCE";
                     g.dest = read_wire_name(*input);
                 }
             }
@@ -42,7 +46,7 @@ day7 :: (input: string) -> string, string
                 if input[0] == #char "A" // AND
                 {
                     advance(*input, 4);
-                    g.op = #char "A";
+                    g.op = "AND";
                     g.src2 = read_wire_name(*input);
                     advance(*input, 4);
                     g.dest = read_wire_name(*input);
@@ -50,7 +54,7 @@ day7 :: (input: string) -> string, string
                 else if input[0] == #char "O" // OR
                 {
                     advance(*input, 3);
-                    g.op = #char "O";
+                    g.op = "OR";
                     g.src2 = read_wire_name(*input);
                     advance(*input, 4);
                     g.dest = read_wire_name(*input);
@@ -58,7 +62,7 @@ day7 :: (input: string) -> string, string
                 else if input[0] == #char "L" // LSHIFT
                 {
                     advance(*input, 7);
-                    g.op = #char "L";
+                    g.op = "LSHIFT";
                     g.val = read_number(*input);
                     advance(*input, 4);
                     g.dest = read_wire_name(*input);
@@ -66,7 +70,7 @@ day7 :: (input: string) -> string, string
                 else if input[0] == #char "R" // RSHIFT
                 {
                     advance(*input, 7);
-                    g.op = #char "R";
+                    g.op = "RSHIFT";
                     g.val = read_number(*input);
                     advance(*input, 4);
                     g.dest = read_wire_name(*input);
@@ -74,7 +78,7 @@ day7 :: (input: string) -> string, string
                 else
                 {
                     advance(*input, 3);
-                    g.op = #char "D";
+                    g.op = "DIRECT";
                     g.dest = read_wire_name(*input);
                 }
             }
@@ -82,15 +86,42 @@ day7 :: (input: string) -> string, string
             while input.count && input[0] != #char "\n" advance(*input, 1); // TEMPORARY
             advance(*input, 1);
             array_add(*gates, g);
+            if g.dest array_add_if_unique(*wires, g.dest);
+            if g.src1 array_add_if_unique(*wires, g.src1);
+            if g.src2 array_add_if_unique(*wires, g.src2);
         }
     }
 
-    return tprint("%", gates), "";
+    while power.count != wires.count
+    {
+        for g: gates
+        {
+            if table_find_pointer(power, g.dest) continue;
+
+            src1 := table_find_pointer(power, g.src1);
+            src2 := table_find_pointer(power, g.src2);
+            pow1 := ifx src1 then <<src1 else 0;
+            pow2 := ifx src2 then <<src2 else 0;
+
+            if g.op ==
+            {
+                case "SOURCE"; table_add(*power, g.dest, g.val);
+                case "NOT"; if src1 table_add(*power, g.dest, ~pow1);
+                case "AND"; if src1 && src2 table_add(*power, g.dest, pow1 & pow2);
+                case "OR";  if src1 && src2 table_add(*power, g.dest, pow1 | pow2);
+                case "RSHIFT"; if src1 table_add(*power, g.dest, pow1 >> g.val);
+                case "LSHIFT"; if src1 table_add(*power, g.dest, pow1 << g.val);
+                case "DIRECT"; if src1 table_add(*power, g.dest, pow1);
+            }
+        }
+    }
+
+    return tprint("%", ""), "";
 }
 
 Gate :: struct {
     val  : u64;
-    op   : u8; // "S"OURCE, "N"OT, "A"ND, "O"R, "R"SHIFT, "L"SHIFT, "D"IRECT
+    op   : string; // SOURCE, NOT, AND, OR, RSHIFT, LSHIFT, DIRECT
     src1 : string;
     src2 : string;
     dest : string;
