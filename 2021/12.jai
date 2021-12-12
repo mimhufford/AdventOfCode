@@ -79,25 +79,20 @@ Cave :: struct
 
 read_pair :: (s: *string) -> string, string
 {
-    a : string = ---;
-    b : string = ---;
-
-    a.data = s.data; a.count = 0;
+    a : string = ---; a.data = s.data; a.count = 0;
     while s.count && s.data[0] != #char "-"
     {
         a.count += 1;
         advance(s, 1);
     }
-
     advance(s, 1);
 
-    b.data = s.data; b.count = 0;
+    b : string = ---; b.data = s.data; b.count = 0;
     while s.count && s.data[0] != #char "\n"
     {
         b.count += 1;
         advance(s, 1);
     }
-
     advance(s, 1);
 
     return a, b;
