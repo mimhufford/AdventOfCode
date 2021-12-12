@@ -19,8 +19,8 @@ day12 :: (data : string) -> string, string
             cave.name = b_name;
             b = table_add(*caves, b_name, cave);
         }
-        array_add(*a.routes, b);
-        array_add(*b.routes, a);
+        if b_name != "start" array_add(*a.routes, b);
+        if a_name != "start" array_add(*b.routes, a);
     }
 
     routes_1 := explore_routes_to_end(table_find_pointer(caves, "start"), true);
@@ -35,8 +35,7 @@ explore_routes_to_end :: (c: *Cave, twice: bool) -> u64
     {
         if c.name == "end" return 1;
         seen := array_find(visited, c);
-        if seen && c.name == "start" return 0;
-        if seen && done_2            return 0;
+        if seen && done_2 return 0;
         now_done_2 := done_2 || seen;
         if c.name[0] >= #char "a" && c.name[0] <= #char "z" array_add(*visited, c);
         routes : u64;
