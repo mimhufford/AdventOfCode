@@ -25,33 +25,15 @@ day12 :: (data : string) -> string, string
         array_add(*b.routes, a);
     }
 
-    routes_1 := explore_routes_to_end_1(table_find_pointer(caves, "start"));
-    routes_2 := explore_routes_to_end_2(table_find_pointer(caves, "start"));
+    routes_1 := explore_routes_to_end(table_find_pointer(caves, "start"), true);
+    routes_2 := explore_routes_to_end(table_find_pointer(caves, "start"), false);
 
 	return tprint("%", routes_1), tprint("%", routes_2);
 }
 
-explore_routes_to_end_1 :: (c: *Cave) -> u64
+explore_routes_to_end :: (c: *Cave, twice: bool) -> u64
 {
-    impl :: (c: *Cave, visited: [..]*Cave) -> u64
-    {
-        if c.name == "end"        return 1;
-        if array_find(visited, c) return 0;
-
-        if c.small array_add(*visited, c);
-
-        routes : u64;
-        for c.routes routes += impl(it, visited);
-        return routes;
-    }
-
-    visited : [..]*Cave;
-    return impl(c, visited);
-}
-
-explore_routes_to_end_2 :: (c: *Cave) -> u64
-{
-    impl :: (c: *Cave, visited: [..]*Cave, done_2 := false) -> u64
+    impl :: (c: *Cave, visited: [..]*Cave, done_2: bool) -> u64
     {
         if c.name == "end"                             return 1;
         if c.name == "start" && array_find(visited, c) return 0;
@@ -67,7 +49,7 @@ explore_routes_to_end_2 :: (c: *Cave) -> u64
     }
 
     visited : [..]*Cave;
-    return impl(c, visited);
+    return impl(c, visited, twice);
 }
 
 Cave :: struct
