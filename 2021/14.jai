@@ -57,19 +57,20 @@ grow :: (pairs : Table, rules : Table)
 
         r := table_find_pointer(rules, pair);
         <<table_find_pointer(pairs, pair) -= count;
-        a := table_find_pointer(pairs, (<<r)[0]);
-        b := table_find_pointer(pairs, (<<r)[1]);
-        <<a += count;
-        <<b += count;
+        <<table_find_pointer(pairs, (<<r)[0]) += count;
+        <<table_find_pointer(pairs, (<<r)[1]) += count;
     }
 }
 
 diff :: inline (counts : []s64) -> s64
 {
-    most  : s64 = S64_MIN;
-    least : s64 = S64_MAX;
+    most, least := S64_MIN, S64_MAX;
 
-    for counts { if it < least && it least = it; if it > most most = it; }
+    for counts
+    {
+        if it < least && it  least = it;
+        if it > most          most = it;
+    }
 
     return most - least;
 }
