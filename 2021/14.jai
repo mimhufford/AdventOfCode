@@ -35,30 +35,41 @@ day14 :: (data : string) -> string, string
         advance(*data, 2);
     }
 
-    for 1..10
-    {
-        copy : Table(string, s64);
-        for pairs table_add(*copy, it_index, it);
-
-        for count, pair : copy
-        {
-            if !count continue;
-
-            r := table_find_pointer(rules, pair);
-            <<table_find_pointer(pairs, pair) -= count;
-            a := table_find_pointer(pairs, (<<r)[0]);
-            b := table_find_pointer(pairs, (<<r)[1]);
-            <<a += count;
-            <<b += count;
-        }
-    }
-
+    for 1..10 grow(pairs, rules);
     for count, pair : pairs counts[pair[1] - #char "A"] += count;
+    part_1 := diff(counts);
+    for count, pair : pairs counts[pair[1] - #char "A"] -= count;
+    for 1..30 grow(pairs, rules);
+    for count, pair : pairs counts[pair[1] - #char "A"] += count;
+    part_2 := diff(counts);
 
+    return tprint("%", part_1), tprint("%", part_2);
+}
+
+grow :: (pairs : Table, rules : Table)
+{
+    copy : Table(string, s64);
+    for pairs table_add(*copy, it_index, it);
+
+    for count, pair : copy
+    {
+        if !count continue;
+
+        r := table_find_pointer(rules, pair);
+        <<table_find_pointer(pairs, pair) -= count;
+        a := table_find_pointer(pairs, (<<r)[0]);
+        b := table_find_pointer(pairs, (<<r)[1]);
+        <<a += count;
+        <<b += count;
+    }
+}
+
+diff :: inline (counts : []s64) -> s64
+{
     most  : s64 = S64_MIN;
     least : s64 = S64_MAX;
 
     for counts { if it < least && it least = it; if it > most most = it; }
 
-    return tprint("%", most - least), tprint("%", "");
+    return most - least;
 }
