@@ -2,9 +2,7 @@ day14 :: (data : string) -> string, string
 {
     pairs : Table(string, s64);
     rules : Table(string, [2]string);
-    counts : [26]s64;
-
-    counts[data[0] - #char "A"] = 1; // count first char
+    first_char := data[0] - #char "A";
 
     while data[1] != #char "\n"
     {
@@ -36,12 +34,9 @@ day14 :: (data : string) -> string, string
     }
 
     for 1..10 grow(pairs, rules);
-    for count, pair : pairs counts[pair[1] - #char "A"] += count;
-    part_1 := diff(counts);
-    for count, pair : pairs counts[pair[1] - #char "A"] -= count;
+    part_1 := diff(pairs, first_char);
     for 1..30 grow(pairs, rules);
-    for count, pair : pairs counts[pair[1] - #char "A"] += count;
-    part_2 := diff(counts);
+    part_2 := diff(pairs, first_char);
 
     return tprint("%", part_1), tprint("%", part_2);
 }
@@ -62,8 +57,17 @@ grow :: (pairs : Table, rules : Table)
     }
 }
 
-diff :: inline (counts : []s64) -> s64
+diff :: inline (pairs : Table, first_char : u8) -> s64
 {
+    counts : [26]s64;
+
+    counts[first_char] += 1;
+
+    for count, pair : pairs
+    {
+        counts[pair[1] - #char "A"] += count;
+    }
+
     most, least := S64_MIN, S64_MAX;
 
     for counts
