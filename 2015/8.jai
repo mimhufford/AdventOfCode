@@ -10,6 +10,7 @@ day8 :: (input: string) -> string, string
         {
             code += 2;
             memory += 1;
+            encoded += 4;
             advance(*input, 2);
         }
         else if input[0] == #char "\\" && input[1] == #char "\""
