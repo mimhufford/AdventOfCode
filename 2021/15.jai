@@ -27,8 +27,6 @@ day15 :: (data : string) -> string, string
     best_x5[0] = 0;
 
     index    :: (x: s32, y: s32) -> s32 #expand { return y*stride + x; }
-    xy_x1    :: (i: s32) -> s32, s32 #expand { return i % stride, i / stride; }
-    xy_x5    :: (i: s32) -> s32, s32 #expand { return i % (stride*5), i / (stride*5); }
     index_x5 :: (x: s32, y: s32) -> s32 #expand { return y*stride*5 + x; }
     map_x5   :: (x: s32, y: s32) -> s32 #expand
     {
@@ -40,7 +38,7 @@ day15 :: (data : string) -> string, string
         return val;
     }
 
-    solve_1 :: (best: []s32, visited: []bool) -> s32 #expand
+    solve_1 :: (size: s32, best: []s32, visited: []bool) -> s32 #expand
     {
         queue : [..]s32;
         array_add(*queue, 0);
@@ -53,7 +51,7 @@ day15 :: (data : string) -> string, string
             array_unordered_remove_by_index(*queue, qi);
             if visited[i] continue;
             visited[i] = true;
-            x, y := xy_x1(i);
+            x, y := i % (stride*size), i / (stride*size);
             if x-1 >= 0     { ni := index(x-1, y); best[ni] = min(best[ni], best[i] + map_x5(x-1, y)); array_add(*queue, ni); }
             if x+1 < stride { ni := index(x+1, y); best[ni] = min(best[ni], best[i] + map_x5(x+1, y)); array_add(*queue, ni); }
             if y-1 >= 0     { ni := index(x, y-1); best[ni] = min(best[ni], best[i] + map_x5(x, y-1)); array_add(*queue, ni); }
@@ -61,7 +59,7 @@ day15 :: (data : string) -> string, string
         }
     }
 
-    solve_2 :: (best: []s32, visited: []bool) -> s32 #expand
+    solve_2 :: (size: s32, best: []s32, visited: []bool) -> s32 #expand
     {
         queue : [..]s32;
         array_add(*queue, 0);
@@ -74,7 +72,7 @@ day15 :: (data : string) -> string, string
             array_unordered_remove_by_index(*queue, qi);
             if visited[i] continue;
             visited[i] = true;
-            x, y := xy_x5(i);
+            x, y := i % (stride*size), i / (stride*size);
             if x-1 >= 0       { ni := index_x5(x-1, y); best[ni] = min(best[ni], best[i] + map_x5(x-1, y)); array_add(*queue, ni); }
             if x+1 < stride*5 { ni := index_x5(x+1, y); best[ni] = min(best[ni], best[i] + map_x5(x+1, y)); array_add(*queue, ni); }
             if y-1 >= 0       { ni := index_x5(x, y-1); best[ni] = min(best[ni], best[i] + map_x5(x, y-1)); array_add(*queue, ni); }
@@ -82,5 +80,5 @@ day15 :: (data : string) -> string, string
         }
     }
 
-    return tprint("%", solve_1(best, visited)), tprint("%", solve_2(best_x5, visited_x5));
+    return tprint("%", solve_1(1, best, visited)), tprint("%", solve_2(5, best_x5, visited_x5));
 }
