@@ -2,29 +2,16 @@ day15 :: (data : string) -> string, string
 {
     stride : s32;
     map : [..]s32;
-    best : [..]s32;
-    visited : [..]bool;
-    best_x5 : [..]s32;
-    visited_x5 : [..]bool;
 
     while data.count
     {
         if !stride && data[0] == #char "\n" stride = xx map.count;
 
         if data[0] >= #char "0" && data[0] <= #char "9"
-        {
-            array_add(*best, S32_MAX);
-            array_add(*visited, false);
-            for 1..25 array_add(*best_x5, S32_MAX);
-            for 1..25 array_add(*visited_x5, false);
             array_add(*map, data[0] - #char "0");
-        }
 
         advance(*data, 1);
     }
-
-    best[0] = 0;
-    best_x5[0] = 0;
 
     cost :: (x: s32, y: s32) -> s32 #expand
     {
@@ -36,8 +23,14 @@ day15 :: (data : string) -> string, string
         return val;
     }
 
-    solve :: (size: s32, best: []s32, visited: []bool) -> s32 #expand
+    solve :: (size: s32) -> s32 #expand
     {
+        best : [..]s32;
+        visited : [..]bool;
+        array_resize(*best, stride*size*stride*size);
+        array_resize(*visited, stride*size*stride*size);
+        for * best { <<it = S32_MAX; }
+        best[0] = 0;
         queue : [..]s32;
         array_add(*queue, 0);
 
@@ -57,5 +50,5 @@ day15 :: (data : string) -> string, string
         }
     }
 
-    return tprint("%", solve(1, best, visited)), tprint("%", solve(5, best_x5, visited_x5));
+    return tprint("%", solve(1)), tprint("%", solve(5));
 }
