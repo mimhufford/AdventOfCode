@@ -19,7 +19,9 @@ day15 :: (data : string) -> string, string
         dy := y / stride;
         val := map[(y%stride)*stride + (x%stride)];
         val += dx + dy;
-        while val > 9 val -= 9;
+        val -= 1;
+        val %= 9;
+        val += 1;
         return val;
     }
 
