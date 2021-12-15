@@ -26,7 +26,7 @@ day15 :: (data : string) -> string, string
     best[0] = 0;
     best_x5[0] = 0;
 
-    cost     :: (x: s32, y: s32) -> s32 #expand
+    cost :: (x: s32, y: s32) -> s32 #expand
     {
         dx := x / stride;
         dy := y / stride;
