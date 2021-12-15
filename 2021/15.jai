@@ -39,7 +39,7 @@ day15 :: (data : string) -> string, string
             priority := best[index];
             for queue
             {
-                if priority <= best[it] continue;
+                if priority < best[it] continue;
                 array_insert_at(*queue, index, it_index);
                 return;
             }
