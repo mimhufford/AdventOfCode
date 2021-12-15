@@ -34,19 +34,30 @@ day15 :: (data : string) -> string, string
         queue : [..]s32;
         array_add(*queue, 0);
 
+        add_priority :: (index: s32) #expand
+        {
+            priority := best[index];
+            for queue
+            {
+                if priority <= best[it] continue;
+                array_insert_at(*queue, index, it_index);
+                return;
+            }
+
+            array_add(*queue, index);
+        }
+
         while queue.count
         {
-            dist, i, qi : s32 = S32_MAX, 0, 0;
-            for queue if best[it] < dist { dist = best[it]; i = it; qi = xx it_index; }
+            i := pop(*queue);
             if i == best.count-1 return best[i];
-            array_unordered_remove_by_index(*queue, qi);
             if visited[i] continue;
             visited[i] = true;
             x, y := i % (stride*size), i / (stride*size);
-            if x-1 >= 0          { ni := y*stride*size + (x-1); best[ni] = min(best[ni], best[i] + cost(x-1, y)); array_add(*queue, ni); }
-            if x+1 < stride*size { ni := y*stride*size + (x+1); best[ni] = min(best[ni], best[i] + cost(x+1, y)); array_add(*queue, ni); }
-            if y-1 >= 0          { ni := (y-1)*stride*size + x; best[ni] = min(best[ni], best[i] + cost(x, y-1)); array_add(*queue, ni); }
-            if y+1 < stride*size { ni := (y+1)*stride*size + x; best[ni] = min(best[ni], best[i] + cost(x, y+1)); array_add(*queue, ni); }
+            if x-1 >= 0          { ni := y*stride*size + (x-1); best[ni] = min(best[ni], best[i] + cost(x-1, y)); add_priority(ni); }
+            if x+1 < stride*size { ni := y*stride*size + (x+1); best[ni] = min(best[ni], best[i] + cost(x+1, y)); add_priority(ni); }
+            if y-1 >= 0          { ni := (y-1)*stride*size + x; best[ni] = min(best[ni], best[i] + cost(x, y-1)); add_priority(ni); }
+            if y+1 < stride*size { ni := (y+1)*stride*size + x; best[ni] = min(best[ni], best[i] + cost(x, y+1)); add_priority(ni); }
         }
     }
 
