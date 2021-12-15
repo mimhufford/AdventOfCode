@@ -36,15 +36,22 @@ day15 :: (data : string) -> string, string
 
         add_priority :: (index: s32) #expand
         {
-            priority := best[index];
-            for queue
+            l, r := 0, queue.count-1;
+
+            if (queue.count)
             {
-                if priority < best[it] continue;
-                array_insert_at(*queue, index, it_index);
-                return;
+                p := best[index];
+                while l < r
+                {
+                    m := (l+r) / 2;
+                    mp := best[queue[m]];
+                    if      mp < p  r = m-1;
+                    else if mp > p  l = m+1;
+                    else    { l = m; r = m; }
+                }
             }
 
-            array_add(*queue, index);
+            array_insert_at(*queue, index, l);
         }
 
         while queue.count
