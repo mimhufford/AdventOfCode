@@ -1,10 +1,10 @@
 day15 :: (data : string) -> string, string
 {
-    stride : s64;
-    map : [..]s64;
-    best : [..]s64;
+    stride : s32;
+    map : [..]s32;
+    best : [..]s32;
     visited : [..]bool;
-    best_x5 : [..]s64;
+    best_x5 : [..]s32;
     visited_x5 : [..]bool;
 
     while data.count
@@ -13,9 +13,9 @@ day15 :: (data : string) -> string, string
 
         if data[0] >= #char "0" && data[0] <= #char "9"
         {
-            array_add(*best, S64_MAX);
+            array_add(*best, S32_MAX);
             array_add(*visited, false);
-            for 1..25 array_add(*best_x5, S64_MAX);
+            for 1..25 array_add(*best_x5, S32_MAX);
             for 1..25 array_add(*visited_x5, false);
             array_add(*map, data[0] - #char "0");
         }
@@ -26,11 +26,11 @@ day15 :: (data : string) -> string, string
     best[0] = 0;
     best_x5[0] = 0;
 
-    index    :: (x: s64, y: s64) -> s64 #expand { return y*stride + x; }
-    xy       :: (i: s64) -> s64, s64 #expand { return i % stride, i / stride; }
-    xy_x5    :: (i: s64) -> s64, s64 #expand { return i % (stride*5), i / (stride*5); }
-    index_x5 :: (x: s64, y: s64) -> s64 #expand { return y*stride*5 + x; }
-    map_x5   :: (x: s64, y: s64) -> s64 #expand
+    index    :: (x: s32, y: s32) -> s32 #expand { return y*stride + x; }
+    xy_x1    :: (i: s32) -> s32, s32 #expand { return i % stride, i / stride; }
+    xy_x5    :: (i: s32) -> s32, s32 #expand { return i % (stride*5), i / (stride*5); }
+    index_x5 :: (x: s32, y: s32) -> s32 #expand { return y*stride*5 + x; }
+    map_x5   :: (x: s32, y: s32) -> s32 #expand
     {
         dx := x / stride;
         dy := y / stride;
@@ -41,18 +41,18 @@ day15 :: (data : string) -> string, string
     }
 
     {
-        queue : [..]s64;
+        queue : [..]s32;
         array_add(*queue, 0);
 
         while queue.count
         {
-            dist, i, qi := S64_MAX, 0, 0;
-            for queue if best[it] < dist { dist = best[it]; i = it; qi = it_index; }
+            dist, i, qi : s32 = S32_MAX, 0, 0;
+            for queue if best[it] < dist { dist = best[it]; i = it; qi = xx it_index; }
             if i == best.count-1 break;
             array_unordered_remove_by_index(*queue, qi);
             if visited[i] continue;
             visited[i] = true;
-            x, y := xy(i);
+            x, y := xy_x1(i);
             if x-1 >= 0     { ni := index(x-1, y); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
             if x+1 < stride { ni := index(x+1, y); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
             if y-1 >= 0     { ni := index(x, y-1); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
@@ -61,14 +61,14 @@ day15 :: (data : string) -> string, string
     }
 
     {
-        queue : [..]s64;
+        queue : [..]s32;
         array_add(*queue, 0);
 
         while queue.count
         {
-            dist, i, qi := S64_MAX, 0, 0;
+            dist, i, qi : s32 = S32_MAX, 0, 0;
             for queue {
-                if best_x5[it] < dist { dist = best_x5[it]; i = it; qi = it_index; }
+                if best_x5[it] < dist { dist = best_x5[it]; i = it; qi = xx it_index; }
             }
             if i == best_x5.count-1 break;
             array_unordered_remove_by_index(*queue, qi);
