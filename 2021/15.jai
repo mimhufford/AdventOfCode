@@ -6,7 +6,7 @@ day15 :: (data : string) -> string, string
 
     while data.count
     {
-        map_row : [..]s32;
+        map_row  : [..]s32;
         cost_row : [..]s32;
 
         while data[0] >= #char "0" && data[0] <= #char "9"
@@ -27,6 +27,7 @@ day15 :: (data : string) -> string, string
     for y: 0..h*5-1
     {
         row : [..]s32;
+        array_reserve(*row, w*5);
         for x: 0..w*5-1 array_add(*row, S32_MAX);
         array_add(*cost5, row);
     }
