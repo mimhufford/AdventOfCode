@@ -5,7 +5,6 @@ day15 :: (data : string) -> string, string
     best : [..]s64;
     visited : [..]bool;
 
-
     while data.count
     {
         if !stride && data[0] == #char "\n" stride = xx map.count;
