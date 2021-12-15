@@ -40,6 +40,7 @@ day15 :: (data : string) -> string, string
         return val;
     }
 
+    solve_1 :: (best: []s32, visited: []bool) -> s32 #expand
     {
         queue : [..]s32;
         array_add(*queue, 0);
@@ -48,18 +49,19 @@ day15 :: (data : string) -> string, string
         {
             dist, i, qi : s32 = S32_MAX, 0, 0;
             for queue if best[it] < dist { dist = best[it]; i = it; qi = xx it_index; }
-            if i == best.count-1 break;
+            if i == best.count-1 return best[i];
             array_unordered_remove_by_index(*queue, qi);
             if visited[i] continue;
             visited[i] = true;
             x, y := xy_x1(i);
-            if x-1 >= 0     { ni := index(x-1, y); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
-            if x+1 < stride { ni := index(x+1, y); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
-            if y-1 >= 0     { ni := index(x, y-1); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
-            if y+1 < stride { ni := index(x, y+1); best[ni] = min(best[ni], best[i] + map[ni]); array_add(*queue, ni); }
+            if x-1 >= 0     { ni := index(x-1, y); best[ni] = min(best[ni], best[i] + map_x5(x-1, y)); array_add(*queue, ni); }
+            if x+1 < stride { ni := index(x+1, y); best[ni] = min(best[ni], best[i] + map_x5(x+1, y)); array_add(*queue, ni); }
+            if y-1 >= 0     { ni := index(x, y-1); best[ni] = min(best[ni], best[i] + map_x5(x, y-1)); array_add(*queue, ni); }
+            if y+1 < stride { ni := index(x, y+1); best[ni] = min(best[ni], best[i] + map_x5(x, y+1)); array_add(*queue, ni); }
         }
     }
 
+    solve_2 :: (best: []s32, visited: []bool) -> s32 #expand
     {
         queue : [..]s32;
         array_add(*queue, 0);
@@ -67,20 +69,18 @@ day15 :: (data : string) -> string, string
         while queue.count
         {
             dist, i, qi : s32 = S32_MAX, 0, 0;
-            for queue {
-                if best_x5[it] < dist { dist = best_x5[it]; i = it; qi = xx it_index; }
-            }
-            if i == best_x5.count-1 break;
+            for queue if best[it] < dist { dist = best[it]; i = it; qi = xx it_index; }
+            if i == best.count-1 return best[i];
             array_unordered_remove_by_index(*queue, qi);
-            if visited_x5[i] continue;
-            visited_x5[i] = true;
+            if visited[i] continue;
+            visited[i] = true;
             x, y := xy_x5(i);
-            if x-1 >= 0       { ni := index_x5(x-1, y); best_x5[ni] = min(best_x5[ni], best_x5[i] + map_x5(x-1, y)); array_add(*queue, ni); }
-            if x+1 < stride*5 { ni := index_x5(x+1, y); best_x5[ni] = min(best_x5[ni], best_x5[i] + map_x5(x+1, y)); array_add(*queue, ni); }
-            if y-1 >= 0       { ni := index_x5(x, y-1); best_x5[ni] = min(best_x5[ni], best_x5[i] + map_x5(x, y-1)); array_add(*queue, ni); }
-            if y+1 < stride*5 { ni := index_x5(x, y+1); best_x5[ni] = min(best_x5[ni], best_x5[i] + map_x5(x, y+1)); array_add(*queue, ni); }
+            if x-1 >= 0       { ni := index_x5(x-1, y); best[ni] = min(best[ni], best[i] + map_x5(x-1, y)); array_add(*queue, ni); }
+            if x+1 < stride*5 { ni := index_x5(x+1, y); best[ni] = min(best[ni], best[i] + map_x5(x+1, y)); array_add(*queue, ni); }
+            if y-1 >= 0       { ni := index_x5(x, y-1); best[ni] = min(best[ni], best[i] + map_x5(x, y-1)); array_add(*queue, ni); }
+            if y+1 < stride*5 { ni := index_x5(x, y+1); best[ni] = min(best[ni], best[i] + map_x5(x, y+1)); array_add(*queue, ni); }
         }
     }
 
-    return tprint("%", best[index(stride-1, stride-1)]), tprint("%", best_x5[index_x5(stride*5-1, stride*5-1)]);
+    return tprint("%", solve_1(best, visited)), tprint("%", solve_2(best_x5, visited_x5));
 }
