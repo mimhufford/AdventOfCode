@@ -8,7 +8,7 @@ main :: ()
 
     for days
     {
-        input := read_entire_file(tprint("input/%.txt", it_index+1));
+        input := read_entire_file(tprint("input/%.txt", formatInt(it_index+1, minimum_digits=2)));
         day_start := get_time();
         part1, part2 := it(input);
         day_time := get_time() - day_start;
@@ -28,16 +28,16 @@ generate_days :: () -> string
 
     append(*code, "days := #type (string) -> (string, string).[");
     for 1..25 {
-        file := tprint("%.jai", it);
+        file := tprint("%.jai", formatInt(it, minimum_digits=2));
         if !file_exists(file) continue;
         append(*code, tprint("day%,", it));
     }
     append(*code, "];");
 
     for 1..25 {
-        file := tprint("%.jai", it);
+        file := tprint("%.jai", formatInt(it, minimum_digits=2));
         if !file_exists(file) continue;
-        append(*code, tprint("#load \"%.jai\";", it));
+        append(*code, tprint("#load \"%.jai\";", formatInt(it, minimum_digits=2)));
     }
 
     return builder_to_string(*code);
