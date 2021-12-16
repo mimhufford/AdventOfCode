@@ -5,26 +5,9 @@ day16 :: (data : string) -> string, string
 
     for 0..data.count-1
     {
-        set :: (b: u8) #expand { set_bit(*bits, it*4+b); }
-
-        if data[it] ==
-        {
-            case #char "1";                         set(3);
-            case #char "2";                 set(2);
-            case #char "3";                 set(2); set(3);
-            case #char "4";         set(1);
-            case #char "5";         set(1);         set(3);
-            case #char "6";         set(1); set(2);
-            case #char "7";         set(1); set(2); set(3);
-            case #char "8"; set(0);
-            case #char "9"; set(0);                 set(3);
-            case #char "A"; set(0);         set(2);        
-            case #char "B"; set(0);         set(2); set(3);
-            case #char "C"; set(0); set(1);                
-            case #char "D"; set(0); set(1);         set(3);
-            case #char "E"; set(0); set(1); set(2);        
-            case #char "F"; set(0); set(1); set(2); set(3);
-        }
+        set4 :: (v: u8) #expand { for b: 0..3 if v & (1 << b) set_bit(*bits, it*4 + 3 - b); }
+        if      data[it] >= #char "1" && data[it] <= #char "9" set4(data[it] - #char "0");
+        else if data[it] >= #char "A" && data[it] <= #char "F" set4(data[it] - #char "A" + 10);
     }
 
     parse_packet :: (bits: Bit_Array, start := 0) -> (consumed: int, result: int)
