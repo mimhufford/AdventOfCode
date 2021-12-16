@@ -1,6 +1,9 @@
 day16 :: (data : string) -> string, string
 {
-    hex := "38006F45291200\n";
+    // hex := "D2FE28\n";
+    // hex := "38006F45291200\n";
+    // hex := "EE00D40C823060\n";
+    hex := data;
     hex.count -= 1; // remove \n
 
     #import "Bit_Array";
@@ -31,7 +34,7 @@ day16 :: (data : string) -> string, string
         }
     }
 
-    parse_packet :: (bits: Bit_Array, _base := 0) -> int
+    parse_packet :: (bits: Bit_Array, start := 0) -> int
     {
         read_int :: (count: int) -> int #expand
         {
@@ -56,9 +59,13 @@ day16 :: (data : string) -> string, string
                 if !more break;
             }
 
-            padding := (4 - base % 4) % 4;
-            base += padding;
-            print("padding: %\n", padding);
+            // The padding is only on the main packet, so I think I can just ignore it (for now?)
+            // if start == 0  // only outmost packet is padded
+            // {
+            //     padding := (4 - ((base - start) % 4)) % 4;
+            //     base += padding;
+            //     print("padding: %\n", padding);
+            // }
 
             return result;
         }
@@ -66,35 +73,56 @@ day16 :: (data : string) -> string, string
         read_operator :: () #expand
         {
             length_type := read_int(1);
-            print("len typ: %\n", length_type);
+            // print("len typ: %\n", length_type);
 
             if length_type ==
             {
                 case 0;
                     length := read_int(15);
-                    print(" length: %\n", length);
-                    // TODO: parse_packet until we've done that many bits...
-                    base = parse_packet(bits, base);
+                    // print(" length: %\n", length);
+                    while length
+                    {
+                        consumed := parse_packet(bits, base);
+                        // print("consumed: %\n", consumed);
+                        base += consumed;
+                        length -= consumed;
+                    }
                 case 1;
-                case  ; assert(false);
+                    sub_packets := read_int(11);
+                    // print("sub pks: %\n", sub_packets);
+                    while sub_packets
+                    {
+                        consumed := parse_packet(bits, base);
+                        // print("consumed: %\n", consumed);
+                        base += consumed;
+                        sub_packets -= 1;
+                    }
+                case; assert(false);
             }
         }
 
-        base := _base;
+        base := start;
 
-        version := read_int(3); print("version: %\n", version);
-        type    := read_int(3); print("   type: %\n", type);
+        version := read_int(3);
+        // print("version: %\n", version);
+        version_total += version;
+        type    := read_int(3);
+        //print("   type: %\n", type);
 
         if type ==
         {
-            case 4; literal := read_literal(); print("literal: %\n", literal);
+            case 4;
+                literal := read_literal();
+                //print("literal: %\n", literal);
             case  ; read_operator();
         }
 
-        return base;
+        return base - start;
     }
 
     parse_packet(bits);
 
-    return tprint("%", ""), tprint("%", "");
+    return tprint("%", version_total), tprint("%", "");
 }
+
+version_total := 0;
