@@ -31,7 +31,7 @@ day16 :: (data : string) -> string, string
         }
     }
 
-    parse_packet :: (bits: Bit_Array)
+    parse_packet :: (bits: Bit_Array, _base := 0) -> int
     {
         read_int :: (count: int) -> int #expand
         {
@@ -70,13 +70,17 @@ day16 :: (data : string) -> string, string
 
             if length_type ==
             {
-                case 0; length := read_int(15); print("  length: %\n", length);
+                case 0;
+                    length := read_int(15);
+                    print(" length: %\n", length);
+                    // TODO: parse_packet until we've done that many bits...
+                    base = parse_packet(bits, base);
                 case 1;
                 case  ; assert(false);
             }
         }
 
-        base : int;
+        base := _base;
 
         version := read_int(3); print("version: %\n", version);
         type    := read_int(3); print("   type: %\n", type);
@@ -87,6 +91,7 @@ day16 :: (data : string) -> string, string
             case  ; read_operator();
         }
 
+        return base;
     }
 
     parse_packet(bits);
