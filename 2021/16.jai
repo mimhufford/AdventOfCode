@@ -1,6 +1,6 @@
 day16 :: (data : string) -> string, string
 {
-    hex := "D2FE28\n";
+    hex := "38006F45291200\n";
     hex.count -= 1; // remove \n
 
     #import "Bit_Array";
@@ -33,57 +33,58 @@ day16 :: (data : string) -> string, string
 
     parse_packet :: (bits: Bit_Array)
     {
-        read_3_bit_u8 :: () -> u8 #expand
+        read_int :: (count: int) -> int #expand
         {
-            value : u8;
-            value |= (cast(u8)bits[base+0]) << 2;
-            value |= (cast(u8)bits[base+1]) << 1;
-            value |= (cast(u8)bits[base+2]) << 0;
-            base += 3;
-            bits_read += 3;
+            value : int;
+            for 0..count value |= (cast(int)bits[base+it]) << (count - it - 1);
+            base += count;
             return value;
         }
 
-        read_literal :: () -> u64 #expand
+        read_literal :: () -> int #expand
         {
-            result : u64;
+            result : int;
 
             while true
             {
-                finished := !bits[base];
-                base += 1;
-
-                value : u8;
-                value |= (cast(u8)bits[base+0]) << 3;
-                value |= (cast(u8)bits[base+1]) << 2;
-                value |= (cast(u8)bits[base+2]) << 1;
-                value |= (cast(u8)bits[base+3]) << 0;
-                base += 4;
+                more  := read_int(1);
+                value := read_int(4);
 
                 result <<= 4;
                 result |= value;
 
-                bits_read += 5;
-
-                if finished break;
+                if !more break;
             }
 
-            padding := (4 - bits_read % 4) % 4;
+            padding := (4 - base % 4) % 4;
             base += padding;
             print("padding: %\n", padding);
 
             return result;
         }
 
-        bits_read := 0;
-        base := 0;
+        read_operator :: () #expand
+        {
+            length_type := read_int(1);
+            print("len typ: %\n", length_type);
 
-        version := read_3_bit_u8(); print("version: %\n", version);
-        type    := read_3_bit_u8(); print("   type: %\n", type);
+            if length_type ==
+            {
+                case 0; length := read_int(15); print("  length: %\n", length);
+                case 1;
+                case  ; assert(false);
+            }
+        }
+
+        base : int;
+
+        version := read_int(3); print("version: %\n", version);
+        type    := read_int(3); print("   type: %\n", type);
 
         if type ==
         {
             case 4; literal := read_literal(); print("literal: %\n", literal);
+            case  ; read_operator();
         }
 
     }
