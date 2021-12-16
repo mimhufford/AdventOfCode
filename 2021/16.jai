@@ -10,7 +10,7 @@ day16 :: (data : string) -> string, string
         else if data[it] >= #char "A" && data[it] <= #char "F" set4(data[it] - #char "A" + 10);
     }
 
-    parse_packet :: (bits: Bit_Array, start := 0) -> (consumed: int, result: int)
+    parse_packet :: (bits: Bit_Array, start := 0) -> (result: int, consumed: int)
     {
         read_int :: (count: int) -> int #expand
         {
@@ -37,17 +37,16 @@ day16 :: (data : string) -> string, string
 
         read_operator :: (type: int) -> int #expand
         {
-            length_type := read_int(1);
-
             results : [..]int;
 
+            length_type := read_int(1);
             if length_type ==
             {
                 case 0;
                     length := read_int(15);
                     while length
                     {
-                        consumed, sub_result := parse_packet(bits, base);
+                        sub_result, consumed := parse_packet(bits, base);
                         array_add(*results, sub_result);
                         base += consumed;
                         length -= consumed;
@@ -56,7 +55,7 @@ day16 :: (data : string) -> string, string
                     sub_packets := read_int(11);
                     while sub_packets
                     {
-                        consumed, sub_result := parse_packet(bits, base);
+                        sub_result, consumed := parse_packet(bits, base);
                         array_add(*results, sub_result);
                         base += consumed;
                         sub_packets -= 1;
@@ -84,18 +83,11 @@ day16 :: (data : string) -> string, string
         version_total += version;
         type    := read_int(3);
 
-        result := 0;
-
-        if type ==
-        {
-            case 4; result = read_literal();
-            case;   result = read_operator(type);
-        }
-
-        return base - start, result;
+        if type == 4 return read_literal(),      base - start;
+        else         return read_operator(type), base - start;
     }
 
-    consumed, result := parse_packet(bits);
+    result := parse_packet(bits);
 
     return tprint("%", version_total), tprint("%", result);
 }
