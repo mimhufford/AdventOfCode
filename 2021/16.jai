@@ -67,8 +67,8 @@ day16 :: (data : string) -> string, string
             {
                 case 0; result := 0; for results result += it; return result;
                 case 1; result := 1; for results result *= it; return result;
-                case 2; result := S64_MAX; for results if it < result result = it; return result;
-                case 3; result := S64_MIN; for results if it > result result = it; return result;
+                case 2; return min(S64_MAX, ..results);
+                case 3; return max(S64_MIN, ..results);
                 case 5; return cast(int)(results[0]  > results[1]);
                 case 6; return cast(int)(results[0]  < results[1]);
                 case 7; return cast(int)(results[0] == results[1]);
