@@ -5,25 +5,24 @@ day17 :: (data : string) -> string, string
     y_min := read_s64(*data);
     y_max := read_s64(*data);
     
-    max_height := (abs(y_min)-1) * abs(y_min) / 2;
-
     xs := calculate_possible_xs(x_min, x_max);
     ys := calculate_possible_ys(y_min, y_max);
 
-    possibilities := count_hits(xs, ys, x_min, x_max, y_min, y_max);
+    highest, possibilities := simulate(xs, ys, x_min, x_max, y_min, y_max);
 
-    return tprint("%", max_height), tprint("%", possibilities);
+    return tprint("%", highest), tprint("%", possibilities);
 }
 
-count_hits :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: s64) -> s64
+simulate :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: s64) -> s64, s64
 {
+    highest := 0;
     count := 0;
 
     for start_dx: xs
     {
         for start_dy: ys
         {
-            x, y, step := 0;
+            max_y, x, y, step := 0;
             dx, dy := start_dx, start_dy;
 
             while y >= y_min && x <= x_max
@@ -32,18 +31,20 @@ count_hits :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: 
                 x += dx;
                 y += dy;
                 if dx dx -= 1;
+                max_y = max(max_y, y);
                 dy -= 1;
 
                 if x >= x_min && x <= x_max && y >= y_min && y <= y_max
                 {
                     count += 1;
+                    highest = max(highest, max_y);
                     break;
                 }
             }
         }
     }
 
-    return count;
+    return highest, count;
 }
 
 calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
