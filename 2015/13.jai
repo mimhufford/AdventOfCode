@@ -60,7 +60,6 @@ max_happiness :: (people: []string, happiness: Table) -> s64
 
 read_line :: (s: *string) -> string, string, s64
 {
-    // Alice would lose 2 happiness units by sitting next to Bob.
     first: string;
     second: string;
     happiness: s64;
