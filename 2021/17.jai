@@ -1,21 +1,21 @@
 day17 :: (data : string) -> string, string
 {
-    x_min := read_s64(*data);
-    x_max := read_s64(*data);
-    y_min := read_s64(*data);
-    y_max := read_s64(*data);
+    left   := read_s64(*data);
+    right  := read_s64(*data);
+    bottom := read_s64(*data);
+    top    := read_s64(*data);
     
-    max_height := (abs(y_min)-1) * abs(y_min) / 2;
+    max_height := (abs(bottom)-1) * abs(bottom) / 2;
 
-    xs := calculate_possible_xs(x_min, x_max);
-    ys := calculate_possible_ys(y_min, y_max);
+    xs := calculate_possible_xs(left, right);
+    ys := calculate_possible_ys(bottom, top);
 
-    possibilities := count_hits(xs, ys, x_min, x_max, y_min, y_max);
+    possibilities := count_hits(xs, ys, left, right, bottom, top);
 
     return tprint("%", max_height), tprint("%", possibilities);
 }
 
-count_hits :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: s64) -> s64
+count_hits :: (xs: []s64, ys: []s64, left: s64, right: s64, bottom: s64, top: s64) -> s64
 {
     count := 0;
 
@@ -26,7 +26,7 @@ count_hits :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: 
             x, y, step := 0;
             dx, dy := start_dx, start_dy;
 
-            while y >= y_min && x <= x_max
+            while y >= bottom && x <= right
             {
                 step += 1;
                 x += dx;
@@ -34,7 +34,7 @@ count_hits :: (xs: []s64, ys: []s64, x_min: s64, x_max: s64, y_min: s64, y_max: 
                 if dx dx -= 1;
                 dy -= 1;
 
-                if x >= x_min && x <= x_max && y >= y_min && y <= y_max
+                if x >= left && x <= right && y >= bottom && y <= top
                 {
                     count += 1;
                     break;
