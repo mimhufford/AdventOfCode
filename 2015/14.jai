@@ -1,19 +1,31 @@
 day14 :: (data: string) -> string, string
 {
-    while data.count
+    reindeers : [..]Reindeer;
+
+    while data.count array_add(*reindeers, read_reindeer(*data));
+
+    furthest := 0;
+
+    for reindeers
     {
-        print("%", read_reindeer(*data));
+        seconds :: 2503;
+        full_cycle := it.time + it.rest;
+        num_full_cycles := seconds / full_cycle;
+        remaining_seconds := seconds % full_cycle;
+        distance_travelled := it.speed * num_full_cycles * it.time;
+        distance_travelled += it.speed * min(remaining_seconds, it.time);
+        furthest = max(furthest, distance_travelled);
     }
 
-    return tprint("%", ""), tprint("%", "");
+    return tprint("%", furthest), tprint("%", "");
 }
 
 Reindeer :: struct
 {
     name: string;
-    speed: u64;
-    time: u64;
-    rest: u64;
+    speed: s64;
+    time: s64;
+    rest: s64;
 }
 
 read_reindeer :: (s: *string) -> Reindeer
