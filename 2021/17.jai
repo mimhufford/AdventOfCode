@@ -10,20 +10,21 @@ day17 :: (data : string) -> string, string
     xs := calculate_possible_xs(left, right);
     ys := calculate_possible_ys(bottom, top);
 
-    possibilities := count_hits(xs, ys, left, right, bottom, top);
+    highest, possibilities := simulate(xs, ys, left, right, bottom, top);
 
-    return tprint("%", max_height), tprint("%", possibilities);
+    return tprint("%", highest), tprint("%", possibilities);
 }
 
-count_hits :: (xs: []s64, ys: []s64, left: s64, right: s64, bottom: s64, top: s64) -> s64
+simulate :: (xs: []s64, ys: []s64, left: s64, right: s64, bottom: s64, top: s64) -> s64, s64
 {
+    highest := 0;
     count := 0;
 
     for start_dx: xs
     {
         for start_dy: ys
         {
-            x, y, step := 0;
+            max_y, x, y, step := 0;
             dx, dy := start_dx, start_dy;
 
             while y >= bottom && x <= right
@@ -32,18 +33,20 @@ count_hits :: (xs: []s64, ys: []s64, left: s64, right: s64, bottom: s64, top: s6
                 x += dx;
                 y += dy;
                 if dx dx -= 1;
+                max_y = max(max_y, y);
                 dy -= 1;
 
                 if x >= left && x <= right && y >= bottom && y <= top
                 {
                     count += 1;
+                    highest = max(highest, max_y);
                     break;
                 }
             }
         }
     }
 
-    return count;
+    return highest, count;
 }
 
 calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
