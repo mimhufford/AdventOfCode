@@ -1,37 +1,48 @@
 day17 :: (data : string) -> string, string
 {
+    //data := "target area: x=20..30, y=-10..-5\n";
+
     tx_min := read_s64(*data);
     tx_max := read_s64(*data);
     ty_min := read_s64(*data);
     ty_max := read_s64(*data);
     
-    highest := calculate_highest(tx_min, tx_max);
+    max_height := (abs(ty_min)-1) * abs(ty_min) / 2;
 
-    return tprint("%", highest), tprint("%", "");
-}
+    // highest: s64;
 
-calculate_highest :: (min: s64, max: s64) -> s64
-{
-    highest: s64;
+    // for < start_dx: tx_min-1..0
+    // {
+    //     x := 0;
+    //     dx := start_dx;
+    //     steps := 0;
 
-    for < start_x: min-1..0
-    {
-        x := start_x;
-        steps := 0;
+    //     while true
+    //     {
+    //         x += dx; if dx > 0 dx -= 1;
+    //         steps += 1;
 
-        for < next_x: start_x-1..0
-        {
-            steps += 1;
-            x += next_x;
+    //         if x < tx_min && dx == 0 break;
+    //         if x > tx_max            break;
 
-            if x >= min && x <= max
-            {
-                print("start: % steps: % x: %\n", start_x, steps, x);
-            }
-        }
-    }
+    //         if x >= tx_min && x <= tx_max
+    //         {
+    //             // found a good x and steps, time to find y
+    //             for start_dy: 0..100
+    //             {
+    //                 y := 0;
+    //                 dy := start_dy;
 
-    return highest;
+    //                 for step: 1..steps { y += dy; dy -= 1; }
+
+    //                 if y >= ty_min && y <= ty_max
+    //                     print("dx: % dy:%\n", start_dx, start_dy);
+    //             }
+    //         }
+    //     }
+    // }
+
+    return tprint("%", max_height), tprint("%", "");
 }
 
 read_s64 :: (s: *string) -> s64
