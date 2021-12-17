@@ -26,7 +26,7 @@ count_hits :: () -> s64 #expand
             x, y, step := 0;
             dx, dy := start_dx, start_dy;
 
-            while step < 10000
+            while y >= `y_min && x <= `x_max
             {
                 step += 1;
                 x += dx;
