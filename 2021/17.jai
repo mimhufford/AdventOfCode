@@ -9,40 +9,60 @@ day17 :: (data : string) -> string, string
     
     max_height := (abs(ty_min)-1) * abs(ty_min) / 2;
 
-    // highest: s64;
-
-    // for < start_dx: tx_min-1..0
-    // {
-    //     x := 0;
-    //     dx := start_dx;
-    //     steps := 0;
-
-    //     while true
-    //     {
-    //         x += dx; if dx > 0 dx -= 1;
-    //         steps += 1;
-
-    //         if x < tx_min && dx == 0 break;
-    //         if x > tx_max            break;
-
-    //         if x >= tx_min && x <= tx_max
-    //         {
-    //             // found a good x and steps, time to find y
-    //             for start_dy: 0..100
-    //             {
-    //                 y := 0;
-    //                 dy := start_dy;
-
-    //                 for step: 1..steps { y += dy; dy -= 1; }
-
-    //                 if y >= ty_min && y <= ty_max
-    //                     print("dx: % dy:%\n", start_dx, start_dy);
-    //             }
-    //         }
-    //     }
-    // }
+    xs := calculate_possible_xs(tx_min, tx_max);
+    ys := calculate_possible_ys(ty_min, ty_max);
 
     return tprint("%", max_height), tprint("%", "");
+}
+
+calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
+{
+    xs: [..]s64;
+
+    for < start_dx: max..0
+    {
+        x := 0;
+        dx := start_dx;
+
+        while dx >= 0
+        {
+            if x >= min && x <= max
+            {
+                array_add(*xs, start_dx);
+                break;
+            }
+
+            x += dx;
+            dx -= 1;
+        }
+    }
+
+    return xs;
+}
+
+calculate_possible_ys :: (min: s64, max: s64) -> [..]s64
+{
+    ys: [..]s64;
+
+    for start_dy: min..abs(min)
+    {
+        y := 0;
+        dy := start_dy;
+
+        while y > max
+        {
+            y += dy;
+            dy -= 1;
+
+            if y >= min && y <= max
+            {
+                array_add(*ys, start_dy);
+                break;
+            }
+        }
+    }
+
+    return ys;
 }
 
 read_s64 :: (s: *string) -> s64
