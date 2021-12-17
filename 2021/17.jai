@@ -49,18 +49,18 @@ simulate :: (xs: []s64, ys: []s64, left: s64, right: s64, bottom: s64, top: s64)
     return highest, count;
 }
 
-calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
+calculate_possible_xs :: (left: s64, right: s64) -> [..]s64
 {
     xs: [..]s64;
 
-    for < start_dx: max..0
+    for start_dx: 1..right
     {
         x := 0;
         dx := start_dx;
 
         while dx >= 0
         {
-            if x >= min && x <= max
+            if x >= left && x <= right
             {
                 array_add(*xs, start_dx);
                 break;
@@ -74,21 +74,21 @@ calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
     return xs;
 }
 
-calculate_possible_ys :: (min: s64, max: s64) -> [..]s64
+calculate_possible_ys :: (bottom: s64, top: s64) -> [..]s64
 {
     ys: [..]s64;
 
-    for start_dy: min..abs(min)
+    for start_dy: bottom..abs(bottom)
     {
         y := 0;
         dy := start_dy;
 
-        while y > max
+        while y > top
         {
             y += dy;
             dy -= 1;
 
-            if y >= min && y <= max
+            if y >= bottom && y <= top
             {
                 array_add(*ys, start_dy);
                 break;
