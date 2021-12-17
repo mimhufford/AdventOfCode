@@ -4,40 +4,38 @@ day14 :: (data: string) -> string, string
 
     while data.count array_add(*reindeers, read_reindeer(*data));
 
-    furthest := 0;
-
-    for reindeers
+    for s: 0..2503
     {
-        seconds :: 2503;
-        full_cycle := it.time + it.rest;
-        num_full_cycles := seconds / full_cycle;
-        remaining_seconds := seconds % full_cycle;
-        distance_travelled := it.speed * num_full_cycles * it.time;
-        distance_travelled += it.speed * min(remaining_seconds, it.time);
-        furthest = max(furthest, distance_travelled);
+        for * reindeers
+        {
+            full_cycle := it.time + it.rest;
+            it.distance = it.speed * (s / full_cycle * it.time + min(s % full_cycle, it.time));
+        }
+
+        furthest := 0; for reindeers furthest = max(furthest, it.distance);
+        for * reindeers if it.distance == furthest it.score += 1;
     }
 
-    return tprint("%", furthest), tprint("%", "");
+    furthest := 0; for reindeers  furthest = max(furthest, it.distance);
+    hi_score := 0; for reindeers  hi_score = max(hi_score, it.score-1);
+    
+    return tprint("%", furthest), tprint("%", hi_score);
 }
 
 Reindeer :: struct
 {
-    name: string;
     speed: s64;
     time: s64;
     rest: s64;
+    distance: s64;
+    score: s64;
 }
 
 read_reindeer :: (s: *string) -> Reindeer
 {
     result: Reindeer;
 
-    result.name.data = s.data;
-    while s.data[0] != #char " "
-    {  
-        result.name.count += 1;
-        advance(s, 1);
-    }
+    while s.data[0] != #char " " advance(s, 1);
 
     advance(s, 9);
 
