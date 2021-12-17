@@ -5,31 +5,33 @@ day17 :: (data : string) -> string, string
     ty_min := read_s64(*data);
     ty_max := read_s64(*data);
     
-    xs := calculate_possible_xs(tx_min, tx_max);
+    highest := calculate_highest(tx_min, tx_max);
 
-    return tprint("%", xs), tprint("%", "");
+    return tprint("%", highest), tprint("%", "");
 }
 
-calculate_possible_xs :: (min: s64, max: s64) -> [..]s64
+calculate_highest :: (min: s64, max: s64) -> s64
 {
-    xs: [..]s64;
+    highest: s64;
 
     for < start_x: min-1..0
     {
         x := start_x;
+        steps := 0;
 
         for < next_x: start_x-1..0
         {
+            steps += 1;
             x += next_x;
+
             if x >= min && x <= max
             {
-                array_add(*xs, start_x);
-                break;
+                print("start: % steps: % x: %\n", start_x, steps, x);
             }
         }
     }
 
-    return xs;
+    return highest;
 }
 
 read_s64 :: (s: *string) -> s64
