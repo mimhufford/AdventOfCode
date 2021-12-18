@@ -50,6 +50,7 @@ generate_days :: () -> string
 #import "Basic";
 #import "String";
 #import "Thread";
+#import "Bit_Array";
 #import "Hash_Table";
 #import "File_Utilities";
 #import "Bit_Operations";
