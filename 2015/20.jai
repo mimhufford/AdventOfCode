@@ -1,25 +1,25 @@
+houses : [1_000_000]u32;
+
 day20 :: (data: string) -> string, string
 {
-    min_presents :: 36000000;
+    for * houses {<<it = 0;}
+    min_presents : u32 : 36000000;
+    first : u32;
 
-    house_num := 1;
-
-    while true
+    for e: 1..houses.count-1
     {
-        presents := 0;
-
-        for i: 1..cast(int)(sqrt(cast(float)house_num))
+        h := e;
+        while h < houses.count
         {
-            if house_num % i != 0 continue;
-            presents += i*10;
-            if house_num / i != i presents += (house_num/i*10);
-            if presents >= min_presents break;
+            houses[h] += xx(e * 10);
+            if houses[h] >= min_presents
+            {
+                first = xx h;
+                break e;
+            }
+            h += e;
         }
-        
-        if presents >= min_presents break;
-
-        house_num += 1;
     }
 
-    return tprint("%", house_num), tprint("%", "");
+    return tprint("%", first), tprint("%", "");
 }
