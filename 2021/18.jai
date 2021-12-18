@@ -12,6 +12,15 @@ Number :: struct
     r : *Number;
 }
 
+add :: (l: *Number, r: *Number) -> *Number
+{
+    n := New(Number);
+    n.v = -1;
+    n.l = l;
+    n.r = r;
+    return n;
+}
+
 magnitude :: (n: *Number) -> s64
 {
     if n.v >= 0 return n.v;
