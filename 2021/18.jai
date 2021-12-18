@@ -1,16 +1,33 @@
 day18 :: (data : string) -> string, string
 {
+    copy := data;
     nums := parse_snailfish_numbers(*data);
 
-    result := nums[0];
-
+    part_1 := nums[0];
     for 1..nums.count-1
     {
-        result = add(result, nums[it]);
-        reduce(result);
+        part_1 = add(part_1, nums[it]);
+        reduce(part_1);
     }
 
-    return tprint("%", magnitude(result)), tprint("%", "");
+    part_2 := 0;
+    for a: 0..nums.count-1
+    {
+        for b: 0..nums.count-1
+        {
+            // SLOW HACK - reducing destroys the data.
+            // Need a clean version of the numbers each time.
+            // For now just reparse the whole thing.
+            d := copy;
+            nums := parse_snailfish_numbers(*d);
+            if a == b continue;
+            sum := add(nums[a], nums[b]);
+            reduce(sum);
+            part_2 = max(part_2, magnitude(sum));
+        }
+    }
+
+    return tprint("%", magnitude(part_1)), tprint("%", part_2);
 }
 
 Number :: struct
