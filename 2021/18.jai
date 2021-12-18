@@ -1,12 +1,11 @@
 day18 :: (data : string) -> string, string
 {
-    copy := data;
     nums := parse_snailfish_numbers(*data);
 
-    part_1 := nums[0];
+    part_1 := clone(nums[0]);
     for 1..nums.count-1
     {
-        part_1 = add(part_1, nums[it]);
+        part_1 = add(part_1, clone(nums[it]));
     }
 
     part_2 := 0;
@@ -14,13 +13,8 @@ day18 :: (data : string) -> string, string
     {
         for b: 0..nums.count-1
         {
-            // SLOW HACK - reducing destroys the data.
-            // Need a clean version of the numbers each time.
-            // For now just reparse the whole thing.
-            d := copy;
-            nums := parse_snailfish_numbers(*d);
             if a == b continue;
-            sum := add(nums[a], nums[b]);
+            sum := add(clone(nums[a]), clone(nums[b]));
             part_2 = max(part_2, magnitude(sum));
         }
     }
@@ -34,6 +28,18 @@ Number :: struct
     l : *Number;
     r : *Number;
     p : *Number;
+}
+
+clone :: (n: *Number) -> *Number
+{
+    result := New(Number);
+    result.v = n.v;
+    if n.v >= 0 return result;
+    result.l = clone(n.l);
+    result.r = clone(n.r);
+    result.l.p = result;
+    result.r.p = result;
+    return result;
 }
 
 add :: (l: *Number, r: *Number) -> *Number
