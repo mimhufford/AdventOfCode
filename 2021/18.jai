@@ -12,6 +12,12 @@ Number :: struct
     r : *Number;
 }
 
+magnitude :: (n: *Number) -> s64
+{
+    if n.v >= 0 return n.v;
+    return 3 * magnitude(n.l) + 2 * magnitude(n.r);
+}
+
 dump :: (n: *Number)
 {
     if n.v >= 0
