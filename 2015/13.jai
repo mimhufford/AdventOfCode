@@ -34,7 +34,7 @@ max_happiness :: (people: []string, happiness: Table) -> s64
     indexes : [..]int;
     for people array_add(*indexes, it_index);
     order : []int = indexes;
-    rounds := permutation_count(xx order.count, xx order.count) - 1;
+    rounds := permutation_count(xx order.count, xx order.count) / xx people.count;
     best := S64_MIN;
     for 1..rounds
     {
