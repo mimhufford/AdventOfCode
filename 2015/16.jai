@@ -35,8 +35,26 @@ day16 :: (data: string) -> string, string
         break;
     }
 
+    part_2 := 0;
 
-    return tprint("%", part_1), tprint("%", "");
+    for sues
+    {
+        if it.cars        != -1 && it.cars        != sender.cars          continue;
+        if it.cats        != -1 && it.cats        <= sender.cats          continue;
+        if it.trees       != -1 && it.trees       <= sender.trees         continue;
+        if it.akitas      != -1 && it.akitas      != sender.akitas        continue;
+        if it.vizslas     != -1 && it.vizslas     != sender.vizslas       continue;
+        if it.perfumes    != -1 && it.perfumes    != sender.perfumes      continue;
+        if it.samoyeds    != -1 && it.samoyeds    != sender.samoyeds      continue;
+        if it.children    != -1 && it.children    != sender.children      continue;
+        if it.goldfish    != -1 && it.goldfish    >= sender.goldfish      continue;
+        if it.pomeranians != -1 && it.pomeranians >= sender.pomeranians   continue;
+
+        part_2 = it_index + 1;
+        break;
+    }
+
+    return tprint("%", part_1), tprint("%", part_2);
 }
 
 Sue :: struct
