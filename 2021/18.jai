@@ -65,20 +65,20 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
 
     while s.count
     {
-        array_add(*nums, parse_number(*s));
+        array_add(*nums, parse_number(s));
         advance(s, 1); // skip the \n
     }
 
     return nums;
 
-    parse_number :: (s: **string) -> *Number
+    parse_number :: (s: *string) -> *Number
     {
         n := New(Number);
         n.v = -1;
 
-        advance(<<s, 1); // skip the [
+        advance(s, 1); // skip the [
 
-        if (<<s).data[0] == #char "["
+        if s.data[0] == #char "["
         {
             n.l = parse_number(s);
             n.l.p = n;
@@ -86,14 +86,14 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
         else
         {
             n.l = New(Number);
-            n.l.v = (<<s).data[0] - #char "0";
+            n.l.v = s.data[0] - #char "0";
             n.l.p = n;
-            advance(<<s, 1);
+            advance(s, 1);
         }
         
-        advance(<<s, 1); // skip the ,
+        advance(s, 1); // skip the ,
 
-        if (<<s).data[0] == #char "["
+        if s.data[0] == #char "["
         {
             n.r = parse_number(s);
             n.r.p = n;
@@ -101,12 +101,12 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
         else
         {
             n.r = New(Number);
-            n.r.v = (<<s).data[0] - #char "0";
+            n.r.v = s.data[0] - #char "0";
             n.r.p = n;
-            advance(<<s, 1);
+            advance(s, 1);
         }
 
-        advance(<<s, 1); // skip the ]
+        advance(s, 1); // skip the ]
 
         return n;
     }
