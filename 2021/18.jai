@@ -2,10 +2,15 @@ day18 :: (data : string) -> string, string
 {
     nums := parse_snailfish_numbers(*data);
 
-    for nums explode(it);
-    for nums { dump(it); print("\n"); }
+    result := nums[0];
 
-    return tprint("%", ""), tprint("%", "");
+    for 1..nums.count-1
+    {
+        result = add(result, nums[it]);
+        reduce(result);
+    }
+
+    return tprint("%", magnitude(result)), tprint("%", "");
 }
 
 Number :: struct
@@ -34,6 +39,36 @@ right_of :: (n: *Number) -> *Number
     l := n.p.r.l;
     while l.v < 0 l = l.l;
     return l;
+}
+
+reduce :: (n: *Number)
+{
+    while true
+    {
+        if explode(n) continue;
+        if split(n)   continue;
+        break;
+    }
+}
+
+split :: (n: *Number) -> bool
+{
+    if n.v >= 10
+    {
+        n.l = New(Number);
+        n.r = New(Number);
+        n.l.p = n;
+        n.r.p = n;
+        n.l.v = (n.v + 0) / 2;
+        n.r.v = (n.v + 1) / 2;
+        n.v = -1;
+        return true;   
+    }
+
+    if n.l && split(n.l) return true;
+    if n.r && split(n.r) return true;
+
+    return false;
 }
 
 explode :: (n: *Number, d := 0) -> bool
