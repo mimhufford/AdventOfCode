@@ -13,18 +13,20 @@ Number :: struct
     p : *Number;
 }
 
-check_depth :: (n: *Number, d := 0)
+explode :: (n: *Number, d := 0) -> bool
 {
-    if n.v >= 0 return;
+    if n.v >= 0 return false;
 
     if d == 4
     {
         dump(n); print(" "); dump(n.p); print(" EXPLODE\n");
-        return;
+        return true;
     }
 
-    check_depth(n.l, d+1);
-    check_depth(n.r, d+1);
+    if explode(n.l, d+1) return true;
+    if explode(n.r, d+1) return true;
+
+    return false;
 }
 
 add :: (l: *Number, r: *Number) -> *Number
