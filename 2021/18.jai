@@ -17,20 +17,22 @@ Number :: struct
 
 left_of :: (n: *Number) -> *Number
 {
-    parent := n.p;
-    if !parent return null;
-    if parent.l == n  parent = parent.p;
-    while parent && parent.l.v < 0 parent = parent.p;
-    return parent;
+    if !n.p return null;
+    if n.p.l == n return left_of(n.p);
+    if n.p.l.v >= 0 return n.p.l;
+    r := n.p.l.r;
+    while r.v < 0 r = r.r;
+    return r;
 }
 
 right_of :: (n: *Number) -> *Number
 {
-    parent := n.p;
-    if !parent return null;
-    if parent.r == n  parent = parent.p;
-    while parent && parent.r.v < 0 parent = parent.p;
-    return parent;
+    if !n.p return null;
+    if n.p.r == n return right_of(n.p);
+    if n.p.r.v >= 0 return n.p.r;
+    l := n.p.r.l;
+    while l.v < 0 l = l.l;
+    return l;
 }
 
 explode :: (n: *Number, d := 0) -> bool
@@ -43,15 +45,6 @@ explode :: (n: *Number, d := 0) -> bool
         dump(n);
         print("\n  ");
         l := left_of(n);  if l dump(l); print("\n  ");
-        
-        //
-        // right_of can't currently get this, left_of probably has same problem
-        //
-        //              .------.
-        //              v      v
-        // [[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]
-        // 
-
         r := right_of(n); if r dump(r); print("\n");
         return true;
     }
