@@ -3,6 +3,7 @@ day18 :: (data : string) -> string, string
     nums := parse_snailfish_numbers(*data);
 
     for nums explode(it);
+    for nums { dump(it); print("\n"); }
 
     return tprint("%", ""), tprint("%", "");
 }
@@ -41,11 +42,13 @@ explode :: (n: *Number, d := 0) -> bool
 
     if d == 4
     {
-        print("EXPLODE\n  ");
-        dump(n);
-        print("\n  ");
-        l := left_of(n);  if l dump(l); print("\n  ");
-        r := right_of(n); if r dump(r); print("\n");
+        l := left_of(n);
+        r := right_of(n);
+        if l l.v += n.l.v;
+        if r r.v += n.r.v;
+        n.v = 0;
+        n.l = null;
+        n.r = null;
         return true;
     }
 
