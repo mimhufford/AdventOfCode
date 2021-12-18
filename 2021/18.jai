@@ -10,6 +10,21 @@ Number :: struct
     v : s64; // -1 == non-leaf
     l : *Number;
     r : *Number;
+    p : *Number;
+}
+
+check_depth :: (n: *Number, d := 0)
+{
+    if n.v >= 0 return;
+
+    if d == 4
+    {
+        dump(n); print(" "); dump(n.p); print(" EXPLODE\n");
+        return;
+    }
+
+    check_depth(n.l, d+1);
+    check_depth(n.r, d+1);
 }
 
 add :: (l: *Number, r: *Number) -> *Number
@@ -18,6 +33,8 @@ add :: (l: *Number, r: *Number) -> *Number
     n.v = -1;
     n.l = l;
     n.r = r;
+    n.l.p = n;
+    n.r.p = n;
     return n;
 }
 
@@ -64,11 +81,13 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
         if (<<s).data[0] == #char "["
         {
             n.l = parse_number(s);
+            n.l.p = n;
         }
         else
         {
             n.l = New(Number);
             n.l.v = (<<s).data[0] - #char "0";
+            n.l.p = n;
             advance(<<s, 1);
         }
         
@@ -77,11 +96,13 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
         if (<<s).data[0] == #char "["
         {
             n.r = parse_number(s);
+            n.r.p = n;
         }
         else
         {
             n.r = New(Number);
             n.r.v = (<<s).data[0] - #char "0";
+            n.r.p = n;
             advance(<<s, 1);
         }
 
