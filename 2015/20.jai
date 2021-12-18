@@ -2,24 +2,26 @@ houses : [1_000_000]u32;
 
 day20 :: (data: string) -> string, string
 {
-    for * houses {<<it = 0;}
-    min_presents : u32 : 36000000;
-    first : u32;
+    return tprint("%", solve(U32_MAX, 10)), tprint("%", solve(50, 11));
 
-    for e: 1..houses.count-1
+    solve :: (limit: u32, multiplier: u32) -> s64
     {
-        h := e;
-        while h < houses.count
-        {
-            houses[h] += xx(e * 10);
-            if houses[h] >= min_presents
-            {
-                first = xx h;
-                break e;
-            }
-            h += e;
-        }
-    }
+        min_presents : u32 : 36000000;
+        memset(houses.data, 0, houses.count * size_of(type_of(houses[0])));
 
-    return tprint("%", first), tprint("%", "");
+        for e: 1..houses.count-1
+        {
+            h := e;
+            c := 0;
+            while h < houses.count && c < limit
+            {
+                houses[h] += xx(e * multiplier);
+                if houses[h] >= min_presents return h;
+                h += e;
+                c += 1;
+            }
+        }
+
+        return 0;
+    }
 }
