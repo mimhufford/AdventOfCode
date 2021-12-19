@@ -1,18 +1,34 @@
 day19 :: (data : string) -> string, string
 {
     scanners: [..]Scanner;
+    fixed : [..]int;
+    queue : [..]int;
 
     while data.count array_add(*scanners, read_scanner(*data));
-    
+
+    array_add(*fixed, 0);
+    for 1..scanners.count-1 array_add(*queue, it);
+
     return tprint("%", ""), tprint("%", "");
 }
+
+/*
+       +z
+        | / +y
+        |/
+ -x ----o---- +x
+       /|
+   -y / |
+       -z
+
+*/
 
 Scanner :: struct
 {
     id  : int;
     pos : Vector3;
-    dir : Vector3;
-    up  : Vector3;
+    dir := Vector3.{0, 1, 0};
+    up  := Vector3.{0, 0, 1};
     beacons : [..]Vector3;
 }
 
