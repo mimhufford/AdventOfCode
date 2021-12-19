@@ -9,6 +9,21 @@ day19 :: (data : string) -> string, string
     array_add(*fixed, 0);
     for 1..scanners.count-1 array_add(*queue, it);
 
+    // trying to match example 0 with 1, should find 12 beacons
+    {
+        a := *scanners[0];
+        b := *scanners[1];
+
+        // for all 24 orientations
+           // for all point combos
+              // translate all 'b.beacons' to 'a' space
+                 // if at least 12 match
+                    // calc 'b.pos'
+                    // set 'b.dir' and 'b.up'
+                    // rebase 'b.beacons' to be in default space?
+                    // return
+    }
+
     return tprint("%", ""), tprint("%", "");
 }
 
