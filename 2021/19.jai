@@ -25,7 +25,6 @@ day19 :: (data : string) -> string, string
 
 Scanner :: struct
 {
-    id  : int;
     pos : Vector3;
     dir := Vector3.{0, 1, 0};
     up  := Vector3.{0, 0, 1};
