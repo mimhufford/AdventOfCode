@@ -90,29 +90,36 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
     // find a matching pair, there are 2 of each because it's not clear which ones match yet
-    s_beacons, sauron_beacons := find_beacons_to_match_on(sauron, s);
+    matches := find_beacons_to_match_on(sauron, s);
 
-    // test all the different orientation for the scanner
-    for orientation: 1..24
+    for match: matches
     {
-        // rotate everything around to the next orientation
-        reorient_scanner(s, orientation);
+        // test all the different orientation for the scanner
+        for orientation: 1..24
+        {
+            // rotate everything around to the next orientation
+            reorient_scanner(s, orientation);
 
-        // use our matching pair to calculate the offset for everything in s
-        offset := sauron.beacons[sauron_beacons[0]] - s.beacons[s_beacons[0]];
+            // use our matching pair to calculate the offset for everything in s
+            offset := sauron.beacons[match[2]] - s.beacons[match[0]];
 
-        // offset everything in s
-        offset_scanner(s, offset);
+            // offset everything in s
+            offset_scanner(s, offset);
 
-        // if the other pair aren't matching then this isn't the right orientation
-        if sauron.beacons[sauron_beacons[1]] != s.beacons[s_beacons[1]] continue;
+            // if the other pair aren't matching then this isn't the right orientation
+            if sauron.beacons[match[3]] != s.beacons[match[1]] continue;
 
-        // it was the right orientation, so let's check if we have >= 12 other matches
-        if !enough_matches(sauron, s) continue;
+            // it was the right orientation, so let's check if we have >= 12 other matches
+            if !enough_matches(sauron, s) continue;
 
-        // we have enough matches, so merge the non-overlapping beacons into sauron
-        add_new_beacons(sauron, s);
+            // we have enough matches, so merge the non-overlapping beacons into sauron
+            add_new_beacons(sauron, s);
+
+            return;
+        }
     }
+
+    assert(false);
 }
 
 add_new_beacons :: (sauron: *Scanner, s: *Scanner)
@@ -149,17 +156,26 @@ enough_matches :: (sauron: *Scanner, s: *Scanner) -> bool
     return false;
 }
 
-find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [2]int, [2]int
+find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [..][4]int
 {
-    for indexes, distance: s.distances
+    matches : [..][4]int;
+
+    for s_indexes, distance: s.distances
     {
-        match := table_find_pointer(sauron.distances, distance);
-        
-        if match return indexes, <<match;
+        sauron_indexes := table_find_pointer(sauron.distances, distance);
+
+        if sauron_indexes
+        {
+            match : [4]int;
+            match[0] = s_indexes[0];
+            match[1] = s_indexes[1];
+            match[2] = (<<sauron_indexes)[0];
+            match[3] = (<<sauron_indexes)[1];
+            array_add(*matches, match);
+        }
     }
 
-    assert(false);
-    return .[0, 0], .[0, 0];
+    return matches;
 }
 
 offset_scanner :: (s: *Scanner, offset: Vector3)
