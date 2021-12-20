@@ -92,6 +92,16 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
     // find a matching pair, there are 2 of each because it's not clear which ones match yet
     matches := find_beacons_to_match_on(sauron, s);
 
+    //
+    // TODO
+    // This only checks if if a pair A B matches the other pair C D.
+    // They will definitely match in some orientation, but they may be reversed so all the other pairs won't match
+    // AB to DC also needs to be checked
+    //
+    // I don't think I need to get all the matches, just one should do, but this is playing it safe in case
+    // for some reason none match
+    //
+
     for match: matches
     {
         // test all the different orientation for the scanner
