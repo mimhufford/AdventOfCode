@@ -1,30 +1,19 @@
 day19 :: (data : string) -> string, string
 {
     scanners: [..]Scanner;
+    beacons : [..]Vector3; // will add to this as beacons are reoriented to scanners[0]
 
     while data.count array_add(*scanners, read_scanner(*data));
 
-    for * scanners
-    {
-        for i: 0..it.beacons.count-1
-        {
-            for j: i+1..it.beacons.count-1
-            {
-                a := it.beacons[i];
-                b := it.beacons[j];
-                d := distance_squared(a, b);
-                bs : [3]int;
-                bs[0] = it_index;
-                bs[1] = i;
-                bs[2] = j;
-                // relying on all points being a unique distance apart
-                assert(!table_find_pointer(it.distances, d));
-                table_add(*it.distances, d, bs);
-            }
-        }
-    }
+    // going to re-orient everything to scanners[0], so add those beacons to the found list
+    for scanners[0].beacons array_add(*beacons, it);
 
-    return tprint("%", ""), tprint("%", "");
+    // pre-calculate the distances between visible beacons to help find matches
+    // if another scanner has the same bunch of distances it can be re-oriented
+    // to check that beacons do all overlap
+    for * scanners calculate_distances_between_all_beacon_pairs(it);
+
+    return tprint("%", beacons.count), tprint("%", "");
 }
 
 /*
@@ -41,10 +30,26 @@ day19 :: (data : string) -> string, string
 Scanner :: struct
 {
     pos : Vector3;
-    dir := Vector3.{0, 1, 0};
-    up  := Vector3.{0, 0, 1};
     beacons : [..]Vector3;
-    distances : Table(float, [3]int);
+    distances : Table(float, [2]int); // distance => beacon[i], beacon[j]
+}
+
+calculate_distances_between_all_beacon_pairs :: (s: *Scanner)
+{
+    for i: 0..s.beacons.count-1
+    {
+        for j: i+1..s.beacons.count-1
+        {
+            a := s.beacons[i];
+            b := s.beacons[j];
+            d := distance_squared(a, b);
+            bs : [2]int;
+            bs[0] = i;
+            bs[1] = j;
+            assert(!table_find_pointer(s.distances, d)); // relying on all points being a unique distance apart
+            table_add(*s.distances, d, bs);
+        }
+    }
 }
 
 read_scanner :: (s: *string) -> Scanner
