@@ -86,10 +86,16 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
-    // find the correct orientation for the scanner
+    // find a matching pair and select one of the beacons from s that we'll use.
+    // there are 2 candidate beacons because it's not clear which one matches yet
+    beacon_to_use, candidate_beacons := find_beacon_to_match_on(sauron, s);
+
+    // test all the different orientation for the scanner
     for orientation: 1..24
     {
         reorient_scanner(s, orientation);
+
+        offset := sauron.beacons[candidate_beacons[0]] - s.beacons[beacon_to_use];
 
         // TODO
         // calculate the offset to make at least 12 beacons overlap
@@ -101,38 +107,57 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
     calculate_distances_between_all_beacon_pairs(sauron);
 }
 
+find_beacon_to_match_on :: (sauron: *Scanner, s: *Scanner) -> int, [2]int
+{
+    for indexes, distance: s.distances
+    {
+        match := table_find_pointer(sauron.distances, distance);
+        
+        if match
+        {
+            candidate_beacons : [2]int;
+            candidate_beacons[0] = (<<match)[0];
+            candidate_beacons[1] = (<<match)[1];
+            return indexes[0], candidate_beacons;
+        }
+    }
+
+    assert(false);
+    return 0, .[0, 0];
+}
+
 reorient_scanner :: (s: *Scanner, orientation: int)
 {
-    for * s.beacons
+    for * d: s.beacons
     {
-        using it;
+        s := <<d;
 
         if orientation ==
         {
-            case  1;  x, y, z = +x, +y, +z;
-            case  2;  x, y, z = +x, -z, +y;
-            case  3;  x, y, z = +x, -y, -z;
-            case  4;  x, y, z = +x, +z, -y;
-            case  5;  x, y, z = -x, -y, +z;
-            case  6;  x, y, z = -x, +z, +y;
-            case  7;  x, y, z = -x, +y, -z;
-            case  8;  x, y, z = -x, -z, -y;
-            case  9;  x, y, z = +y, -x, +z;
-            case 10;  x, y, z = +y, -z, -x;
-            case 11;  x, y, z = +y, +x, -z;
-            case 12;  x, y, z = +y, +z, +x;
-            case 13;  x, y, z = -y, +x, +z;
-            case 14;  x, y, z = -y, +z, -x;
-            case 15;  x, y, z = -y, -x, -z;
-            case 16;  x, y, z = -y, -z, +x;
-            case 17;  x, y, z = +z, -x, -y;
-            case 18;  x, y, z = +z, +y, -x;
-            case 19;  x, y, z = +z, +x, +y;
-            case 20;  x, y, z = +z, -y, +x;
-            case 21;  x, y, z = -z, +x, -y;
-            case 22;  x, y, z = -z, -y, -x;
-            case 23;  x, y, z = -z, -x, +y;
-            case 24;  x, y, z = -z, +y, +x;
+            case  1;  d.x, d.y, d.z = +s.x, +s.y, +s.z;
+            case  2;  d.x, d.y, d.z = +s.x, -s.z, +s.y;
+            case  3;  d.x, d.y, d.z = +s.x, -s.y, -s.z;
+            case  4;  d.x, d.y, d.z = +s.x, +s.z, -s.y;
+            case  5;  d.x, d.y, d.z = -s.x, -s.y, +s.z;
+            case  6;  d.x, d.y, d.z = -s.x, +s.z, +s.y;
+            case  7;  d.x, d.y, d.z = -s.x, +s.y, -s.z;
+            case  8;  d.x, d.y, d.z = -s.x, -s.z, -s.y;
+            case  9;  d.x, d.y, d.z = +s.y, -s.x, +s.z;
+            case 10;  d.x, d.y, d.z = +s.y, -s.z, -s.x;
+            case 11;  d.x, d.y, d.z = +s.y, +s.x, -s.z;
+            case 12;  d.x, d.y, d.z = +s.y, +s.z, +s.x;
+            case 13;  d.x, d.y, d.z = -s.y, +s.x, +s.z;
+            case 14;  d.x, d.y, d.z = -s.y, +s.z, -s.x;
+            case 15;  d.x, d.y, d.z = -s.y, -s.x, -s.z;
+            case 16;  d.x, d.y, d.z = -s.y, -s.z, +s.x;
+            case 17;  d.x, d.y, d.z = +s.z, -s.x, -s.y;
+            case 18;  d.x, d.y, d.z = +s.z, +s.y, -s.x;
+            case 19;  d.x, d.y, d.z = +s.z, +s.x, +s.y;
+            case 20;  d.x, d.y, d.z = +s.z, -s.y, +s.x;
+            case 21;  d.x, d.y, d.z = -s.z, +s.x, -s.y;
+            case 22;  d.x, d.y, d.z = -s.z, -s.y, -s.x;
+            case 23;  d.x, d.y, d.z = -s.z, -s.x, +s.y;
+            case 24;  d.x, d.y, d.z = -s.z, +s.y, +s.x;
         }
     }
 }
