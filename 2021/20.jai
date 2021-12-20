@@ -43,8 +43,8 @@ day20 :: (data : string) -> string, string
     }
 }
 
-offset :: 75;
-size   :: 250;
+offset :: 52;
+size   :: 204;
 
 read_algorithm :: (s: *string) -> [512]bool
 {
