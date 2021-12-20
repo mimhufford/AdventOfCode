@@ -7,11 +7,12 @@ day20 :: (data : string) -> string, string
     prev := canvas;
 
     for 1..2 zoom_and_enhance(it);
+    part_1 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_1 += 1;
 
-    part_1 := 0;
-    for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_1 += 1;
+    for 3..50 zoom_and_enhance(it);
+    part_2 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_2 += 1;
 
-    return tprint("%", part_1), tprint("%", "");
+    return tprint("%", part_1), tprint("%", part_2);
 
     zoom_and_enhance :: (generation: int) #expand
     {
@@ -44,8 +45,8 @@ day20 :: (data : string) -> string, string
     }
 }
 
-offset :: 25;
-size   :: 150;
+offset :: 75;
+size   :: 250;
 
 read_algorithm :: (s: *string) -> [512]bool
 {
