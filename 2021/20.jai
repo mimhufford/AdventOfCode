@@ -24,24 +24,22 @@ day20 :: (data : string) -> string, string
             for x: min..max
             {
                 index : int;
-                if prev[y-1][x-1] index |= 1 << 8;
-                if prev[y-1][x  ] index |= 1 << 7;
-                if prev[y-1][x+1] index |= 1 << 6;
-                if prev[y  ][x-1] index |= 1 << 5;
-                if prev[y  ][x  ] index |= 1 << 4;
-                if prev[y  ][x+1] index |= 1 << 3;
-                if prev[y+1][x-1] index |= 1 << 2;
-                if prev[y+1][x  ] index |= 1 << 1;
-                if prev[y+1][x+1] index |= 1 << 0;
+                index |= ( cast(int) prev[y-1][x-1] ) << 8;
+                index |= ( cast(int) prev[y-1][x  ] ) << 7;
+                index |= ( cast(int) prev[y-1][x+1] ) << 6;
+                index |= ( cast(int) prev[y  ][x-1] ) << 5;
+                index |= ( cast(int) prev[y  ][x  ] ) << 4;
+                index |= ( cast(int) prev[y  ][x+1] ) << 3;
+                index |= ( cast(int) prev[y+1][x-1] ) << 2;
+                index |= ( cast(int) prev[y+1][x  ] ) << 1;
+                index |= ( cast(int) prev[y+1][x+1] ) << 0;
 
                 next[y][x] = algorithm[index];
             }
         }
 
         memset(prev.data, xx(generation % 2 == 0), size*size);
-        t := next;
-        next = prev;
-        prev = t;
+        next, prev = swap(next, prev);
     }
 }
 
