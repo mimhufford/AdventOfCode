@@ -92,26 +92,50 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
     // test all the different orientation for the scanner
     for orientation: 1..24
     {
+        // rotate everything around to the next orientation
         reorient_scanner(s, orientation);
 
+        // use our matching pair to calculate the offset for everything in s
         offset := sauron.beacons[sauron_beacons[0]] - s.beacons[s_beacons[0]];
 
-        print("% % % %\n", sauron.beacons[sauron_beacons[0]], s.beacons[s_beacons[0]] + offset,
-                           sauron.beacons[sauron_beacons[1]], s.beacons[s_beacons[1]] + offset);
+        // offset everything in s
+        offset_scanner(s, offset);
 
-        if sauron.beacons[sauron_beacons[1]] == s.beacons[s_beacons[1]] + offset
-        {
-            print("MATCH");
-        }
+        // if the other pair aren't matching then this isn't the right orientation
+        if sauron.beacons[sauron_beacons[1]] != s.beacons[s_beacons[1]] continue;
+
+        // it was the right orientation, so let's check if we have >= 12 other matches
+        if !enough_matches(sauron, s) continue;
+
 
         // TODO
-        // calculate the offset to make at least 12 beacons overlap
         // remove duplicates
         // merge the reoriented and offset beacons into sauron
     }
 
     // now sauron can see more, recalculate distance pairs for next match
     calculate_distances_between_all_beacon_pairs(sauron);
+}
+
+enough_matches :: (sauron: *Scanner, s: *Scanner) -> bool
+{
+    count := 0;
+
+    for * s_beacon: s.beacons
+    {
+        for * sauron_beacon: sauron.beacons
+        {
+            if <<s_beacon == <<sauron_beacon
+            {
+                count += 1;
+                break;
+            }
+        }
+
+        if count == 12 return true;
+    }
+
+    return false;
 }
 
 find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [2]int, [2]int
@@ -125,6 +149,12 @@ find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [2]int, [2]int
 
     assert(false);
     return .[0, 0], .[0, 0];
+}
+
+offset_scanner :: (s: *Scanner, offset: Vector3)
+{
+    s.position = offset;
+    for * s.beacons { <<it += offset; }
 }
 
 reorient_scanner :: (s: *Scanner, orientation: int)
