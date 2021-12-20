@@ -16,8 +16,17 @@ day19 :: (data : string) -> string, string
     // and take it out the list so we don't look at it any more
     array_unordered_remove_by_index(*scanners, 0);
 
-    // find the scanner with the most beacons that overlap with what sauron can see
-    scanner_index_to_merge_in:= find_scanner_with_most_potential_overlaps(sauron, scanners);
+    while scanners.count
+    {
+        // find the scanner with the most beacons that overlap with what sauron can see
+        scanner_index_to_merge_in := find_scanner_with_most_potential_overlaps(sauron, scanners);
+
+        // reorient the scanner, match the beacons, and merge them into sauron
+        merge_into_sauron(*sauron, *scanners[scanner_index_to_merge_in]);
+
+        // and take it out the list so we don't look at it again
+        array_unordered_remove_by_index(*scanners, scanner_index_to_merge_in);
+    }
 
     return tprint("%", sauron.beacons.count), tprint("%", "");
 }
@@ -84,6 +93,18 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
     }
 
     return best_scanner_index;
+}
+
+merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
+{
+    // TODO
+    // find the correct orientation for the scanner
+    // calculate the offset to make at least 12 beacons overlap
+    // remove duplicates
+    // merge the reoriented and offset beacons into sauron
+
+    // now sauron can see more, recalculate distance pairs for next match
+    calculate_distances_between_all_beacon_pairs(sauron);
 }
 
 read_scanner :: (s: *string) -> Scanner
