@@ -26,6 +26,9 @@ day19 :: (data : string) -> string, string
 
         // and take it out the list so we don't look at it again
         array_unordered_remove_by_index(*scanners, scanner_index_to_merge_in);
+
+        // now sauron can see more let's recalculate distance pairs for the next match
+        calculate_distances_between_all_beacon_pairs(*sauron);
     }
 
     return tprint("%", sauron.beacons.count), tprint("%", "");
@@ -107,14 +110,22 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
         // it was the right orientation, so let's check if we have >= 12 other matches
         if !enough_matches(sauron, s) continue;
 
-
-        // TODO
-        // remove duplicates
-        // merge the reoriented and offset beacons into sauron
+        // we have enough matches, so merge the non-overlapping beacons into sauron
+        add_new_beacons(sauron, s);
     }
+}
 
-    // now sauron can see more, recalculate distance pairs for next match
-    calculate_distances_between_all_beacon_pairs(sauron);
+add_new_beacons :: (sauron: *Scanner, s: *Scanner)
+{
+    for * s_beacon: s.beacons
+    {
+        for * sauron_beacon: sauron.beacons
+        {
+            if <<s_beacon == <<sauron_beacon continue s_beacon;
+        }
+
+        array_add(*sauron.beacons, <<s_beacon);
+    }
 }
 
 enough_matches :: (sauron: *Scanner, s: *Scanner) -> bool
