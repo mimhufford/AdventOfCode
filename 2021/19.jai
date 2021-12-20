@@ -103,17 +103,6 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 
 reorient_scanner :: (s: *Scanner, orientation: int)
 {
-    /*
-           -y
-            | / +z
-            |/
-     +x ----o---- -x
-           /|
-       -z / |
-           +y
-
-    */
-
     for * s.beacons
     {
         using it;
