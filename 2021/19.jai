@@ -1,27 +1,27 @@
 day19 :: (data : string) -> string, string
 {
     scanners: [..]Scanner;
-    fixed : [..]int;
-    queue : [..]int;
 
     while data.count array_add(*scanners, read_scanner(*data));
 
-    array_add(*fixed, 0);
-    for 1..scanners.count-1 array_add(*queue, it);
-
-    // trying to match example 0 with 1, should find 12 beacons
+    for * scanners
     {
-        a := *scanners[0];
-        b := *scanners[1];
-
-        // for all 24 orientations
-           // for all point combos
-              // translate all 'b.beacons' to 'a' space
-                 // if at least 12 match
-                    // calc 'b.pos'
-                    // set 'b.dir' and 'b.up'
-                    // rebase 'b.beacons' to be in default space?
-                    // return
+        for i: 0..it.beacons.count-1
+        {
+            for j: i+1..it.beacons.count-1
+            {
+                a := it.beacons[i];
+                b := it.beacons[j];
+                d := distance_squared(a, b);
+                bs : [3]int;
+                bs[0] = it_index;
+                bs[1] = i;
+                bs[2] = j;
+                // relying on all points being a unique distance apart
+                assert(!table_find_pointer(it.distances, d));
+                table_add(*it.distances, d, bs);
+            }
+        }
     }
 
     return tprint("%", ""), tprint("%", "");
@@ -44,6 +44,7 @@ Scanner :: struct
     dir := Vector3.{0, 1, 0};
     up  := Vector3.{0, 0, 1};
     beacons : [..]Vector3;
+    distances : Table(float, [3]int);
 }
 
 read_scanner :: (s: *string) -> Scanner
