@@ -31,17 +31,6 @@ day19 :: (data : string) -> string, string
     return tprint("%", sauron.beacons.count), tprint("%", "");
 }
 
-/*
-       +z
-        | / +y
-        |/
- -x ----o---- +x
-       /|
-   -y / |
-       -z
-
-*/
-
 Scanner :: struct
 {
     pos : Vector3;
@@ -105,6 +94,53 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 
     // now sauron can see more, recalculate distance pairs for next match
     calculate_distances_between_all_beacon_pairs(sauron);
+}
+
+reorient_scanner :: (s: *Scanner, orientation: int)
+{
+    /*
+           -y
+            | / +z
+            |/
+     +x ----o---- -x
+           /|
+       -z / |
+           +y
+
+    */
+
+    for * s.beacons
+    {
+        using it;
+
+        if orientation ==
+        {
+            case  1;  x, y, z = +x, +y, +z;
+            case  2;  x, y, z = +x, -z, +y;
+            case  3;  x, y, z = +x, -y, -z;
+            case  4;  x, y, z = +x, +z, -y;
+            case  5;  x, y, z = -x, -y, +z;
+            case  6;  x, y, z = -x, +z, +y;
+            case  7;  x, y, z = -x, +y, -z;
+            case  8;  x, y, z = -x, -z, -y;
+            case  9;  x, y, z = +y, -x, +z;
+            case 10;  x, y, z = +y, -z, -x;
+            case 11;  x, y, z = +y, +x, -z;
+            case 12;  x, y, z = +y, +z, +x;
+            case 13;  x, y, z = -y, +x, +z;
+            case 14;  x, y, z = -y, +z, -x;
+            case 15;  x, y, z = -y, -x, -z;
+            case 16;  x, y, z = -y, -z, +x;
+            case 17;  x, y, z = +z, -x, -y;
+            case 18;  x, y, z = +z, +y, -x;
+            case 19;  x, y, z = +z, +x, +y;
+            case 20;  x, y, z = +z, -y, +x;
+            case 21;  x, y, z = -z, +x, -y;
+            case 22;  x, y, z = -z, -y, -x;
+            case 23;  x, y, z = -z, -x, +y;
+            case 24;  x, y, z = -z, +y, +x;
+        }
+    }
 }
 
 read_scanner :: (s: *string) -> Scanner
