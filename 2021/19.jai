@@ -33,7 +33,7 @@ day19 :: (data : string) -> string, string
 
 Scanner :: struct
 {
-    pos : Vector3;
+    position : Vector3;
     beacons : [..]Vector3;
     distances : Table(float, [2]int); // distance => beacon[i], beacon[j]
 }
@@ -86,16 +86,23 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
-    // find a matching pair and select one of the beacons from s that we'll use.
-    // there are 2 candidate beacons because it's not clear which one matches yet
-    beacon_to_use, candidate_beacons := find_beacon_to_match_on(sauron, s);
+    // find a matching pair, there are 2 of each because it's not clear which ones match yet
+    s_beacons, sauron_beacons := find_beacons_to_match_on(sauron, s);
 
     // test all the different orientation for the scanner
     for orientation: 1..24
     {
         reorient_scanner(s, orientation);
 
-        offset := sauron.beacons[candidate_beacons[0]] - s.beacons[beacon_to_use];
+        offset := sauron.beacons[sauron_beacons[0]] - s.beacons[s_beacons[0]];
+
+        print("% % % %\n", sauron.beacons[sauron_beacons[0]], s.beacons[s_beacons[0]] + offset,
+                           sauron.beacons[sauron_beacons[1]], s.beacons[s_beacons[1]] + offset);
+
+        if sauron.beacons[sauron_beacons[1]] == s.beacons[s_beacons[1]] + offset
+        {
+            print("MATCH");
+        }
 
         // TODO
         // calculate the offset to make at least 12 beacons overlap
@@ -107,23 +114,17 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
     calculate_distances_between_all_beacon_pairs(sauron);
 }
 
-find_beacon_to_match_on :: (sauron: *Scanner, s: *Scanner) -> int, [2]int
+find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [2]int, [2]int
 {
     for indexes, distance: s.distances
     {
         match := table_find_pointer(sauron.distances, distance);
         
-        if match
-        {
-            candidate_beacons : [2]int;
-            candidate_beacons[0] = (<<match)[0];
-            candidate_beacons[1] = (<<match)[1];
-            return indexes[0], candidate_beacons;
-        }
+        if match return indexes, <<match;
     }
 
     assert(false);
-    return 0, .[0, 0];
+    return .[0, 0], .[0, 0];
 }
 
 reorient_scanner :: (s: *Scanner, orientation: int)
