@@ -86,11 +86,16 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
-    // TODO
     // find the correct orientation for the scanner
-    // calculate the offset to make at least 12 beacons overlap
-    // remove duplicates
-    // merge the reoriented and offset beacons into sauron
+    for orientation: 1..24
+    {
+        reorient_scanner(s, orientation);
+
+        // TODO
+        // calculate the offset to make at least 12 beacons overlap
+        // remove duplicates
+        // merge the reoriented and offset beacons into sauron
+    }
 
     // now sauron can see more, recalculate distance pairs for next match
     calculate_distances_between_all_beacon_pairs(sauron);
