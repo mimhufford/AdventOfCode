@@ -1,7 +1,7 @@
 day21 :: (data : string) -> string, string
 {
-    p1_pos : u64 = data[28] - #char "0";
-    p2_pos : u64 = data[58] - #char "0";
+    p1_pos : u64 = data[28] - #char "1";
+    p2_pos : u64 = data[58] - #char "1";
     p1_score : u64;
     p2_score : u64;
     die : u64 = 0;
@@ -15,19 +15,19 @@ day21 :: (data : string) -> string, string
         p1_move : u64 = xx (((die-1) / 3) % 2 == 0);
         p2_move : u64 = xx (((die-1) / 3) % 2 != 0);
 
-        p1_pos += p1_move * total_roll; p1_pos -= 1; p1_pos %= 10; p1_pos += 1;
-        p2_pos += p2_move * total_roll; p2_pos -= 1; p2_pos %= 10; p2_pos += 1;
+        p1_pos = (p1_pos + p1_move * total_roll) % 10; 
+        p2_pos = (p2_pos + p2_move * total_roll) % 10;
 
-        p1_score += p1_pos * p1_move;
-        p2_score += p2_pos * p2_move;
+        p1_score += (p1_pos+1) * p1_move;
+        p2_score += (p2_pos+1) * p2_move;
     }
 
     part_1 := min(p1_score, p2_score) * die;
 
     start_state : State;
     init(*seen, 32_000);
-    start_state.p1_pos = data[28] - #char "0";
-    start_state.p2_pos = data[58] - #char "0";
+    start_state.p1_pos = data[28] - #char "1";
+    start_state.p2_pos = data[58] - #char "1";
 
     part_2 := count_wins(start_state);
 
@@ -60,9 +60,8 @@ count_wins :: (curr: State) -> [2]u64
     for d1: 1..cast(u8)3 for d2: 1..cast(u8)3 for d3: 1..cast(u8)3
     {
         next := curr;
-        next.p1_pos += d1 + d2 + d3;
-        next.p1_pos -= 1; next.p1_pos %= 10; next.p1_pos += 1;
-        next.p1_score += next.p1_pos;
+        next.p1_pos = (next.p1_pos + d1 + d2 + d3) % 10;
+        next.p1_score += next.p1_pos + 1;
         next.p1_pos,   next.p2_pos   = swap(next.p1_pos,   next.p2_pos);
         next.p1_score, next.p2_score = swap(next.p1_score, next.p2_score);
         sub_wins := count_wins(next);
