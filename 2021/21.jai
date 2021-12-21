@@ -47,29 +47,29 @@ State :: struct
     hash : u32;
 }
 
-count_wins :: (_s: State) -> [2]u64
+count_wins :: (curr: State) -> [2]u64
 {
-    if _s.p1_score >= 21 return .[1, 0];
-    if _s.p2_score >= 21 return .[0, 1];
+    if curr.p1_score >= 21 return .[1, 0];
+    if curr.p2_score >= 21 return .[0, 1];
 
-    result, found := table_find(seen, _s.hash);
+    result, found := table_find(seen, curr.hash);
     if found return result;
 
     wins : [2]u64;
 
     for d1: 1..cast(u8)3 for d2: 1..cast(u8)3 for d3: 1..cast(u8)3
     {
-        s := _s;
-        s.p1_pos += d1 + d2 + d3;
-        s.p1_pos -= 1; s.p1_pos %= 10; s.p1_pos += 1;
-        s.p1_score += s.p1_pos;
-        s.p1_pos, s.p2_pos = swap(s.p1_pos, s.p2_pos);
-        s.p1_score, s.p2_score = swap(s.p1_score, s.p2_score);
-        sub_wins := count_wins(s);
+        next := curr;
+        next.p1_pos += d1 + d2 + d3;
+        next.p1_pos -= 1; next.p1_pos %= 10; next.p1_pos += 1;
+        next.p1_score += next.p1_pos;
+        next.p1_pos,   next.p2_pos   = swap(next.p1_pos,   next.p2_pos);
+        next.p1_score, next.p2_score = swap(next.p1_score, next.p2_score);
+        sub_wins := count_wins(next);
         wins[0] += sub_wins[1];
         wins[1] += sub_wins[0];
     }
     
-    table_add(*seen, _s.hash, wins);
+    table_add(*seen, curr.hash, wins);
     return wins;
 }
