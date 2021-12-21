@@ -24,5 +24,27 @@ day21 :: (data : string) -> string, string
 
     part_1 := min(p1_score, p2_score) * die;
 
+
+    // part 2, 27 different versions for each roll
+    // ends when a player score gets to >= 21
+
+    seen : Table(u32, bool);
+    p1_wins : u64;
+    p2_wins : u64;
+    start_state : State;
+    start_state.p1_pos = data[28] - #char "0";
+    start_state.p2_pos = data[58] - #char "0";
+
     return tprint("%", part_1), "";
+}
+
+State :: struct
+{
+    p1_pos   : u8;
+    p2_pos   : u8;
+    p1_score : u8;
+    p2_score : u8;
+
+    #place p1_pos;
+    hash : u32;
 }
