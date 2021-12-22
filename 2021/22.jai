@@ -17,22 +17,12 @@ day22 :: (data : string) -> string, string
                 {
                     remove existing_cube;
                 }
-                else if existing_cube.value == 1 && new_cube.value == 0
+                else if existing_cube.value == 1
                 {
                     cube_intersection.value = -1;
                     array_add(*to_add, cube_intersection);
                 }
-                else if existing_cube.value == 1 && new_cube.value == 1
-                {
-                    cube_intersection.value = -1;
-                    array_add(*to_add, cube_intersection);
-                }
-                else if existing_cube.value == -1 && new_cube.value == 0
-                {
-                    cube_intersection.value = 1;
-                    array_add(*to_add, cube_intersection);
-                }
-                else if existing_cube.value == -1 && new_cube.value == 1
+                else if existing_cube.value == -1
                 {
                     cube_intersection.value = 1;
                     array_add(*to_add, cube_intersection);
