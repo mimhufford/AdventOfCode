@@ -34,7 +34,7 @@ play_game :: (s: State, boss_damage: s16) -> s64
         nns := ns;
         nns.boss -= 4;
         nns.mana -= 53;
-        nns.health -= boss_damage + armour;
+        nns.health -= boss_damage - armour;
         spent = 53 + min(spent, play_game(nns, boss_damage));
     }
     if ns.mana >= 73
@@ -43,7 +43,7 @@ play_game :: (s: State, boss_damage: s16) -> s64
         nns.boss -= 2;
         nns.mana -= 73;
         nns.health += 2;
-        nns.health -= boss_damage + armour;
+        nns.health -= boss_damage - armour;
         spent = 73 + min(spent, play_game(nns, boss_damage));
     }
     if ns.mana >= 113 && ns.e1 == 0
@@ -51,7 +51,7 @@ play_game :: (s: State, boss_damage: s16) -> s64
         nns := ns;
         nns.mana -= 113;
         nns.e1 = 6;
-        nns.health -= boss_damage + armour;
+        nns.health -= boss_damage - armour;
         spent = 113 + min(spent, play_game(nns, boss_damage));
     }
     if ns.mana >= 173 && ns.e2 == 0
@@ -59,7 +59,7 @@ play_game :: (s: State, boss_damage: s16) -> s64
         nns := ns;
         nns.mana -= 173;
         nns.e2 = 6;
-        nns.health -= boss_damage + armour;
+        nns.health -= boss_damage - armour;
         spent = 173 + min(spent, play_game(nns, boss_damage));
     }
     if ns.mana >= 229 && ns.e3 == 0
@@ -67,7 +67,7 @@ play_game :: (s: State, boss_damage: s16) -> s64
         nns := ns;
         nns.mana -= 229;
         nns.e3 = 5;
-        nns.health -= boss_damage + armour;
+        nns.health -= boss_damage - armour;
         spent = 229 + min(spent, play_game(nns, boss_damage));
     }
 
