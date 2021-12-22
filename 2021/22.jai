@@ -1,53 +1,89 @@
 day22 :: (data : string) -> string, string
 {
-    instructions : [..]Cube;
-    bounds : Cube;
+    cubes : [..]Cube;
 
     while data.count
     {
-        c := read_cube(*data);
-        array_add(*instructions, c);
-        bounds.x_min = min(bounds.x_min, c.x_min);
-        bounds.x_max = max(bounds.x_max, c.x_max);
-        bounds.y_min = min(bounds.y_min, c.y_min);
-        bounds.y_max = max(bounds.y_max, c.y_max);
-        bounds.z_min = min(bounds.z_min, c.z_min);
-        bounds.z_max = max(bounds.z_max, c.z_max);
-    }
+        new_cube := read_cube(*data);
+        if new_cube.x_min < -50 || new_cube.x_max > 50 continue;
+        if new_cube.y_min < -50 || new_cube.y_max > 50 continue;
+        if new_cube.z_min < -50 || new_cube.z_max > 50 continue;
 
-    // naive approach just to confirm part 2 is what I think it is
-    reboot_steps : [100][100][100]bool;
-    for i: instructions
-    {
-        if i.x_min < -50 || i.x_max > 50 continue;
-        if i.y_min < -50 || i.y_max > 50 continue;
-        if i.z_min < -50 || i.z_max > 50 continue;
+        to_add : [..]Cube;
 
-        for z: i.z_min..i.z_max for y: i.y_min..i.y_max for x: i.x_min..i.x_max
+        for existing_cube: cubes
         {
-            reboot_steps[z+50][y+50][x+50] = i.on;
+            intersects, cube_intersection := intersection(existing_cube, new_cube);
+            if intersects
+            {
+                if existing_cube.value == 1 && new_cube.value == 0
+                {
+                    cube_intersection.value = -1;
+                    array_add(*to_add, cube_intersection);
+                }
+                else if existing_cube.value == 1 && new_cube.value == 1
+                {
+                    cube_intersection.value = -1;
+                    array_add(*to_add, cube_intersection);
+                }
+                else if existing_cube.value == -1 && new_cube.value == 0
+                {
+                    cube_intersection.value = 1;
+                    array_add(*to_add, cube_intersection);
+                }
+                else if existing_cube.value == -1 && new_cube.value == 1
+                {
+                    cube_intersection.value = 1;
+                    array_add(*to_add, cube_intersection);
+                }
+            }
         }
+
+        for to_add array_add(*cubes, it);
+        if new_cube.value == 1 array_add(*cubes, new_cube);
     }
-    part_1 : u64;
-    for z: reboot_steps for y: z for y if it part_1 += 1;
+
+    part_1 : s64;
+    for c: cubes part_1 += c.value * (c.x_max+1-c.x_min) * (c.y_max+1-c.y_min) * (c.z_max+1-c.z_min);
 
     return tprint("%", part_1), tprint("%", "");
 }
 
+intersection :: (a: Cube, b: Cube) -> bool, Cube
+{
+    if a.x_min > b.x_max return false, .{};
+    if a.x_max < b.x_min return false, .{};
+    if a.y_min > b.y_max return false, .{};
+    if a.y_max < b.y_min return false, .{};
+    if a.z_min > b.z_max return false, .{};
+    if a.z_max < b.z_min return false, .{};
+
+    c : Cube;
+
+    c.x_min = max(a.x_min, b.x_min);
+    c.x_max = min(a.x_max, b.x_max);
+    c.y_min = max(a.y_min, b.y_min);
+    c.y_max = min(a.y_max, b.y_max);
+    c.z_min = max(a.z_min, b.z_min);
+    c.z_max = min(a.z_max, b.z_max);
+
+    return true, c;
+}
+
 Cube :: struct
 {
-    on : bool;
-    x_min, x_max : s32;
-    y_min, y_max : s32;
-    z_min, z_max : s32;
+    value : s64;
+    x_min, x_max : s64;
+    y_min, y_max : s64;
+    z_min, z_max : s64;
 }
 
 read_cube :: (s: *string) -> Cube
 {
     c : Cube;
 
-    if s.data[1] == #char "n" c.on = true;
-    advance(s, ifx c.on then 5 else 6);
+    if s.data[1] == #char "n" c.value = 1;
+    advance(s, ifx c.value then 5 else 6);
     c.x_min = read_num(); advance(s, 2);
     c.x_max = read_num(); advance(s, 3);
     c.y_min = read_num(); advance(s, 2);
@@ -57,10 +93,10 @@ read_cube :: (s: *string) -> Cube
 
     return c;
 
-    read_num :: () -> s32 #expand
+    read_num :: () -> s64 #expand
     {
         neg := false;
-        num : s32;
+        num : s64;
         if s.data[0] == #char "-" { neg = true; advance(s, 1); }
         while s.data[0] >= #char "0" && s.data[0] <= #char "9"
         {
