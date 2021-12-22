@@ -5,9 +5,6 @@ day22 :: (data : string) -> string, string
     while data.count
     {
         new_cube := read_cube(*data);
-        if new_cube.x_min < -50 || new_cube.x_max > 50 continue;
-        if new_cube.y_min < -50 || new_cube.y_max > 50 continue;
-        if new_cube.z_min < -50 || new_cube.z_max > 50 continue;
 
         to_add : [..]Cube;
 
@@ -43,10 +40,22 @@ day22 :: (data : string) -> string, string
         if new_cube.value == 1 array_add(*cubes, new_cube);
     }
 
-    part_1 : s64;
-    for c: cubes part_1 += c.value * (c.x_max+1-c.x_min) * (c.y_max+1-c.y_min) * (c.z_max+1-c.z_min);
+    part_1, part_2 : s64;
 
-    return tprint("%", part_1), tprint("%", "");
+    for c: cubes
+    {
+        cube_worth := c.value * (c.x_max+1-c.x_min) * (c.y_max+1-c.y_min) * (c.z_max+1-c.z_min);
+
+        part_2 += cube_worth;
+
+        if c.x_min < -50 || c.x_max > 50 continue;
+        if c.y_min < -50 || c.y_max > 50 continue;
+        if c.z_min < -50 || c.z_max > 50 continue;
+
+        part_1 += cube_worth;
+    }
+
+    return tprint("%", part_1), tprint("%", part_2);
 }
 
 intersection :: (a: Cube, b: Cube) -> bool, Cube
