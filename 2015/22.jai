@@ -22,9 +22,9 @@ play_game :: (s: State, boss_damage: s16) -> s64
 
     ns := s;
 
-    if ns.e1 armour = 7;      ns.e1 = xx max(0, ns.e1 - 1);
-    if ns.e2 ns.boss -= 3;    ns.e2 = xx max(0, ns.e2 - 1);
-    if ns.e3 ns.mana += 101;  ns.e3 = xx max(0, ns.e3 - 1);
+    if ns.e1 { armour = 7;      ns.e1 -= 1; }
+    if ns.e2 { ns.boss -= 3;    ns.e2 -= 1; }
+    if ns.e3 { ns.mana += 101;  ns.e3 -= 1; }
 
     if   ns.boss <= 0  return 0;
     if ns.health <= 0  return spent;
