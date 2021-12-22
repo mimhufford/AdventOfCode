@@ -13,7 +13,11 @@ day22 :: (data : string) -> string, string
             intersects, cube_intersection := intersection(existing_cube, new_cube);
             if intersects
             {
-                if existing_cube.value == 1 && new_cube.value == 0
+                if equal(existing_cube, cube_intersection)
+                {
+                    remove existing_cube;
+                }
+                else if existing_cube.value == 1 && new_cube.value == 0
                 {
                     cube_intersection.value = -1;
                     array_add(*to_add, cube_intersection);
@@ -77,6 +81,17 @@ intersection :: (a: Cube, b: Cube) -> bool, Cube
     c.z_max = min(a.z_max, b.z_max);
 
     return true, c;
+}
+
+equal :: (a: Cube, b: Cube) -> bool
+{
+    if a.x_min != b.x_min return false;
+    if a.x_max != b.x_max return false;
+    if a.y_min != b.y_min return false;
+    if a.y_max != b.y_max return false;
+    if a.z_min != b.z_min return false;
+    if a.z_max != b.z_max return false;
+    return true;
 }
 
 Cube :: struct
