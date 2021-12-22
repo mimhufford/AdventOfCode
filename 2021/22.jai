@@ -14,7 +14,24 @@ day22 :: (data : string) -> string, string
         bounds.z_min = min(bounds.z_min, c.z_min);
         bounds.z_max = max(bounds.z_max, c.z_max);
     }
-    return tprint("%", ""), tprint("%", "");
+
+    // naive approach just to confirm part 2 is what I think it is
+    reboot_steps : [100][100][100]bool;
+    for i: instructions
+    {
+        if i.x_min < -50 || i.x_max > 50 continue;
+        if i.y_min < -50 || i.y_max > 50 continue;
+        if i.z_min < -50 || i.z_max > 50 continue;
+
+        for z: i.z_min..i.z_max for y: i.y_min..i.y_max for x: i.x_min..i.x_max
+        {
+            reboot_steps[z+50][y+50][x+50] = i.on;
+        }
+    }
+    part_1 : u64;
+    for z: reboot_steps for y: z for y if it part_1 += 1;
+
+    return tprint("%", part_1), tprint("%", "");
 }
 
 Cube :: struct
