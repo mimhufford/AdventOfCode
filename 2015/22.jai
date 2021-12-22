@@ -4,12 +4,28 @@ day22 :: (data: string) -> string, string
     bh := next_s16(*data);
     bd := next_s16(*data);
 
-    return tprint("%", ""), tprint("%", "");
+    return tprint("%", size_of(State)), tprint("%", "");
 }
 
 play_game :: () -> bool
 {
+    // 50 hp 500 mana
+    // must do a spell every turn
+    // not enough mana = lose
     return false;
+}
+
+State :: struct
+{
+    ph : s16;
+    pm : s16;
+    bh : s8;
+    e1 : u8;
+    e2 : u8;
+    e3 : u8;
+    
+    #place ph;
+    hash : u64;
 }
 
 Spell  :: struct { cost: s16; damage: s16; heal: s16; ticks: s16; armour: s16; tick_damage: s16; tick_mana: s16; }
