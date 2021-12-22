@@ -1,15 +1,21 @@
 day22 :: (data: string) -> string, string
 {
     advance(*data, 12);
-    bh := next_s16(*data);
+    bh := next_s8(*data);
     bd := next_s16(*data);
 
-    return tprint("%", size_of(State)), tprint("%", "");
+    initial_state : State;
+    initial_state.ph = 50;
+    initial_state.pm = 500;
+    initial_state.bh = bh;
+    
+    play_game(initial_state, bd);
+
+    return tprint("%", ""), tprint("%", "");
 }
 
-play_game :: () -> bool
+play_game :: (s: State, bd: s16) -> bool
 {
-    // 50 hp 500 mana
     // must do a spell every turn
     // not enough mana = lose
     return false;
