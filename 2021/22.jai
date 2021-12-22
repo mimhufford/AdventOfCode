@@ -82,9 +82,9 @@ intersection :: (a: Cube, b: Cube) -> bool, Cube
 Cube :: struct
 {
     value : s64;
-    x_min, x_max : s64;
-    y_min, y_max : s64;
-    z_min, z_max : s64;
+    x_min, x_max : s32;
+    y_min, y_max : s32;
+    z_min, z_max : s32;
 }
 
 read_cube :: (s: *string) -> Cube
@@ -102,10 +102,10 @@ read_cube :: (s: *string) -> Cube
 
     return c;
 
-    read_num :: () -> s64 #expand
+    read_num :: () -> s32 #expand
     {
         neg := false;
-        num : s64;
+        num : s32;
         if s.data[0] == #char "-" { neg = true; advance(s, 1); }
         while s.data[0] >= #char "0" && s.data[0] <= #char "9"
         {
