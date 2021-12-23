@@ -54,16 +54,138 @@ day23 :: (data : string) -> string, string
         wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
     }
 
+    paths : [7][23]Path;
+    paths[0][ 7] = .{ cost =  3, path = .[ 1 ] };
+    paths[0][11] = .{ cost =  4, path = .[ 1, 7 ] };
+    paths[0][15] = .{ cost =  5, path = .[ 1, 7, 11 ] };
+    paths[0][19] = .{ cost =  6, path = .[ 1, 7, 11, 15 ] };
+    paths[1][ 7] = .{ cost =  2, path = .[ ] };
+    paths[1][11] = .{ cost =  3, path = .[ 7 ] };
+    paths[1][15] = .{ cost =  4, path = .[ 7, 11 ] };
+    paths[1][19] = .{ cost =  5, path = .[ 7, 11, 15 ] };
+    paths[2][ 7] = .{ cost =  2, path = .[ ] };
+    paths[2][11] = .{ cost =  3, path = .[ 7 ] };
+    paths[2][15] = .{ cost =  4, path = .[ 7, 11 ] };
+    paths[2][19] = .{ cost =  5, path = .[ 7, 11, 15 ] };
+    paths[3][ 7] = .{ cost =  4, path = .[ 2 ] };
+    paths[3][11] = .{ cost =  5, path = .[ 2, 7 ] };
+    paths[3][15] = .{ cost =  6, path = .[ 2, 7, 11 ] };
+    paths[3][19] = .{ cost =  7, path = .[ 2, 7, 11, 15 ] };
+    paths[4][ 7] = .{ cost =  6, path = .[ 3, 2 ] };
+    paths[4][11] = .{ cost =  7, path = .[ 3, 2, 7 ] };
+    paths[4][15] = .{ cost =  8, path = .[ 3, 2, 7, 11 ] };
+    paths[4][19] = .{ cost =  9, path = .[ 3, 2, 7, 11, 15 ] };
+    paths[5][ 7] = .{ cost =  8, path = .[ 4, 3, 2 ] };
+    paths[5][11] = .{ cost =  9, path = .[ 4, 3, 2, 7 ] };
+    paths[5][15] = .{ cost = 10, path = .[ 4, 3, 2, 7, 11 ] };
+    paths[5][19] = .{ cost = 11, path = .[ 4, 3, 2, 7, 11, 15 ] };
+    paths[6][ 7] = .{ cost =  9, path = .[ 5, 4, 3, 2 ] };
+    paths[6][11] = .{ cost = 10, path = .[ 5, 4, 3, 2, 7 ] };
+    paths[6][15] = .{ cost = 11, path = .[ 5, 4, 3, 2, 7, 11 ] };
+    paths[6][19] = .{ cost = 12, path = .[ 5, 4, 3, 2, 7, 11, 15 ] };
+    paths[0][ 8] = .{ cost =  5, path = .[ 1, 2 ] };
+    paths[0][12] = .{ cost =  6, path = .[ 1, 2, 8 ] };
+    paths[0][16] = .{ cost =  7, path = .[ 1, 2, 8, 12 ] };
+    paths[0][20] = .{ cost =  8, path = .[ 1, 2, 8, 12, 16 ] };
+    paths[1][ 8] = .{ cost =  4, path = .[ 2 ] };
+    paths[1][12] = .{ cost =  5, path = .[ 2, 8 ] };
+    paths[1][16] = .{ cost =  6, path = .[ 2, 8, 12 ] };
+    paths[1][20] = .{ cost =  7, path = .[ 2, 8, 12, 16 ] };
+    paths[2][ 8] = .{ cost =  2, path = .[ ] };
+    paths[2][12] = .{ cost =  3, path = .[ 8 ] };
+    paths[2][16] = .{ cost =  4, path = .[ 8, 12 ] };
+    paths[2][20] = .{ cost =  5, path = .[ 8, 12, 16 ] };
+    paths[3][ 8] = .{ cost =  2, path = .[ ] };
+    paths[3][12] = .{ cost =  3, path = .[ 8 ] };
+    paths[3][16] = .{ cost =  4, path = .[ 8, 12 ] };
+    paths[3][20] = .{ cost =  5, path = .[ 8, 12, 16 ] };
+    paths[4][ 8] = .{ cost =  4, path = .[ 3 ] };
+    paths[4][12] = .{ cost =  5, path = .[ 3, 8 ] };
+    paths[4][16] = .{ cost =  6, path = .[ 3, 8, 12 ] };
+    paths[4][20] = .{ cost =  7, path = .[ 3, 8, 12, 16 ] };
+    paths[5][ 8] = .{ cost =  6, path = .[ 4, 3 ] };
+    paths[5][12] = .{ cost =  7, path = .[ 4, 3, 8 ] };
+    paths[5][16] = .{ cost =  8, path = .[ 4, 3, 8, 12 ] };
+    paths[5][20] = .{ cost =  9, path = .[ 4, 3, 8, 12, 16 ] };
+    paths[6][ 8] = .{ cost =  7, path = .[ 5, 4, 3 ] };
+    paths[6][12] = .{ cost =  8, path = .[ 5, 4, 3, 8 ] };
+    paths[6][16] = .{ cost =  9, path = .[ 5, 4, 3, 8, 12 ] };
+    paths[6][20] = .{ cost = 10, path = .[ 5, 4, 3, 8, 12, 16 ] };
+    paths[0][ 9] = .{ cost =  7, path = .[ 1, 2, 3 ] };
+    paths[0][13] = .{ cost =  8, path = .[ 1, 2, 3, 9 ] };
+    paths[0][17] = .{ cost =  9, path = .[ 1, 2, 3, 9, 13 ] };
+    paths[0][21] = .{ cost = 10, path = .[ 1, 2, 3, 9, 13, 17 ] };
+    paths[1][ 9] = .{ cost =  6, path = .[ 2, 3 ] };
+    paths[1][13] = .{ cost =  7, path = .[ 2, 3, 9 ] };
+    paths[1][17] = .{ cost =  8, path = .[ 2, 3, 9, 13 ] };
+    paths[1][21] = .{ cost =  9, path = .[ 2, 3, 9, 13, 17 ] };
+    paths[2][ 9] = .{ cost =  4, path = .[ 3 ] };
+    paths[2][13] = .{ cost =  5, path = .[ 3, 9 ] };
+    paths[2][17] = .{ cost =  6, path = .[ 3, 9, 13 ] };
+    paths[2][21] = .{ cost =  7, path = .[ 3, 9, 13, 17 ] };
+    paths[3][ 9] = .{ cost =  2, path = .[ ] };
+    paths[3][13] = .{ cost =  3, path = .[ 9 ] };
+    paths[3][17] = .{ cost =  4, path = .[ 9, 13 ] };
+    paths[3][21] = .{ cost =  5, path = .[ 9, 13, 17 ] };
+    paths[4][ 9] = .{ cost =  2, path = .[ ] };
+    paths[4][13] = .{ cost =  3, path = .[ 9 ] };
+    paths[4][17] = .{ cost =  4, path = .[ 9, 13 ] };
+    paths[4][21] = .{ cost =  5, path = .[ 9, 13, 17 ] };
+    paths[5][ 9] = .{ cost =  4, path = .[ 4 ] };
+    paths[5][13] = .{ cost =  5, path = .[ 4, 9 ] };
+    paths[5][17] = .{ cost =  6, path = .[ 4, 9, 13 ] };
+    paths[5][21] = .{ cost =  7, path = .[ 4, 9, 13, 17 ] };
+    paths[6][ 9] = .{ cost =  5, path = .[ 5, 4 ] };
+    paths[6][13] = .{ cost =  6, path = .[ 5, 4, 9 ] };
+    paths[6][17] = .{ cost =  7, path = .[ 5, 4, 9, 13 ] };
+    paths[6][21] = .{ cost =  8, path = .[ 5, 4, 9, 13, 17 ] };
+    paths[0][10] = .{ cost =  9, path = .[ 1, 2, 3, 4 ] };
+    paths[0][14] = .{ cost = 10, path = .[ 1, 2, 3, 4, 9 ] };
+    paths[0][18] = .{ cost = 11, path = .[ 1, 2, 3, 4, 9, 13 ] };
+    paths[0][22] = .{ cost = 12, path = .[ 1, 2, 3, 4, 9, 13, 17 ] };
+    paths[1][10] = .{ cost =  8, path = .[ 2, 3, 4 ] };
+    paths[1][14] = .{ cost =  9, path = .[ 2, 3, 4, 9 ] };
+    paths[1][18] = .{ cost = 10, path = .[ 2, 3, 4, 9, 13 ] };
+    paths[1][22] = .{ cost = 11, path = .[ 2, 3, 4, 9, 13, 17 ] };
+    paths[2][10] = .{ cost =  6, path = .[ 3, 4 ] };
+    paths[2][14] = .{ cost =  7, path = .[ 3, 4, 9 ] };
+    paths[2][18] = .{ cost =  8, path = .[ 3, 4, 9, 13 ] };
+    paths[2][22] = .{ cost =  9, path = .[ 3, 4, 9, 13, 17 ] };
+    paths[3][10] = .{ cost =  4, path = .[ 4 ] };
+    paths[3][14] = .{ cost =  5, path = .[ 4, 9 ] };
+    paths[3][18] = .{ cost =  6, path = .[ 4, 9, 13 ] };
+    paths[3][22] = .{ cost =  7, path = .[ 4, 9, 13, 17 ] };
+    paths[4][10] = .{ cost =  2, path = .[ ] };
+    paths[4][14] = .{ cost =  3, path = .[ 9 ] };
+    paths[4][18] = .{ cost =  4, path = .[ 9, 13 ] };
+    paths[4][22] = .{ cost =  5, path = .[ 9, 13, 17 ] };
+    paths[5][10] = .{ cost =  2, path = .[ ] };
+    paths[5][14] = .{ cost =  3, path = .[ 9 ] };
+    paths[5][18] = .{ cost =  4, path = .[ 9, 13 ] };
+    paths[5][22] = .{ cost =  5, path = .[ 9, 13, 17 ] };
+    paths[6][10] = .{ cost =  3, path = .[ 5 ] };
+    paths[6][14] = .{ cost =  4, path = .[ 5, 9 ] };
+    paths[6][18] = .{ cost =  5, path = .[ 5, 9, 13 ] };
+    paths[6][22] = .{ cost =  6, path = .[ 5, 9, 13, 17 ] };
+
     return tprint("%", board1), tprint("%", "");
 }
 
+#scope_file
+
 /*
-    00 01  02  03  04  05 06
+   00 01  02  03  04  05 06
         07  08  09  10
         11  12  13  14
         15  16  17  18
         19  20  21  22
 */
+
+Path :: struct
+{
+    path : []u8;
+    cost : int;
+}
 
 rooms : [4][4]u8 : .[
     .[ 7, 11, 15, 19], // room 1 / A
