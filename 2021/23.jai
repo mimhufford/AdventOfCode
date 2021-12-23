@@ -32,6 +32,7 @@ day23 :: (data : string) -> string, string
         {
             if b[src] == 0 || b[dst] != 0   return false;
 
+            // TODO: check if worth moving, might already be in right place
             // TODO: check path isn't blocked
             return true;
         }
