@@ -16,7 +16,7 @@ day23 :: (data : string) -> string, string
     b2[19] = data[45];  b2[20] = data[47];  b2[21] = data[49];  b2[22] = data[51];
     for * b2 if <<it { <<it -= #char "A" - 1; }
 
-    return tprint("%", solve(b1)), tprint("%", solve(b2));
+    return tprint("%", solve(b1)), tprint("%", "");
 }
 
 #scope_file
@@ -35,51 +35,59 @@ Path :: struct
     cost : int;
 }
 
-solve :: (b : []u8) -> u64
+solve :: (b: []u8) -> u64
 {
-    cheapest := U64_MAX;
+    costs : [..]u64;
 
     for hallway: 0..6 for room: 7..22
     {
-        if valid_hallway_to_room(hallway, room)
+        cost_h_to_r := valid_hallway_to_room(hallway, room);
+        if cost_h_to_r
         {
-            print("move from h% to r%\n", hallway, room);
-            new_b := b;
+            new_b := array_copy(b);
             new_b[room] = b[hallway];
             new_b[hallway] = 0;
-            cheapest = min(cheapest, solve(new_b));
+            piece_cost : int = 1;
+            if b[hallway] == 2 piece_cost = 10;
+            if b[hallway] == 3 piece_cost = 100;
+            if b[hallway] == 4 piece_cost = 1000;
+            array_add(*costs, xx (cost_h_to_r*piece_cost + xx solve(new_b)));
         }
-        if valid_room_to_hallway(room, hallway)
+
+        cost_r_to_h := valid_room_to_hallway(room, hallway);
+        if cost_r_to_h
         {
-            print("move from r% to h%\n", room, hallway);
-            new_b := b;
+            new_b := array_copy(b);
             new_b[hallway] = b[room];
             new_b[room] = 0;
-            cheapest = min(cheapest, solve(new_b));
+            piece_cost : int = 1;
+            if b[room] == 2 piece_cost = 10;
+            if b[room] == 3 piece_cost = 100;
+            if b[room] == 4 piece_cost = 1000;
+            array_add(*costs, xx (cost_r_to_h*piece_cost + xx solve(new_b)));
         }
     }
 
+    cheapest := min(U64_MAX, ..costs);
     return cheapest;
 
-    valid_room_to_hallway :: (src: int, dst: int) -> bool #expand
+    valid_room_to_hallway :: (src: int, dst: int) -> int #expand
     {
-        if b[src] == 0 || b[dst] != 0   return false;
-        if homed_and_not_blocking(src)  return false;
-        if path_blocked(src, dst)       return false;
-        return true;
+        if b[src] == 0 || b[dst] != 0   return 0;
+        if homed_and_not_blocking(src)  return 0;
+        return path_cost(src, dst);
     }
 
-    valid_hallway_to_room :: (src: int, dst: int) -> bool #expand
+    valid_hallway_to_room :: (src: int, dst: int) -> int #expand
     {
-        if b[src] == 0 || b[dst] != 0   return false;
-        if wrong_room(dst, b[src])      return false;
-        if room_not_ready(b[src])       return false;
-        if dst != next_room_pos(b[src]) return false;
-        if path_blocked(src, dst)       return false;
-        return true;
+        if b[src] == 0 || b[dst] != 0   return 0;
+        if wrong_room(dst, b[src])      return 0;
+        if room_not_ready(b[src])       return 0;
+        if dst != next_room_pos(b[src]) return 0;
+        return path_cost(src, dst);
     }
 
-    path_blocked :: (s: int, d: int) -> bool #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if b[it] != 0 return true; return false; }
+    path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if b[it] != 0 return 0; return p.cost; }
     homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, b[i]) return false; for < rooms[b[i]-1] if it > i && b[it] != b[i] return false; return true; }
     next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if b[it] == 0 return it; return 0; }
     room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if b[it] != r && b[it] != 0 return true; return false; }
