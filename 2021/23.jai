@@ -31,8 +31,8 @@ day23 :: (data : string) -> string, string
         valid_room_to_hallway :: (src: int, dst: int) -> bool #expand
         {
             if b[src] == 0 || b[dst] != 0   return false;
+            if homed_and_not_blocking(src)  return false;
 
-            // TODO: check if worth moving, might already be in right place
             // TODO: check path isn't blocked
             return true;
         }
@@ -48,6 +48,7 @@ day23 :: (data : string) -> string, string
             return true;
         }
 
+        homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, b[i]) return false; for < rooms[b[i]-1] if it > i && b[it] != b[i] return false; return true; }
         next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if b[it] == 0 return it; return 0; }
         room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if b[it] != r && b[it] != 0 return true; return false; }
         wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
