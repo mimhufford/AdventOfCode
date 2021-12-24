@@ -16,7 +16,9 @@ day23 :: (data : string) -> string, string
     b2[19] = data[45];  b2[20] = data[47];  b2[21] = data[49];  b2[22] = data[51];
     for * b2 if <<it { <<it -= #char "A" - 1; }
 
-    return tprint("%", solve(b1)), tprint("%", "");
+    // solve(b1);
+
+    return tprint("%", best), tprint("%", "");
 }
 
 #scope_file
@@ -35,9 +37,22 @@ Path :: struct
     cost : int;
 }
 
-solve :: (b: []u8) -> u64
+best := U64_MAX;
+goal :: u8.[0,0,0,0,0,0,0,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4];
+
+solve :: (b: []u8, cost_so_far: u64 = 0)
 {
-    costs : [..]u64;
+    if cost_so_far >= best return;
+    done := true;
+    for b
+    {
+        if b[it_index] != goal[it_index] 
+        {
+            done = false;
+            break;
+        }
+    }
+    if done { print("%\n", cost_so_far); best = cost_so_far; return; }
 
     for hallway: 0..6 for room: 7..22
     {
@@ -51,7 +66,8 @@ solve :: (b: []u8) -> u64
             if b[hallway] == 2 piece_cost = 10;
             if b[hallway] == 3 piece_cost = 100;
             if b[hallway] == 4 piece_cost = 1000;
-            array_add(*costs, xx (cost_h_to_r*piece_cost + xx solve(new_b)));
+            cost := cost_h_to_r * piece_cost;
+            solve(new_b, xx cost + cost_so_far);
         }
 
         cost_r_to_h := valid_room_to_hallway(room, hallway);
@@ -64,12 +80,10 @@ solve :: (b: []u8) -> u64
             if b[room] == 2 piece_cost = 10;
             if b[room] == 3 piece_cost = 100;
             if b[room] == 4 piece_cost = 1000;
-            array_add(*costs, xx (cost_r_to_h*piece_cost + xx solve(new_b)));
+            cost := cost_h_to_r * piece_cost;
+            solve(new_b, xx cost + cost_so_far);
         }
     }
-
-    cheapest := min(U64_MAX, ..costs);
-    return cheapest;
 
     valid_room_to_hallway :: (src: int, dst: int) -> int #expand
     {
