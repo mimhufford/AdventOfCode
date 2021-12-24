@@ -3,8 +3,7 @@ day24 :: (data : string) -> string, string
     a : [..]s64;
     b : [..]s64;
 
-    lines := split(data, "\n");
-    for lines
+    for split(data, "\n")
     {
         if it_index % 18 ==  5 { advance(*it, 6); array_add(*a, string_to_int(it)); } 
         if it_index % 18 == 15 { advance(*it, 6); array_add(*b, string_to_int(it)); } 
