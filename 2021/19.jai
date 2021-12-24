@@ -16,7 +16,7 @@ day19 :: (data : string) -> string, string
     // and take it out the list so we don't look at it any more
     array_unordered_remove_by_index(*scanners, 0);
 
-    while scanners.count
+    // while scanners.count
     {
         // find the scanner with the most beacons that overlap with what sauron can see
         scanner_index_to_merge_in := find_scanner_with_most_potential_overlaps(sauron, scanners);
