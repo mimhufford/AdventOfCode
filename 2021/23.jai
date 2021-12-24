@@ -2,21 +2,21 @@ day23 :: (data : string) -> string, string
 {
     init_pathfinding_lol();
 
-    b1: [23]u8;                
-    b1[ 7] = data[31];  b1[ 8] = data[33];  b1[ 9] = data[35];  b1[10] = data[37];         
-    b1[11] = data[45];  b1[12] = data[47];  b1[13] = data[49];  b1[14] = data[51];         
-    b1[15] = #char "A"; b1[16] = #char "B"; b1[17] = #char "C"; b1[18] = #char "D";        
-    b1[19] = #char "A"; b1[20] = #char "B"; b1[21] = #char "C"; b1[22] = #char "D";        
-    for * b1 if <<it { <<it -= #char "A" - 1; }
+    s1: [23]u8;                
+    s1[ 7] = data[31];  s1[ 8] = data[33];  s1[ 9] = data[35];  s1[10] = data[37];         
+    s1[11] = data[45];  s1[12] = data[47];  s1[13] = data[49];  s1[14] = data[51];         
+    s1[15] = #char "A"; s1[16] = #char "B"; s1[17] = #char "C"; s1[18] = #char "D";        
+    s1[19] = #char "A"; s1[20] = #char "B"; s1[21] = #char "C"; s1[22] = #char "D";        
+    for * s1 if <<it { <<it -= #char "A" - 1; }
 
-    b2: [23]u8;
-    b2[ 7] = data[31];  b2[ 8] = data[33];  b2[ 9] = data[35];  b2[10] = data[37];
-    b2[11] = #char "D"; b2[12] = #char "C"; b2[13] = #char "B"; b2[14] = #char "A";
-    b2[15] = #char "D"; b2[16] = #char "B"; b2[17] = #char "A"; b2[18] = #char "C";
-    b2[19] = data[45];  b2[20] = data[47];  b2[21] = data[49];  b2[22] = data[51];
-    for * b2 if <<it { <<it -= #char "A" - 1; }
+    s2: [23]u8;
+    s2[ 7] = data[31];  s2[ 8] = data[33];  s2[ 9] = data[35];  s2[10] = data[37];
+    s2[11] = #char "D"; s2[12] = #char "C"; s2[13] = #char "B"; s2[14] = #char "A";
+    s2[15] = #char "D"; s2[16] = #char "B"; s2[17] = #char "A"; s2[18] = #char "C";
+    s2[19] = data[45];  s2[20] = data[47];  s2[21] = data[49];  s2[22] = data[51];
+    for * s2 if <<it { <<it -= #char "A" - 1; }
 
-    solve(b1);
+    solve(s1);
 
     return tprint("%", best), tprint("%", "");
 }
@@ -40,10 +40,10 @@ Path :: struct
 best := U64_MAX;
 goal :: u8.[0,0,0,0,0,0,0,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4];
 
-solve :: (b: []u8, cost_so_far: u64 = 0)
+solve :: (state: []u8, cost_so_far: u64 = 0)
 {
     if cost_so_far >= best return;
-    done := memcmp(b.data, goal.data, goal.count) == 0;
+    done := memcmp(state.data, goal.data, goal.count) == 0;
     if done { print("%\n", cost_so_far); best = cost_so_far; return; }
 
     for hallway: 0..6 for room: 7..22
@@ -51,59 +51,59 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
         cost_h_to_r := valid_hallway_to_room(hallway, room);
         if cost_h_to_r
         {
-            new_b := array_copy(b);
-            new_b[room] = b[hallway];
-            new_b[hallway] = 0;
-            piece_cost : int = xx pow(10, xx (b[hallway]-1));
+            new_state := array_copy(state);
+            new_state[room] = state[hallway];
+            new_state[hallway] = 0;
+            piece_cost : int = xx pow(10, xx (state[hallway]-1));
             cost := cost_h_to_r * piece_cost;
-            // dump(b);
-            // print("moving % from % to %\n\n", b[hallway], hallway, room);
-            solve(new_b, xx cost + cost_so_far);
+            // dump(state);
+            // print("moving % from % to %\n\n", state[hallway], hallway, room);
+            solve(new_state, xx cost + cost_so_far);
         }
 
         cost_r_to_h := valid_room_to_hallway(room, hallway);
         if cost_r_to_h
         {
-            new_b := array_copy(b);
-            new_b[hallway] = b[room];
-            new_b[room] = 0;
-            piece_cost : int = xx pow(10, xx (b[room]-1));
+            new_state := array_copy(state);
+            new_state[hallway] = state[room];
+            new_state[room] = 0;
+            piece_cost : int = xx pow(10, xx (state[room]-1));
             cost := cost_r_to_h * piece_cost;
-            // dump(b);
-            // print("moving % from % to %\n\n", b[room], room, hallway);
-            solve(new_b, xx cost + cost_so_far);
+            // dump(state);
+            // print("moving % from % to %\n\n", state[room], room, hallway);
+            solve(new_state, xx cost + cost_so_far);
         }
     }
 
     valid_room_to_hallway :: (src: int, dst: int) -> int #expand
     {
-        if b[src] == 0 || b[dst] != 0   return 0;
+        if state[src] == 0 || state[dst] != 0   return 0;
         if homed_and_not_blocking(src)  return 0;
         return path_cost(src, dst);
     }
 
     valid_hallway_to_room :: (src: int, dst: int) -> int #expand
     {
-        if b[src] == 0 || b[dst] != 0   return 0;
-        if wrong_room(dst, b[src])      return 0;
-        if room_not_ready(b[src])       return 0;
-        if dst != next_room_pos(b[src]) return 0;
+        if state[src] == 0 || state[dst] != 0   return 0;
+        if wrong_room(dst, state[src])      return 0;
+        if room_not_ready(state[src])       return 0;
+        if dst != next_room_pos(state[src]) return 0;
         return path_cost(src, dst);
     }
 
-    dump :: (b: []u8)
+    dump :: (state: []u8)
     {
-        for  0..6  print("% ", b[it]); print("\n");
-        print("   "); for  7..10 print("% ", b[it]); print("\n");
-        print("   "); for 11..14 print("% ", b[it]); print("\n");
-        print("   "); for 15..18 print("% ", b[it]); print("\n");
-        print("   "); for 19..22 print("% ", b[it]); print("\n");
+        for  0..6  print("% ", state[it]); print("\n");
+        print("   "); for  7..10 print("% ", state[it]); print("\n");
+        print("   "); for 11..14 print("% ", state[it]); print("\n");
+        print("   "); for 15..18 print("% ", state[it]); print("\n");
+        print("   "); for 19..22 print("% ", state[it]); print("\n");
     }
 
-    path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if b[it] != 0 return 0; return p.cost; }
-    homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, b[i]) return false; for < rooms[b[i]-1] if it > i && b[it] != b[i] return false; return true; }
-    next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if b[it] == 0 return it; return 0; }
-    room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if b[it] != r && b[it] != 0 return true; return false; }
+    path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if state[it] != 0 return 0; return p.cost; }
+    homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, state[i]) return false; for < rooms[state[i]-1] if it > i && state[it] != state[i] return false; return true; }
+    next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if state[it] == 0 return it; return 0; }
+    room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if state[it] != r && state[it] != 0 return true; return false; }
     wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
 }
 
