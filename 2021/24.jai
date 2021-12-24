@@ -106,130 +106,67 @@ Hand converted instructions:
 
 w, x, y, z = 0;
 
-w = FIRST DIGIT;
-x = ((z % 26) + 11) != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 14) * x;
-z += y;
+x = ((z % 26) + 11) != D1
+z *= (25 * x) + 1;
+z += (D1 + 14) * x;
 
-w = SECOND DIGIT;
-x = ((z % 26) + 13) != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 8) * x;
-z += y;
+x = ((z % 26) + 13) != D2
+z *= (25 * x) + 1;
+z += (D2 + 8) * x;
 
-w = THIRD DIGIT;
-x = ((z % 26) + 11) != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 4) * x;
-z += y;
+x = ((z % 26) + 11) != D3
+z *= (25 * x) + 1;
+z += (D3 + 4) * x;
 
-w = FOURTH DIGIT;
-x = ((z % 26) + 10) != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 10) * x;
-z += y;
+x = (z % 26) + 10) != D4
+z *= (25 * x) + 1;
+z += (D4 + 10) * x;
 
-// FIRST DIFFERENCE HERE ==================
-w = FIFTH DIGIT;
-x = (z % 26);
+x = ((z % 26) - 3) != D5
 z /= 26;
-x -= 3;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 14) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D5 + 14) * x;
 
-w = SIXTH DIGIT;
-x = (z % 26);
+x = ((z % 26) - 4) != D6
 z /= 26;
-x -= 4;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 10) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D6 + 10) * x;
 
-w = SEVENTH DIGIT;
-x = (z % 26);
-x += 12;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 4) * x;
-z += y;
+x = ((z % 26) + 12) != D7
+z *= (25 * x) + 1;
+z += (D7 + 4) * x;
 
-w = EIGTH DIGIT;
-x = (z % 26);
+x = (z % 26)- 8 != D8
 z /= 26;
-x -= 8;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 14) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D8 + 14) * x;
 
-w = NINTH DIGIT;
-x = (z % 26);
+x = (z % 26)-3 != D9
 z /= 26;
-x -= 3;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 1) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D9 + 1) * x;
 
-w = TENTH DIGIT;
-x = (z % 26);
+x = (z % 26)-12 != D10
 z /= 26;
-x -= 12;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 6) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D10 + 6) * x;
 
-w = ELEVENTH DIGIT;
-x = (z % 26);
-x += 14;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 0) * x;
-z += y;
+x = (z % 26) + 14 != D11
+z *= (25 * x) + 1;
+z += (D11 + 0) * x;
 
-w = TWELTH DIGIT;
-x = (z % 26);
+x = (z % 26)-6 != D12
 z /= 26;
-x -= 6;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 9) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D12 + 9) * x;
 
-w = THIRTEENTH DIGIT;
-x = (z % 26);
-x += 11;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 13) * x;
-z += y;
+x = (z % 26)+11 != D13
+z *= (25 * x) + 1;
+z += (D13 + 13) * x;
 
-w = FOURTEENTH DIGIT;
-x = (z % 26);
+x = (z % 26)-12 != D14
 z /= 26;
-x -= 12;
-x = x != w
-y = (25 * x) + 1;
-z *= y;
-y = (w + 12) * x;
-z += y;
+z *= (25 * x) + 1;
+z += (D14 + 12) * x;
 
 */
