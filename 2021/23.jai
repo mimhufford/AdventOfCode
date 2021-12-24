@@ -16,7 +16,7 @@ day23 :: (data : string) -> string, string
     b2[19] = data[45];  b2[20] = data[47];  b2[21] = data[49];  b2[22] = data[51];
     for * b2 if <<it { <<it -= #char "A" - 1; }
 
-    // solve(b1);
+    solve(b1);
 
     return tprint("%", best), tprint("%", "");
 }
@@ -52,7 +52,7 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
             break;
         }
     }
-    if done { print("%\n", cost_so_far); best = cost_so_far; return; }
+    if done { print("%: %\n", cost_so_far, b); best = cost_so_far; return; }
 
     for hallway: 0..6 for room: 7..22
     {
@@ -62,10 +62,7 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
             new_b := array_copy(b);
             new_b[room] = b[hallway];
             new_b[hallway] = 0;
-            piece_cost : int = 1;
-            if b[hallway] == 2 piece_cost = 10;
-            if b[hallway] == 3 piece_cost = 100;
-            if b[hallway] == 4 piece_cost = 1000;
+            piece_cost : int = xx pow(10, xx (b[hallway]-1));
             cost := cost_h_to_r * piece_cost;
             solve(new_b, xx cost + cost_so_far);
         }
@@ -76,11 +73,8 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
             new_b := array_copy(b);
             new_b[hallway] = b[room];
             new_b[room] = 0;
-            piece_cost : int = 1;
-            if b[room] == 2 piece_cost = 10;
-            if b[room] == 3 piece_cost = 100;
-            if b[room] == 4 piece_cost = 1000;
-            cost := cost_h_to_r * piece_cost;
+            piece_cost : int = xx pow(10, xx (b[room]-1));
+            cost := cost_r_to_h * piece_cost;
             solve(new_b, xx cost + cost_so_far);
         }
     }
