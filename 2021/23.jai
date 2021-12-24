@@ -43,16 +43,8 @@ goal :: u8.[0,0,0,0,0,0,0,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4];
 solve :: (b: []u8, cost_so_far: u64 = 0)
 {
     if cost_so_far >= best return;
-    done := true;
-    for b
-    {
-        if b[it_index] != goal[it_index] 
-        {
-            done = false;
-            break;
-        }
-    }
-    if done { print("%: %\n", cost_so_far, b); best = cost_so_far; return; }
+    done := memcmp(b.data, goal.data, goal.count) == 0;
+    if done { print("%\n", cost_so_far); best = cost_so_far; return; }
 
     for hallway: 0..6 for room: 7..22
     {
@@ -64,6 +56,8 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
             new_b[hallway] = 0;
             piece_cost : int = xx pow(10, xx (b[hallway]-1));
             cost := cost_h_to_r * piece_cost;
+            // dump(b);
+            // print("moving % from % to %\n\n", b[hallway], hallway, room);
             solve(new_b, xx cost + cost_so_far);
         }
 
@@ -75,6 +69,8 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
             new_b[room] = 0;
             piece_cost : int = xx pow(10, xx (b[room]-1));
             cost := cost_r_to_h * piece_cost;
+            // dump(b);
+            // print("moving % from % to %\n\n", b[room], room, hallway);
             solve(new_b, xx cost + cost_so_far);
         }
     }
@@ -93,6 +89,15 @@ solve :: (b: []u8, cost_so_far: u64 = 0)
         if room_not_ready(b[src])       return 0;
         if dst != next_room_pos(b[src]) return 0;
         return path_cost(src, dst);
+    }
+
+    dump :: (b: []u8)
+    {
+        for  0..6  print("% ", b[it]); print("\n");
+        print("   "); for  7..10 print("% ", b[it]); print("\n");
+        print("   "); for 11..14 print("% ", b[it]); print("\n");
+        print("   "); for 15..18 print("% ", b[it]); print("\n");
+        print("   "); for 19..22 print("% ", b[it]); print("\n");
     }
 
     path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if b[it] != 0 return 0; return p.cost; }
