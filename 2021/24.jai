@@ -1,8 +1,14 @@
 day24 :: (data : string) -> string, string
 {
-    // TODO, build this table based on input file, numbers are on every x + 18th rows
-    a :: s64.[ 11,  13,  11,  10,  -3,  -4,  12,  -8,  -3, -12,  14,  -6,  11, -12];
-    b :: s64.[ 14,   8,   4,  10,  14,  10,   4,  14,   1,   6,   0,   9,  13,  12];
+    a : [..]s64;
+    b : [..]s64;
+
+    lines := split(data, "\n");
+    for lines
+    {
+        if it_index % 18 ==  5 { advance(*it, 6); array_add(*a, string_to_int(it)); } 
+        if it_index % 18 == 15 { advance(*it, 6); array_add(*b, string_to_int(it)); } 
+    }
 
     hi := calculate_highest(a, b);
     lo := calculate_lowest (a, b);
