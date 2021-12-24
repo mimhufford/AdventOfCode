@@ -28,14 +28,6 @@ day23 :: (data : string) -> string, string
 
 #scope_file
 
-/*
-   00 01  02  03  04  05 06
-        07  08  09  10
-        11  12  13  14
-        15  16  17  18
-        19  20  21  22
-*/
-
 Path :: struct
 {
     path : []u8;
@@ -67,8 +59,6 @@ solve :: (state: string, cost_so_far: u64 = 0)
             new_state[hallway] = 0;
             piece_cost : int = xx pow(10, xx (state[hallway]-1));
             cost := cost_h_to_r * piece_cost;
-            // dump(state);
-            // print("moving % from % to %\n\n", state[hallway], hallway, room);
             solve(new_state, xx cost + cost_so_far);
         }
 
@@ -80,35 +70,24 @@ solve :: (state: string, cost_so_far: u64 = 0)
             new_state[room] = 0;
             piece_cost : int = xx pow(10, xx (state[room]-1));
             cost := cost_r_to_h * piece_cost;
-            // dump(state);
-            // print("moving % from % to %\n\n", state[room], room, hallway);
             solve(new_state, xx cost + cost_so_far);
         }
     }
 
     valid_room_to_hallway :: (src: int, dst: int) -> int #expand
     {
-        if state[src] == 0 || state[dst] != 0   return 0;
-        if homed_and_not_blocking(src)  return 0;
+        if state[src] == 0 || state[dst] != 0  return 0;
+        if homed_and_not_blocking(src)         return 0;
         return path_cost(src, dst);
     }
 
     valid_hallway_to_room :: (src: int, dst: int) -> int #expand
     {
-        if state[src] == 0 || state[dst] != 0   return 0;
-        if wrong_room(dst, state[src])      return 0;
-        if room_not_ready(state[src])       return 0;
-        if dst != next_room_pos(state[src]) return 0;
+        if state[src] == 0 || state[dst] != 0  return 0;
+        if wrong_room(dst, state[src])         return 0;
+        if room_not_ready(state[src])          return 0;
+        if dst != next_room_pos(state[src])    return 0;
         return path_cost(src, dst);
-    }
-
-    dump :: (state: []u8)
-    {
-        for  0..6  print("% ", state[it]); print("\n");
-        print("   "); for  7..10 print("% ", state[it]); print("\n");
-        print("   "); for 11..14 print("% ", state[it]); print("\n");
-        print("   "); for 15..18 print("% ", state[it]); print("\n");
-        print("   "); for 19..22 print("% ", state[it]); print("\n");
     }
 
     path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if state[it] != 0 return 0; return p.cost; }
