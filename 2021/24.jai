@@ -91,3 +91,138 @@ day24 :: (data : string) -> string, string
 
     return tprint("%", ""), tprint("%", "");
 }
+
+
+/*
+
+Hand converted instructions:
+
+w, x, y, z = 0;
+
+w = FIRST DIGIT;
+x = ((z % 26) + 11) == w  &&  x == 0; // weird, x always 0?
+y = (25 * x) + 1;
+z *= y;
+y = (w + 14) * x;
+z += y;
+
+w = SECOND DIGIT;
+x = ((z % 26) + 13) == w  &&  x == 0; // weird, x always 0?
+y = (25 * x) + 1;
+z *= y;
+y = (w + 8) * x;
+z += y;
+
+w = THIRD DIGIT;
+x = ((z % 26) + 11) == w  &&  x == 0; // weird, x always 0?
+y = (25 * x) + 1;
+z *= y;
+y = (w + 4) * x;
+z += y;
+
+w = FOURTH DIGIT;
+x = ((z % 26) + 10) == w  &&  x == 0; // weird, x always 0?
+y = (25 * x) + 1;
+z *= y;
+y = (w + 10) * x;
+z += y;
+
+// FIRST DIFFERENCE HERE ==================
+w = FIFTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 3;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 14) * x;
+z += y;
+
+w = SIXTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 4;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 10) * x;
+z += y;
+
+w = SEVENTH DIGIT;
+x = (z % 26);
+x += 12;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 4) * x;
+z += y;
+
+w = EIGTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 8;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 14) * x;
+z += y;
+
+w = NINTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 3;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 1) * x;
+z += y;
+
+w = TENTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 12;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 6) * x;
+z += y;
+
+w = ELEVENTH DIGIT;
+x = (z % 26);
+x += 14;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 0) * x;
+z += y;
+
+w = TWELTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 6;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 9) * x;
+z += y;
+
+w = THIRTEENTH DIGIT;
+x = (z % 26);
+x += 11;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 13) * x;
+z += y;
+
+w = FOURTEENTH DIGIT;
+x = (z % 26);
+z /= 26;
+x -= 12;
+x = x == w && x == 0;
+y = (25 * x) + 1;
+z *= y;
+y = (w + 12) * x;
+z += y;
+
+*/
