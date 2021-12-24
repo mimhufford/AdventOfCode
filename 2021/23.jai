@@ -16,9 +16,14 @@ day23 :: (data : string) -> string, string
     s2[19] = data[45];  s2[20] = data[47];  s2[21] = data[49];  s2[22] = data[51];
     for * s2 if <<it { <<it -= #char "A" - 1; }
 
-    solve(s1);
+    solve(xx s1);
+    part_1 := best;
+    best = U64_MAX;
+    table_reset(*seen);
+    solve(xx s2);
+    part_2 := best;
 
-    return tprint("%", best), tprint("%", "");
+    return tprint("%", part_1), tprint("%", part_2);
 }
 
 #scope_file
@@ -39,19 +44,25 @@ Path :: struct
 
 best := U64_MAX;
 goal :: u8.[0,0,0,0,0,0,0,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4];
+seen : Table(string, u64);
 
-solve :: (state: []u8, cost_so_far: u64 = 0)
+solve :: (state: string, cost_so_far: u64 = 0)
 {
     if cost_so_far >= best return;
+    prev := table_find_pointer(seen, state);
+    if prev && cost_so_far >= <<prev return;
+    if prev { <<prev = cost_so_far; }
+    else table_add(*seen, state, cost_so_far);
+
     done := memcmp(state.data, goal.data, goal.count) == 0;
-    if done { print("%\n", cost_so_far); best = cost_so_far; return; }
+    if done { best = cost_so_far; return; }
 
     for hallway: 0..6 for room: 7..22
     {
         cost_h_to_r := valid_hallway_to_room(hallway, room);
         if cost_h_to_r
         {
-            new_state := array_copy(state);
+            new_state := tprint("%", state);
             new_state[room] = state[hallway];
             new_state[hallway] = 0;
             piece_cost : int = xx pow(10, xx (state[hallway]-1));
@@ -64,7 +75,7 @@ solve :: (state: []u8, cost_so_far: u64 = 0)
         cost_r_to_h := valid_room_to_hallway(room, hallway);
         if cost_r_to_h
         {
-            new_state := array_copy(state);
+            new_state := tprint("%", state);
             new_state[hallway] = state[room];
             new_state[room] = 0;
             piece_cost : int = xx pow(10, xx (state[room]-1));
