@@ -15,14 +15,18 @@ day19 :: (data : string) -> string, string
 
     // and take it out the list so we don't look at it any more
     array_unordered_remove_by_index(*scanners, 0);
+    
+    positions : [..]Vector3;
 
-    // while scanners.count
+    while scanners.count
     {
         // find the scanner with the most beacons that overlap with what sauron can see
         scanner_index_to_merge_in := find_scanner_with_most_potential_overlaps(sauron, scanners);
 
         // reorient the scanner, match the beacons, and merge them into sauron
         merge_into_sauron(*sauron, *scanners[scanner_index_to_merge_in]);
+
+        array_add(*positions, scanners[scanner_index_to_merge_in].position);
 
         // and take it out the list so we don't look at it again
         array_unordered_remove_by_index(*scanners, scanner_index_to_merge_in);
@@ -31,7 +35,18 @@ day19 :: (data : string) -> string, string
         calculate_distances_between_all_beacon_pairs(*sauron);
     }
 
-    return tprint("%", sauron.beacons.count), tprint("%", "");
+    furthest : float;
+
+    for i: 0..positions.count-1 for j: i+1..positions.count-1
+    {
+        furthest = max(furthest, 
+                        abs(positions[i].x - positions[j].x) +
+                        abs(positions[i].y - positions[j].y) +
+                        abs(positions[i].z - positions[j].z)
+                    );
+    }
+
+    return tprint("%", sauron.beacons.count), tprint("%", furthest);
 }
 
 Scanner :: struct
@@ -55,7 +70,6 @@ calculate_distances_between_all_beacon_pairs :: (s: *Scanner)
             bs : [2]int;
             bs[0] = i;
             bs[1] = j;
-            assert(!table_find_pointer(s.distances, d)); // relying on all points being a unique distance apart
             table_add(*s.distances, d, bs);
         }
     }
@@ -89,6 +103,7 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
+
     // find a matching pair, there are 2 of each because it's not clear which ones match yet
     matches := find_beacons_to_match_on(sauron, s);
 
@@ -97,23 +112,31 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
         // test all the different orientation for the scanner
         for orientation: 1..24
         {
+            // @HACK: cannot keep reoriented scanners and destructively changing them
+            //        need to start form a fresh version each time
+            ss : Scanner;
+            ss.position = s.position;
+            for s.beacons { v: Vector3; v.x = it.x; v.y = it.y; v.z = it.z; array_add(*ss.beacons, it); }
+
             // rotate everything around to the next orientation
-            reorient_scanner(s, orientation);
+            reorient_scanner(*ss, orientation);
 
             // use our matching pair to calculate the offset for everything in s
-            offset := sauron.beacons[match[2]] - s.beacons[match[0]];
+            offset := sauron.beacons[match[2]] - ss.beacons[match[0]];
 
             // offset everything in s
-            offset_scanner(s, offset);
+            offset_scanner(*ss, offset);
 
             // if the other pair aren't matching then this isn't the right orientation
-            if sauron.beacons[match[3]] != s.beacons[match[1]] continue;
+            if sauron.beacons[match[3]] != ss.beacons[match[1]] continue;
 
             // it was the right orientation, so let's check if we have >= 12 other matches
-            if !enough_matches(sauron, s) continue;
+            if !enough_matches(sauron, *ss) continue;
 
             // we have enough matches, so merge the non-overlapping beacons into sauron
-            add_new_beacons(sauron, s);
+            add_new_beacons(sauron, *ss);
+
+            s.position = offset;
 
             return;
         }
