@@ -103,7 +103,6 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
 
 merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
 {
-
     // find a matching pair, there are 2 of each because it's not clear which ones match yet
     matches := find_beacons_to_match_on(sauron, s);
 
@@ -136,6 +135,7 @@ merge_into_sauron :: (sauron: *Scanner, s: *Scanner)
             // we have enough matches, so merge the non-overlapping beacons into sauron
             add_new_beacons(sauron, *ss);
 
+            // and record the position of the scanner relative to 0,0,0
             s.position = offset;
 
             return;
