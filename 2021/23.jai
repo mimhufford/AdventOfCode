@@ -16,11 +16,11 @@ day23 :: (data : string) -> string, string
     s2[19] = data[45];  s2[20] = data[47];  s2[21] = data[49];  s2[22] = data[51];
     for * s2 if <<it { <<it -= #char "A" - 1; }
 
-    solve(xx s1);
+    solve(encode(s1));
     part_1 := best;
     best = U64_MAX;
     table_reset(*seen);
-    solve(xx s2);
+    solve(encode(s2));
     part_2 := best;
 
     return tprint("%", part_1), tprint("%", part_2);
@@ -35,42 +35,45 @@ Path :: struct
 }
 
 best := U64_MAX;
-goal :: u8.[0,0,0,0,0,0,0,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4];
-seen : Table(string, u64);
+seen : Table(u64, u64);
+// state encoding, 55 bits (16*3 bits + 7*1 bit)
+// 0 = 0, 100 = 1, 101 = 2, 110 = 3, 111 = 4
+goal :: 0b0000000__100_101_110_111__100_101_110_111__100_101_110_111__100_101_110_111; 
 
-solve :: (state: string, cost_so_far: u64 = 0)
+solve :: (s: u64, cost_so_far: u64 = 0)
 {
     if cost_so_far >= best return;
-    prev := table_find_pointer(seen, state);
+    prev := table_find_pointer(seen, s);
     if prev && cost_so_far >= <<prev return;
     if prev { <<prev = cost_so_far; }
-    else table_add(*seen, state, cost_so_far);
+    else table_add(*seen, s, cost_so_far);
 
-    done := memcmp(state.data, goal.data, goal.count) == 0;
-    if done { best = cost_so_far; return; }
+    if s == goal { best = cost_so_far; return; }
+
+    state := decode(s);
 
     for hallway: 0..6 for room: 7..22
     {
         cost_h_to_r := valid_hallway_to_room(hallway, room);
         if cost_h_to_r
         {
-            new_state := tprint("%", state);
+            new_state := state;
             new_state[room] = state[hallway];
             new_state[hallway] = 0;
             piece_cost : int = xx pow(10, xx (state[hallway]-1));
             cost := cost_h_to_r * piece_cost;
-            solve(new_state, xx cost + cost_so_far);
+            solve(encode(new_state), xx cost + cost_so_far);
         }
 
         cost_r_to_h := valid_room_to_hallway(room, hallway);
         if cost_r_to_h
         {
-            new_state := tprint("%", state);
+            new_state := state;
             new_state[hallway] = state[room];
             new_state[room] = 0;
             piece_cost : int = xx pow(10, xx (state[room]-1));
             cost := cost_r_to_h * piece_cost;
-            solve(new_state, xx cost + cost_so_far);
+            solve(encode(new_state), xx cost + cost_so_far);
         }
     }
 
@@ -95,6 +98,53 @@ solve :: (state: string, cost_so_far: u64 = 0)
     next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if state[it] == 0 return it; return 0; }
     room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if state[it] != r && state[it] != 0 return true; return false; }
     wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
+}
+
+encode :: (s: [23]u8) -> u64
+{
+    result : u64;
+
+    i : u64 = 54;
+
+    for s
+    {
+        if it
+        {
+            result |= cast(u64)(1 << i);
+            result |= ((cast(u64)it)-1) << (i-2);
+            i -= 3;
+        }
+        else
+        {
+            i -= 1;
+        }
+    }
+
+    return result;
+}
+
+decode :: (s: u64) -> [23]u8
+{
+    result : [23]u8;
+
+    i : u64 = 54;
+
+    for 0..22
+    {
+        bit := (s >> i) & 1;
+        if bit
+        {
+            result[it] = xx (((s >> (i - 2)) & 3) + 1);
+            i -= 3;
+        }
+        else
+        {
+            result[it] = 0;
+            i -= 1;
+        }
+    }
+
+    return result;
 }
 
 paths : [7][23]Path;
