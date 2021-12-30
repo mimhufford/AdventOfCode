@@ -1,11 +1,24 @@
 day19 :: (data: string) -> string, string
 {
-    new_molecules : [..]string;
+    replacements, molecule := read_replacements_and_molecule(data);
+
+    unqiue_calibrations := calibrate(molecule, replacements);
+
+    return tprint("%", unqiue_calibrations), tprint("%", "");
+}
+
+Replacement :: struct
+{
+    src: string;
+    dst: string;
+}
+
+read_replacements_and_molecule :: (s: string) -> []Replacement, string
+{
     replacements : [..]Replacement;
     molecule : string;
 
-    lines := split(data, "\n");
-    molecule = lines[lines.count-2];
+    lines := split(s, "\n");
 
     for 0..lines.count-4
     {
@@ -15,6 +28,13 @@ day19 :: (data: string) -> string, string
         replacement.dst = parts[1];
         array_add(*replacements, replacement);
     }
+
+    return replacements, lines[lines.count-2];
+}
+
+calibrate :: (molecule: string, replacements: []Replacement) -> s64
+{
+    new_molecules : [..]string;
 
     for char_index: 0..molecule.count-1
     {
@@ -49,14 +69,7 @@ day19 :: (data: string) -> string, string
                 array_add_if_unique(*new_molecules, new_molecule);
             }
         }
-
     }
 
-    return tprint("%", new_molecules.count), tprint("%", "");
-}
-
-Replacement :: struct
-{
-    src: string;
-    dst: string;
+    return new_molecules.count;
 }
