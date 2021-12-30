@@ -87,7 +87,6 @@ parse_num :: (s: *string)
         advance(s, 1);
     }
 
-    advance(s, 1);
     num *= mul;
     print("%\n", num);
 }
