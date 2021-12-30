@@ -3,8 +3,9 @@ day19 :: (data: string) -> string, string
     replacements, molecule := read_replacements_and_molecule(data);
 
     unqiue_calibrations := calibrate(molecule, replacements);
+    steps_to_reduce     := reduce(molecule);
 
-    return tprint("%", unqiue_calibrations), tprint("%", "");
+    return tprint("%", unqiue_calibrations), tprint("%", steps_to_reduce);
 }
 
 Replacement :: struct
@@ -72,4 +73,30 @@ calibrate :: (molecule: string, replacements: []Replacement) -> s64
     }
 
     return new_molecules.count;
+}
+
+reduce :: (molecule: string) -> s64
+{
+    total_elements := 0;
+    Rn_and_Ar_count := 0;
+    Y_count := 0;
+
+    while molecule.count
+    {
+        total_elements += 1;
+        element := molecule;
+        element.count = 1;
+        advance(*molecule, 1); // skip the capital letter
+
+        while molecule.count && molecule[0] >= #char "a" && molecule[0] <= #char "z"
+        {
+            element.count += 1;
+            advance(*molecule, 1);
+        }
+
+        if element == "Rn" || element == "Ar" Rn_and_Ar_count += 1;
+        else if element == "Y" Y_count += 1;
+    }
+
+    return total_elements - Rn_and_Ar_count - 2*Y_count - 1;
 }
