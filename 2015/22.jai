@@ -11,8 +11,6 @@ day22 :: (data: string) -> string, string
 
     play_game(initial_state, boss_damage);
 
-    // 1507 too low, not 1810
-
     return tprint("%", best), tprint("%", "");
 }
 
