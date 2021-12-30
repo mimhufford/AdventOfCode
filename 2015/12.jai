@@ -60,6 +60,7 @@ parse_arr :: (s: *string) -> s64, s64
 parse_str :: (s: *string) -> bool
 {
     str : string = ---;
+    str.count = 0;
     str.data = s.data + 1;
 
     assert(s.data[0] == #char "\"");
