@@ -1,20 +1,16 @@
 day12 :: (data: string) -> string, string
 {
-    total : int;
+    total, total_non_red := parse_obj(*data);
 
-    parse_obj(*data);
-
-    while data.count
-    {
-        if is_digit(*data) total += read_num(*data);
-        else advance(*data, 1);
-    }
-
-    return tprint("%", total), tprint("%", "");
+    return tprint("%", total), tprint("%", total_non_red);
 }
 
-parse_obj :: (s: *string)
+parse_obj :: (s: *string) -> s64, s64
 {
+    total : s64;
+    total_non_red : s64;
+    contains_red : bool;
+
     assert(s.data[0] == #char "{");
     advance(s, 1); // skip {
 
@@ -25,36 +21,43 @@ parse_obj :: (s: *string)
         assert(s.data[0] == #char ":", "%\n", <<s);
         advance(s, 1); // skip :
         
-        if      s.data[0] == #char "{" parse_obj(s);
-        else if s.data[0] == #char "[" parse_arr(s);
-        else if is_digit(s)            parse_num(s);
-        else                           parse_str(s);
+        if      s.data[0] == #char "{" { a,b := parse_obj(s); total += a; total_non_red += b; }
+        else if s.data[0] == #char "[" { a,b := parse_arr(s); total += a; total_non_red += b; }
+        else if is_digit(s)            {   n := parse_num(s); total += n; total_non_red += n; }
+        else                           contains_red |= parse_str(s);
 
         if s.data[0] == #char "," advance(s, 1);
     }
 
     advance(s, 1); // skip }
+
+    return total, ifx contains_red then 0 else total_non_red;
 }
 
-parse_arr :: (s: *string)
+parse_arr :: (s: *string) -> s64, s64
 {
+    total : s64;
+    total_non_red : s64;
+
     assert(s.data[0] == #char "[");
     advance(s, 1); // skip [
 
     while s.data[0] != #char "]"
     {
-        if      s.data[0] == #char "{" parse_obj(s);
-        else if s.data[0] == #char "[" parse_arr(s);
-        else if is_digit(s)            parse_num(s);
+        if      s.data[0] == #char "{" { a,b := parse_obj(s); total += a; total_non_red += b; }
+        else if s.data[0] == #char "[" { a,b := parse_arr(s); total += a; total_non_red += b; }
+        else if is_digit(s)            {   n := parse_num(s); total += n; total_non_red += n; }
         else                           parse_str(s);
 
         if s.data[0] == #char "," advance(s, 1);
     }
 
     advance(s, 1); // skip ]
+
+    return total, total_non_red;
 }
 
-parse_str :: (s: *string)
+parse_str :: (s: *string) -> bool
 {
     str : string = ---;
     str.data = s.data + 1;
@@ -67,13 +70,14 @@ parse_str :: (s: *string)
         str.count += 1;
     }
     advance(s, 1); // skip "
-    print("%\n", str);
+
+    return str == "red";
 }
 
-parse_num :: (s: *string)
+parse_num :: (s: *string) -> s64
 {
-    num : int;
-    mul : int = 1;
+    num : s64;
+    mul : s64 = 1;
 
     if s.data[0] == #char "-"
     {
@@ -89,30 +93,7 @@ parse_num :: (s: *string)
     }
 
     num *= mul;
-    print("%\n", num);
+    return num;
 }
 
 is_digit :: inline (s: *string) -> bool { return s.data[0] == #char "-" || (s.data[0] >= #char "0" && s.data[0] <= #char "9"); }
-
-read_num :: (s: *string) -> int
-{
-    num : int;
-    mul : int = 1;
-
-    if s.data[0] == #char "-"
-    {
-        mul = -1;
-        advance(s, 1);
-    }
-    
-    while is_digit(s)
-    {
-        num *= 10;
-        num += s.data[0] - #char "0";
-        advance(s, 1);
-    }
-
-    advance(s, 1);
-
-    return num * mul;
-}
