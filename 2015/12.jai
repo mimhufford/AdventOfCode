@@ -21,9 +21,9 @@ parse_obj :: (s: *string) -> s64, s64
         assert(s.data[0] == #char ":", "%\n", <<s);
         advance(s, 1); // skip :
         
-        if      s.data[0] == #char "{" { a,b := parse_obj(s); total += a; total_non_red += b; }
-        else if s.data[0] == #char "[" { a,b := parse_arr(s); total += a; total_non_red += b; }
-        else if is_digit(s)            {   n := parse_num(s); total += n; total_non_red += n; }
+        if      s.data[0] == #char "{" total, total_non_red += parse_obj(s);
+        else if s.data[0] == #char "[" total, total_non_red += parse_arr(s);
+        else if is_digit(s)            { n := parse_num(s); total += n; total_non_red += n; }
         else                           contains_red |= parse_str(s);
 
         if s.data[0] == #char "," advance(s, 1);
@@ -44,9 +44,9 @@ parse_arr :: (s: *string) -> s64, s64
 
     while s.data[0] != #char "]"
     {
-        if      s.data[0] == #char "{" { a,b := parse_obj(s); total += a; total_non_red += b; }
-        else if s.data[0] == #char "[" { a,b := parse_arr(s); total += a; total_non_red += b; }
-        else if is_digit(s)            {   n := parse_num(s); total += n; total_non_red += n; }
+        if      s.data[0] == #char "{" total, total_non_red += parse_obj(s);
+        else if s.data[0] == #char "[" total, total_non_red += parse_arr(s);
+        else if is_digit(s)            { n := parse_num(s); total += n; total_non_red += n; }
         else                           parse_str(s);
 
         if s.data[0] == #char "," advance(s, 1);
