@@ -43,6 +43,9 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns := ns;
         nns.boss -= 4;
         nns.mana -= 53;
+        if nns.e1 { armour = 7;       nns.e1 -= 1; }
+        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
+        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
         nns.health -= boss_damage - armour;
         play_game(nns, boss_damage, 53 + spent);
     }
@@ -52,6 +55,9 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns.boss -= 2;
         nns.mana -= 73;
         nns.health += 2;
+        if nns.e1 { armour = 7;       nns.e1 -= 1; }
+        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
+        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
         nns.health -= boss_damage - armour;
         play_game(nns, boss_damage, 73 + spent);
     }
@@ -60,6 +66,9 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns := ns;
         nns.mana -= 113;
         nns.e1 = 6;
+        if nns.e1 { armour = 7;       nns.e1 -= 1; }
+        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
+        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
         nns.health -= boss_damage - 7;
         play_game(nns, boss_damage, 113 + spent);
     }
@@ -68,6 +77,9 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns := ns;
         nns.mana -= 173;
         nns.e2 = 6;
+        if nns.e1 { armour = 7;       nns.e1 -= 1; }
+        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
+        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
         nns.health -= boss_damage - armour;
         play_game(nns, boss_damage, 173 + spent);
     }
@@ -76,6 +88,9 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns := ns;
         nns.mana -= 229;
         nns.e3 = 5;
+        if nns.e1 { armour = 7;       nns.e1 -= 1; }
+        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
+        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
         nns.health -= boss_damage - armour;
         play_game(nns, boss_damage, 229 + spent);
     }
