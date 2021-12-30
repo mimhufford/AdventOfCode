@@ -11,7 +11,7 @@ day22 :: (data: string) -> string, string
 
     play_game(initial_state, boss_damage);
 
-    // 641 too low
+    // 1507 too low
 
     return tprint("%", best), tprint("%", "");
 }
@@ -60,7 +60,7 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
         nns := ns;
         nns.mana -= 113;
         nns.e1 = 6;
-        nns.health -= boss_damage - armour;
+        nns.health -= boss_damage - 7;
         play_game(nns, boss_damage, 113 + spent);
     }
     if ns.mana >= 173 && ns.e2 == 0
