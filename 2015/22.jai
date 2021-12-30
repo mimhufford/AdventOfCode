@@ -9,7 +9,7 @@ day22 :: (data: string) -> string, string
     initial_state.mana = 500;
     initial_state.boss = xx boss_health;
 
-    play_game(initial_state, boss_damage);
+    // play_game(initial_state, boss_damage);
 
     // 1507 too low
 
