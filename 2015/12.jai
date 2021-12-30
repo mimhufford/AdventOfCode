@@ -69,6 +69,7 @@ parse_str :: (s: *string)
     advance(s, 1); // skip "
     print("%\n", str);
 }
+
 parse_num :: (s: *string)
 {
     num : int;
