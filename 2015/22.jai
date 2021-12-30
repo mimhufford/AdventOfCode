@@ -9,9 +9,9 @@ day22 :: (data: string) -> string, string
     initial_state.mana = 500;
     initial_state.boss = xx boss_health;
 
-    // play_game(initial_state, boss_damage);
+    play_game(initial_state, boss_damage);
 
-    // 1507 too low
+    // 1507 too low, not 1810
 
     return tprint("%", best), tprint("%", "");
 }
@@ -20,15 +20,7 @@ best := S64_MAX;
 
 play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
 {
-    armour : s16 = 0;
-
-    ns := s;
-
-    if ns.e1 { armour = 7;      ns.e1 -= 1; }
-    if ns.e2 { ns.boss -= 3;    ns.e2 -= 1; }
-    if ns.e3 { ns.mana += 101;  ns.e3 -= 1; }
-
-    if ns.boss <= 0
+    if s.boss <= 0
     {
         if spent < best
         {
@@ -36,63 +28,68 @@ play_game :: (s: State, boss_damage: s16, spent: s64 = 0)
             best = spent;
         } 
     }
-    if ns.health <= 0  return;
 
-    if ns.mana >= 53
+    if s.health <= 0 return;
+
+    if s.mana >= 53
     {
-        nns := ns;
-        nns.boss -= 4;
-        nns.mana -= 53;
-        if nns.e1 { armour = 7;       nns.e1 -= 1; }
-        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
-        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
-        nns.health -= boss_damage - armour;
-        play_game(nns, boss_damage, 53 + spent);
+        ns := s;
+        do_effects(*ns);
+        ns.mana -= 53;
+        ns.boss -= 4;
+        do_boss_turn(*ns);
+        play_game(ns, boss_damage, 53 + spent);
     }
-    if ns.mana >= 73
+    if s.mana >= 73
     {
-        nns := ns;
-        nns.boss -= 2;
-        nns.mana -= 73;
-        nns.health += 2;
-        if nns.e1 { armour = 7;       nns.e1 -= 1; }
-        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
-        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
-        nns.health -= boss_damage - armour;
-        play_game(nns, boss_damage, 73 + spent);
+        ns := s;
+        do_effects(*ns);
+        ns.mana -= 73;
+        ns.boss -= 2;
+        ns.health += 2;
+        do_boss_turn(*ns);
+        play_game(ns, boss_damage, 73 + spent);
     }
-    if ns.mana >= 113 && ns.e1 == 0
+    if s.mana >= 113 && s.e1 == 1
     {
-        nns := ns;
-        nns.mana -= 113;
-        nns.e1 = 6;
-        if nns.e1 { armour = 7;       nns.e1 -= 1; }
-        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
-        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
-        nns.health -= boss_damage - 7;
-        play_game(nns, boss_damage, 113 + spent);
+        ns := s;
+        do_effects(*ns);
+        ns.mana -= 113;
+        ns.e1 = 6;
+        do_boss_turn(*ns);
+        play_game(ns, boss_damage, 113 + spent);
     }
-    if ns.mana >= 173 && ns.e2 == 0
+    if s.mana >= 173 && s.e2 == 1
     {
-        nns := ns;
-        nns.mana -= 173;
-        nns.e2 = 6;
-        if nns.e1 { armour = 7;       nns.e1 -= 1; }
-        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
-        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
-        nns.health -= boss_damage - armour;
-        play_game(nns, boss_damage, 173 + spent);
+        ns := s;
+        do_effects(*ns);
+        ns.mana -= 173;
+        ns.e2 = 6;
+        do_boss_turn(*ns);
+        play_game(ns, boss_damage, 173 + spent);
     }
-    if ns.mana >= 229 && ns.e3 == 0
+    if s.mana >= 229 && s.e3 == 1
     {
-        nns := ns;
-        nns.mana -= 229;
-        nns.e3 = 5;
-        if nns.e1 { armour = 7;       nns.e1 -= 1; }
-        if nns.e2 { nns.boss -= 3;    nns.e2 -= 1; }
-        if nns.e3 { nns.mana += 101;  nns.e3 -= 1; }
-        nns.health -= boss_damage - armour;
-        play_game(nns, boss_damage, 229 + spent);
+        ns := s;
+        do_effects(*ns);
+        ns.mana -= 229;
+        ns.e3 = 5;
+        do_boss_turn(*ns);
+        play_game(ns, boss_damage, 229 + spent);
+    }
+
+    do_effects :: (s: *State)
+    {
+        if s.e1 {                s.e1 -= 1; }
+        if s.e2 { s.boss -= 3;   s.e2 -= 1; }
+        if s.e3 { s.mana += 101; s.e3 -= 1; }
+    }
+
+    do_boss_turn :: (s: *State) #expand
+    {
+        armour : s16 = xx ifx s.e1 then 7 else 0;
+        do_effects(s);
+        s.health -= `boss_damage - armour;
     }
 }
 
