@@ -1,29 +1,50 @@
-day4 :: (input: string) -> string, string {
-    index   := 0;
-    found_5 := 0;
-    found_6 := 0;
+day4 :: (data: string) -> string, string
+{
+    index   : u64;
+    found_5 : u64;
+    found_6 : u64;
 
-    new_context := context;
-    new_context.allocator = __temporary_allocator;
+    buffer : [32]u8;
+    for 0..data.count-1 buffer[it] = data[it];
+    input  : string = ---; input.data = buffer.data; input.count = data.count;
+    number : string = ---; number.data = buffer.data + data.count;
 
-    push_context new_context 
+    while !found_6
     {
-        // @TODO: quite slow
-        while !found_6 {
-            reset_temporary_storage();
-            index += 1;
-            in := tprint("%1%2", input, index);
-            out := md5(in);
-            if out & 0xFFFFF000 != 0  continue;
-            if !found_5               found_5 = index;
-            if out & 0xFFFFFF00 == 0  found_6 = index;
-        }
+        index += 1;
+        append_num(index);
+        out := md5(input);
+        if out & 0xFFFFF000 != 0  continue;
+        if !found_5               found_5 = index;
+        if out & 0xFFFFFF00 == 0  found_6 = index;
     }
 
     return tprint("%", found_5), tprint("%", found_6);
 }
 
 #scope_file
+
+// Avoid lots of memory allocation by implementing a custom
+// u64 printer which prints directly into the existing memory
+append_num :: (_v: u64) #expand
+{
+    output : [12] u8;
+    end := output.data + 12;
+    p   := end;
+    v   := _v;
+
+    while v
+    {
+        place := v % 10;
+        v     =  v / 10;
+        p -= 1;
+        << p  = "0123456789"[place];
+    }
+
+    num_chars := end - p;
+    `input.count = `data.count + num_chars;
+    memcpy(`number.data, p, num_chars);
+}
 
 // @NOTE modified version of md5
 // - removes concept of chunks becuase we don't need it for this
