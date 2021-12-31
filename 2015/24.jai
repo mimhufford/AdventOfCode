@@ -46,6 +46,8 @@ for_expansion :: (cf: *Combination_For, body: Code, flags: For_Flags) #expand
 
     for binary: 1..1<<cf.n.count-1
     {
+       if popcount(binary) > 6 continue;
+
        `it.count = 0;
 
         for bit: 0..cf.n.count-1
