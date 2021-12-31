@@ -8,7 +8,6 @@ main :: ()
 
     for days
     {
-        if it_index+1 == 4 continue;
         input := read_entire_file(tprint("input/%.txt", it_index+1));
         day_start := get_time();
         part1, part2 := it(input);
