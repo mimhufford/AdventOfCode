@@ -11,6 +11,8 @@ day4 :: (data: string) -> string, string
 
     while !found_6
     {
+        push_allocator(temp);
+        auto_release_temp();
         index += 1;
         append_num(index);
         out := md5(input);
