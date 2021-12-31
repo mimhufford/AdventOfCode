@@ -23,14 +23,7 @@ play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent
 
     if hard s.health -= 1;
 
-    if s.boss <= 0
-    {
-        if spent < <<best
-        {
-            <<best = spent;
-        } 
-    }
-
+    if s.boss <= 0 { if spent < <<best { <<best = spent; } return; }
     if s.health <= 0 return;
 
     if s.mana >= 53
@@ -52,7 +45,7 @@ play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent
         do_boss_turn(*ns);
         play_game(ns, boss_damage, hard, best, 73 + spent);
     }
-    if s.mana >= 113 && s.e1 == 1
+    if s.mana >= 113 && s.e1 <= 1
     {
         ns := s;
         do_effects(*ns);
@@ -61,7 +54,7 @@ play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent
         do_boss_turn(*ns);
         play_game(ns, boss_damage, hard, best, 113 + spent);
     }
-    if s.mana >= 173 && s.e2 == 1
+    if s.mana >= 173 && s.e2 <= 1
     {
         ns := s;
         do_effects(*ns);
@@ -70,7 +63,7 @@ play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent
         do_boss_turn(*ns);
         play_game(ns, boss_damage, hard, best, 173 + spent);
     }
-    if s.mana >= 229 && s.e3 == 1
+    if s.mana >= 229 && s.e3 <= 1
     {
         ns := s;
         do_effects(*ns);
