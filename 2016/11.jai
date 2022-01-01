@@ -62,6 +62,7 @@ move :: (s: *u64, f_src: u64, f_dst: u64, item: string)
 }
 
 // state is a u64 containing the current floor and items for each floor
+// |  08  | |   10   | |   10   | |   10   | |   10   |
 // |  cf  | | floor4 | | floor3 | | floor2 | | floor1 |
 // 44444444 3333333333 2222222222 1111111111 0000000000
 // 76543210 9876543210 9876543210 9876543210 9876543210
