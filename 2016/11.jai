@@ -3,16 +3,16 @@ day11 :: (data: string) -> string, string
     state : u64;
 
     // todo: parse input
-    table_add(*items, "ag", 0);  add(*state, 1, 0);
-    table_add(*items, "ac", 1);  add(*state, 1, 1);
-    table_add(*items, "bg", 2);  add(*state, 2, 2);
-    table_add(*items, "cg", 3);  add(*state, 2, 3);
-    table_add(*items, "dg", 4);  add(*state, 2, 4);
-    table_add(*items, "eg", 5);  add(*state, 2, 5);
-    table_add(*items, "bc", 6);  add(*state, 3, 6);
-    table_add(*items, "cc", 7);  add(*state, 3, 7);
-    table_add(*items, "dc", 8);  add(*state, 3, 8);
-    table_add(*items, "ec", 9);  add(*state, 3, 9);
+    table_add(*item_to_index, "ag", 0); array_add(*index_to_item, "ag"); add(*state, 1, 0);
+    table_add(*item_to_index, "ac", 1); array_add(*index_to_item, "ac"); add(*state, 1, 1);
+    table_add(*item_to_index, "bg", 2); array_add(*index_to_item, "bg"); add(*state, 2, 2);
+    table_add(*item_to_index, "cg", 3); array_add(*index_to_item, "cg"); add(*state, 2, 3);
+    table_add(*item_to_index, "dg", 4); array_add(*index_to_item, "dg"); add(*state, 2, 4);
+    table_add(*item_to_index, "eg", 5); array_add(*index_to_item, "eg"); add(*state, 2, 5);
+    table_add(*item_to_index, "bc", 6); array_add(*index_to_item, "bc"); add(*state, 3, 6);
+    table_add(*item_to_index, "cc", 7); array_add(*index_to_item, "cc"); add(*state, 3, 7);
+    table_add(*item_to_index, "dc", 8); array_add(*index_to_item, "dc"); add(*state, 3, 8);
+    table_add(*item_to_index, "ec", 9); array_add(*index_to_item, "ec"); add(*state, 3, 9);
     floor(*state, 1);
 
     best := U64_MAX;
@@ -29,10 +29,15 @@ day11 :: (data: string) -> string, string
         if prev && moves >= <<prev return;
         if prev { <<prev = moves; }
         else table_add(*seen, s, moves);
+
+        // for combinations of 1 or 2 items from current floor
+        //     move it/them up a floor, recurse
+        //     move it/them down a floor, recurse
     }
 }
 
-items : Table(string, u8);
+item_to_index : Table(string, u8);
+index_to_item : [..]string;
 seen  : Table(u64, u64); // state -> fewest moves
 
 print :: (s: u64)
@@ -52,11 +57,11 @@ print :: (s: u64)
 floor :: (s: *u64, f: u64) { <<s &= 0b1111111111_1111111111_1111111111_1111111111; <<s |= f << 40; }
 rem :: (s: *u64, f: u64, item: u64) { <<s &= (~cast(u64)1 << (item + 10*(f-1))); }
 add :: (s: *u64, f: u64, item: u64) { <<s |=   cast(u64)1 << (item + 10*(f-1));  }
-rem :: (s: *u64, f: u64, item: string) { rem(s, f, <<table_find_pointer(items, item)); }
-add :: (s: *u64, f: u64, item: string) { add(s, f, <<table_find_pointer(items, item)); }
+rem :: (s: *u64, f: u64, item: string) { rem(s, f, <<table_find_pointer(item_to_index, item)); }
+add :: (s: *u64, f: u64, item: string) { add(s, f, <<table_find_pointer(item_to_index, item)); }
 move :: (s: *u64, f_src: u64, f_dst: u64, item: string)
 {
-    index := table_find_pointer(items, item);
+    index := table_find_pointer(item_to_index, item);
     rem(s, f_src, <<index);
     add(s, f_dst, <<index);
 }
