@@ -25,15 +25,31 @@ day11 :: (data: string) -> string, string
     {
         if s >> 30 & 0b1111111111 == 0b1111111111 { print(s); if moves < <<best { <<best = moves; } return; }
 
-        prev := table_find_pointer(seen, s);
-        if prev && moves >= <<prev return;
-        if prev { <<prev = moves; }
-        else table_add(*seen, s, moves);
-
         current_floor : u64 = s >> 40;
         current_items : u64 = s >> ((current_floor-1)*10) & 0b1111111111;
         items : [..]string; // todo: memory shite
         for 0..9 if current_items & (cast(u64)1 << it) array_add(*items, index_to_item[it]);
+
+        // check for fried chips
+        has_generators := false;
+        for items if it[1] == #char "g" { has_generators = true; break; }
+        if has_generators for c: items
+        {
+            if c[1] == #char "c" // check chip has matching generator
+            {
+                for g: items
+                {
+                    if g[1] == #char "g" && g[0] == c[0] continue c;
+                }
+
+                return;
+            }
+        }
+
+        prev := table_find_pointer(seen, s);
+        if prev && moves >= <<prev return;
+        if prev { <<prev = moves; }
+        else table_add(*seen, s, moves);
 
         // take individual items to different floors
         for items
@@ -54,7 +70,26 @@ day11 :: (data: string) -> string, string
             }
         }
 
-        // todo: take pairs of items to different floors
+        // take pairs of items to different floors
+        for a: 0..items.count-1  for b: a+1..items.count-1
+        {
+            if current_floor < 4
+            {
+                ns := s;
+                move(*ns, current_floor, current_floor + 1, items[a]);
+                move(*ns, current_floor, current_floor + 1, items[b]);
+                floor(*ns, current_floor + 1);
+                solve(ns, best, moves + 1);
+            }
+            if current_floor > 1
+            {
+                ns := s;
+                move(*ns, current_floor, current_floor - 1, items[a]);
+                move(*ns, current_floor, current_floor - 1, items[b]);
+                floor(*ns, current_floor - 1);
+                solve(ns, best, moves + 1);
+            }
+        }
     }
 }
 
