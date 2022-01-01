@@ -21,18 +21,40 @@ day11 :: (data: string) -> string, string
 
     return tprint("%", best), tprint("%", "");
 
-    solve :: (s: u64, best: *u64, floor: u8 = 1, moves: u64 = 0)
+    solve :: (s: u64, best: *u64, moves: u64 = 0)
     {
-        if s >> 30 & 0b1111111111 == 0b1111111111 { if moves < <<best { <<best = moves; } return; }
+        if s >> 30 & 0b1111111111 == 0b1111111111 { print(s); if moves < <<best { <<best = moves; } return; }
 
         prev := table_find_pointer(seen, s);
         if prev && moves >= <<prev return;
         if prev { <<prev = moves; }
         else table_add(*seen, s, moves);
 
-        // for combinations of 1 or 2 items from current floor
-        //     move it/them up a floor, recurse
-        //     move it/them down a floor, recurse
+        current_floor : u64 = s >> 40;
+        current_items : u64 = s >> ((current_floor-1)*10) & 0b1111111111;
+        items : [..]string; // todo: memory shite
+        for 0..9 if current_items & (cast(u64)1 << it) array_add(*items, index_to_item[it]);
+
+        // take individual items to different floors
+        for items
+        {
+            if current_floor < 4
+            {
+                ns := s;
+                move(*ns, current_floor, current_floor + 1, it);
+                floor(*ns, current_floor + 1);
+                solve(ns, best, moves + 1);
+            }
+            if current_floor > 1
+            {
+                ns := s;
+                move(*ns, current_floor, current_floor - 1, it);
+                floor(*ns, current_floor - 1);
+                solve(ns, best, moves + 1);
+            }
+        }
+
+        // todo: take pairs of items to different floors
     }
 }
 
