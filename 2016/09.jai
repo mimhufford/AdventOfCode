@@ -3,27 +3,40 @@ day9 :: (data: string) -> string, string
     input := data;
     input.count -= 1; // trim the newline
 
+    return tprint("%", decompress(input, .V1)), tprint("%", decompress(input, .V2));
+}
+
+#scope_file
+
+decompress :: (s: string, version: enum{V1; V2;}) -> u64
+{
     count : u64;
 
-    while input.count
+    while s.count
     {
-        if input[0] == #char "("
+        if s[0] == #char "("
         {
-            chars, repeats := parse_chars_and_repeats(*input);
-            count += chars * repeats;
-            advance(*input, xx chars);
+            chars, repeats := parse_chars_and_repeats(*s);
+
+            if version == .V1 count += chars * repeats;
+            else
+            {
+                segment := s;
+                segment.count = xx chars;
+                count += repeats * decompress(segment, version);
+            }
+
+            advance(*s, xx chars);
         }
         else
         {
             count += 1;
-            advance(*input, 1);
+            advance(*s, 1);
         }
     }
 
-    return tprint("%", count), tprint("%", "");
+    return count;
 }
-
-#scope_file
 
 parse_chars_and_repeats :: (s: *string) -> u64, u64
 {
