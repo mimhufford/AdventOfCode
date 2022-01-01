@@ -6,12 +6,12 @@ day5 :: (data: string) -> string, string
     number : string = ---; number.data = buffer.data + data.count;
 
     password_1 : [..]u8;
-    password_2 : [8]u8;
-    password_2_set : u8;
+    password_2 := u8.[255,255,255,255,255,255,255,255];
+    password_2_count := 0;
 
     index : u64;
 
-    while password_1.count != 8 || password_2_set != 0b11111111
+    while password_1.count != 8 || password_2_count != 8
     {
         push_allocator(temp);
         auto_release_temp();
@@ -29,12 +29,12 @@ day5 :: (data: string) -> string, string
             array_add(*password_1, char);
         }
 
-        if sixth >= 0 && sixth <= 7 && !(password_2_set & 1 << sixth)
+        if sixth >= 0 && sixth <= 7 && password_2[sixth] == 255
         {
             seventh := out & 0xF0 >> 4;
-            password_2_set |= xx(1 << sixth);
             char := "0123456789abcdef"[seventh];
             password_2[sixth] = char;
+            password_2_count += 1;
         }
     }
 
