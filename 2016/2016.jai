@@ -14,7 +14,7 @@ main :: ()
         day_time := get_time() - day_start;
         total_time += day_time;
         print("Day % ", formatInt(it_index+1, minimum_digits=2));
-        print("- %ms ", formatFloat(day_time*1000, width=7, trailing_width=3, zero_removal=.NO));
+        print("- %ms ", formatFloat(day_time*1000, width=8, trailing_width=3, zero_removal=.NO));
         print("- % ", part1);
         print("- %\n", part2);
     }
