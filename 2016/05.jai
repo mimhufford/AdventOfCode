@@ -5,23 +5,40 @@ day5 :: (data: string) -> string, string
     input  : string = ---; input.data = buffer.data; input.count = data.count;
     number : string = ---; number.data = buffer.data + data.count;
 
-    password : [..]u8;
+    password_1 : [..]u8;
+    password_2 : [8]u8;
+    password_2_set : u8;
 
     index : u64;
 
-    while password.count != 8
+    while password_1.count != 8 || password_2_set != 0b11111111
     {
         push_allocator(temp);
         auto_release_temp();
         index += 1;
         append_num(index);
         out := md5(input);
+
         if out & 0xFFFFF000 != 0  continue;
-        char := "0123456789abcdef"[out & 0xF00 >> 8];
-        array_add(*password, char);
+
+        sixth := out & 0xF00 >> 8;
+
+        if password_1.count != 8
+        {
+            char := "0123456789abcdef"[sixth];
+            array_add(*password_1, char);
+        }
+
+        if sixth >= 0 && sixth <= 7 && !(password_2_set & 1 << sixth)
+        {
+            seventh := out & 0xF0 >> 4;
+            password_2_set |= xx(1 << sixth);
+            char := "0123456789abcdef"[seventh];
+            password_2[sixth] = char;
+        }
     }
 
-    return tprint("%", cast(string)password), tprint("%", "");
+    return tprint("%", cast(string)password_1), tprint("%", cast(string)password_2);
 }
 
 #scope_file
