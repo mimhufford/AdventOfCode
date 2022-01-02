@@ -1,4 +1,4 @@
-const input = `rect 1x1
+rect 1x1
 rotate row y=0 by 20
 rect 1x1
 rotate row y=0 by 2
@@ -170,26 +170,4 @@ rotate column x=13 by 1
 rotate column x=12 by 5
 rotate column x=11 by 5
 rotate column x=3 by 1
-rotate column x=0 by 1`
-
-const generateGrid = (rows, cols) => new Array(rows).join(".").split(".").map(i => new Array(cols + 1).join(".").split(""))
-const display = grid => grid.map(row => row.join("")).join("\n")
-
-const rot = (amount, data) => [...data.slice(data.length - amount, data.length), ...data.slice(0, data.length - amount)]
-const drwRec = (width, height) => grid => grid.map((row, ri) => ri < height ? row.map((cell, ci) => ci < width ? "#" : cell) : row)
-const rotRow = (rowIndex, amount) => grid => grid.map((row, ri) => ri === rowIndex ? rot(amount, row) : row)
-const rotCol = (colIndex, amount) => grid => grid.map((row, ri) => [...row.slice(0, colIndex), rot(amount, grid.map(row => row[colIndex]))[ri], ...row.slice(colIndex + 1, row.length)])
-
-const generateInstructionFunction = ins => {
-    const recRes = ins.match(/rect (\d+)x(\d+)/)
-    const rowRes = ins.match(/row y=(\d+) by (\d+)/)
-    const colRes = ins.match(/column x=(\d+) by (\d+)/)
-    if (recRes) return drwRec(parseInt(recRes[1]), parseInt(recRes[2]))
-    if (rowRes) return rotRow(parseInt(rowRes[1]), parseInt(rowRes[2]))
-    if (colRes) return rotCol(parseInt(colRes[1]), parseInt(colRes[2]))
-}
-
-const finalGrid = input.split("\n").map(generateInstructionFunction).reduce((data, fn) => fn(data), generateGrid(6, 50))
-
-console.log(finalGrid.map(r => r.filter(c => c === "#").join("")).join("").length)
-console.log(display(finalGrid))
+rotate column x=0 by 1
