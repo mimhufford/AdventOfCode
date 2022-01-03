@@ -25,14 +25,25 @@ day15 :: (data: string) -> string, string
 
 find_alignment :: (discs: [][2]int) -> int
 {
-    for time: 0..S64_MAX
+    time := 0;
+    skip := 1;
+
+    while true
     {
+        found := true;
+
         for disc, disc_index: discs
         {
-            if (disc[1]+disc_index+time+1) % disc[0] != 0 continue time;
+            if (disc[1]+disc_index+time+1) % disc[0] != 0
+            {
+                found = false;
+                if disc_index > 0 skip = discs[disc_index-1][0];
+                break;
+            }
         }
 
-        return time;
+        if found return time;
+        time += skip;
     }
 
     return 0;
