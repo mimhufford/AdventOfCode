@@ -29,14 +29,22 @@ parse_instructions :: (s: string) -> []Instruction
         i : Instruction;
 
         if line[0] == {
-            case #char "c"; advance(*line, 4);
+            case #char "c";
+                advance(*line, 4);
                 val, is_val := val_or_reg();
                 i.src = val;
                 i.type = .CPY_VAL; if !is_val i.type = .CPY_REG;
                 i.dst = line[0] - #char "a";
-            case #char "i"; advance(*line, 4); i.type = .INC; i.dst = line[0] - #char "a";
-            case #char "d"; advance(*line, 4); i.type = .DEC; i.dst = line[0] - #char "a";
-            case #char "j"; advance(*line, 4);
+            case #char "i";
+                advance(*line, 4);
+                i.type = .INC;
+                i.dst = line[0] - #char "a";
+            case #char "d";
+                advance(*line, 4);
+                i.type = .DEC;
+                i.dst = line[0] - #char "a";
+            case #char "j";
+                advance(*line, 4);
                 val, is_val := val_or_reg();
                 i.type = .JNZ_VAL; if !is_val i.type = .JNZ_REG;
                 i.src = val;
@@ -44,29 +52,29 @@ parse_instructions :: (s: string) -> []Instruction
         }
 
         array_add(*instructions, i);
-
-        val_or_reg :: () -> s64, bool #expand
-        {
-            if `line[0] >= #char "a" && `line[0] <= #char "d"
-            {
-                val := `line[0] - #char "a";
-                advance(*`line, 2);
-                return val, false;
-            }
-
-            val : s64;
-            while `line[0] >= #char "0" && `line[0] <= #char "9"
-            {
-                val *= 10;
-                val += `line[0] - #char "0";
-                advance(*`line, 1);
-            }
-            advance(*`line, 1);
-            return val, true;
-        }
     }
 
     return instructions;
+
+    val_or_reg :: () -> s64, bool #expand
+    {
+        if `line[0] >= #char "a" && `line[0] <= #char "d"
+        {
+            val := `line[0] - #char "a";
+            advance(*`line, 2);
+            return val, false;
+        }
+
+        val : s64;
+        while `line[0] >= #char "0" && `line[0] <= #char "9"
+        {
+            val *= 10;
+            val += `line[0] - #char "0";
+            advance(*`line, 1);
+        }
+        advance(*`line, 1);
+        return val, true;
+    }
 }
 
 run :: (instructions: []Instruction, c: s64) -> s64
