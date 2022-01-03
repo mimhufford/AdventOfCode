@@ -1,7 +1,15 @@
 day14 :: (data: string) -> string, string
 {
-    // todo: remove all the tprint stuff
     key := data; key.count -= 1;
+
+    return tprint("%", solve(key, 1)), tprint("%", solve(key, 2017));
+}
+
+#scope_file;
+
+solve :: (key: string, times: int) -> int
+{
+    // todo: remove all the tprint stuff
     key_indexes : [..]int;
 
     hashes : [..]string;
@@ -9,7 +17,9 @@ day14 :: (data: string) -> string, string
 
     while hashes.count != 1001
     {
-        array_add(*hashes, md5(tprint("%1%2", key, index)));
+        hash := md5(tprint("%1%2", key, index));
+        for 1..times-1 hash = md5(hash);
+        array_add(*hashes, hash);
         index += 1;
     }
 
@@ -42,12 +52,13 @@ day14 :: (data: string) -> string, string
         }
 
         array_ordered_remove_by_index(*hashes, 0); // todo slow
-        array_add(*hashes, md5(tprint("%1%2", key, index)));
+        hash := md5(tprint("%1%2", key, index));
+        for 1..times-1 hash = md5(hash);
+        array_add(*hashes, hash);
         index += 1;
     }
 
-    return tprint("%", key_indexes[63]), tprint("%", "");
+    return key_indexes[63];
 }
 
-#scope_file;
 #import "md5";
