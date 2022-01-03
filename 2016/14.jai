@@ -1,21 +1,29 @@
 day14 :: (data: string) -> string, string
 {
     // todo: remove all the tprint stuff
-    //       avoid md5ing same thing multiple times
     key := data; key.count -= 1;
     key_indexes : [..]int;
 
-    for i: 0..U64_MAX
+    hashes : [..]string;
+    index := 0;
+
+    while hashes.count != 1001
     {
-        result := md5(tprint("%1%2", key, i));
+        array_add(*hashes, md5(tprint("%1%2", key, index)));
+        index += 1;
+    }
+
+    while key_indexes.count != 64
+    {
+        result := hashes[0];
 
         for ci: 0..result.count-3
         {
             if result[ci] == result[ci+1] && result[ci] == result[ci+2]
             {
-                for n: i+1..i+1001
+                for n: 1..1000
                 {
-                    next := md5(tprint("%1%2", key, n));
+                    next := hashes[n];
                     for ni: 0..next.count-5
                     {
                         if next[ni+0] == result[ci] &&
@@ -24,7 +32,7 @@ day14 :: (data: string) -> string, string
                            next[ni+3] == result[ci] &&
                            next[ni+4] == result[ci]
                         {
-                            array_add(*key_indexes, xx i);
+                            array_add(*key_indexes, xx index - 1001);
                             break ci;
                         }
                     }
@@ -33,7 +41,9 @@ day14 :: (data: string) -> string, string
             }
         }
 
-        if key_indexes.count == 64 break;
+        array_ordered_remove_by_index(*hashes, 0); // todo slow
+        array_add(*hashes, md5(tprint("%1%2", key, index)));
+        index += 1;
     }
 
     return tprint("%", key_indexes[63]), tprint("%", "");
