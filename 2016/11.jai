@@ -1,24 +1,44 @@
 day11 :: (data: string) -> string, string
 {
-    state : State;
+    state_1, state_2: State;
+    best_1, best_2:= U64_MAX;
 
     // todo: parse input
-    array_add(*index_to_item, "ag"); add(*state, 0, 0);
-    array_add(*index_to_item, "ac"); add(*state, 0, 1);
-    array_add(*index_to_item, "bg"); add(*state, 1, 2);
-    array_add(*index_to_item, "cg"); add(*state, 1, 3);
-    array_add(*index_to_item, "dg"); add(*state, 1, 4);
-    array_add(*index_to_item, "eg"); add(*state, 1, 5);
-    array_add(*index_to_item, "bc"); add(*state, 2, 6);
-    array_add(*index_to_item, "cc"); add(*state, 2, 7);
-    array_add(*index_to_item, "dc"); add(*state, 2, 8);
-    array_add(*index_to_item, "ec"); add(*state, 2, 9);
+    array_add(*index_to_item, "ag"); add(*state_1, 0, 0);
+    array_add(*index_to_item, "ac"); add(*state_1, 0, 1);
+    array_add(*index_to_item, "bg"); add(*state_1, 1, 2);
+    array_add(*index_to_item, "cg"); add(*state_1, 1, 3);
+    array_add(*index_to_item, "dg"); add(*state_1, 1, 4);
+    array_add(*index_to_item, "eg"); add(*state_1, 1, 5);
+    array_add(*index_to_item, "bc"); add(*state_1, 2, 6);
+    array_add(*index_to_item, "cc"); add(*state_1, 2, 7);
+    array_add(*index_to_item, "dc"); add(*state_1, 2, 8);
+    array_add(*index_to_item, "ec"); add(*state_1, 2, 9);
 
-    best := U64_MAX;
+    solve(state_1, *best_1);
 
-    solve(state, *best);
+    array_reset(*index_to_item);
+    table_reset(*seen);
 
-    return tprint("%", best), tprint("%", "");
+    // todo: parse input
+    array_add(*index_to_item, "ag"); add(*state_2, 0, 0);
+    array_add(*index_to_item, "ac"); add(*state_2, 0, 1);
+    array_add(*index_to_item, "bg"); add(*state_2, 1, 2);
+    array_add(*index_to_item, "cg"); add(*state_2, 1, 3);
+    array_add(*index_to_item, "dg"); add(*state_2, 1, 4);
+    array_add(*index_to_item, "eg"); add(*state_2, 1, 5);
+    array_add(*index_to_item, "bc"); add(*state_2, 2, 6);
+    array_add(*index_to_item, "cc"); add(*state_2, 2, 7);
+    array_add(*index_to_item, "dc"); add(*state_2, 2, 8);
+    array_add(*index_to_item, "ec"); add(*state_2, 2, 9);
+    array_add(*index_to_item, "fc"); add(*state_2, 0, 10);
+    array_add(*index_to_item, "fg"); add(*state_2, 0, 11);
+    array_add(*index_to_item, "gc"); add(*state_2, 0, 12);
+    array_add(*index_to_item, "gg"); add(*state_2, 0, 13);
+
+    solve(state_2, *best_2);
+
+    return tprint("%", best_1), tprint("%", best_2);
 
     solve :: (s: State, best: *u64, current_floor: u8 = 0, moves: u64 = 0)
     {
@@ -45,9 +65,11 @@ day11 :: (data: string) -> string, string
         if prev { <<prev = moves; }
         else table_add(*seen, compressed_state, moves);
 
-        // calculate all possible combos of moving 2 or 1 items up and recurse
+        // calculate all possible combos of moving items up and recurse
         if current_floor < 3
         {
+            moved_2 := false;
+
             for i: 0..index_to_item.count-1 for j: i+1..index_to_item.count-1
             {
                 if s.floor[current_floor] & (1 << i) && s.floor[current_floor] & (1 << j)
@@ -55,31 +77,62 @@ day11 :: (data: string) -> string, string
                     ns := s;
                     mov(*ns, current_floor, current_floor + 1, xx i);
                     mov(*ns, current_floor, current_floor + 1, xx j);
-                    solve(ns, best, current_floor + 1, moves + 1);
+                    _, valid := generate_seen_state(ns, current_floor + 1);
+                    if valid
+                    {
+                        moved_2 = true;
+                        solve(ns, best, current_floor + 1, moves + 1);
+                    }
                 }
             }
 
-            for i: 0..index_to_item.count-1
+            if !moved_2
             {
-                if s.floor[current_floor] & (1 << i)    
+                for i: 0..index_to_item.count-1
                 {
-                    ns := s;
-                    mov(*ns, current_floor, current_floor + 1, xx i);
-                    solve(ns, best, current_floor + 1, moves + 1);
-                }
-            } 
+                    if s.floor[current_floor] & (1 << i)    
+                    {
+                        ns := s;
+                        mov(*ns, current_floor, current_floor + 1, xx i);
+                        _, valid := generate_seen_state(ns, current_floor + 1);
+                        if valid solve(ns, best, current_floor + 1, moves + 1);
+                    }
+                } 
+            }
         }
 
-        // calculate all possible combos of taking 1 item down and recurse
+        // calculate all possible combos of taking items down and recurse
         if current_floor > 0
         {
+            moved_1 := false;
+
             for i: 0..index_to_item.count-1
             {
                 if s.floor[current_floor] & (1 << i)
                 {
                     ns := s;
                     mov(*ns, current_floor, current_floor - 1, xx i);
-                    solve(ns, best, current_floor - 1, moves + 1);
+                    _, valid := generate_seen_state(ns, current_floor - 1);
+                    if valid
+                    {
+                        moved_1 = true;
+                        solve(ns, best, current_floor - 1, moves + 1);
+                    }
+                }
+            }
+
+            if !moved_1
+            {
+                for i: 0..index_to_item.count-1 for j: i+1..index_to_item.count-1
+                {
+                    if s.floor[current_floor] & (1 << i) && s.floor[current_floor] & (1 << j)
+                    {
+                        ns := s;
+                        mov(*ns, current_floor, current_floor - 1, xx i);
+                        mov(*ns, current_floor, current_floor - 1, xx j);
+                        _, valid := generate_seen_state(ns, current_floor - 1);
+                        if valid solve(ns, best, current_floor - 1, moves + 1);
+                    }
                 }
             }
         }
@@ -157,21 +210,4 @@ generate_seen_state :: (s: State, current_floor: u8) -> u64, bool
     }
 
     return state, valid;
-}
-
-print :: (s: State, floor: u8) -> string
-{
-    res : string;
-    for < 3..0
-    {
-        res = tprint("%1%2|%3| ", res, it, ifx it == floor then "#" else " ");
-        for i: 0..index_to_item.count-1
-            if s.floor[it] & (1 << i)
-                res = tprint("%1%2 ", res, index_to_item[i]);
-            else
-                res = tprint("%   ", res);
-        res = tprint("%\n", res);
-    }
-    res = tprint("%\n", res);
-    return res;
 }
