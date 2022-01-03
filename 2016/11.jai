@@ -159,8 +159,19 @@ generate_seen_state :: (s: State, current_floor: u8) -> u64, bool
     return state, valid;
 }
 
-print :: (s: State)
+print :: (s: State, floor: u8) -> string
 {
-    for < 3..0 print("% %\n", it, formatInt(s.floor[it], base=2, minimum_digits=index_to_item.count));
-    print("\n");
+    res : string;
+    for < 3..0
+    {
+        res = tprint("%1%2|%3| ", res, it, ifx it == floor then "#" else " ");
+        for i: 0..index_to_item.count-1
+            if s.floor[it] & (1 << i)
+                res = tprint("%1%2 ", res, index_to_item[i]);
+            else
+                res = tprint("%   ", res);
+        res = tprint("%\n", res);
+    }
+    res = tprint("%\n", res);
+    return res;
 }
