@@ -25,7 +25,7 @@ solve :: (key: string, times: int) -> int
 
     while key_indexes.count != 64
     {
-        result := hashes[0];
+        result := hashes[index%1001];
 
         for ci: 0..result.count-3
         {
@@ -33,7 +33,7 @@ solve :: (key: string, times: int) -> int
             {
                 for n: 1..1000
                 {
-                    next := hashes[n];
+                    next := hashes[(index+n)%1001];
                     for ni: 0..next.count-5
                     {
                         if next[ni+0] == result[ci] &&
@@ -51,10 +51,9 @@ solve :: (key: string, times: int) -> int
             }
         }
 
-        array_ordered_remove_by_index(*hashes, 0); // todo slow
         hash := md5(tprint("%1%2", key, index));
         for 1..times-1 hash = md5(hash);
-        array_add(*hashes, hash);
+        hashes[index%1001] = hash;
         index += 1;
     }
 
