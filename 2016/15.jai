@@ -15,7 +15,10 @@ day15 :: (data: string) -> string, string
         array_add(*discs, disc);
     }
 
-    return tprint("%", find_alignment(discs)), tprint("%", "");
+    extra_disc := discs;
+    array_add(*extra_disc, .[11, 0]);
+
+    return tprint("%", find_alignment(discs)), tprint("%", find_alignment(extra_disc));
 }
 
 #scope_file;
