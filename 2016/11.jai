@@ -1,19 +1,18 @@
 day11 :: (data: string) -> string, string
 {
-    state : u64;
+    state : State;
 
     // todo: parse input
-    table_add(*item_to_index, "ag", 0); array_add(*index_to_item, "ag"); add(*state, 1, 0);
-    table_add(*item_to_index, "ac", 1); array_add(*index_to_item, "ac"); add(*state, 1, 1);
-    table_add(*item_to_index, "bg", 2); array_add(*index_to_item, "bg"); add(*state, 2, 2);
-    table_add(*item_to_index, "cg", 3); array_add(*index_to_item, "cg"); add(*state, 2, 3);
-    table_add(*item_to_index, "dg", 4); array_add(*index_to_item, "dg"); add(*state, 2, 4);
-    table_add(*item_to_index, "eg", 5); array_add(*index_to_item, "eg"); add(*state, 2, 5);
-    table_add(*item_to_index, "bc", 6); array_add(*index_to_item, "bc"); add(*state, 3, 6);
-    table_add(*item_to_index, "cc", 7); array_add(*index_to_item, "cc"); add(*state, 3, 7);
-    table_add(*item_to_index, "dc", 8); array_add(*index_to_item, "dc"); add(*state, 3, 8);
-    table_add(*item_to_index, "ec", 9); array_add(*index_to_item, "ec"); add(*state, 3, 9);
-    floor(*state, 1);
+    array_add(*index_to_item, "ag"); add(*state, 0, 0);
+    array_add(*index_to_item, "ac"); add(*state, 0, 1);
+    array_add(*index_to_item, "bg"); add(*state, 1, 2);
+    array_add(*index_to_item, "cg"); add(*state, 1, 3);
+    array_add(*index_to_item, "dg"); add(*state, 1, 4);
+    array_add(*index_to_item, "eg"); add(*state, 1, 5);
+    array_add(*index_to_item, "bc"); add(*state, 2, 6);
+    array_add(*index_to_item, "cc"); add(*state, 2, 7);
+    array_add(*index_to_item, "dc"); add(*state, 2, 8);
+    array_add(*index_to_item, "ec"); add(*state, 2, 9);
 
     best := U64_MAX;
 
@@ -21,110 +20,147 @@ day11 :: (data: string) -> string, string
 
     return tprint("%", best), tprint("%", "");
 
-    solve :: (s: u64, best: *u64, moves: u64 = 0)
+    solve :: (s: State, best: *u64, current_floor: u8 = 0, moves: u64 = 0)
     {
-        if s >> 30 & 0b1111111111 == 0b1111111111 { print(s); if moves < <<best { <<best = moves; } return; }
-
-        current_floor : u64 = s >> 40;
-        current_items : u64 = s >> ((current_floor-1)*10) & 0b1111111111;
-        items : [..]string; // todo: memory shite
-        for 0..9 if current_items & (cast(u64)1 << it) array_add(*items, index_to_item[it]);
-
-        // check for fried chips
-        has_generators := false;
-        for items if it[1] == #char "g" { has_generators = true; break; }
-        if has_generators for c: items
+        // if floor 4 has all the items, maybe update best, and stop
+        if s.floor[0] == 0 && s.floor[1] == 0 && s.floor[2] == 0
         {
-            if c[1] == #char "c" // check chip has matching generator
+            if <<best > moves
             {
-                for g: items
-                {
-                    if g[1] == #char "g" && g[0] == c[0] continue c;
-                }
-
-                return;
+                <<best = moves;
             }
-        }
+            return;
+        } 
 
-        prev := table_find_pointer(seen, s);
-        if prev && moves >= <<prev return;
+        compressed_state, is_valid := generate_seen_state(s, current_floor);
+
+        if !is_valid return;
+
+        prev := table_find_pointer(seen, compressed_state);
+
+        // if seen this state before and we're at more moves, stop
+        if prev && <<prev <= moves return;
+
+        // update seen states with new info
         if prev { <<prev = moves; }
-        else table_add(*seen, s, moves);
+        else table_add(*seen, compressed_state, moves);
 
-        // take individual items to different floors
-        for items
+        // calculate all possible combos of moving 2 or 1 items up and recurse
+        if current_floor < 3
         {
-            if current_floor < 4
+            for i: 0..index_to_item.count-1 for j: i+1..index_to_item.count-1
             {
-                ns := s;
-                move(*ns, current_floor, current_floor + 1, it);
-                floor(*ns, current_floor + 1);
-                solve(ns, best, moves + 1);
+                if s.floor[current_floor] & (1 << i) && s.floor[current_floor] & (1 << j)
+                {
+                    ns := s;
+                    mov(*ns, current_floor, current_floor + 1, xx i);
+                    mov(*ns, current_floor, current_floor + 1, xx j);
+                    solve(ns, best, current_floor + 1, moves + 1);
+                }
             }
-            if current_floor > 1
+
+            for i: 0..index_to_item.count-1
             {
-                ns := s;
-                move(*ns, current_floor, current_floor - 1, it);
-                floor(*ns, current_floor - 1);
-                solve(ns, best, moves + 1);
-            }
+                if s.floor[current_floor] & (1 << i)    
+                {
+                    ns := s;
+                    mov(*ns, current_floor, current_floor + 1, xx i);
+                    solve(ns, best, current_floor + 1, moves + 1);
+                }
+            } 
         }
 
-        // take pairs of items to different floors
-        for a: 0..items.count-1  for b: a+1..items.count-1
+        // calculate all possible combos of taking 1 item down and recurse
+        if current_floor > 0
         {
-            if current_floor < 4
+            for i: 0..index_to_item.count-1
             {
-                ns := s;
-                move(*ns, current_floor, current_floor + 1, items[a]);
-                move(*ns, current_floor, current_floor + 1, items[b]);
-                floor(*ns, current_floor + 1);
-                solve(ns, best, moves + 1);
-            }
-            if current_floor > 1
-            {
-                ns := s;
-                move(*ns, current_floor, current_floor - 1, items[a]);
-                move(*ns, current_floor, current_floor - 1, items[b]);
-                floor(*ns, current_floor - 1);
-                solve(ns, best, moves + 1);
+                if s.floor[current_floor] & (1 << i)
+                {
+                    ns := s;
+                    mov(*ns, current_floor, current_floor - 1, xx i);
+                    solve(ns, best, current_floor - 1, moves + 1);
+                }
             }
         }
     }
 }
 
-item_to_index : Table(string, u8);
 index_to_item : [..]string;
-seen  : Table(u64, u64); // state -> fewest moves
+seen : Table(u64, u64); // state -> fewest moves
 
-print :: (s: u64)
+// u64 seen state stores: the current floor, the number of pairs on each floor,
+//                        the number of lone generators on each floor,
+//                        and the number of lone chips on each floor
+//
+//                           |cf|f3p|f3g|f3c|f2p|f2g|f2c|f1p|f1g|f1c|f0p|f0g|f0c
+// 66665555555555444444444433|33|333|333|222|222|222|211|111|111|110|000|000|000
+// 32109876543210987654321098|76|543|210|987|654|321|098|765|432|109|876|543|210
+
+rem :: (s: *State, f: u64, item: u64) { s.floor[f] &= ~cast(u16)1 << item; }
+add :: (s: *State, f: u64, item: u64) { s.floor[f] |=  cast(u16)1 << item; }
+mov :: (s: *State, f_src: u64, f_dst: u64, item: u64) { rem(s, f_src, item); add(s, f_dst, item); }
+
+State :: struct
 {
-    current_floor := s >> 40;
-    floor_4 := s >> 30 & 0b1111111111;
-    floor_3 := s >> 20 & 0b1111111111;
-    floor_2 := s >> 10 & 0b1111111111;
-    floor_1 := s >> 00 & 0b1111111111;
-    print("4) % %\n", ifx current_floor == 4 then "=>" else "  ", formatInt(floor_4, base=2, minimum_digits=10));
-    print("3) % %\n", ifx current_floor == 3 then "=>" else "  ", formatInt(floor_3, base=2, minimum_digits=10));
-    print("2) % %\n", ifx current_floor == 2 then "=>" else "  ", formatInt(floor_2, base=2, minimum_digits=10));
-    print("1) % %\n", ifx current_floor == 1 then "=>" else "  ", formatInt(floor_1, base=2, minimum_digits=10));
+    floor: [4]u16;
+}
+
+generate_seen_state :: (s: State, current_floor: u8) -> u64, bool
+{
+    valid := true;
+    state : u64;
+    state |= (cast(u64)current_floor) << 36;
+
+    for f: 0..3
+    {
+        pairs: u64;
+
+        // todo: this but without allocating arrays
+        chips: [..]string;
+        generators: [..]string;
+        defer array_free(generators);
+        defer array_free(chips);
+
+        for i: 0..index_to_item.count-1
+        {
+            if s.floor[f] & (1 << i)
+            {
+                item := index_to_item[i];
+                if item[1] == #char "g" array_add(*generators, item);
+                else                    array_add(*chips, item);
+            }
+        }
+
+        for c: chips
+        {
+            for g: generators
+            {
+                if c[0] == g[0]
+                {
+                    pairs += 1;
+                    remove c;
+                    remove g;
+                    continue c;
+                }
+            }
+        }
+
+        if chips.count && (generators.count || pairs)
+        {
+            valid = false;
+        }
+
+        state |=                       pairs << (6+f*9);
+        state |= (cast(u64)generators.count) << (3+f*9);
+        state |=      (cast(u64)chips.count) << (0+f*9);
+    }
+
+    return state, valid;
+}
+
+print :: (s: State)
+{
+    for < 3..0 print("% %\n", it, formatInt(s.floor[it], base=2, minimum_digits=index_to_item.count));
     print("\n");
 }
-
-floor :: (s: *u64, f: u64) { <<s &= 0b1111111111_1111111111_1111111111_1111111111; <<s |= f << 40; }
-rem :: (s: *u64, f: u64, item: u64) { <<s &= (~cast(u64)1 << (item + 10*(f-1))); }
-add :: (s: *u64, f: u64, item: u64) { <<s |=   cast(u64)1 << (item + 10*(f-1));  }
-rem :: (s: *u64, f: u64, item: string) { rem(s, f, <<table_find_pointer(item_to_index, item)); }
-add :: (s: *u64, f: u64, item: string) { add(s, f, <<table_find_pointer(item_to_index, item)); }
-move :: (s: *u64, f_src: u64, f_dst: u64, item: string)
-{
-    index := table_find_pointer(item_to_index, item);
-    rem(s, f_src, <<index);
-    add(s, f_dst, <<index);
-}
-
-// state is a u64 containing the current floor and items for each floor
-// |  08  | |   10   | |   10   | |   10   | |   10   |
-// |  cf  | | floor4 | | floor3 | | floor2 | | floor1 |
-// 44444444 3333333333 2222222222 1111111111 0000000000
-// 76543210 9876543210 9876543210 9876543210 9876543210
