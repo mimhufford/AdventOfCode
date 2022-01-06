@@ -12,13 +12,26 @@ day20 :: (data: string) -> string, string
 
     quick_sort(blacklist, (a, b) => ifx a[0] < b[0] then -1 else 1);
 
-    first_allowed : s64 = 0;
-
-    for blacklist
+    while true
     {
-        if first_allowed >= it[0]  first_allowed = it[1] + 1;
-        else break;
+        done := true;
+
+        for 0..blacklist.count-2
+        {
+            if blacklist[it+1][0] <= blacklist[it][1]+1
+            {
+                blacklist[it][1] = max(blacklist[it][1], blacklist[it+1][1]);
+                array_ordered_remove_by_index(*blacklist, it+1);
+                done = false;
+                break;
+            }
+        }
+
+        if done break;
     }
 
-    return tprint("%", first_allowed), tprint("%", "");
+    first_allowed := blacklist[0][1] + 1;
+    total_allowed := blacklist.count - 1;
+
+    return tprint("%", first_allowed), tprint("%", total_allowed);
 }
