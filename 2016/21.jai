@@ -1,6 +1,7 @@
 day21 :: (data: string) -> string, string
 {
-    part_1 := scramble(data, "abcdefgh");
+    instructions := parse_instructions(data);
+    part_1 := scramble(instructions, "abcdefgh");
 
     _input := int.[97,98,99,100,101,102,103,104];
     input := permutation(_input);
@@ -8,7 +9,7 @@ day21 :: (data: string) -> string, string
     while true {
         input = permutation(input);
         i : [8]u8; for 0..7 i[it] = xx input[it];
-        result := scramble(data, xx i);
+        result := scramble(instructions, xx i);
         if result == "fbgdceah"
         {
             part_2 = i;
@@ -23,7 +24,84 @@ day21 :: (data: string) -> string, string
 
 #import "Permute";
 
-scramble :: (data: string, input: string) -> string
+Instruction :: struct
+{
+    type : enum { SWAP_POS; SWAP_CHAR; ROTATE_CHAR; ROTATE_LEFT; ROTATE_RIGHT; REVERSE; MOVE; };
+    a, b : u8;
+}
+
+parse_instructions :: (data: string) -> []Instruction
+{
+    instructions : [..]Instruction;
+
+    for line: split(data, "\n")
+    {
+        if starts_with(line, "swap pos")
+        {
+            i : Instruction;
+            i.type = .SWAP_POS;
+            advance(*line, 14);
+            i.a = next_u8(*line);
+            i.b = next_u8(*line);
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "swap let")
+        {
+            i : Instruction;
+            i.type = .SWAP_CHAR;
+            advance(*line, 12);
+            i.a = line[0];
+            advance(*line, 14);
+            i.b = line[0];
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "rotate based")
+        {
+            i : Instruction;
+            i.type = .ROTATE_CHAR;
+            i.a = line[line.count-1];
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "rotate left")
+        {
+            i : Instruction;
+            i.type = .ROTATE_LEFT;
+            advance(*line, 12);
+            i.a = next_u8(*line);
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "rotate right")
+        {
+            i : Instruction;
+            i.type = .ROTATE_RIGHT;
+            advance(*line, 13);
+            i.a = next_u8(*line);
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "reverse")
+        {
+            i : Instruction;
+            i.type = .REVERSE;
+            advance(*line, 18);
+            i.a = next_u8(*line);
+            i.b = next_u8(*line);
+            array_add(*instructions, i);
+        }
+        else if starts_with(line, "move")
+        {
+            i : Instruction;
+            i.type = .MOVE;
+            advance(*line, 14);
+            i.a = next_u8(*line);
+            i.b = next_u8(*line);
+            array_add(*instructions, i);
+        }
+    }
+
+    return instructions;
+}
+
+scramble :: (instructions: []Instruction, input: string) -> string
 {
     buffer : [2][8]u8;
     for 0..7 {
@@ -34,76 +112,54 @@ scramble :: (data: string, input: string) -> string
     curr := 0;
     next := 1;
 
-    for line: split(data, "\n")
+    for inst: instructions
     {
-        if starts_with(line, "swap pos")
+        if inst.type ==
         {
-            advance(*line, 14);
-            a := next_u8(*line);
-            b := next_u8(*line);
-            buffer[next][a] = buffer[curr][b];
-            buffer[next][b] = buffer[curr][a];
-        }
-        else if starts_with(line, "swap let")
-        {
-            advance(*line, 12);
-            a := line[0];
-            advance(*line, 14);
-            b := line[0];
-            for 0..buffer[next].count-1
-            {
-                if buffer[curr][it] == a  buffer[next][it] = b;
-                if buffer[curr][it] == b  buffer[next][it] = a;
-            }
-        }
-        else if starts_with(line, "rotate based")
-        {
-            amt := 0;
-            for 0..buffer[next].count-1
-            {
-                if buffer[curr][it] == line[line.count-1]
+            case .SWAP_POS;
+                buffer[next][inst.a] = buffer[curr][inst.b];
+                buffer[next][inst.b] = buffer[curr][inst.a];
+        
+            case .SWAP_CHAR;
+                for 0..buffer[next].count-1
                 {
-                    amt = it;
-                    break;
+                    if buffer[curr][it] == inst.a  buffer[next][it] = inst.b;
+                    if buffer[curr][it] == inst.b  buffer[next][it] = inst.a;
                 }
-            }
-            if amt >= 4 amt += 1;
-            amt += 1;
 
-            for 0..buffer[next].count-1
-                buffer[next][it] = buffer[curr][(it-amt+2*buffer[curr].count) % buffer[curr].count];
-        }
-        else if starts_with(line, "rotate left")
-        {
-            advance(*line, 12);
-            amt := next_u8(*line);
-            for 0..buffer[next].count-1
-                buffer[next][it] = buffer[curr][(it+amt) % buffer[curr].count];
-        }
-        else if starts_with(line, "rotate right")
-        {
-            advance(*line, 13);
-            amt := next_u8(*line);
-            for 0..buffer[next].count-1
-                buffer[next][it] = buffer[curr][(it-amt+buffer[curr].count) % buffer[curr].count];
-        }
-        else if starts_with(line, "reverse")
-        {
-            advance(*line, 18);
-            a := next_u8(*line);
-            b := next_u8(*line);
-            d := b - a;
-            for 0..d
-                buffer[next][it+a] = buffer[curr][b-it];
-        }
-        else if starts_with(line, "move")
-        {
-            advance(*line, 14);
-            a := next_u8(*line);
-            b := next_u8(*line);
-            for a..buffer[next].count-2      buffer[next][it] = buffer[next][it+1];
-            for < buffer[next].count-1..b+1  buffer[next][it] = buffer[next][it-1];
-            buffer[next][b] = buffer[curr][a];
+            case .ROTATE_CHAR;
+                amt := 0;
+                for 0..buffer[next].count-1
+                {
+                    if buffer[curr][it] == inst.a
+                    {
+                        amt = it;
+                        break;
+                    }
+                }
+                if amt >= 4 amt += 1;
+                amt += 1;
+
+                for 0..buffer[next].count-1
+                    buffer[next][it] = buffer[curr][(it-amt+2*buffer[curr].count) % buffer[curr].count];
+            
+            case .ROTATE_LEFT;
+                for 0..buffer[next].count-1
+                    buffer[next][it] = buffer[curr][(it+inst.a) % buffer[curr].count];
+        
+            case .ROTATE_RIGHT;
+                for 0..buffer[next].count-1
+                    buffer[next][it] = buffer[curr][(it-inst.a+buffer[curr].count) % buffer[curr].count];
+        
+            case .REVERSE;
+                d := inst.b - inst.a;
+                for 0..d
+                    buffer[next][it+inst.a] = buffer[curr][inst.b-it];
+        
+            case .MOVE;
+                for inst.a..buffer[next].count-2      buffer[next][it] = buffer[next][it+1];
+                for < buffer[next].count-1..inst.b+1  buffer[next][it] = buffer[next][it-1];
+                buffer[next][inst.b] = buffer[curr][inst.a];
         }
 
         buffer[curr] = buffer[next];
