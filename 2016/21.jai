@@ -1,18 +1,16 @@
 day21 :: (data: string) -> string, string
 {
     instructions := parse_instructions(data);
-    part_1 := scramble(instructions, "abcdefgh");
+    input := u8.[97,98,99,100,101,102,103,104];
 
-    _input := int.[97,98,99,100,101,102,103,104];
-    input := permutation(_input);
-    part_2 : [8]u8;
+    part_1 := scramble(instructions, xx input);
+    part_2 : string;
+
     while true {
-        input = permutation(input);
-        i : [8]u8; for 0..7 i[it] = xx input[it];
-        result := scramble(instructions, xx i);
-        if result == "fbgdceah"
+        permute(input);
+        if scramble(instructions, xx input) == "fbgdceah"
         {
-            part_2 = i;
+            part_2 = xx input;
             break;
         }
     }
@@ -21,8 +19,6 @@ day21 :: (data: string) -> string, string
 }
 
 #scope_file
-
-#import "Permute";
 
 Instruction :: struct
 {
@@ -168,4 +164,24 @@ scramble :: (instructions: []Instruction, input: string) -> string
     }
 
     return tprint(cast(string)buffer[curr]);
+}
+
+permute :: (current : [] u8)
+{
+    j := current.count-2;
+    k := current.count-1;
+
+    while current[j] > current[j+1] j -= 1;
+    while current[j] > current[k]   k -= 1;
+
+    Swap(*current[j], *current[k]);
+
+    r := current.count-1;
+    s := j+1;
+
+    while r > s {
+        Swap(*current[r], *current[s]);
+        r -= 1;
+        s += 1;
+    }
 }
