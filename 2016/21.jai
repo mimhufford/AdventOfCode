@@ -1,9 +1,35 @@
 day21 :: (data: string) -> string, string
 {
-    buffer : [2][8]u8 = .[
-        .[#char "a", #char "b", #char "c", #char "d", #char "e", #char "f", #char "g", #char "h"],
-        .[#char "a", #char "b", #char "c", #char "d", #char "e", #char "f", #char "g", #char "h"],
-    ];
+    part_1 := scramble(data, "abcdefgh");
+
+    _input := int.[97,98,99,100,101,102,103,104];
+    input := permutation(_input);
+    part_2 : [8]u8;
+    while true {
+        input = permutation(input);
+        i : [8]u8; for 0..7 i[it] = xx input[it];
+        result := scramble(data, xx i);
+        if result == "fbgdceah"
+        {
+            part_2 = i;
+            break;
+        }
+    }
+
+    return tprint("%", part_1), tprint("%", cast(string)part_2);
+}
+
+#scope_file
+
+#import "Permute";
+
+scramble :: (data: string, input: string) -> string
+{
+    buffer : [2][8]u8;
+    for 0..7 {
+        buffer[0][it] = input[it];
+        buffer[1][it] = input[it];
+    }
 
     curr := 0;
     next := 1;
@@ -85,5 +111,5 @@ day21 :: (data: string) -> string, string
         next = 1 - next;
     }
 
-    return tprint("%", cast(string)buffer[curr]), tprint("%", "");
+    return tprint(cast(string)buffer[curr]);
 }
