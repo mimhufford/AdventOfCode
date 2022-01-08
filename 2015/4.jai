@@ -85,33 +85,35 @@ md5 :: (input: string) -> u32 #must {
 
     A, B, C, D := a0, b0, c0, d0;
     
-    // 64 passes
-    for 0..cast(u32)63 {
-        F, g : u32;
+    
+    // 64 passes, split into 16s to avoid branching
+    for 0..cast(u32)15 {
+        F := D ^ (B & (C ^ D));
+        commit_pass(it);
+    }
+    for 16..cast(u32)31 {
+        F := C ^ (D & (B ^ C));
+        commit_pass((it*5 + 1) % 16);
+    }
+    for 32..cast(u32)47 {
+        F := B ^ C ^ D;
+        commit_pass((it*3 + 5) % 16);
+    }
+    for 48..cast(u32)63 {
+        F := C ^ (B | (~D));
+        commit_pass((it*7) % 16);
+    }
 
-        if it < 16 {
-            F = D ^ (B & (C ^ D));
-            g = it;
-        } else if it < 32 {
-            F = C ^ (D & (B ^ C));
-            g = (it*5 + 1) % 16;
-        } else if it < 48 {
-            F = B ^ C ^ D;
-            g = (it*3 + 5) % 16;
-        } else {
-            F = C ^ (B | (~D));
-            g = (it*7) % 16;
-        }
+    commit_pass :: (g: u32) #expand {
+    // grab the relevant 32 bits from the original input
+    word := << ((cast(*u32)`data.data) + g);
 
-        // grab the relevant 32 bits from the original input
-        word := << ((cast(*u32)data.data) + g);
-
-        // apply this section of data
-        F += A + K[it] + word;
-        A = D;
-        D = C;
-        C = B;
-        B += F <<< s[it];
+    // apply this section of data
+    `F += `A + K[`it] + word;
+    `A = `D;
+    `D = `C;
+    `C = `B;
+    `B += `F <<< s[`it];
     }
 
     a0 += A;
