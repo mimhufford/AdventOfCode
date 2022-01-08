@@ -85,7 +85,6 @@ md5 :: (input: string) -> u32 #must {
 
     A, B, C, D := a0, b0, c0, d0;
     
-    
     // 64 passes, split into 16s to avoid branching
     for 0..cast(u32)15 {
         F := D ^ (B & (C ^ D));
