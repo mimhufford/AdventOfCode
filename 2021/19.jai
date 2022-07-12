@@ -85,7 +85,7 @@ find_scanner_with_most_potential_overlaps :: (sauron: Scanner, scanners: []Scann
         distance_matches := 0;
         for indexes, distance: scanners[it].distances
         {
-            if table_find_pointer(sauron.distances, distance)
+            if table_find_pointer(*sauron.distances, distance)
             {
                 distance_matches += 1;
             }
@@ -185,7 +185,7 @@ find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [..][4]int
 
     for s_indexes, distance: s.distances
     {
-        sauron_indexes := table_find_pointer(sauron.distances, distance);
+        sauron_indexes := table_find_pointer(*sauron.distances, distance);
 
         if sauron_indexes
         {

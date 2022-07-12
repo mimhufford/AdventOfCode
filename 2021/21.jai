@@ -52,7 +52,7 @@ count_wins :: (curr: State) -> [2]u64
     if curr.p1_score >= 21 return .[1, 0];
     if curr.p2_score >= 21 return .[0, 1];
 
-    result, found := table_find(seen, curr.hash);
+    result, found := table_find(*seen, curr.hash);
     if found return result;
 
     wins : [2]u64;

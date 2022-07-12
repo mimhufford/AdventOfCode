@@ -5,8 +5,8 @@ day12 :: (data : string) -> string, string
     while data.count
     {
         a_name, b_name := read_pair(*data);
-        a := table_find_pointer(caves, a_name);
-        b := table_find_pointer(caves, b_name);
+        a := table_find_pointer(*caves, a_name);
+        b := table_find_pointer(*caves, b_name);
         if !a
         {
             cave : Cave;
@@ -23,8 +23,8 @@ day12 :: (data : string) -> string, string
         if a_name != "start" array_add(*b.routes, a);
     }
 
-    routes_1 := explore_routes_to_end(table_find_pointer(caves, "start"), true);
-    routes_2 := explore_routes_to_end(table_find_pointer(caves, "start"), false);
+    routes_1 := explore_routes_to_end(table_find_pointer(*caves, "start"), true);
+    routes_2 := explore_routes_to_end(table_find_pointer(*caves, "start"), false);
 
 	return tprint("%", routes_1), tprint("%", routes_2);
 }

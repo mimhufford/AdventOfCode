@@ -43,7 +43,7 @@ goal :: 0b0000000__100_101_110_111__100_101_110_111__100_101_110_111__100_101_11
 solve :: (s: u64, cost_so_far: u64 = 0)
 {
     if cost_so_far >= best return;
-    prev := table_find_pointer(seen, s);
+    prev := table_find_pointer(*seen, s);
     if prev && cost_so_far >= <<prev return;
     if prev { <<prev = cost_so_far; }
     else table_add(*seen, s, cost_so_far);

@@ -27,9 +27,9 @@ day14 :: (data : string) -> string, string
         dst[0] = tprint("%", cast(string)dst0);
         dst[1] = tprint("%", cast(string)dst1);
         table_add(*rules, src, dst);
-        if !table_find_pointer(pairs, src   ) table_add(*pairs, src   , 0);
-        if !table_find_pointer(pairs, dst[0]) table_add(*pairs, dst[0], 0);
-        if !table_find_pointer(pairs, dst[1]) table_add(*pairs, dst[1], 0);
+        if !table_find_pointer(*pairs, src   ) table_add(*pairs, src   , 0);
+        if !table_find_pointer(*pairs, dst[0]) table_add(*pairs, dst[0], 0);
+        if !table_find_pointer(*pairs, dst[1]) table_add(*pairs, dst[1], 0);
         advance(*data, 2);
     }
 
@@ -50,10 +50,10 @@ grow :: (pairs : Table, rules : Table)
     {
         if !count continue;
 
-        r := table_find_pointer(rules, pair);
-        <<table_find_pointer(pairs, pair) -= count;
-        <<table_find_pointer(pairs, (<<r)[0]) += count;
-        <<table_find_pointer(pairs, (<<r)[1]) += count;
+        r := table_find_pointer(*rules, pair);
+        <<table_find_pointer(*pairs, pair) -= count;
+        <<table_find_pointer(*pairs, (<<r)[0]) += count;
+        <<table_find_pointer(*pairs, (<<r)[1]) += count;
     }
 }
 
