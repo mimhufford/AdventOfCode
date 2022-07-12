@@ -8,7 +8,7 @@ day13 :: (data: string) -> string, string
         first, second, delta := read_line(*data);
         array_add_if_unique(*people, first);
         array_add_if_unique(*people, second);
-        f := table_find_pointer(happiness, first);
+        f := table_find_pointer(*happiness, first);
         if !f f = table_add(*happiness, first, .{});
         table_add(f, second, delta);
     }
@@ -19,7 +19,7 @@ day13 :: (data: string) -> string, string
     table_add(*happiness, "me", .{});
     for ft, f: happiness
     {
-        table_add(table_find_pointer(happiness, "me"), f, 0);
+        table_add(table_find_pointer(*happiness, "me"), f, 0);
         table_add(*ft, "me", 0);
     }
 
@@ -47,8 +47,8 @@ max_happiness :: (people: []string, happiness: Table) -> s64
             l := people[order[(i-1+order.count) % order.count]];
             m := people[order[i]];
             r := people[order[(i+1) % order.count]];
-            ml := <<table_find_pointer(<<table_find_pointer(happiness, m), l);
-            mr := <<table_find_pointer(<<table_find_pointer(happiness, m), r);
+            ml := <<table_find_pointer(table_find_pointer(happiness, m), l);
+            mr := <<table_find_pointer(table_find_pointer(happiness, m), r);
             total += ml + mr;
         }
 

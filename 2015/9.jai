@@ -46,7 +46,7 @@ explore :: (places : Table, place : string, shortest : *u16, longest : *u16)
             if (distance > <<longest)  { <<longest  = distance; }
             return;
         }
-        edges := <<table_find_pointer(places, place);
+        edges := <<table_find_pointer(*places, place);
         for edges impl(places, it.place, visited, shortest, longest, distance + it.dist);
     }
     
@@ -56,7 +56,7 @@ explore :: (places : Table, place : string, shortest : *u16, longest : *u16)
 
 find_or_create :: (places : *Table, place : string) -> *Place
 {
-    ep := table_find_pointer(<<places, place);
+    ep := table_find_pointer(places, place);
     if ep return ep;
 
     np : Place;
