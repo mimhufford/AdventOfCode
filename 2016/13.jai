@@ -20,7 +20,7 @@ explore_50_steps :: (id: s64, x : s64 = 1, y : s64 = 1, steps : s64 = 0)
     if !walkable(id, x, y) return;
 
     hash := x << 32 | y;
-    prev := table_find_pointer(seen, hash);
+    prev := table_find_pointer(*seen, hash);
     if prev && <<prev < steps return;
     if prev { <<prev = steps; }
     else table_add(*seen, hash, steps);
@@ -36,7 +36,7 @@ steps_to :: (id: s64, tx: s64, ty: s64, x : s64 = 1, y : s64 = 1, steps : s64 = 
     if x == tx && y == ty return steps;
 
     hash := x << 32 | y;
-    prev := table_find_pointer(seen, hash);
+    prev := table_find_pointer(*seen, hash);
     if prev && <<prev < steps return S64_MAX;
     if prev { <<prev = steps; }
     else table_add(*seen, hash, steps);

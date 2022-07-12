@@ -56,7 +56,7 @@ day11 :: (data: string) -> string, string
 
         if !is_valid return;
 
-        prev := table_find_pointer(seen, compressed_state);
+        prev := table_find_pointer(*seen, compressed_state);
 
         // if seen this state before and we're at more moves, stop
         if prev && <<prev <= moves return;

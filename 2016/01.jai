@@ -27,7 +27,7 @@ day1 :: (data: string) -> string, string
             y += dir[d][1];
 
             hash := (10000+x)<<32 | (10000+y); // offset to avoid dealing with shifting the negative bit
-            if !first_dup && table_find_pointer(seen, hash) first_dup = x + y;
+            if !first_dup && table_find_pointer(*seen, hash) first_dup = x + y;
             else table_add(*seen, hash, 0);
         }
 
