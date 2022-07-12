@@ -97,7 +97,7 @@ play :: (p1: [..]u8, p2: [..]u8) -> u8, [..]u8
         for p1 state = (state << 16) + (state << 6) - state + it;
         state = (state << 16) + (state << 6) - state; // divide decks
         for p2 state = (state << 16) + (state << 6) - state + it;
-        if table_find_pointer(history, state) return 1, p1; // player 1 wins
+        if table_find_pointer(*history, state) return 1, p1; // player 1 wins
 
         // didn't see it before, so record it
         table_add(*history, state, true);
