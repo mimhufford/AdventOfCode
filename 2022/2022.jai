@@ -95,8 +95,7 @@ read_word :: (s: *string) -> string
     while s.count && !is_whitespace(s.data[0])
     {
         word.count += 1;
-        s.count -= 1;
-        s.data  += 1;
+        advance(s);
     }
 
     skip_whitespace(s);
@@ -108,8 +107,7 @@ skip_whitespace :: (s: *string)
 {
     while s.count && is_whitespace(s.data[0])
     {
-        s.count -= 1;
-        s.data  += 1;
+        advance(s);
     }
 }
 
@@ -131,8 +129,7 @@ read_number :: ($T: Type, s: *string) -> T
         if s.count && s.data[0] == #char "-"
         {
             neg = true;
-            s.count -= 1;
-            s.data  += 1;
+            advance(s);
         }
     }
 
@@ -140,8 +137,7 @@ read_number :: ($T: Type, s: *string) -> T
     {
         num *= 10;
         num += s.data[0] - #char "0";
-        s.count -= 1;
-        s.data  += 1;
+        advance(s);
     }
 
     skip_whitespace(s);
