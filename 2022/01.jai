@@ -1,14 +1,14 @@
 day1 :: (input: string) -> string, string
 {
-    totals : [..]u32;
+    totals : [..]s32;
 
     while input.count
     {
-        current_elf_calories : u32;
+        current_elf_calories : s32;
 
         while input.count && !is_whitespace(input.data[0])
         {   
-            current_elf_calories += read_number(u32, *input, skip_trailing_whitespace=false);
+            current_elf_calories += read_number(s32, *input, skip_trailing_whitespace=false);
             if input.count advance(*input);
         }
 
@@ -16,7 +16,7 @@ day1 :: (input: string) -> string, string
         if input.count advance(*input);
     }
 
-    quick_sort(totals, n => n);
+    quick_sort(totals, n => -n);
 
-    return tprint("%", totals[totals.count-1]), tprint("%", totals[totals.count-1]+totals[totals.count-2]+totals[totals.count-3]);
+    return tprint("%", totals[0]), tprint("%", totals[0] + totals[1] + totals[2]);
 }
