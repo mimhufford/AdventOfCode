@@ -116,9 +116,7 @@ is_whitespace :: (c: u8) -> bool
     return c == #char " " || c == #char "\n" || c == #char "\r" || c == #char "\t";
 }
 
-#scope_file;
-
-read_number :: ($T: Type, s: *string) -> T
+read_number :: ($T: Type, s: *string, $skip_trailing_whitespace := true) -> T
 {
     num : T;
     
@@ -140,7 +138,7 @@ read_number :: ($T: Type, s: *string) -> T
         advance(s);
     }
 
-    skip_whitespace(s);
+    #if skip_trailing_whitespace skip_whitespace(s);
 
     #if T == s8 || T == s16 || T == s32 || T == s64
     {
@@ -151,6 +149,8 @@ read_number :: ($T: Type, s: *string) -> T
         return num;
     }
 }
+
+#scope_file;
 
 ints :: ($T: Type, s: string) -> IntIterator(T)
 {
