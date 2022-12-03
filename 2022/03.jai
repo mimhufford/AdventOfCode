@@ -5,23 +5,25 @@ day3 :: (input: string) -> string, string
 
     while input.count
     {
-        group_contents := U64_MAX;
+        in_group := U64_MAX;
 
         for 1..3
         {
-            one, two := pack(read_word(*input));
+            one, two := encode(read_word(*input));
             in_both  := one & two;
-            both_sum += bit_scan_forward(in_both)-1;
-            group_contents &= one | two;
+            both_sum += bit_scan_forward(in_both) - 1;
+            in_group &= one | two;
         }
 
-        group_sum += bit_scan_forward(group_contents)-1;
+        group_sum += bit_scan_forward(in_group) - 1;
     }
 
     return tprint("%", both_sum), tprint("%", group_sum);
 }
 
-pack :: (s: string) -> u64, u64
+#scope_file
+
+encode :: (s: string) -> u64, u64
 {
     compartment_1: u64;
     compartment_2: u64;
