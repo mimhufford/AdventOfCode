@@ -32,8 +32,8 @@ encode :: (s: string) -> u64, u64
 
     for 0..count-1
     {
-        one : u64 = s[it]       - ifx s[it]       <= #char "Z" cast(u64)38 else 96;
-        two : u64 = s[it+count] - ifx s[it+count] <= #char "Z" cast(u64)38 else 96;
+        one : u64 = (s[it]       - 38) % 58;
+        two : u64 = (s[it+count] - 38) % 58;
         compartment_1 |= cast(u64)1 << one;
         compartment_2 |= cast(u64)1 << two;
     }
