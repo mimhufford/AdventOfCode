@@ -18,8 +18,7 @@ day4 :: (input: string) -> string, string
             contained += 1;
         }
 
-        if lo_2 <= lo_1 && lo_1 <= hi_2 || lo_2 <= hi_1 && hi_1 <= hi_2
-        || lo_1 <= lo_2 && lo_2 <= hi_1 || lo_1 <= hi_2 && hi_2 <= hi_1
+        if hi_1 >= lo_2 && lo_1 <= hi_2
         {
             overlap += 1;
         }
