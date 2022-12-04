@@ -1,7 +1,7 @@
 day4 :: (input: string) -> string, string
 {
-    contained := 0;
-    overlap   := 0;
+    contains := 0;
+    overlaps := 0;
 
     while input.count
     {
@@ -13,16 +13,9 @@ day4 :: (input: string) -> string, string
         advance(*input);
         hi_2 := read_number(u32, *input, skip_trailing_whitespace=true);
 
-        if lo_1 <= lo_2 && hi_1 >= hi_2 || lo_2 <= lo_1 && hi_2 >= hi_1
-        {
-            contained += 1;
-        }
-
-        if hi_1 >= lo_2 && lo_1 <= hi_2
-        {
-            overlap += 1;
-        }
+        contains += cast(s8)(lo_1 <= lo_2 && hi_1 >= hi_2 || lo_2 <= lo_1 && hi_2 >= hi_1);
+        overlaps += cast(s8)(hi_1 >= lo_2 && lo_1 <= hi_2);
     }
 
-    return tprint("%", contained), tprint("%", overlap);
+    return tprint("%", contains), tprint("%", overlaps);
 }
