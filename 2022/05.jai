@@ -13,10 +13,9 @@ day5 :: (input: string) -> string, string
         }
     }
 
-    // I'm pretty sure there's a nicer way to print u8s as characters...
     tops_9000, tops_9001: [..]u8;
-    for 1..9 array_add(*tops_9000, s9000[it][s9000[it].count-1]);
-    for 1..9 array_add(*tops_9001, s9001[it][s9001[it].count-1]);
+    for 1..9 array_add(*tops_9000, pop(*s9000[it]));
+    for 1..9 array_add(*tops_9001, pop(*s9001[it]));
 
     return tprint("%", cast(string)tops_9000), tprint("%", cast(string)tops_9001);
 }
