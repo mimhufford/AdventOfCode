@@ -4,26 +4,24 @@ day6 :: (input: string) -> string, string
 
     solve_for_window_size :: (n: int, input: string) -> int
     {
-        window := input;
-        window.count = n;
-
-        while true
+        for i: 0..input.count
         {
             repeat := false;
 
-            for i: 0..n-1
+            for a: i..i+n-1
             {
-                for j: i+1..n-1
+                for b: a+1..i+n-1
                 {
-                    if window[i] != window[j] continue;
+                    if input[a] != input[b] continue;
 
-                    window.data += 1;
                     repeat = true;
-                    break i;
+                    break a;
                 }
             }
 
-            if !repeat return window.data - input.data + n;
+            if !repeat return i + n;
         }
+
+        return 0;
     }
 }
