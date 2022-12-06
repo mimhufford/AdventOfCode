@@ -18,5 +18,33 @@ day6 :: (input: string) -> string, string
         }
     }
 
-    return tprint("%", index), tprint("%", "");
+    msg := 14;
+    w14 := input;
+    w14.count = 14;
+
+    while true
+    {
+        found := false;
+
+        for i: 0..13
+        {
+            for j: i+1..13
+            {
+                if w14[i] == w14[j]
+                {
+                    w14.data += 1;
+                    msg += 1;
+                    found = true;
+                    break i;
+                }
+            }
+        }
+
+        if !found
+        {
+            break;
+        }
+    }
+
+    return tprint("%", index), tprint("%", msg);
 }
