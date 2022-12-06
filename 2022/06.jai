@@ -11,7 +11,7 @@ solve_for_window_size :: (n: int, data: string) -> int
 
     while true
     {
-        found := false;
+        repeat := false;
 
         for i: 0..n-1
         {
@@ -21,15 +21,12 @@ solve_for_window_size :: (n: int, data: string) -> int
                 {
                     window.data += 1;
                     index += 1;
-                    found = true;
+                    repeat = true;
                     break i;
                 }
             }
         }
 
-        if !found
-        {
-            return index;
-        }
+        if !repeat return index;
     }
 }
