@@ -1,29 +1,29 @@
 day6 :: (input: string) -> string, string
 {
     return tprint("%", solve_for_window_size(4, input)), tprint("%", solve_for_window_size(14, input));
-}
 
-solve_for_window_size :: (n: int, input: string) -> int
-{
-    window := input;
-    window.count = n;
-
-    while true
+    solve_for_window_size :: (n: int, input: string) -> int
     {
-        repeat := false;
+        window := input;
+        window.count = n;
 
-        for i: 0..n-1
+        while true
         {
-            for j: i+1..n-1
+            repeat := false;
+
+            for i: 0..n-1
             {
-                if window[i] != window[j] continue;
+                for j: i+1..n-1
+                {
+                    if window[i] != window[j] continue;
 
-                window.data += 1;
-                repeat = true;
-                break i;
+                    window.data += 1;
+                    repeat = true;
+                    break i;
+                }
             }
-        }
 
-        if !repeat return window.data - input.data + n;
+            if !repeat return window.data - input.data + n;
+        }
     }
 }
