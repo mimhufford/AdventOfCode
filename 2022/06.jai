@@ -3,11 +3,10 @@ day6 :: (input: string) -> string, string
     return tprint("%", solve_for_window_size(4, input)), tprint("%", solve_for_window_size(14, input));
 }
 
-solve_for_window_size :: (n: int, data: string) -> int
+solve_for_window_size :: (n: int, input: string) -> int
 {
-    window := data;
+    window := input;
     window.count = n;
-    index := n;
 
     while true
     {
@@ -20,12 +19,11 @@ solve_for_window_size :: (n: int, data: string) -> int
                 if window[i] != window[j] continue;
 
                 window.data += 1;
-                index += 1;
                 repeat = true;
                 break i;
             }
         }
 
-        if !repeat return index;
+        if !repeat return window.data - input.data + n;
     }
 }
