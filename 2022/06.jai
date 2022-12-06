@@ -17,13 +17,12 @@ solve_for_window_size :: (n: int, data: string) -> int
         {
             for j: i+1..n-1
             {
-                if window[i] == window[j]
-                {
-                    window.data += 1;
-                    index += 1;
-                    repeat = true;
-                    break i;
-                }
+                if window[i] != window[j] continue;
+
+                window.data += 1;
+                index += 1;
+                repeat = true;
+                break i;
             }
         }
 
