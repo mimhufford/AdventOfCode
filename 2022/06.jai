@@ -1,39 +1,26 @@
 day6 :: (input: string) -> string, string
 {
-    index := 4;
-    window := input;
-    window.count = 4;
+    return tprint("%", solve_for_window_size(4, input)), tprint("%", solve_for_window_size(14, input));
+}
 
-    while true
-    {
-        if window[0] == window[1] || window[0] == window[2] || window[0] == window[3] ||
-           window[1] == window[2] || window[1] == window[3] || window[2] == window[3]
-        {
-            window.data += 1;
-            index += 1;
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    msg := 14;
-    w14 := input;
-    w14.count = 14;
+solve_for_window_size :: (n: int, data: string) -> int
+{
+    window := data;
+    window.count = n;
+    index := n;
 
     while true
     {
         found := false;
 
-        for i: 0..13
+        for i: 0..n-1
         {
-            for j: i+1..13
+            for j: i+1..n-1
             {
-                if w14[i] == w14[j]
+                if window[i] == window[j]
                 {
-                    w14.data += 1;
-                    msg += 1;
+                    window.data += 1;
+                    index += 1;
                     found = true;
                     break i;
                 }
@@ -42,9 +29,7 @@ day6 :: (input: string) -> string, string
 
         if !found
         {
-            break;
+            return index;
         }
     }
-
-    return tprint("%", index), tprint("%", msg);
 }
