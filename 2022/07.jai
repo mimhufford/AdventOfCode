@@ -14,7 +14,6 @@ Directory :: struct
     size     : s64;
     parent   : *Directory;
     children : [..]Directory;
-    files    : s64;
 }
 
 find_best_dir_to_delete :: (dir: *Directory, minimum: s64) -> s64
@@ -35,7 +34,6 @@ sum_sizes_lte_100000 :: (dir: *Directory) -> s64
 
 calculate_size :: (dir: *Directory) -> s64
 {
-    dir.size += dir.files;
     for * dir.children dir.size += calculate_size(it);
     return dir.size;
 }
@@ -72,9 +70,8 @@ parse_log :: (log: string) -> *Directory
                 }
                 else // file
                 {
-                    size := read_s64(*log);
-                    name := read_word(*log);
-                    cwd.files += size;
+                    cwd.size += read_s64(*log);
+                    read_word(*log);
                 }
             }
         }
