@@ -116,6 +116,12 @@ is_whitespace :: (c: u8) -> bool
     return c == #char " " || c == #char "\n" || c == #char "\r" || c == #char "\t";
 }
 
+skip_to_next_line :: (s: *string)
+{
+    while s.count && s.data[0] != #char "\n" advance(s);
+    if s.count advance(s);
+}
+
 read_number :: ($T: Type, s: *string, $skip_trailing_whitespace := true) -> T
 {
     num : T;
