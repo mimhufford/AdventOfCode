@@ -35,42 +35,33 @@ parse_log :: (log: string) -> *Directory
 
     cwd := root;
 
-    while log.count && log[0] == #char "$"
+    while log.count
     {
-        advance(*log, 2);
-        if log[0] == #char "c" // cd
+        if log[0] == #char "$" && log[2] == #char "c"
         {
-            advance(*log, 3);
+            advance(*log, 5);
             dir_name := read_word(*log);
             if dir_name == ".." cwd = cwd.parent;
-            else for * cwd.children if it.name == dir_name cwd = it;
-        }
-        else // ls
-        {
-            advance(*log, 3);
-            while log.count && log[0] != #char "$"
+            else if dir_name != "/"
             {
-                if log[0] == #char "d" // dir
-                {
-                    advance(*log, 4);
-                    dir_name := read_word(*log);
-                    dir := array_add(*cwd.children);
-                    dir.name = dir_name;
-                    dir.parent = cwd;
-                }
-                else // file
-                {
-                    size := read_s64(*log);
-                    read_word(*log);
-                    dir := cwd;
-                    while dir
-                    {
-                        dir.size += size;
-                        dir = dir.parent;
-                    }
-                }
+                dir := array_add(*cwd.children);
+                dir.name = dir_name;
+                dir.parent = cwd;
+                cwd = dir;
             }
         }
+        else if is_digit(log[0])
+        {
+            size := read_s64(*log);
+            read_word(*log);
+            dir := cwd;
+            while dir
+            {
+                dir.size += size;
+                dir = dir.parent;
+            }
+        }
+        else skip_to_next_line(*log);
     }
 
     return root;
