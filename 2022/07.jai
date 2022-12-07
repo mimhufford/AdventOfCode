@@ -8,15 +8,20 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
+Directory :: struct
+{
+    name     : string;
+    size     : s64;
+    parent   : *Directory;
+    children : [..]*Directory;
+    files    : s64;
+}
+
 find_best_dir_to_delete :: (dir: *Directory, minimum: s64) -> s64
 {
-    best := S64_MAX;
-    if dir.size >= minimum && dir.size < best  best = dir.size;
-    for dir.children
-    {
-        child_best := find_best_dir_to_delete(it, minimum);
-        if child_best < best  best = child_best;
-    }
+    if dir.size < minimum return S64_MAX;
+    best := dir.size;
+    for dir.children best = min(best, find_best_dir_to_delete(it, minimum));
     return best;
 }
 
@@ -77,13 +82,4 @@ parse_log :: (log: string) -> *Directory
     }
 
     return root;
-}
-
-Directory :: struct
-{
-    name     : string;
-    size     : s64;
-    parent   : *Directory;
-    children : [..]*Directory;
-    files    : s64;
 }
