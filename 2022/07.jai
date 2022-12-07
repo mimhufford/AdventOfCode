@@ -1,9 +1,21 @@
 day7 :: (input: string) -> string, string
 {
     root := parse_log(input);
-    used := calculate_size(root);
-    need := 30000000 - (70000000 - used);
-    return tprint("%", sum_sizes_lte_100000(root)), tprint("%", find_best_dir_to_delete(root, need));
+
+    part1 := 0;
+    part2 := S64_MAX;
+
+    queue : [..]*Directory;
+    array_add(*queue, root);
+    while queue.count
+    {
+        dir := pop(*queue);
+        if dir.size <= 100000 part1 += dir.size;
+        if dir.size >= root.size - 40000000 && dir.size < part2 part2 = dir.size;
+        for * dir.children array_add(*queue, it);
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -14,28 +26,6 @@ Directory :: struct
     size     : s64;
     parent   : *Directory;
     children : [..]Directory;
-}
-
-find_best_dir_to_delete :: (dir: *Directory, minimum: s64) -> s64
-{
-    if dir.size < minimum return S64_MAX;
-    best := dir.size;
-    for * dir.children best = min(best, find_best_dir_to_delete(it, minimum));
-    return best;
-}
-
-sum_sizes_lte_100000 :: (dir: *Directory) -> s64
-{
-    size : s64;
-    if dir.size <= 100000 size += dir.size;
-    for * dir.children size += sum_sizes_lte_100000(it);
-    return size;
-}
-
-calculate_size :: (dir: *Directory) -> s64
-{
-    for * dir.children dir.size += calculate_size(it);
-    return dir.size;
 }
 
 parse_log :: (log: string) -> *Directory
@@ -70,8 +60,14 @@ parse_log :: (log: string) -> *Directory
                 }
                 else // file
                 {
-                    cwd.size += read_s64(*log);
+                    size := read_s64(*log);
                     read_word(*log);
+                    dir := cwd;
+                    while dir
+                    {
+                        dir.size += size;
+                        dir = dir.parent;
+                    }
                 }
             }
         }
