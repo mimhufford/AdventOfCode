@@ -1,18 +1,14 @@
 day7 :: (input: string) -> string, string
 {
-    root := parse_log(input);
+    dirs := parse_log(input);
 
     part1 := 0;
     part2 := S64_MAX;
 
-    queue : [..]*Directory;
-    array_add(*queue, root);
-    while queue.count
+    for dirs
     {
-        dir := pop(*queue);
-        if dir.size <= 100000 part1 += dir.size;
-        if dir.size >= root.size - 40000000 && dir.size < part2 part2 = dir.size;
-        for * dir.children array_add(*queue, it);
+        if it.size <= 100000 part1 += it.size;
+        if it.size >= dirs[0].size - 40000000 && it.size < part2 part2 = it.size;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -25,15 +21,12 @@ Directory :: struct
     name     : string;
     size     : s64;
     parent   : *Directory;
-    children : [..]Directory;
 }
 
-parse_log :: (log: string) -> *Directory
+parse_log :: (log: string) -> []*Directory
 {
-    root := New(Directory);
-    root.name = "/";
-
-    cwd := root;
+    dirs : [..]*Directory;
+    cwd  : *Directory;
 
     while log.count
     {
@@ -42,11 +35,12 @@ parse_log :: (log: string) -> *Directory
             advance(*log, 5);
             dir_name := read_word(*log);
             if dir_name == ".." cwd = cwd.parent;
-            else if dir_name != "/"
+            else
             {
-                dir := array_add(*cwd.children);
+                dir := New(Directory);
                 dir.name = dir_name;
                 dir.parent = cwd;
+                array_add(*dirs, dir);
                 cwd = dir;
             }
         }
@@ -64,5 +58,5 @@ parse_log :: (log: string) -> *Directory
         else skip_to_next_line(*log);
     }
 
-    return root;
+    return dirs;
 }
