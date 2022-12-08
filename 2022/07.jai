@@ -18,7 +18,6 @@ day7 :: (input: string) -> string, string
 
 Directory :: struct
 {
-    name     : string;
     size     : s64;
     parent   : *Directory;
 }
@@ -38,7 +37,6 @@ parse_log :: (log: string) -> []*Directory
             else
             {
                 dir := New(Directory);
-                dir.name = dir_name;
                 dir.parent = cwd;
                 array_add(*dirs, dir);
                 cwd = dir;
