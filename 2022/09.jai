@@ -1,9 +1,8 @@
 day9 :: (input: string) -> string, string
 {
-    sx : [10]s64;
-    sy : [10]s64;
-    neck : Table(s64, s64); // pos -> count
-    arse : Table(s64, s64); // pos -> count
+    snake : [10][2]s64;
+    neck  : Table(s64, s64); // pos -> count
+    arse  : Table(s64, s64); // pos -> count
 
     while input
     {
@@ -26,21 +25,21 @@ day9 :: (input: string) -> string, string
 
 move :: (x: s64, y: s64) #expand
 {
-    `sx[0] += x;
-    `sy[0] += y;
+    `snake[0][0] += x;
+    `snake[0][1] += y;
 
     for 1..9
     {
-        dx := `sx[it-1] - `sx[it];
-        dy := `sy[it-1] - `sy[it];
+        dx := `snake[it-1][0] - `snake[it][0];
+        dy := `snake[it-1][1] - `snake[it][1];
         
         if dx*dx + dy*dy > 2
         {
-            if dx != 0 `sx[it] += ifx dx < 1 then -1 else 1;
-            if dy != 0 `sy[it] += ifx dy < 1 then -1 else 1;
+            if dx != 0 `snake[it][0] += ifx dx < 1 then -1 else 1;
+            if dy != 0 `snake[it][1] += ifx dy < 1 then -1 else 1;
         }
     }
 
-    <<find_or_add(*`neck, `sx[1]*1_000_000+`sy[1]) += 1;
-    <<find_or_add(*`arse, `sx[9]*1_000_000+`sy[9]) += 1;
+    <<find_or_add(*`neck, `snake[1][0]*1_000_000 + `snake[1][1]) += 1;
+    <<find_or_add(*`arse, `snake[9][0]*1_000_000 + `snake[9][1]) += 1;
 }
