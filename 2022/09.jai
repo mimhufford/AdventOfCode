@@ -1,8 +1,8 @@
 day9 :: (input: string) -> string, string
 {
     snake : [10][2]s64;
-    neck  : Table(s64, s64); // pos -> count
-    arse  : Table(s64, s64); // pos -> count
+    neck  : Table(s64, s64); // values not used
+    arse  : Table(s64, s64); // using tables as sets
 
     while input
     {
@@ -40,6 +40,6 @@ move :: (x: s64, y: s64) #expand
         }
     }
 
-    <<find_or_add(*`neck, `snake[1][0]*1_000_000 + `snake[1][1]) += 1;
-    <<find_or_add(*`arse, `snake[9][0]*1_000_000 + `snake[9][1]) += 1;
+    find_or_add(*`neck, `snake[1][0]*1_000_000 + `snake[1][1]);
+    find_or_add(*`arse, `snake[9][0]*1_000_000 + `snake[9][1]);
 }
