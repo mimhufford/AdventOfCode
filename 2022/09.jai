@@ -1,13 +1,13 @@
 day9 :: (input: string) -> string, string
 {
-    snake : [10][2]s64;
-    neck  : Table(s64, s64); // values not used
-    arse  : Table(s64, s64); // using tables as sets
+    snake : [10][2]s32;
+    neck  : Table(s32, void); // values not used
+    arse  : Table(s32, void); // using tables as sets
 
     while input
     {
         dir := read_word(*input);
-        amt := read_s64(*input);
+        amt := read_s32(*input);
 
         for 1..amt
         {
@@ -23,7 +23,7 @@ day9 :: (input: string) -> string, string
 
 #scope_file
 
-move :: (x: s64, y: s64) #expand
+move :: (x: s32, y: s32) #expand
 {
     `snake[0][0] += x;
     `snake[0][1] += y;
@@ -35,11 +35,11 @@ move :: (x: s64, y: s64) #expand
         
         if dx*dx + dy*dy > 2
         {
-            if dx != 0 `snake[it][0] += ifx dx < 1 then -1 else 1;
-            if dy != 0 `snake[it][1] += ifx dy < 1 then -1 else 1;
+            if dx != 0 `snake[it][0] += ifx dx < 1 then cast(s32)-1 else 1;
+            if dy != 0 `snake[it][1] += ifx dy < 1 then cast(s32)-1 else 1;
         }
     }
 
-    find_or_add(*`neck, `snake[1][0]*1_000_000 + `snake[1][1]);
-    find_or_add(*`arse, `snake[9][0]*1_000_000 + `snake[9][1]);
+    find_or_add(*`neck, `snake[1][0]*100_000 + `snake[1][1]);
+    find_or_add(*`arse, `snake[9][0]*100_000 + `snake[9][1]);
 }
