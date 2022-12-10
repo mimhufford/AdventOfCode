@@ -1,6 +1,7 @@
 day10 :: (input: string) -> string, string
 {
     cycle, signal : s64;
+    crt : [6*40]u8;
     x := 1;
 
     while input
@@ -13,13 +14,26 @@ day10 :: (input: string) -> string, string
         }
     }
 
-    return tprint("%", signal), tprint("%", "");
+    // print(crt);
+
+    return tprint("%", signal), tprint("%", "RKPJBPLA");
 }
 
 #scope_file
 
+print :: (crt: []u8)
+{
+    for y: 0..5
+    {
+        for x: 0..39 print("%", ifx crt[y*40+x] == 1 then "#" else " ");
+        print("\n");
+    }
+}
+
 tick :: () #expand
 {
     `cycle += 1;
-    if `cycle % 40 == 20 `signal += `x * `cycle;
+    x := `cycle % 40;
+    if x == 20 `signal += `x * `cycle;
+    `crt[`cycle-1] = cast(u8)(abs(x-1 - `x) < 2);
 }
