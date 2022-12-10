@@ -33,7 +33,6 @@ print :: (crt: []u8)
 tick :: () #expand
 {
     `cycle += 1;
-    x := `cycle % 40;
-    if x == 20 `signal += `x * `cycle;
-    `crt[`cycle-1] = cast(u8)(abs(x-1 - `x) < 2);
+    if `cycle % 40 == 20 `signal += `x * `cycle;
+    `crt[`cycle-1] = cast(u8)(abs((`cycle-1)%40 - `x) < 2);
 }
