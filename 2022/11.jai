@@ -16,10 +16,10 @@ Monkey :: struct
     sqr   := false;
     mod   : u8;
     next  : [2]u8;
-    inspections : u64;
+    inspections : s64;
 }
 
-simulate :: (monkeys: []Monkey, $worry_divisor: s64, rounds: s64) -> u64
+simulate :: (monkeys: []Monkey, $worry_divisor: s64, rounds: s64) -> s64
 {
     worry_modulus := 1; for monkeys worry_modulus *= it.mod;
 
@@ -41,10 +41,8 @@ simulate :: (monkeys: []Monkey, $worry_divisor: s64, rounds: s64) -> u64
         }
     }
 
-    inspections : [..]u64;
-    for monkeys array_add(*inspections, it.inspections);
-    quick_sort(inspections, n => n);
-    return inspections[7] * inspections[6];
+    quick_sort(monkeys, (a, b) => b.inspections - a.inspections);
+    return monkeys[0].inspections * monkeys[1].inspections;
 }
 
 parse_monkeys :: (input: string) -> []Monkey
