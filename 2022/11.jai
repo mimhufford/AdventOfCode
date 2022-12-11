@@ -27,11 +27,9 @@ simulate :: (monkeys: []Monkey, rounds: s64, part: s64) -> u64
     {
         for * m: monkeys
         {
-            while m.items.count
+            for item: m.items
             {
                 m.inspections += 1;
-                item := m.items[0];
-                array_ordered_remove_by_index(*m.items, 0);
                 item += m.add;
                 item *= m.mul;
                 if m.sqr item *= item;
@@ -39,6 +37,7 @@ simulate :: (monkeys: []Monkey, rounds: s64, part: s64) -> u64
                 item %= lcm;
                 array_add(*monkeys[m.next[1 - cast(u8)(item % m.mod == 0)]].items, item);
             }
+            m.items.count = 0;
         }
     }
 
