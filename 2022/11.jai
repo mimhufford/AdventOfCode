@@ -35,7 +35,7 @@ simulate :: (monkeys: []Monkey, $worry_divisor: s64, rounds: s64) -> s64
                 if m.sqr item *= item;
                 item /= worry_divisor;
                 item %= worry_modulus;
-                array_add(*monkeys[m.next[1 - cast(u8)(item % m.mod == 0)]].items, item);
+                array_add(*monkeys[m.next[cast(u8)(item % m.mod == 0)]].items, item);
             }
             m.items.count = 0;
         }
@@ -68,9 +68,9 @@ parse_monkeys :: (input: string) -> []Monkey
         for 1..3 read_word(*input);
         m.mod = read_u8(*input);
         for 1..5 read_word(*input);
-        m.next[0] = read_u8(*input);
-        for 1..5 read_word(*input);
         m.next[1] = read_u8(*input);
+        for 1..5 read_word(*input);
+        m.next[0] = read_u8(*input);
     }
 
     return monkeys;
