@@ -1,7 +1,7 @@
 day11 :: (input: string) -> string, string
 {
-    part1 := simulate(parse_monkeys(input), 20, 1);
-    part2 := simulate(parse_monkeys(input), 10_000, 2);
+    part1 := simulate(parse_monkeys(input), 3, 20);
+    part2 := simulate(parse_monkeys(input), 1, 10_000);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -19,9 +19,9 @@ Monkey :: struct
     inspections : u64;
 }
 
-simulate :: (monkeys: []Monkey, rounds: s64, part: s64) -> u64
+simulate :: (monkeys: []Monkey, $worry_divisor: s64, rounds: s64) -> u64
 {
-    lcm := 1; for monkeys lcm *= it.mod;
+    worry_modulus := 1; for monkeys worry_modulus *= it.mod;
 
     for 1..rounds
     {
@@ -33,8 +33,8 @@ simulate :: (monkeys: []Monkey, rounds: s64, part: s64) -> u64
                 item += m.add;
                 item *= m.mul;
                 if m.sqr item *= item;
-                if part == 1 item /= 3;
-                item %= lcm;
+                item /= worry_divisor;
+                item %= worry_modulus;
                 array_add(*monkeys[m.next[1 - cast(u8)(item % m.mod == 0)]].items, item);
             }
             m.items.count = 0;
