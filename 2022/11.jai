@@ -1,31 +1,9 @@
 day11 :: (input: string) -> string, string
 {
-    monkeys := parse_monkeys(input);
+    part1 := simulate(parse_monkeys(input), 20, 1);
+    part2 := simulate(parse_monkeys(input), 10_000, 2);
 
-    for 1..20
-    {
-        for * m: monkeys
-        {
-            while m.items.count
-            {
-                m.inspections += 1;
-                item := m.items[0];
-                array_ordered_remove_by_index(*m.items, 0);
-                item += m.add;
-                item *= m.mul;
-                if m.sqr item *= item;
-                item /= 3;
-                array_add(*monkeys[m.next[1 - cast(u8)(item % m.mod == 0)]].items, item);
-            }
-        }
-    }
-
-    inspections : [..]s32;
-    for monkeys array_add(*inspections, it.inspections);
-    quick_sort(inspections, n => -n);
-    monkey_business := inspections[0] * inspections[1];
-
-    return tprint("%", monkey_business), tprint("%", "");
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -38,7 +16,36 @@ Monkey :: struct
     sqr   := false;
     mod   : u8;
     next  : [2]u8;
-    inspections : s32;
+    inspections : u64;
+}
+
+simulate :: (monkeys: []Monkey, rounds: s64, part: s64) -> u64
+{
+    lcm := 1; for monkeys lcm *= it.mod;
+
+    for 1..rounds
+    {
+        for * m: monkeys
+        {
+            while m.items.count
+            {
+                m.inspections += 1;
+                item := m.items[0];
+                array_ordered_remove_by_index(*m.items, 0);
+                item += m.add;
+                item *= m.mul;
+                if m.sqr item *= item;
+                if part == 1 item /= 3;
+                item %= lcm;
+                array_add(*monkeys[m.next[1 - cast(u8)(item % m.mod == 0)]].items, item);
+            }
+        }
+    }
+
+    inspections : [..]u64;
+    for monkeys array_add(*inspections, it.inspections);
+    quick_sort(inspections, n => n);
+    return inspections[7] * inspections[6];
 }
 
 parse_monkeys :: (input: string) -> []Monkey
