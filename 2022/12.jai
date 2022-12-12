@@ -27,17 +27,17 @@ find_shortest_path :: (x: s8, y: s8, up: bool) -> u16 #expand
     {
         curr := queue[index];
         index += 1;
-        if  up && curr.x == `ex && curr.y == `ey return curr.move;
-        if !up && `map[curr.y][curr.x] == 0      return curr.move;
 
         for []s8.[.[1,0],.[-1,0],.[0,1],.[0,-1]]
         {
             next : Move = .{curr.x + it[0], curr.y + it[1], curr.move + 1};
-            if next.x < 0 || next.x >= `width   continue;
-            if next.y < 0 || next.y >= `height  continue;
-            if visited[next.y*`width+next.x]    continue;
+            if next.x < 0 || next.x >= `width                         continue;
+            if next.y < 0 || next.y >= `height                        continue;
+            if visited[next.y*`width+next.x]                          continue;
             if  up && `map[next.y][next.x] > `map[curr.y][curr.x] + 1 continue;
             if !up && `map[curr.y][curr.x] > `map[next.y][next.x] + 1 continue;
+            if  up && next.x == `ex && next.y == `ey                  return next.move;
+            if !up && `map[next.y][next.x] == 0                       return next.move;
             visited[next.y*`width+next.x] = true;
             array_add(*queue, next);
         }
