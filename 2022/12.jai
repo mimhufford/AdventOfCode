@@ -18,38 +18,39 @@ Move :: struct
 
 find_shortest_path :: (x: s8, y: s8, up: bool) -> u16 #expand
 {
-    best : [..][..]u16;
+    best : [..][..]bool;
     for 1..`height
     {
         row := array_add(*best);
-        for 1..`width array_add(row, U16_MAX);
+        for 1..`width array_add(row, false);
     }
 
     queue : [..]Move;
     array_add(*queue, .{x, y, 0});
+    index := 0;
     
-    while queue
+    while index < queue.count
     {
-        curr := pop(*queue);
-        best[curr.y][curr.x] = curr.move;
+        curr := queue[index];
+        index += 1;
+        if  up && curr.x == `ex && curr.y == `ey return curr.move;
+        if !up && `map[curr.y][curr.x] == 0      return curr.move;
 
         for []s8.[.[1,0],.[-1,0],.[0,1],.[0,-1]]
         {
             next : Move = .{curr.x + it[0], curr.y + it[1], curr.move + 1};
             if next.x < 0 || next.x >= `width     continue;
             if next.y < 0 || next.y >= `height    continue;
-            if best[next.y][next.x] <= next.move  continue;
+            if best[next.y][next.x]               continue;
             if  up && `map[next.y][next.x] > `map[curr.y][curr.x] + 1 continue;
             if !up && `map[curr.y][curr.x] > `map[next.y][next.x] + 1 continue;
+            best[next.y][next.x] = true;
             array_add(*queue, next);
         }
     }
 
-    if up return best[`ey][`ex];
-
-    best_0 := U16_MAX;
-    for y: 0..`height-1 for x: 0..`width-1 if `map[y][x] == 0 best_0 = min(best_0, best[y][x]);
-    return best_0;
+    assert(false);
+    return 0;
 }
 
 generate_map :: (input: string) -> [..][..]u8, s8, s8, s8, s8, s8, s8
