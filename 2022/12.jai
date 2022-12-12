@@ -2,11 +2,21 @@ day12 :: (input: string) -> string, string
 {
     map, sx, sy, ex, ey, width, height := generate_map(input);
     
-    trail_lengths : [..]u16;
+    part1 := find_shortest_path(sx, sy);
+    part2 := part1;
 
-    array_add(*trail_lengths, find_shortest_path(sx, sy));
+    for y: 0..height-1
+    {
+        for x: 0..width-1
+        {
+            if (x != sx || y != sy) && map[y][x] == 0
+            {
+                part2 = min(part2, find_shortest_path(x, y));
+            }
+        }
+    }
     
-    return tprint("%", trail_lengths[0]), tprint("%", "");
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -17,7 +27,7 @@ Move :: struct
     move : u16;
 }
 
-find_shortest_path :: (sx: s8, sy: s8) -> u16 #expand
+find_shortest_path :: (x: s8, y: s8) -> u16 #expand
 {
     best : [..][..]u16;
     for 1..`height
@@ -27,7 +37,7 @@ find_shortest_path :: (sx: s8, sy: s8) -> u16 #expand
     }
 
     queue : [..]Move;
-    array_add(*queue, .{sx, sy, 0});
+    array_add(*queue, .{x, y, 0});
     
     while queue
     {
