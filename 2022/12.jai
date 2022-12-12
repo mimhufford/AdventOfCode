@@ -2,20 +2,9 @@ day12 :: (input: string) -> string, string
 {
     map, sx, sy, ex, ey, width, height := generate_map(input);
     
-    part1 := find_shortest_path(sx, sy);
-    part2 := part1;
+    part1 := find_shortest_path_up(sx, sy);
+    part2 := find_shortest_path_down(ex, ey);
 
-    for y: 0..height-1
-    {
-        for x: 0..width-1
-        {
-            if (x != sx || y != sy) && map[y][x] == 0
-            {
-                part2 = min(part2, find_shortest_path(x, y));
-            }
-        }
-    }
-    
     return tprint("%", part1), tprint("%", part2);
 }
 
@@ -27,7 +16,40 @@ Move :: struct
     move : u16;
 }
 
-find_shortest_path :: (x: s8, y: s8) -> u16 #expand
+find_shortest_path_down :: (x: s8, y: s8) -> u16 #expand
+{
+    best : [..][..]u16;
+    for 1..`height
+    {
+        row := array_add(*best);
+        for 1..`width array_add(row, U16_MAX);
+    }
+
+    queue : [..]Move;
+    array_add(*queue, .{x, y, 0});
+    
+    while queue
+    {
+        curr := pop(*queue);
+        best[curr.y][curr.x] = curr.move;
+
+        for []s8.[.[1,0],.[-1,0],.[0,1],.[0,-1]]
+        {
+            next : Move = .{curr.x + it[0], curr.y + it[1], curr.move + 1};
+            if next.x < 0 || next.x >= `width     continue;
+            if next.y < 0 || next.y >= `height    continue;
+            if best[next.y][next.x] <= next.move  continue;
+            if `map[curr.y][curr.x] > `map[next.y][next.x] + 1 continue;
+            array_add(*queue, next);
+        }
+    }
+
+    best_0 := U16_MAX;
+    for y: 0..`height-1 for x: 0..`width-1 if `map[y][x] == 0 best_0 = min(best_0, best[y][x]);
+    return best_0;
+}
+
+find_shortest_path_up :: (x: s8, y: s8) -> u16 #expand
 {
     best : [..][..]u16;
     for 1..`height
