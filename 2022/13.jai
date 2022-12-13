@@ -31,7 +31,6 @@ Item :: struct
 {
     items  : [..]*Item;
     value  : u8;
-    is_val : bool;
 }
 
 make_divider :: (value: u8) -> *Item
@@ -39,8 +38,7 @@ make_divider :: (value: u8) -> *Item
     d   := New(Item);
     dd  := New(Item);
     ddv := New(Item);
-    ddv.value  = value;
-    ddv.is_val = true;
+    ddv.value  = value + 1;
     array_add(*d.items,  dd);
     array_add(*dd.items, ddv);
     return d;
@@ -57,24 +55,24 @@ is_ordered :: (a: *Item, b: *Item) -> s8
         ai := a.items[it];
         bi := b.items[it];
 
-        if ai.is_val && bi.is_val
+        if ai.value && bi.value
         {
             if ai.value < bi.value return -1;
             if ai.value > bi.value return  1;
         }
-        else if !ai.is_val && !bi.is_val
+        else if !ai.value && !bi.value
         {
             result := is_ordered(ai, bi);
             if result != 0 return result;
         }
-        else if ai.is_val && !bi.is_val
+        else if ai.value && !bi.value
         {
             new := New(Item);
             array_add(*new.items, ai);
             result := is_ordered(new, bi);
             if result != 0 return result;
         }
-        else if !ai.is_val && bi.is_val
+        else if !ai.value && bi.value
         {
             new := New(Item);
             array_add(*new.items, bi);
@@ -86,15 +84,6 @@ is_ordered :: (a: *Item, b: *Item) -> s8
     if a_length < b_length return -1;
     if a_length > b_length return  1;
     return 0;
-}
-
-print :: (using i: *Item)
-{
-    if is_val print(" % ", value);
-    if is_val return;
-    print("[");
-    for items print(it);
-    print("]");
 }
 
 parse_packet :: (s: *string) -> *Item
@@ -127,8 +116,7 @@ parse_packet :: (s: *string) -> *Item
         else
         {
             new := New(Item);
-            new.is_val = true;
-            new.value = read_number(u8, s, skip_trailing_whitespace=false);
+            new.value = read_number(u8, s, skip_trailing_whitespace=false) + 1;
             array_add(*peek(stack).items, new);
         }
     }
