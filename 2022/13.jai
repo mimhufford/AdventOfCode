@@ -20,7 +20,7 @@ day13 :: (input: string) -> string, string
     quick_sort(packets, is_ordered);
     
     part2 := 1;
-    for packets if it == div1 || it == div2 part2 *= (it_index+1);
+    for packets if it == div1 || it == div2 part2 *= it_index+1;
     
     return tprint("%", part1), tprint("%", part2);
 }
@@ -29,8 +29,8 @@ day13 :: (input: string) -> string, string
 
 Item :: struct
 {
-    items  : [..]*Item;
-    value  : u8;
+    items : [..]*Item;
+    value : u8;
 }
 
 make_divider :: (value: u8) -> *Item
@@ -38,7 +38,7 @@ make_divider :: (value: u8) -> *Item
     d   := New(Item);
     dd  := New(Item);
     ddv := New(Item);
-    ddv.value  = value + 1;
+    ddv.value = value + 1;
     array_add(*d.items,  dd);
     array_add(*dd.items, ddv);
     return d;
