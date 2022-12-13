@@ -7,13 +7,22 @@ day13 :: (input: string) -> string, string
     part1 := 0;
     for 0..packets.count/2-1
     {
-        if is_ordered(packets[it*2], packets[it*2+1]) == 1
+        if is_ordered(packets[it*2], packets[it*2+1]) < 0
         {
             part1 += (it+1);
         }
     }
+
+    div1 := make_divider(2);
+    div2 := make_divider(6);
+    array_add(*packets, div1);
+    array_add(*packets, div2);
+    quick_sort(packets, is_ordered);
     
-    return tprint("%", part1), tprint("%", "");
+    part2 := 1;
+    for packets if it == div1 || it == div2 part2 *= (it_index+1);
+    
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -24,6 +33,18 @@ Item :: struct
     items  : [..]*Item;
     value  : u8;
     is_val : bool;
+}
+
+make_divider :: (value: u8) -> *Item
+{
+    d   := New(Item);
+    dd  := New(Item);
+    ddv := New(Item);
+    ddv.value  = value;
+    ddv.is_val = true;
+    array_add(*d.items,  dd);
+    array_add(*dd.items, ddv);
+    return d;
 }
 
 is_ordered :: (a: *Item, b: *Item) -> s8
@@ -39,8 +60,8 @@ is_ordered :: (a: *Item, b: *Item) -> s8
 
         if ai.is_val && bi.is_val
         {
-            if ai.value < bi.value return  1;
-            if ai.value > bi.value return -1;
+            if ai.value < bi.value return -1;
+            if ai.value > bi.value return  1;
         }
         else if !ai.is_val && !bi.is_val
         {
@@ -63,8 +84,8 @@ is_ordered :: (a: *Item, b: *Item) -> s8
         }
     }
 
-    if a_length < b_length return  1;
-    if a_length > b_length return -1;
+    if a_length < b_length return -1;
+    if a_length > b_length return  1;
     return 0;
 }
 
