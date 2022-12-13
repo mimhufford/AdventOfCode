@@ -35,13 +35,11 @@ Item :: struct
 
 make_divider :: (value: u8) -> *Item
 {
-    d   := New(Item);
-    dd  := New(Item);
-    ddv := New(Item);
-    ddv.value = value + 1;
-    array_add(*d.items,  dd);
-    array_add(*dd.items, ddv);
-    return d;
+    div  := New(Item);
+    divv := New(Item);
+    divv.value = value + 1;
+    array_add(*div.items, divv);
+    return div;
 }
 
 is_ordered :: (a: *Item, b: *Item) -> s8
