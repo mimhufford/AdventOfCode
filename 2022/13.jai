@@ -1,17 +1,18 @@
 day13 :: (input: string) -> string, string
 {
+    packets : [..]*Item;
+
+    while input array_add(*packets, parse_packet(*input));
+
     part1 := 0;
-    
-    index := 0;
-    while input
+    for 0..packets.count/2-1
     {
-        index += 1;
-        a := parse_packet(*input);
-        b := parse_packet(*input);
-
-        if is_ordered(a, b) == 1 part1 += index;
+        if is_ordered(packets[it*2], packets[it*2+1]) == 1
+        {
+            part1 += (it+1);
+        }
     }
-
+    
     return tprint("%", part1), tprint("%", "");
 }
 
