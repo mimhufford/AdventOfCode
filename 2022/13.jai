@@ -9,7 +9,7 @@ day13 :: (input: string) -> string, string
         a := parse_packet(*input);
         b := parse_packet(*input);
 
-        if is_ordered(a, b) part1 += index;
+        if is_ordered(a, b) == 1 part1 += index;
     }
 
     return tprint("%", part1), tprint("%", "");
@@ -25,30 +25,46 @@ Item :: struct
     is_val : bool;
 }
 
-is_ordered :: (a: *Item, b: *Item) -> bool
+is_ordered :: (a: *Item, b: *Item) -> s8
 {
-    // NOTE: in progress
+    a_length := a.items.count;
+    b_length := b.items.count;
+    length   := min(a_length, b_length);
 
-    // if a.is_val && b.is_val
-    // {
-    //     return a.value < b.value; // nope
-    // }
+    for 0..length-1
+    {
+        ai := a.items[it];
+        bi := b.items[it];
 
-    // if a.is_val
-    // {
-    //     new := New(Item);
-    //     array_add(*new.items, a);
-    //     return is_ordered(new, b);
-    // }
-    
-    // if b.is_val
-    // {
-    //     new := New(Item);
-    //     array_add(*new.items, b);
-    //     return is_ordered(a, new);
-    // }
+        if ai.is_val && bi.is_val
+        {
+            if ai.value < bi.value return  1;
+            if ai.value > bi.value return -1;
+        }
+        else if !ai.is_val && !bi.is_val
+        {
+            result := is_ordered(ai, bi);
+            if result != 0 return result;
+        }
+        else if ai.is_val && !bi.is_val
+        {
+            new := New(Item);
+            array_add(*new.items, ai);
+            result := is_ordered(new, bi);
+            if result != 0 return result;
+        }
+        else if !ai.is_val && bi.is_val
+        {
+            new := New(Item);
+            array_add(*new.items, bi);
+            result := is_ordered(ai, new);
+            if result != 0 return result;
+        }
+    }
 
-    return true;
+    if a_length < b_length return  1;
+    if a_length > b_length return -1;
+    return 0;
 }
 
 print :: (using i: *Item)
