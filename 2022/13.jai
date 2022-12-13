@@ -29,7 +29,6 @@ day13 :: (input: string) -> string, string
 
 Item :: struct
 {
-    parent : *Item;
     items  : [..]*Item;
     value  : u8;
     is_val : bool;
@@ -101,7 +100,9 @@ print :: (using i: *Item)
 parse_packet :: (s: *string) -> *Item
 {
     packet := New(Item);
-    current := packet;
+
+    stack : [..]*Item;
+    array_add(*stack, packet);
 
     advance(s); // skip opening [
 
@@ -110,14 +111,13 @@ parse_packet :: (s: *string) -> *Item
         if s.data[0] == #char "["
         {
             new := New(Item);
-            new.parent = current;
-            array_add(*current.items, new);
-            current = new;
+            array_add(*peek(stack).items, new);
+            array_add(*stack, new);
             advance(s);
         }
         else if s.data[0] == #char "]"
         {
-            current = current.parent;
+            pop(*stack);
             advance(s);
         }
         else if s.data[0] == #char ","
@@ -127,10 +127,9 @@ parse_packet :: (s: *string) -> *Item
         else
         {
             new := New(Item);
-            new.parent = current;
             new.is_val = true;
             new.value = read_number(u8, s, skip_trailing_whitespace=false);
-            array_add(*current.items, new);
+            array_add(*peek(stack).items, new);
         }
     }
 
