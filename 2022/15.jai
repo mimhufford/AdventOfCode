@@ -45,10 +45,17 @@ count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
 
     for x: min_x..max_x
     {
-        for false_positives if it == x continue x;
-        for ranges   if it.x <= x && x <= it.y { count +=1; continue x; }
+        for r: ranges
+        {
+            if r.x > x || x > r.y continue;
+            adj_x := r.y - x;
+            for false_positives if adj_x <= it && it <= r.y count -= 1;
+            count += adj_x + 1;
+            x += adj_x;
+            break;
+        }
     }
-    
+
     return count;
 }
 
