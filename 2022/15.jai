@@ -23,6 +23,8 @@ Point :: struct
 
 count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
 {
+    // TODO: switch this to use ranges
+
     negatives : Table(s32, void);
 
     for readings
