@@ -38,13 +38,14 @@ count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
         max_x = max(max_x, r.y);
     }
 
-    // TODO: try to collapse and merge ranges to avoid this mess
+    false_positives : [..]s32;
+    for readings if it.beacon.y == row array_add_if_unique(*false_positives, it.beacon.x);
 
     count := 0;
 
     for x: min_x..max_x
     {
-        for readings if it.beacon.y == row && it.beacon.x == x continue x;
+        for false_positives if it == x continue x;
         for ranges   if it.x <= x && x <= it.y { count +=1; continue x; }
     }
     
