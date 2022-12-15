@@ -1,56 +1,83 @@
 day15 :: (input: string) -> string, string
 {
-    sensors : [..]Point;
-    beacons : [..]Point;
+    readings : [..]Reading;
 
     while input
     {
+        reading := array_add(*readings);
         for 1..2 read_word(*input);
         advance(*input, 2);
-        sx := read_s32(*input);
+        reading.sensor.x = read_s32(*input);
         advance(*input, 4);
-        sy := read_s32(*input);
-        array_add(*sensors, .{sx, sy});
+        reading.sensor.y = read_s32(*input);
         for 1..5 read_word(*input);
         advance(*input, 2);
-        bx := read_s32(*input);
+        reading.beacon.x = read_s32(*input);
         advance(*input, 4);
-        by := read_s32(*input);
-        array_add(*beacons, .{bx, by});
+        reading.beacon.y = read_s32(*input);
+        reading.dist = manhattan_distance(reading.sensor, reading.beacon);
     }
 
     not_beacon_2_000_000 : Table(s32, void);
 
-    for 0..sensors.count-1
+    for readings
     {
-        s := sensors[it];
-        b := beacons[it];
-        d := manhattan_distance(s, b);
-
-        dx := d - abs(2_000_000 - s.y);
+        dx := it.dist - abs(2_000_000 - it.sensor.y);
         if dx < 0 continue;
 
-        for x: s.x - dx..s.x + dx
+        for x: it.sensor.x - dx..it.sensor.x + dx
         {
             find_or_add(*not_beacon_2_000_000, x);
         }
     }
 
-    for beacons if it.y == 2_000_000 table_remove(*not_beacon_2_000_000, it.x);
+    for readings if it.beacon.y == 2_000_000 table_remove(*not_beacon_2_000_000, it.beacon.x);
+    
 
-    return tprint("%", not_beacon_2_000_000.count), tprint("%", "");
+    tuning_frequency := 0;
+
+    for r: readings
+    {
+        s := r.sensor;
+        s.x += r.dist + 1;
+
+        found := false;
+        for 0..r.dist { s.x -= 1; s.y -= 1; found, tuning_frequency = search(s); if found break r; }
+        for 0..r.dist { s.x -= 1; s.y += 1; found, tuning_frequency = search(s); if found break r; }
+        for 0..r.dist { s.x += 1; s.y += 1; found, tuning_frequency = search(s); if found break r; }
+        for 0..r.dist { s.x += 1; s.y -= 1; found, tuning_frequency = search(s); if found break r; }
+    }
+
+    return tprint("%", not_beacon_2_000_000.count), tprint("%", tuning_frequency);
 }
 
 #scope_file
 
+Reading :: struct
+{
+    sensor : Point;
+    beacon : Point;
+    dist   : s32;
+}
+
 Point :: struct
 {
     x, y : s32;
-    #place x;
-    hash : u64;
 }
 
 manhattan_distance :: (a: Point, b: Point) -> s32
 {
     return abs(a.x - b.x) + abs(a.y - b.y);
+}
+
+search :: (p: Point) -> bool, s64 #expand
+{
+    if p.x < 0         return false, 0;
+    if p.y < 0         return false, 0;
+    if p.x > 4_000_000 return false, 0;
+    if p.y > 4_000_000 return false, 0;
+
+    for `readings if manhattan_distance(p, it.sensor) <= it.dist return false, 0;
+
+    return true, (cast(s64)p.x) * 4_000_000 + p.y;
 }
