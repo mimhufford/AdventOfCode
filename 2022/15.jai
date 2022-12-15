@@ -19,19 +19,28 @@ day15 :: (input: string) -> string, string
         array_add(*beacons, .{bx, by});
     }
 
+    not_beacon_2_000_000 : Table(s32, void);
+
     for 0..sensors.count-1
     {
         s := sensors[it];
         b := beacons[it];
         d := manhattan_distance(s, b);
 
-        if abs(2_000_000 - s.y) < d
+        // TODO: I know this is dumb. Figure out how to
+        //       calculate this pairs x range for y=2_000_000
+        for x: s.x - d..s.x + d
         {
-            // this pair has some places on y=2_000_000 that are definitely not beacon
+            if manhattan_distance(s, .{x, 2_000_000}) <= d
+            {
+                find_or_add(*not_beacon_2_000_000, x);
+            }
         }
     }
 
-    return tprint("%", ""), tprint("%", "");
+    for beacons if it.y == 2_000_000 table_remove(*not_beacon_2_000_000, it.x);
+
+    return tprint("%", not_beacon_2_000_000.count), tprint("%", "");
 }
 
 #scope_file
