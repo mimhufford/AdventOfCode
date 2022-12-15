@@ -27,14 +27,12 @@ day15 :: (input: string) -> string, string
         b := beacons[it];
         d := manhattan_distance(s, b);
 
-        // TODO: I know this is dumb. Figure out how to
-        //       calculate this pairs x range for y=2_000_000
-        for x: s.x - d..s.x + d
+        dx := d - abs(2_000_000 - s.y);
+        if dx < 0 continue;
+
+        for x: s.x - dx..s.x + dx
         {
-            if manhattan_distance(s, .{x, 2_000_000}) <= d
-            {
-                find_or_add(*not_beacon_2_000_000, x);
-            }
+            find_or_add(*not_beacon_2_000_000, x);
         }
     }
 
