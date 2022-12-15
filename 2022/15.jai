@@ -70,7 +70,7 @@ find_beacon :: (readings: []Reading) -> s64
             if p.x > 4_000_000 return false, 0;
             if p.y > 4_000_000 return false, 0;
 
-            for `readings if manhattan_distance(p, it.sensor) <= it.dist return false, 0;
+            for readings if manhattan_distance(p, it.sensor) <= it.dist return false, 0;
 
             return true, (cast(s64)p.x) * 4_000_000 + p.y;
         }
