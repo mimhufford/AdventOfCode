@@ -2,7 +2,7 @@ day15 :: (input: string) -> string, string
 {
     readings  := parse_readings(input);
     negatives := count_negatives_on_row(readings, 2_000_000);
-    frequency := find_beacon(readings);
+    frequency := find_beacon(readings, 4_000_000);
 
     return tprint("%", negatives), tprint("%", frequency);
 }
@@ -59,7 +59,7 @@ count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
     return count;
 }
 
-find_beacon :: (readings: []Reading) -> s64
+find_beacon :: (readings: []Reading, limit: s64) -> s64
 {
     for r: readings
     {
@@ -73,10 +73,10 @@ find_beacon :: (readings: []Reading) -> s64
 
         search :: (p: Point) -> bool, s64 #expand
         {
-            if p.x < 0         return false, 0;
-            if p.y < 0         return false, 0;
-            if p.x > 4_000_000 return false, 0;
-            if p.y > 4_000_000 return false, 0;
+            if p.x < 0     return false, 0;
+            if p.y < 0     return false, 0;
+            if p.x > limit return false, 0;
+            if p.y > limit return false, 0;
 
             for readings if manhattan_distance(p, it.sensor) <= it.dist return false, 0;
 
