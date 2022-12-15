@@ -23,24 +23,32 @@ Point :: struct
 
 count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
 {
-    // TODO: switch this to use ranges
-
-    negatives : Table(s32, void);
+    ranges : [..]Point;
+    min_x := S32_MAX;
+    max_x := S32_MIN;
 
     for readings
     {
         dx := it.dist - abs(row - it.sensor.y);
         if dx < 0 continue;
-
-        for x: it.sensor.x - dx..it.sensor.x + dx
-        {
-            find_or_add(*negatives, x);
-        }
+        r := array_add(*ranges);
+        r.x = it.sensor.x - dx;
+        r.y = it.sensor.x + dx;
+        min_x = min(min_x, r.x);
+        max_x = max(max_x, r.y);
     }
 
-    for readings if it.beacon.y == row table_remove(*negatives, it.beacon.x);
+    // TODO: try to collapse and merge ranges to avoid this mess
+
+    count := 0;
+
+    for x: min_x..max_x
+    {
+        for readings if it.beacon.y == row && it.beacon.x == x continue x;
+        for ranges   if it.x <= x && x <= it.y { count +=1; continue x; }
+    }
     
-    return negatives.count;
+    return count;
 }
 
 find_beacon :: (readings: []Reading) -> s64
