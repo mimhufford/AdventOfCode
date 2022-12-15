@@ -38,7 +38,7 @@ count_negatives_on_row :: (readings: []Reading, row: s32) -> s64
         }
     }
 
-    for readings if it.beacon.y == 2_000_000 table_remove(*negatives, it.beacon.x);
+    for readings if it.beacon.y == row table_remove(*negatives, it.beacon.x);
     
     return negatives.count;
 }
