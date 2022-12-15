@@ -18,6 +18,8 @@ day15 :: (input: string) -> string, string
         reading.dist = manhattan_distance(reading.sensor, reading.beacon);
     }
 
+    quick_sort(readings, (a, b) => manhattan_distance(a.sensor, b.sensor));
+
     not_beacon_2_000_000 : Table(s32, void);
 
     for readings
