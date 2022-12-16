@@ -1,38 +1,35 @@
 day16 :: (input: string) -> string, string
 {
-    valves := parse_valves(input);
+    valves, distances := parse_valves(input);
 
-    // for valves print("[%] %\n", it, <<it);
+    for valves print("%\n", <<it);
+
+    print("%\n", distances);
 
     return tprint("%", ""), tprint("%", "");
 }
 
 #scope_file
 
-Connection :: struct
-{
-    other : *Valve;
-    steps : s64;
-}
-
 Valve :: struct
 {
-    name : string;
-    flow : s16;
-    cons : [..]Connection;
+    index : s64;
+    name  : string;
+    flow  : s64;
+    cons  : [..]*Valve;
 }
 
-add_or_find :: (name: string, valves: *[..]*Valve) -> *Valve
+parse_valves :: (s: string) -> []*Valve, [16][16]s64
 {
-    for <<valves if it.name == name return it;
-    valve := New(Valve);
-    valve.name = name;
-    array_add(valves, valve);
-    return valve;
-}
+    add_or_find :: (name: string, valves: *[..]*Valve) -> *Valve
+    {
+        for <<valves if it.name == name return it;
+        valve := New(Valve);
+        valve.name = name;
+        array_add(valves, valve);
+        return valve;
+    }
 
-parse_valves :: (s: string) -> []*Valve
-{
     valves : [..]*Valve;
 
     while s
@@ -49,7 +46,7 @@ parse_valves :: (s: string) -> []*Valve
             name := s;
             name.count = 2;
             other := add_or_find(name, *valves);
-            array_add(*valve.cons, .{other, 1});
+            array_add(*valve.cons, other);
             advance(*s, 2);
             if s[0] == #char "," advance(*s, 2);
         }
@@ -57,33 +54,43 @@ parse_valves :: (s: string) -> []*Valve
         skip_whitespace(*s);
     }
 
-    for v: valves
+    // sort so AA is first, and valves with flow are next
+    quick_sort(valves, v => cast(s64)v.name[0]*26 + v.name[1] - ifx v.name == "AA" || v.flow > 0 then 100000 else 0);
+
+    // now assign indexes so we can quickly lookup distances
+    for valves it.index = it_index;
+
+    // generate the full distance matrix
+    size := valves.count;
+    dist := NewArray(size * size, s64);
+    for *dist { <<it = S64_MAX; }
+    for 0..size-1 dist[it*size + it] = 0;
+    for v, i1: valves
     {
-        if v.name != "AA" && v.flow == 0
+        for c: v.cons
         {
-            for c: v.cons
-            {
-                // delete us from other
-                for * cv: c.other.cons
-                {
-                    if cv.other == v
-                    {
-                        remove cv;
-                        break;
-                    }
-                }
-
-                // add anythign that isn't itself to others
-                for cc: v.cons
-                {
-                    if c.other == cc.other continue;
-                    array_add(*c.other.cons, .{cc.other, cc.steps + 1});
-                }
-            }
-
-            remove v;
+            i2 := 0; for valves if it == c { i2 = it_index; break; }
+            dist[i1*size + i2] = 1;
         }
     }
 
-    return valves;
+    // floyd-warshal method to find shortest path between all valve pairs
+    for k: 0..size-1 for i: 0..size-1 for j: 0..size-1
+    {
+        if dist[i*size+k] == S64_MAX continue;
+        if dist[k*size+j] == S64_MAX continue;
+
+        if dist[i*size+j] > dist[i*size+k] + dist[k*size+j]
+            dist[i*size+j] = dist[i*size+k] + dist[k*size+j];
+    }
+
+    // only return the interesting valves
+    valves.count = 15;
+    valves.data += 1;
+
+    // only return the interesting valve distances
+    dists : [16][16]s64;
+    for x: 0..15 for y: 0..15 dists[x][y] = dist[x*size + y];
+
+    return valves, dists;
 }
