@@ -37,6 +37,7 @@ Valve :: struct
     flow : u8;
 }
 
+// TODO: this is way bigger than it needs to be, generate this after parsing and compressing the space down
 SIZE :: 26*26;
 dist : [SIZE][SIZE]u8;
 
