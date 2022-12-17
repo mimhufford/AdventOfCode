@@ -4,33 +4,27 @@ day16 :: (input: string) -> string, string
 
     max_flow = 0;
 
-    walk(valves[0], 30, dist);
+    walk(valves[0], 30, dist, false);
+    walk(valves[0], 26, dist, true);
 
-    walk :: (v: *Valve, time: s64, dist: [16][16]s64, prev_visits: u16 = 0, prev_flow: s64 = 0)
+    max_2x_26 := 0;
+
+    for a: 0..flows.count-1
     {
-        flow := prev_flow + v.flow * max(time, 0);
-
-        if time < 1
+        for b: 0..flows.count-1
         {
-            max_flow = max(flow, max_flow);
-            return;
-        }
-
-        visited := prev_visits | cast(u16)1 << v.index;
-
-        for v.cons
-        {
-            if visited & cast(u16)1 << it.index continue;
-
-            steps := dist[v.index][it.index];
-            walk(it, time - steps - 1, dist, visited, flow);
+            if a == b continue;
+            if a & b  continue;
+            max_2x_26 = max(max_2x_26, flows[a] + flows[b]);
         }
     }
 
-    return tprint("%", max_flow), tprint("%", "");
+    return tprint("%", max_flow), tprint("%", max_2x_26);
 }
 
 #scope_file
+
+flows : [32_768]s64;
 
 max_flow := 0;
 
@@ -40,6 +34,29 @@ Valve :: struct
     name  : string;
     flow  : s64;
     cons  : [..]*Valve;
+}
+
+walk :: (v: *Valve, time: s64, dist: [16][16]s64, store: bool, prev_visits: u16 = 0, prev_flow: s64 = 0)
+{
+    flow := prev_flow + v.flow * max(time, 0);
+
+    if store flows[prev_visits>>1] = max(flows[prev_visits>>1], flow);
+
+    if time < 1
+    {
+        max_flow = max(flow, max_flow);
+        return;
+    }
+
+    visited := prev_visits | cast(u16)1 << v.index;
+
+    for v.cons
+    {
+        if visited & cast(u16)1 << it.index continue;
+
+        steps := dist[v.index][it.index];
+        walk(it, time - steps - 1, dist, store, visited, flow);
+    }
 }
 
 parse_valves :: (s: string) -> []*Valve, [16][16]s64
