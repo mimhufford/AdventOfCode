@@ -30,9 +30,9 @@ day16 :: (input: string) -> string, string
     return tprint("%", max_flow), tprint("%", "");
 }
 
-max_flow := 0;
-
 #scope_file
+
+max_flow := 0;
 
 Valve :: struct
 {
