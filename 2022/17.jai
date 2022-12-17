@@ -4,8 +4,13 @@ day17 :: (input: string) -> string, string
     top    : s32;
     windex : s64;
 
-    for i: 0..2022-1
+    height_2022 : s32;
+    lcm := shapes.count * (input.count-1);
+
+    for i: 0..lcm
     {
+        if i == 2022 height_2022 = top;
+
         s := shapes[i % shapes.count];
         x : s32 = 2;
         y : s32 = top + 3;
@@ -75,7 +80,7 @@ day17 :: (input: string) -> string, string
         }
     }
 
-    return tprint("%", top), tprint("%", "");
+    return tprint("%", height_2022), tprint("%", "");
 }
 
 Position :: struct
