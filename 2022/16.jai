@@ -11,11 +11,9 @@ day16 :: (input: string) -> string, string
 
     for a: 0..flows.count-1
     {
-        for b: 0..flows.count-1
+        for b: a+1..flows.count-1
         {
-            if a == b continue;
-            if a & b  continue;
-            max_2x_26 = max(max_2x_26, flows[a] + flows[b]);
+            if a & b == 0 max_2x_26 = max(max_2x_26, flows[a] + flows[b]);
         }
     }
 
