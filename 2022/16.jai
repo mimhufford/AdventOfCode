@@ -2,37 +2,35 @@ day16 :: (input: string) -> string, string
 {
     valves, dist := parse_valves(input);
 
-    // parsing is optimised enough
-    // need to work on the valve walk order next
+    max_flow = 0;
 
-    max_flow := 0;
+    walk(valves[0], 30, dist);
 
-    // TODO: this does give the correct answer but takes too long
-    for permutations(valves)
+    walk :: (v: *Valve, time: s64, dist: [16][16]s64, prev_visits: u16 = 0, prev_flow: s64 = 0)
     {
-        time := 30;
-        pos  : s64;
-        next := 0;
-        flow := 0;
+        flow := prev_flow + v.flow * max(time, 0);
 
-        if it_index % 100000000 == 0 print("%\n", max_flow);
-
-        while true
+        if time < 1
         {
-            valve := it[next];
-            next  += 1;
-            time  -= dist[pos][valve.index] + 1;
-            flow  += valve.flow * max(time, 0);
-            pos    = valve.index;
-            if time < 1 break;
-            if next >= valves.count break;
+            max_flow = max(flow, max_flow);
+            return;
         }
 
-        max_flow = max(max_flow, flow);
+        visited := prev_visits | cast(u16)1 << v.index;
+
+        for v.cons
+        {
+            if visited & cast(u16)1 << it.index continue;
+
+            steps := dist[v.index][it.index];
+            walk(it, time - steps - 1, dist, visited, flow);
+        }
     }
 
     return tprint("%", max_flow), tprint("%", "");
 }
+
+max_flow := 0;
 
 #scope_file
 
@@ -109,60 +107,17 @@ parse_valves :: (s: string) -> []*Valve, [16][16]s64
             dist[i*size+j] = dist[i*size+k] + dist[k*size+j];
     }
 
+    // re-write the neighbour graph for interesting valves
+    for valves it.cons.count = 0;
+    for 1..15 array_add(*valves[0].cons, valves[it]);
+    for a: 1..15 for b: 1..15 if a != b array_add(*valves[a].cons, valves[b]);
+
     // only return the interesting valves
-    valves.count = 15;
-    valves.data += 1;
+    valves.count = 16;
 
     // only return the interesting valve distances
     dists : [16][16]s64;
     for x: 0..15 for y: 0..15 dists[x][y] = dist[x*size + y];
 
     return valves, dists;
-}
-
-
-
-for_expansion :: (pi: *PermutationsIterator, body: Code, flags: For_Flags) #expand
-{
-    `it_index := 0;
-    `it       := pi.a;
-
-    #insert body;
-    `it_index += 1;
-
-    c := NewArray(pi.a.count, int);
-    i := 1;
-
-    while i < pi.a.count
-    {
-        if c[i] < i
-        {
-            if i % 2 == 0 Swap(*pi.a[0], *pi.a[i]);
-            else          Swap(*pi.a[c[i]], *pi.a[i]);
-
-            #insert body;
-            c[i] += 1;
-            i = 1;
-            `it_index += 1;
-        }
-        else
-        {
-            c[i] = 0;
-            i += 1;
-        }
-    }
-
-    free(c.data);
-}
-
-permutations :: (a: []$T) -> PermutationsIterator(T)
-{
-   i : PermutationsIterator(T) = ---;
-   i.a = a;
-   return i;
-}
-
-PermutationsIterator :: struct ($T: Type)
-{
-    a: []T;
 }
