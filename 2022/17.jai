@@ -2,6 +2,7 @@ day17 :: (input: string) -> string, string
 {
     filled : Table(u64, void);
     top    : s32;
+    windex : s64;
 
     for i: 0..2022-1
     {
@@ -12,7 +13,8 @@ day17 :: (input: string) -> string, string
         // simulate rock
         while true
         {
-            dx := ifx input[i % (input.count-1)] == #char "<" then cast(s32)-1 else 1;
+            dx := ifx input[windex] == #char "<" then cast(s32)-1 else 1;
+            windex = (windex + 1) % (input.count - 1);
 
             can_move_x := true;
             to_check := ifx dx < 0 then s.left else s.right;
@@ -22,7 +24,7 @@ day17 :: (input: string) -> string, string
                 pos.x += x;
                 pos.y += y;
 
-                if pos.x <= 0 || pos.x >= 6
+                if pos.x < 0 || pos.x > 6
                 {
                     can_move_x = false;
                     break;
@@ -44,7 +46,7 @@ day17 :: (input: string) -> string, string
                 pos.x += x;
                 pos.y += y;
 
-                if pos.y == 0
+                if pos.y < 0
                 {
                     can_move_y = false;
                     break;
@@ -69,7 +71,7 @@ day17 :: (input: string) -> string, string
             pos.y += y;
             find_or_add(*filled, pos.hash);
 
-            top = max(top, pos.y);
+            top = max(top, pos.y+1);
         }
     }
 
