@@ -1,22 +1,79 @@
 day17 :: (input: string) -> string, string
 {
     filled : Table(u64, void);
-    top    := 0;
-    windex := 0;
-    sindex := 0;
+    top    : s32;
 
+    for i: 0..2022-1
     {
-        s  := shapes[sindex];
-        x  := 2;
-        y  := top + 3;
-        dx := ifx input[windex] == #char "<" then -1 else 1;
-        windex = (windex + 1) % (input.count - 1);
-        sindex = (sindex + 1) % (shapes.count);
+        s := shapes[i % shapes.count];
+        x : s32 = 2;
+        y : s32 = top + 3;
 
         // simulate rock
+        while true
+        {
+            dx := ifx input[i % (input.count-1)] == #char "<" then cast(s32)-1 else 1;
+
+            can_move_x := true;
+            to_check := ifx dx < 0 then s.left else s.right;
+            for to_check
+            {
+                pos := it;
+                pos.x += x;
+                pos.y += y;
+
+                if pos.x <= 0 || pos.x >= 6
+                {
+                    can_move_x = false;
+                    break;
+                }
+
+                if table_find_pointer(*filled, pos.hash)
+                {
+                    can_move_x = false;
+                    break;
+                }
+            }
+
+            if can_move_x then x += dx;
+
+            can_move_y := true;
+            for s.down
+            {
+                pos := it;
+                pos.x += x;
+                pos.y += y;
+
+                if pos.y == 0
+                {
+                    can_move_y = false;
+                    break;
+                }
+
+                if table_find_pointer(*filled, pos.hash)
+                {
+                    can_move_y = false;
+                    break;
+                }
+            }
+
+            if can_move_y then y -= 1;
+            else break;
+        }
+
+        // add final shape positions to set and update new top
+        for s.cells
+        {
+            pos := it;
+            pos.x += x;
+            pos.y += y;
+            find_or_add(*filled, pos.hash);
+
+            top = max(top, pos.y);
+        }
     }
 
-    return tprint("%", ""), tprint("%", "");
+    return tprint("%", top), tprint("%", "");
 }
 
 Position :: struct
