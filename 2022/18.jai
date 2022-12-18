@@ -17,9 +17,24 @@ day18 :: (input: string) -> string, string
         p_max.x = max(p_max.x, p.x+1); p_max.y = max(p_max.y, p.y+1); p_max.z = max(p_max.z, p.z+1);
     }
 
+    surface_area := 0;
+
+    for drops
+    {
+        p : Pos;
+        p.hash = it_index;
+        p.x += 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.x -= 1;
+        p.x -= 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.x += 1;
+        p.y += 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.y -= 1;
+        p.y -= 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.y += 1;
+        p.z += 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.z -= 1;
+        p.z -= 1; if !table_find_pointer(*drops, p.hash) surface_area += 1; p.z += 1;
+    }
+
     outside : Table(u32, void);
     queue   : [..]Pos;
     array_add(*queue, p_min);
+    outer_surface := 0;
 
     while queue
     {
@@ -27,7 +42,7 @@ day18 :: (input: string) -> string, string
         if p.x < p_min.x || p.y < p_min.y || p.z < p_min.z continue;
         if p.x > p_max.x || p.y > p_max.y || p.z > p_max.z continue;
         if table_find_pointer(*outside, p.hash) continue;
-        if table_find_pointer(*drops,   p.hash) continue;
+        if table_find_pointer(*drops, p.hash) { outer_surface +=1 ; continue; }
 
         v : outside.Value_Type;
         table_add(*outside, p.hash, v);
@@ -38,12 +53,6 @@ day18 :: (input: string) -> string, string
         p.z += 1; array_add(*queue, p); p.z -= 1;
         p.z -= 1; array_add(*queue, p); p.z += 1;
     }
-
-    surface_area  := count_surface_area(drops);
-    outer_surface := count_surface_area(outside);
-    outer_surface -= 2 * (cast(s64)p_max.x - p_min.x + 1) * (cast(s64)p_max.y - p_min.y + 1);
-    outer_surface -= 2 * (cast(s64)p_max.x - p_min.x + 1) * (cast(s64)p_max.z - p_min.z + 1);
-    outer_surface -= 2 * (cast(s64)p_max.y - p_min.y + 1) * (cast(s64)p_max.z - p_min.z + 1);
 
     return tprint("%", surface_area), tprint("%", outer_surface);
 }
@@ -57,23 +66,4 @@ Pos :: struct
     z: u8;
     #place x;
     hash: u32;
-}
-
-count_surface_area :: (positions: Table(u32, void)) -> s64
-{
-    surface_area := 0;
-
-    for positions
-    {
-        p : Pos;
-        p.hash = it_index;
-        p.x += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.x -= 1;
-        p.x -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.x += 1;
-        p.y += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.y -= 1;
-        p.y -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.y += 1;
-        p.z += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.z -= 1;
-        p.z -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.z += 1;
-    }
-
-    return surface_area;
 }
