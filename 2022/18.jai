@@ -65,15 +65,14 @@ count_surface_area :: (positions: Table(u32, void)) -> s64
 
     for positions
     {
-        surface_area += 6;
         p : Pos;
         p.hash = it_index;
-        p.x += 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.x -= 1;
-        p.x -= 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.x += 1;
-        p.y += 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.y -= 1;
-        p.y -= 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.y += 1;
-        p.z += 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.z -= 1;
-        p.z -= 1; if table_find_pointer(*positions, p.hash) surface_area -= 1; p.z += 1;
+        p.x += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.x -= 1;
+        p.x -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.x += 1;
+        p.y += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.y -= 1;
+        p.y -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.y += 1;
+        p.z += 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.z -= 1;
+        p.z -= 1; if !table_find_pointer(*positions, p.hash) surface_area += 1; p.z += 1;
     }
 
     return surface_area;
