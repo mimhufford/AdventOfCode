@@ -74,7 +74,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     most : u8 = cast(u8)min(cast(u64)255, cast(u64)s.geode_count + cast(u64)s.geode_bots*cast(u64)t + (cast(u64)t * (cast(u64)t+1) / 2));
     if most <= highest_geode_count_so_far[0] return s.geode_count;
 
-    // simulate all possible buying paths / waiting a minute from here
+    // simulate all possible buying paths from current state
     best_child := s.geode_count;
 
     if s.obsidian_bots
