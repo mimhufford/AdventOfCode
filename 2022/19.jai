@@ -5,10 +5,6 @@ day19 :: (input: string) -> string, string
     first_3       := 1;
     quality_total := 0;
 
-    // TODO:
-    // This solution works but is slow
-    // Need to find better ways to prune the search space
-
     for * b: blueprints
     {
         state : State;
