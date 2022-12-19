@@ -35,8 +35,6 @@ day19 :: (input: string) -> string, string
 
 State :: struct
 {
-    minute         : u8;
-
     ore_count      : u8;
     clay_count     : u8;
     obsidian_count : u8;
@@ -62,17 +60,15 @@ Blueprint :: struct
 
 highest_geode_count_so_far : [32]u8;
 
-simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
+simulate :: (time: u8, b: *Blueprint, _state: State) -> u8
 {
     using state := _state;
 
     // prune any branches where we have a lower geode count (with +1 tolerance)
-    if geode_count + 1 < highest_geode_count_so_far[minute] return geode_count;
-    highest_geode_count_so_far[minute] = max(highest_geode_count_so_far[minute], geode_count);
+    if geode_count + 1 < highest_geode_count_so_far[time] return geode_count;
+    highest_geode_count_so_far[time] = max(highest_geode_count_so_far[time], geode_count);
 
-    if minute == limit return geode_count;
-
-    minute += 1;
+    if time == 0 return geode_count;
 
     // collect resources
     ore_count += ore_bots;
@@ -90,7 +86,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         next.ore_count -= b.geode[0];
         next.obsidian_count -= b.geode[1];
         next.geode_bots += 1;
-        best_child = max(best_child, simulate(limit, b, next));
+        best_child = max(best_child, simulate(time - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
@@ -100,7 +96,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         next.ore_count -= b.obsidian[0];
         next.clay_count -= b.obsidian[1];
         next.obsidian_bots += 1;
-        best_child = max(best_child, simulate(limit, b, next));
+        best_child = max(best_child, simulate(time - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
@@ -109,7 +105,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         next := state;
         next.ore_count -= b.clay;
         next.clay_bots += 1;
-        best_child = max(best_child, simulate(limit, b, next));
+        best_child = max(best_child, simulate(time - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
@@ -118,10 +114,10 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         next := state;
         next.ore_count -= b.ore;
         next.ore_bots += 1;
-        best_child = max(best_child, simulate(limit, b, next));
+        best_child = max(best_child, simulate(time - 1, b, next));
     }
 
-    return max(best_child, simulate(limit, b, state));
+    return max(best_child, simulate(time - 1, b, state));
 }
 
 parse_blueprints :: (input: string) -> []Blueprint
