@@ -139,7 +139,6 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
         }
     }
 
-    // if it's worth building this robot, and we had enough resources at the start of the minute
     if s.ore_bots < b.max_ore_cost
     {
         using ns := s;
