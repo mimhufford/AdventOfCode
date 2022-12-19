@@ -24,8 +24,6 @@ day19 :: (input: string) -> string, string
         quality_total += most_geodes * (it_index + 1);
 
         if it_index < 3 first_3 *= simulate(32, b, state);
-
-        print("%/% = %\n", it_index+1, blueprints.count, most_geodes);
     }
 
     return tprint("%", quality_total), tprint("%", first_3);
