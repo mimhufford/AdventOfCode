@@ -60,6 +60,14 @@ Blueprint :: struct
 
 highest_geode_count_so_far : [32]u8;
 
+tick :: (using s: *State)
+{
+    ore_count += ore_bots;
+    clay_count += clay_bots;
+    obsidian_count += obsidian_bots;
+    geode_count += geode_bots;
+}
+
 simulate :: (t: u8, b: *Blueprint, s: State) -> u8
 {
     // prune any branches where we have a lower geode count (with +1 tolerance)
@@ -75,10 +83,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     if s.ore_count >= b.geode[0] && s.obsidian_count >= b.geode[1]
     {
         using next := s;
-        ore_count += ore_bots;
-        clay_count += clay_bots;
-        obsidian_count += obsidian_bots;
-        geode_count += geode_bots;
+        tick(*next);
         ore_count -= b.geode[0];
         obsidian_count -= b.geode[1];
         geode_bots += 1;
@@ -89,10 +94,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     if s.obsidian_bots < b.max_obsidian_cost && s.ore_count >= b.obsidian[0] && s.clay_count >= b.obsidian[1]
     {
         using next := s;
-        ore_count += ore_bots;
-        clay_count += clay_bots;
-        obsidian_count += obsidian_bots;
-        geode_count += geode_bots;
+        tick(*next);
         ore_count -= b.obsidian[0];
         clay_count -= b.obsidian[1];
         obsidian_bots += 1;
@@ -103,10 +105,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     if s.clay_bots < b.max_clay_cost && s.ore_count >= b.clay
     {
         using next := s;
-        ore_count += ore_bots;
-        clay_count += clay_bots;
-        obsidian_count += obsidian_bots;
-        geode_count += geode_bots;
+        tick(*next);
         ore_count -= b.clay;
         clay_bots += 1;
         best_child = max(best_child, simulate(t - 1, b, next));
@@ -116,10 +115,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     if s.ore_bots < b.max_ore_cost && s.ore_count >= b.ore
     {
         using next := s;
-        ore_count += ore_bots;
-        clay_count += clay_bots;
-        obsidian_count += obsidian_bots;
-        geode_count += geode_bots;
+        tick(*next);
         ore_count -= b.ore;
         ore_bots += 1;
         best_child = max(best_child, simulate(t - 1, b, next));
@@ -128,10 +124,7 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     // and simulate waiting a turn
     {
         using next := s;
-        ore_count += ore_bots;
-        clay_count += clay_bots;
-        obsidian_count += obsidian_bots;
-        geode_count += geode_bots;
+        tick(*next);
         best_child = max(best_child, simulate(t - 1, b, next));
     }
 
