@@ -83,21 +83,13 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
     // simulate all possible buying paths / waiting a minute from here
     best_child := geode_count;
 
-    // if it's worth building this robot, and we had enough resources at the start of the minute
-    if ore_bots < b.max_ore_cost && ore_count - ore_bots >= b.ore
+    // if we had enough resources at the start of the minute
+    if ore_count - ore_bots >= b.geode[0] && obsidian_count - obsidian_bots >= b.geode[1]
     {
         next := state;
-        next.ore_count -= b.ore;
-        next.ore_bots += 1;
-        best_child = max(best_child, simulate(limit, b, next));
-    }
-
-    // if it's worth building this robot, and we had enough resources at the start of the minute
-    if clay_bots < b.max_clay_cost && ore_count - ore_bots >= b.clay
-    {
-        next := state;
-        next.ore_count -= b.clay;
-        next.clay_bots += 1;
+        next.ore_count -= b.geode[0];
+        next.obsidian_count -= b.geode[1];
+        next.geode_bots += 1;
         best_child = max(best_child, simulate(limit, b, next));
     }
 
@@ -111,13 +103,21 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         best_child = max(best_child, simulate(limit, b, next));
     }
 
-    // if we had enough resources at the start of the minute
-    if ore_count - ore_bots >= b.geode[0] && obsidian_count - obsidian_bots >= b.geode[1]
+    // if it's worth building this robot, and we had enough resources at the start of the minute
+    if clay_bots < b.max_clay_cost && ore_count - ore_bots >= b.clay
     {
         next := state;
-        next.ore_count -= b.geode[0];
-        next.obsidian_count -= b.geode[1];
-        next.geode_bots += 1;
+        next.ore_count -= b.clay;
+        next.clay_bots += 1;
+        best_child = max(best_child, simulate(limit, b, next));
+    }
+
+    // if it's worth building this robot, and we had enough resources at the start of the minute
+    if ore_bots < b.max_ore_cost && ore_count - ore_bots >= b.ore
+    {
+        next := state;
+        next.ore_count -= b.ore;
+        next.ore_bots += 1;
         best_child = max(best_child, simulate(limit, b, next));
     }
 
