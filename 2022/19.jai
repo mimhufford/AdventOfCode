@@ -73,8 +73,12 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     if t == 0 return s.geode_count;
 
     // prune any branches where we have a lower geode count (with +1 tolerance)
-    if s.geode_count + 1 < highest_geode_count_so_far[t] return s.geode_count;
-    highest_geode_count_so_far[t] = max(highest_geode_count_so_far[t], s.geode_count);
+    if s.geode_count + 1 < highest_geode_count_so_far[t-1] return s.geode_count;
+    highest_geode_count_so_far[t-1] = max(highest_geode_count_so_far[t-1], s.geode_count);
+
+    // prune any branches that couldn't possibly beat the best we've seen so far
+    most : u8 = cast(u8)min(cast(u64)255, cast(u64)s.geode_count + cast(u64)s.geode_bots*cast(u64)t + (cast(u64)t * (cast(u64)t+1) / 2));
+    if most <= highest_geode_count_so_far[0] return s.geode_count;
 
     // simulate all possible buying paths / waiting a minute from here
     best_child := s.geode_count;
