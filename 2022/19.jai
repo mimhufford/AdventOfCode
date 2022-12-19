@@ -83,53 +83,87 @@ simulate :: (t: u8, b: *Blueprint, s: State) -> u8
     // simulate all possible buying paths / waiting a minute from here
     best_child := s.geode_count;
 
-    // if we had enough resources at the start of the minute
-    if s.ore_count >= b.geode[0] && s.obsidian_count >= b.geode[1]
+    if s.obsidian_bots
     {
-        using next := s;
-        ore_count -= b.geode[0];
-        obsidian_count -= b.geode[1];
-        tick(*next);
-        geode_bots += 1;
-        best_child = max(best_child, simulate(t - 1, b, next));
+        using ns := s;
+        nt := t;
+
+        while nt > 0
+        {
+            nt -= 1;
+            if ore_count >= b.geode[0] && obsidian_count >= b.geode[1]
+            {
+                tick(*ns);
+                ore_count -= b.geode[0];
+                obsidian_count -= b.geode[1];
+                geode_bots += 1;
+                best_child = max(best_child, simulate(nt, b, ns));
+                break;
+            }
+            tick(*ns);
+        }
+    }
+
+    if s.obsidian_bots < b.max_obsidian_cost && s.clay_bots
+    {
+        using ns := s;
+        nt := t;
+
+        while nt > 0
+        {
+            nt -= 1;
+            if ore_count >= b.obsidian[0] && clay_count >= b.obsidian[1]
+            {
+                tick(*ns);
+                ore_count -= b.obsidian[0];
+                clay_count -= b.obsidian[1];
+                obsidian_bots += 1;
+                best_child = max(best_child, simulate(nt, b, ns));
+                break;
+            }
+            tick(*ns);
+        }
+    }
+
+    if s.clay_bots < b.max_clay_cost
+    {
+        using ns := s;
+        nt := t;
+
+        while nt > 0
+        {
+            nt -= 1;
+            if ore_count >= b.clay
+            {
+                tick(*ns);
+                ore_count -= b.clay;
+                clay_bots += 1;
+                best_child = max(best_child, simulate(nt, b, ns));
+                break;
+            }
+            tick(*ns);
+        }
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
-    if s.obsidian_bots < b.max_obsidian_cost && s.ore_count >= b.obsidian[0] && s.clay_count >= b.obsidian[1]
+    if s.ore_bots < b.max_ore_cost
     {
-        using next := s;
-        ore_count -= b.obsidian[0];
-        clay_count -= b.obsidian[1];
-        tick(*next);
-        obsidian_bots += 1;
-        best_child = max(best_child, simulate(t - 1, b, next));
-    }
+        using ns := s;
+        nt := t;
 
-    // if it's worth building this robot, and we had enough resources at the start of the minute
-    if s.clay_bots < b.max_clay_cost && s.ore_count >= b.clay
-    {
-        using next := s;
-        ore_count -= b.clay;
-        tick(*next);
-        clay_bots += 1;
-        best_child = max(best_child, simulate(t - 1, b, next));
-    }
-
-    // if it's worth building this robot, and we had enough resources at the start of the minute
-    if s.ore_bots < b.max_ore_cost && s.ore_count >= b.ore
-    {
-        using next := s;
-        ore_count -= b.ore;
-        tick(*next);
-        ore_bots += 1;
-        best_child = max(best_child, simulate(t - 1, b, next));
-    }
-
-    // and simulate waiting a turn
-    {
-        using next := s;
-        tick(*next);
-        best_child = max(best_child, simulate(t - 1, b, next));
+        while nt > 0
+        {
+            nt -= 1;
+            if ore_count >= b.ore
+            {
+                tick(*ns);
+                ore_count -= b.ore;
+                ore_bots += 1;
+                best_child = max(best_child, simulate(nt, b, ns));
+                break;
+            }
+            tick(*ns);
+        }
     }
 
     return best_child;
