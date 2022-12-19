@@ -2,11 +2,18 @@ day19 :: (input: string) -> string, string
 {
     blueprints := parse_blueprints(input);
 
+    first_3       := 1;
     quality_total := 0;
+
+    // TODO:
+    // This solution works but is slow
+    // Need to find better ways to prune the search space
 
     for * b: blueprints
     {
         state : State;
+
+        for * highest_geode_count_so_far { <<it = 0; }
 
         // find out max costs, we don't need to make more robots for this type if we already collect this amount per minute
         b.max_ore_cost      = max(b.ore, b.clay, b.obsidian[0], b.geode[0]);
@@ -16,10 +23,12 @@ day19 :: (input: string) -> string, string
         most_geodes := simulate(24, b, state);
         quality_total += most_geodes * (it_index + 1);
 
+        if it_index < 3 first_3 *= simulate(32, b, state);
+
         print("%/% = %\n", it_index+1, blueprints.count, most_geodes);
     }
 
-    return tprint("%", quality_total), tprint("%", "");
+    return tprint("%", quality_total), tprint("%", first_3);
 }
 
 #scope_file
@@ -33,10 +42,6 @@ State :: struct
     obsidian_count : u8;
     geode_count    : u8;
 
-    // bot count for 24 minutes never exceeds 20
-    // for 32 minutes it can only ever reach ~28
-    // can compress these to only use 5 bits each
-    // then the whole state can fit in a u64
     ore_bots       : u8 = 1;
     clay_bots      : u8;
     obsidian_bots  : u8;
@@ -55,16 +60,15 @@ Blueprint :: struct
     max_obsidian_cost : u8;
 }
 
+highest_geode_count_so_far : [32]u8;
+
 simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
 {
     using state := _state;
 
-    // sanity check using u8s ===================
-    if ore_count > 200 print("%\n", state);
-    if clay_count > 200 print("%\n", state);
-    if obsidian_count > 200 print("%\n", state);
-    if geode_count > 200 print("%\n", state);
-    // ==========================================
+    // prune any branches where we have a lower geode count (with +1 tolerance)
+    if geode_count + 1 < highest_geode_count_so_far[minute] return geode_count;
+    highest_geode_count_so_far[minute] = max(highest_geode_count_so_far[minute], geode_count);
 
     if minute == limit return geode_count;
 
@@ -79,8 +83,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
     // simulate all possible buying paths / waiting a minute from here
     best_child := geode_count;
 
-    // we're supposed to build using the resources at the start of the minute
-    // so we have to subtract the current number of bots to negate the above addition
+    // if it's worth building this robot, and we had enough resources at the start of the minute
     if ore_bots < b.max_ore_cost && ore_count - ore_bots >= b.ore
     {
         next := state;
@@ -89,6 +92,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         best_child = max(best_child, simulate(limit, b, next));
     }
 
+    // if it's worth building this robot, and we had enough resources at the start of the minute
     if clay_bots < b.max_clay_cost && ore_count - ore_bots >= b.clay
     {
         next := state;
@@ -97,6 +101,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         best_child = max(best_child, simulate(limit, b, next));
     }
 
+    // if it's worth building this robot, and we had enough resources at the start of the minute
     if obsidian_bots < b.max_obsidian_cost && ore_count - ore_bots >= b.obsidian[0] && clay_count - clay_bots >= b.obsidian[1]
     {
         next := state;
@@ -106,6 +111,7 @@ simulate :: (limit: u8, b: *Blueprint, _state: State) -> u8
         best_child = max(best_child, simulate(limit, b, next));
     }
 
+    // if we had enough resources at the start of the minute
     if ore_count - ore_bots >= b.geode[0] && obsidian_count - obsidian_bots >= b.geode[1]
     {
         next := state;
