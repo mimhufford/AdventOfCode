@@ -70,11 +70,11 @@ tick :: (using s: *State)
 
 simulate :: (t: u8, b: *Blueprint, s: State) -> u8
 {
+    if t == 0 return s.geode_count;
+
     // prune any branches where we have a lower geode count (with +1 tolerance)
     if s.geode_count + 1 < highest_geode_count_so_far[t] return s.geode_count;
     highest_geode_count_so_far[t] = max(highest_geode_count_so_far[t], s.geode_count);
-
-    if t == 0 return s.geode_count;
 
     // simulate all possible buying paths / waiting a minute from here
     best_child := s.geode_count;
