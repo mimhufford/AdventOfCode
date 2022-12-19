@@ -60,64 +60,82 @@ Blueprint :: struct
 
 highest_geode_count_so_far : [32]u8;
 
-simulate :: (time: u8, b: *Blueprint, _state: State) -> u8
+simulate :: (t: u8, b: *Blueprint, s: State) -> u8
 {
-    using state := _state;
-
     // prune any branches where we have a lower geode count (with +1 tolerance)
-    if geode_count + 1 < highest_geode_count_so_far[time] return geode_count;
-    highest_geode_count_so_far[time] = max(highest_geode_count_so_far[time], geode_count);
+    if s.geode_count + 1 < highest_geode_count_so_far[t] return s.geode_count;
+    highest_geode_count_so_far[t] = max(highest_geode_count_so_far[t], s.geode_count);
 
-    if time == 0 return geode_count;
-
-    // collect resources
-    ore_count += ore_bots;
-    clay_count += clay_bots;
-    obsidian_count += obsidian_bots;
-    geode_count += geode_bots;
+    if t == 0 return s.geode_count;
 
     // simulate all possible buying paths / waiting a minute from here
-    best_child := geode_count;
+    best_child := s.geode_count;
 
     // if we had enough resources at the start of the minute
-    if ore_count - ore_bots >= b.geode[0] && obsidian_count - obsidian_bots >= b.geode[1]
+    if s.ore_count >= b.geode[0] && s.obsidian_count >= b.geode[1]
     {
-        next := state;
-        next.ore_count -= b.geode[0];
-        next.obsidian_count -= b.geode[1];
-        next.geode_bots += 1;
-        best_child = max(best_child, simulate(time - 1, b, next));
+        using next := s;
+        ore_count += ore_bots;
+        clay_count += clay_bots;
+        obsidian_count += obsidian_bots;
+        geode_count += geode_bots;
+        ore_count -= b.geode[0];
+        obsidian_count -= b.geode[1];
+        geode_bots += 1;
+        best_child = max(best_child, simulate(t - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
-    if obsidian_bots < b.max_obsidian_cost && ore_count - ore_bots >= b.obsidian[0] && clay_count - clay_bots >= b.obsidian[1]
+    if s.obsidian_bots < b.max_obsidian_cost && s.ore_count >= b.obsidian[0] && s.clay_count >= b.obsidian[1]
     {
-        next := state;
-        next.ore_count -= b.obsidian[0];
-        next.clay_count -= b.obsidian[1];
-        next.obsidian_bots += 1;
-        best_child = max(best_child, simulate(time - 1, b, next));
+        using next := s;
+        ore_count += ore_bots;
+        clay_count += clay_bots;
+        obsidian_count += obsidian_bots;
+        geode_count += geode_bots;
+        ore_count -= b.obsidian[0];
+        clay_count -= b.obsidian[1];
+        obsidian_bots += 1;
+        best_child = max(best_child, simulate(t - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
-    if clay_bots < b.max_clay_cost && ore_count - ore_bots >= b.clay
+    if s.clay_bots < b.max_clay_cost && s.ore_count >= b.clay
     {
-        next := state;
-        next.ore_count -= b.clay;
-        next.clay_bots += 1;
-        best_child = max(best_child, simulate(time - 1, b, next));
+        using next := s;
+        ore_count += ore_bots;
+        clay_count += clay_bots;
+        obsidian_count += obsidian_bots;
+        geode_count += geode_bots;
+        ore_count -= b.clay;
+        clay_bots += 1;
+        best_child = max(best_child, simulate(t - 1, b, next));
     }
 
     // if it's worth building this robot, and we had enough resources at the start of the minute
-    if ore_bots < b.max_ore_cost && ore_count - ore_bots >= b.ore
+    if s.ore_bots < b.max_ore_cost && s.ore_count >= b.ore
     {
-        next := state;
-        next.ore_count -= b.ore;
-        next.ore_bots += 1;
-        best_child = max(best_child, simulate(time - 1, b, next));
+        using next := s;
+        ore_count += ore_bots;
+        clay_count += clay_bots;
+        obsidian_count += obsidian_bots;
+        geode_count += geode_bots;
+        ore_count -= b.ore;
+        ore_bots += 1;
+        best_child = max(best_child, simulate(t - 1, b, next));
     }
 
-    return max(best_child, simulate(time - 1, b, state));
+    // and simulate waiting a turn
+    {
+        using next := s;
+        ore_count += ore_bots;
+        clay_count += clay_bots;
+        obsidian_count += obsidian_bots;
+        geode_count += geode_bots;
+        best_child = max(best_child, simulate(t - 1, b, next));
+    }
+
+    return best_child;
 }
 
 parse_blueprints :: (input: string) -> []Blueprint
