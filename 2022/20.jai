@@ -1,9 +1,26 @@
 day20 :: (input: string) -> string, string
 {
+    part1 := process(input,  1, 1);
+    part2 := process(input, 10, 811589153);
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+Node :: struct
+{
+    value : s64;
+    prev  : *Node;
+    next  : *Node;
+}
+
+process :: (input: string, times: s64, multiplier: s64) -> s64
+{
     ring : [..]*Node;
     zero : *Node;
 
-    for s16s(input)
+    for s64s(input)
     {
         node := New(Node);
         node.value = it;
@@ -17,39 +34,34 @@ day20 :: (input: string) -> string, string
         ring[it].next = ring[(it+1) % ring.count];
     }
 
-    for ring
+    for 1..times
     {
-        if it.value == 0 continue;
+        for ring
+        {
+            if it.value == 0 continue;
 
-        it.next.prev = it.prev;
-        it.prev.next = it.next;
+            it.next.prev = it.prev;
+            it.prev.next = it.next;
 
-        t := it;
-        if it.value > 0 for i: 1..it.value t = t.next;
-        if it.value < 0 for i: it.value..0 t = t.prev;
+            t := it;
+            steps := (it.value * multiplier) % (ring.count - 1);
+            if it.value > 0 for i: 1..steps t = t.next;
+            if it.value < 0 for i: steps..0 t = t.prev;
 
-        t.next.prev = it;
-        it.next     = t.next;
-        t.next      = it;
-        it.prev     = t;
+            t.next.prev = it;
+            it.next     = t.next;
+            t.next      = it;
+            it.prev     = t;
+        }
     }
 
-    part1 := 0;
-    n := zero;
+    result := 0;
+
     for 1..3000
     {
-        n = n.next;
-        if it % 1000 == 0 part1 += n.value;
+        zero = zero.next;
+        if it % 1000 == 0 result += zero.value * multiplier;
     }
 
-    return tprint("%", part1), tprint("%", "");
-}
-
-#scope_file
-
-Node :: struct
-{
-    value : s16;
-    prev  : *Node;
-    next  : *Node;
+    return result;
 }
