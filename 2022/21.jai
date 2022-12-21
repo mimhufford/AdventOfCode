@@ -4,6 +4,9 @@ day21 :: (input: string) -> string, string
 
     resolve(root);
 
+    // Part 2: every node is used exactly once, so the
+    //         expression can be flattened and simplified
+
     return tprint("%", root.value), tprint("%", "");
 }
 
