@@ -1,13 +1,29 @@
 day21 :: (input: string) -> string, string
 {
-    root, nodes := parse_nodes(input);
-
+    root, humn, nodes := parse_nodes(input);
     resolve(root);
+    part1 := root.value;
+
+    part2 := 0;
 
     // Part 2: every node is used exactly once, so the
     //         expression can be flattened and simplified
 
-    return tprint("%", root.value), tprint("%", "");
+    // NOTE: Found starting value via manual experimentation
+    // Convert into something more automatic when I have time
+    for i: 3916936800000..S64_MAX
+    {
+        for nodes if it.op != 0 it.done = false;
+        humn.value = i;
+        resolve(root);
+        if root.ops[0].value == root.ops[1].value
+        {
+            part2 = i;
+            break;
+        }
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
@@ -16,13 +32,14 @@ Node :: struct
 {
     name  : string;
     value : s64;
+    done  : bool;
     op    : u8;
     ops   : [2]*Node;
 }
 
 resolve :: (node: *Node)
 {
-    if node.op == 0 return;
+    if node.done return;
 
     resolve(node.ops[0]);
     resolve(node.ops[1]);
@@ -34,10 +51,10 @@ resolve :: (node: *Node)
         case #char "/"; node.value = node.ops[0].value / node.ops[1].value;
     }
 
-    node.op = 0; // mark as done
+    node.done = true;
 }
 
-parse_nodes :: (input: string) -> *Node, []*Node
+parse_nodes :: (input: string) -> *Node, *Node, []*Node
 {
     nodes : [..]*Node;
 
@@ -51,6 +68,7 @@ parse_nodes :: (input: string) -> *Node, []*Node
         if is_digit(input[0])
         {
             node.value = read_s64(*input);
+            node.done  = true;
         }
         else
         {
@@ -60,7 +78,7 @@ parse_nodes :: (input: string) -> *Node, []*Node
         }
     }
 
-    return find_or_add(*nodes, "root"), nodes;
+    return find_or_add(*nodes, "root"), find_or_add(*nodes, "humn"), nodes;
 
     find_or_add :: (nodes: *[..]*Node, name: string) -> *Node
     {
