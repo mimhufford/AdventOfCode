@@ -22,7 +22,7 @@ walk :: (map: []string, moves: []s64, _x: s64, wrap: ([]string, s64, s64, s64, s
                 if dx != 0
                 {
                     // hitting the edge
-                    if (dx == 1 && x + dx >= map[y].count) || dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " ")
+                    if x + dx >= map[y].count || x + dx < 0 || map[y][x + dx] == #char " "
                     {
                         x, y, dx, dy = wrap(map, x, y, dx, dy);
                     }
@@ -42,7 +42,7 @@ walk :: (map: []string, moves: []s64, _x: s64, wrap: ([]string, s64, s64, s64, s
                 else
                 {
                     // hitting the edge
-                    if (dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")) || (dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " "))
+                    if y + dy >= map.count || y + dy < 0 || map[y + dy].count < x || map[y + dy][x] == #char " "
                     {
                         x, y, dx, dy = wrap(map, x, y, dx, dy);
                     }
