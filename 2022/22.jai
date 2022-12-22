@@ -11,14 +11,6 @@ day22 :: (input: string) -> string, string
 
 walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
 {
-    /*  0 1 2
-          _ _
-    0    |e|f|
-    1   _|d|
-    2  |b|c|
-    3  |a|
-    */
-
     x, y, dx, dy := _x, 0, 1, 0;
     
     for move, move_index: moves
@@ -30,117 +22,10 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
                 // horizontal move
                 if dx != 0
                 {
-                    // going right and hitting the edge
-                    if dx == 1 && x + dx >= map[y].count
+                    // hitting the edge
+                    if (dx == 1 && x + dx >= map[y].count) || dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " ")
                     {
-                        side_x  := x / 50;
-                        side_y  := y / 50;
-                        rel_x   := x % 50;
-                        rel_y   := y % 50;
-                        next_x  := x;
-                        next_y  := y;
-                        next_dx := dx;
-                        next_dy := dy;
-
-                        if side_x == 2 && side_y == 0 // f to c
-                        {
-                            next_x  = 99;
-                            next_y  = (49 - rel_y) + 100;
-                            next_dx = -1;
-                        }
-                        else if side_x == 1 && side_y == 1 // d to f
-                        {
-                            next_x  = rel_y + 100;
-                            next_y  = 49;
-                            next_dx = 0;
-                            next_dy = -1;
-                        }
-                        else if side_x == 1 && side_y == 2 // c to f
-                        {
-                            next_x  = 149;
-                            next_y  = 49 - rel_y;
-                            next_dx = -1;
-                        }
-                        else if side_x == 0 && side_y == 3 // a to c
-                        {
-                            next_x  = rel_y + 50;
-                            next_y  = 149;
-                            next_dx = 0;
-                            next_dy = -1;
-                        }
-                        else
-                        {
-                            assert(false);
-                        }
-
-                        if map[next_y][next_x] == #char "."
-                        {
-                            x  = next_x;
-                            y  = next_y;
-                            dx = next_dx;
-                            dy = next_dy;
-                        }
-                        else
-                        {
-                            assert(map[next_y][next_x] == #char "#");
-                            break;
-                        }
-                    }
-                    // going left and hitting the edge
-                    else if dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " ")
-                    {
-                        side_x  := x / 50;
-                        side_y  := y / 50;
-                        rel_x   := x % 50;
-                        rel_y   := y % 50;
-                        next_x  := x;
-                        next_y  := y;
-                        next_dx := dx;
-                        next_dy := dy;
-
-                        if side_x == 1 && side_y == 0 // e to b
-                        {
-                            next_x  = 0;
-                            next_y  = (49 - rel_y) + 100;
-                            next_dx = 1;
-                        }
-                        else if side_x == 1 && side_y == 1 // d to b
-                        {
-                            next_x  = rel_y;
-                            next_y  = 100;
-                            next_dx = 0;
-                            next_dy = 1;
-                        }
-                        else if side_x == 0 && side_y == 2 // b to e
-                        {
-                            next_x  = 50;
-                            next_y  = 49 - rel_y;
-                            next_dx = 1;
-                        }
-                        else if side_x == 0 && side_y == 3 // a to c
-                        {
-                            next_x  = rel_y + 50;
-                            next_y  = 0;
-                            next_dx = 0;
-                            next_dy = 1;
-                        }
-                        else
-                        {
-                            assert(false);
-                        }
-
-                        if map[next_y][next_x] == #char "."
-                        {
-                            x  = next_x;
-                            y  = next_y;
-                            dx = next_dx;
-                            dy = next_dy;
-                        }
-                        else
-                        {
-                            assert(map[next_y][next_x] == #char "#");
-                            break;
-                        }
+                        x, y, dx, dy = wrap_3d(map, x, y, dx, dy);
                     }
                     // successfully going left or right
                     else if map[y][x + dx] == #char "."
@@ -157,103 +42,10 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
                 // vertical move
                 else
                 {
-                    // going down and hitting the edge
-                    if dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")
+                    // hitting the edge
+                    if (dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")) || (dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " "))
                     {
-                        side_x  := x / 50;
-                        side_y  := y / 50;
-                        rel_x   := x % 50;
-                        rel_y   := y % 50;
-                        next_x  := x;
-                        next_y  := y;
-                        next_dx := dx;
-                        next_dy := dy;
-
-                        if side_x == 2 && side_y == 0 // f to d
-                        {
-                            next_x  = 99;
-                            next_y  = rel_x + 50;
-                            next_dx = -1;
-                            next_dy = 0;
-                        }
-                        else if side_x == 1 && side_y == 2 // c to a
-                        {
-                            next_x  = 49;
-                            next_y  = rel_x + 150;
-                            next_dx = -1;
-                            next_dy = 0;
-                        }
-                        else if side_x == 0 && side_y == 3 // a to f
-                        {
-                            next_x  = rel_x + 100;
-                            next_y  = 0;
-                        }
-                        else
-                        {
-                            assert(false);
-                        }
-
-                        if map[next_y][next_x] == #char "."
-                        {
-                            x  = next_x;
-                            y  = next_y;
-                            dx = next_dx;
-                            dy = next_dy;
-                        }
-                        else
-                        {
-                            assert(map[next_y][next_x] == #char "#");
-                            break;
-                        }
-                    }
-                    // going up and hitting the edge
-                    else if dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " ")
-                    {
-                        side_x  := x / 50;
-                        side_y  := y / 50;
-                        rel_x   := x % 50;
-                        rel_y   := y % 50;
-                        next_x  := x;
-                        next_y  := y;
-                        next_dx := dx;
-                        next_dy := dy;
-
-                        if side_x == 2 && side_y == 0 // f to a
-                        {
-                            next_x  = rel_x;
-                            next_y  = 199;
-                        }
-                        else if side_x == 1 && side_y == 0 // e to a
-                        {
-                            next_x  = 0;
-                            next_y  = rel_x + 150;
-                            next_dx = 1;
-                            next_dy = 0;
-                        }
-                        else if side_x == 0 && side_y == 2 // b to d
-                        {
-                            next_x  = 50;
-                            next_y  = rel_x + 50;
-                            next_dx = 1;
-                            next_dy = 0;
-                        }
-                        else
-                        {
-                            assert(false);
-                        }
-
-                        if map[next_y][next_x] == #char "."
-                        {
-                            x  = next_x;
-                            y  = next_y;
-                            dx = next_dx;
-                            dy = next_dy;
-                        }
-                        else
-                        {
-                            assert(map[next_y][next_x] == #char "#");
-                            break;
-                        }
+                        x, y, dx, dy = wrap_3d(map, x, y, dx, dy);
                     }
                     // successfully going up or down
                     else if map[y + dy][x] == #char "."
@@ -290,6 +82,131 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
     else if dy == -1 password += 3;
 
     return password;
+}
+
+wrap_3d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s64
+{
+    /*  0 1 2
+          _ _
+    0    |e|f|
+    1   _|d|
+    2  |b|c|
+    3  |a|
+    */
+
+    side_x  := x / 50;
+    side_y  := y / 50;
+    rel_x   := x % 50;
+    rel_y   := y % 50;
+    next_x  := x;
+    next_y  := y;
+    next_dx := dx;
+    next_dy := dy;
+
+    if dx == 1 && side_x == 2 && side_y == 0 // f to c
+    {
+        next_x  = 99;
+        next_y  = (49 - rel_y) + 100;
+        next_dx = -1;
+    }
+    else if dx == 1 && side_x == 1 && side_y == 1 // d to f
+    {
+        next_x  = rel_y + 100;
+        next_y  = 49;
+        next_dx = 0;
+        next_dy = -1;
+    }
+    else if dx == 1 && side_x == 1 && side_y == 2 // c to f
+    {
+        next_x  = 149;
+        next_y  = 49 - rel_y;
+        next_dx = -1;
+    }
+    else if dx == 1 && side_x == 0 && side_y == 3 // a to c
+    {
+        next_x  = rel_y + 50;
+        next_y  = 149;
+        next_dx = 0;
+        next_dy = -1;
+    }
+    else if dx == -1 && side_x == 1 && side_y == 0 // e to b
+    {
+        next_x  = 0;
+        next_y  = (49 - rel_y) + 100;
+        next_dx = 1;
+    }
+    else if dx == -1 && side_x == 1 && side_y == 1 // d to b
+    {
+        next_x  = rel_y;
+        next_y  = 100;
+        next_dx = 0;
+        next_dy = 1;
+    }
+    else if dx == -1 && side_x == 0 && side_y == 2 // b to e
+    {
+        next_x  = 50;
+        next_y  = 49 - rel_y;
+        next_dx = 1;
+    }
+    else if dx == -1 && side_x == 0 && side_y == 3 // a to c
+    {
+        next_x  = rel_y + 50;
+        next_y  = 0;
+        next_dx = 0;
+        next_dy = 1;
+    }
+    else if dy == 1 && side_x == 2 && side_y == 0 // f to d
+    {
+        next_x  = 99;
+        next_y  = rel_x + 50;
+        next_dx = -1;
+        next_dy = 0;
+    }
+    else if dy == 1 && side_x == 1 && side_y == 2 // c to a
+    {
+        next_x  = 49;
+        next_y  = rel_x + 150;
+        next_dx = -1;
+        next_dy = 0;
+    }
+    else if dy == 1 && side_x == 0 && side_y == 3 // a to f
+    {
+        next_x  = rel_x + 100;
+        next_y  = 0;
+    }
+    else if dy == -1 && side_x == 2 && side_y == 0 // f to a
+    {
+        next_x  = rel_x;
+        next_y  = 199;
+    }
+    else if dy == -1 && side_x == 1 && side_y == 0 // e to a
+    {
+        next_x  = 0;
+        next_y  = rel_x + 150;
+        next_dx = 1;
+        next_dy = 0;
+    }
+    else if dy == -1 && side_x == 0 && side_y == 2 // b to d
+    {
+        next_x  = 50;
+        next_y  = rel_x + 50;
+        next_dx = 1;
+        next_dy = 0;
+    }
+    else
+    {
+        assert(false);
+    }
+
+    if map[next_y][next_x] == #char "."
+    {
+        return next_x, next_y, next_dx, next_dy;
+    }
+    else
+    {
+        assert(map[next_y][next_x] == #char "#");
+        return x, y, dx, dy;
+    }
 }
 
 walk_2d :: (map: []string, moves: []s64, _x: s64) -> s64
