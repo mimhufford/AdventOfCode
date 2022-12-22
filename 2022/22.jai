@@ -1,7 +1,21 @@
 day22 :: (input: string) -> string, string
 {
     map, moves, x := parse_input(input);
-    y, dx, dy := 0, 1, 0;
+    password_2d := walk_2d(map, moves, x);
+    password_3d := walk_3d(map, moves, x);
+    return tprint("%", password_2d), tprint("%", password_3d);
+}
+
+#scope_file
+
+walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
+{
+    return 0;
+}
+
+walk_2d :: (map: []string, moves: []s64, _x: s64) -> s64
+{
+    x, y, dx, dy := _x, 0, 1, 0;
 
     for move, move_index: moves
     {
@@ -147,10 +161,9 @@ day22 :: (input: string) -> string, string
     if      dy ==  1 password += 1;
     else if dx == -1 password += 2;
     else if dy == -1 password += 3;
-    return tprint("%", password), tprint("%", "");
-}
 
-#scope_file
+    return password;
+}
 
 parse_input :: (input: string) -> []string, []s64, s64
 {
