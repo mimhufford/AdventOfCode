@@ -84,6 +84,76 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
     return password;
 }
 
+wrap_2d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s64
+{
+    next_x := x;
+    next_y := y;
+
+    if dx == 1
+    {
+        for 0..map[y].count-1
+        {
+            if map[y][it] != #char " "
+            {
+                next_x = it;
+                break;
+            }
+        }
+
+        if map[y][next_x] == #char "#"
+        {
+            next_x = x;
+        }
+    }
+    else if dx == -1
+    {
+        next_x = map[y].count - 1;
+        
+        if map[y][next_x] == #char "#"
+        {
+            next_x = x;
+        }
+    }
+    else if dy == 1
+    {
+        next_y = 0;
+
+        for 0..map.count-1
+        {
+            if map[it][x] != #char " "
+            {
+                next_y = it;
+                break;
+            }
+        }
+
+        if map[next_y][x] == #char "#"
+        {
+            next_y = y;
+        }
+    }
+    else if dy == -1
+    {
+        next_y = 0;
+
+        for < map.count-1..0
+        {
+            if map[it].count >= x && map[it][x] != #char " "
+            {
+                next_y = it;
+                break;
+            }
+        }
+
+        if map[next_y][x] == #char "#"
+        {
+            next_y = y;
+        }
+    }
+
+    return next_x, next_y, dx, dy;
+}
+
 wrap_3d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s64
 {
     /*  0 1 2
@@ -222,44 +292,10 @@ walk_2d :: (map: []string, moves: []s64, _x: s64) -> s64
                 // horizontal move
                 if dx != 0
                 {
-                    // going right and hitting the edge
-                    if dx == 1 && x + dx >= map[y].count
+                    // hitting the edge
+                    if (dx == 1 && x + dx >= map[y].count) || (dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " "))
                     {
-                        next_x := 0;
-
-                        for 0..map[y].count-1
-                        {
-                            if map[y][it] != #char " "
-                            {
-                                next_x = it;
-                                break;
-                            }
-                        }
-
-                        if map[y][next_x] == #char "."
-                        {
-                            x = next_x;
-                        }
-                        else
-                        {
-                            assert(map[y][next_x] == #char "#");
-                            break;
-                        }
-                    }
-                    // going left and hitting the edge
-                    else if dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " ")
-                    {
-                        next_x := map[y].count - 1;
-                        
-                        if map[y][next_x] == #char "."
-                        {
-                            x = next_x;
-                        }
-                        else
-                        {
-                            assert(map[y][next_x] == #char "#");
-                            break;
-                        }
+                        x, y, dx, dy = wrap_2d(map, x, y, dx, dy);
                     }
                     // successfully going left or right
                     else if map[y][x + dx] == #char "."
@@ -276,53 +312,10 @@ walk_2d :: (map: []string, moves: []s64, _x: s64) -> s64
                 // vertical move
                 else
                 {
-                    // going down and hitting the edge
-                    if dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")
+                    // hitting the edge
+                    if (dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")) || (dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " "))
                     {
-                        next_y := 0;
-
-                        for 0..map.count-1
-                        {
-                            if map[it][x] != #char " "
-                            {
-                                next_y = it;
-                                break;
-                            }
-                        }
-
-                        if map[next_y][x] == #char "."
-                        {
-                            y = next_y;
-                        }
-                        else
-                        {
-                            assert(map[next_y][x] == #char "#");
-                            break;
-                        }
-                    }
-                    // going up and hitting the edge
-                    else if dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " ")
-                    {
-                        next_y := 0;
-
-                        for < map.count-1..0
-                        {
-                            if map[it].count >= x && map[it][x] != #char " "
-                            {
-                                next_y = it;
-                                break;
-                            }
-                        }
-
-                        if map[next_y][x] == #char "."
-                        {
-                            y = next_y;
-                        }
-                        else
-                        {
-                            assert(map[next_y][x] == #char "#");
-                            break;
-                        }
+                        x, y, dx, dy = wrap_2d(map, x, y, dx, dy);
                     }
                     // successfully going up or down
                     else if map[y + dy][x] == #char "."
