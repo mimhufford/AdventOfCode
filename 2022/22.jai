@@ -11,52 +11,29 @@ day22 :: (input: string) -> string, string
 walk :: (map: []string, moves: []s64, _x: s64, wrap: ([]string, s64, s64, s64, s64) -> (s64, s64, s64, s64)) -> s64
 {
     x, y, dx, dy := _x, 0, 1, 0;
-    
+
     for move, move_index: moves
     {
         if move_index % 2 == 0
         {
             for 1..move
             {
-                // horizontal move
-                if dx != 0
+                // hitting the edge
+                if x + dx >= map[y].count || x + dx < 0 || map[y][x + dx] == #char " " ||
+                   y + dy >= map.count    || y + dy < 0 || map[y + dy].count < x || map[y + dy][x] == #char " "
                 {
-                    // hitting the edge
-                    if x + dx >= map[y].count || x + dx < 0 || map[y][x + dx] == #char " "
-                    {
-                        x, y, dx, dy = wrap(map, x, y, dx, dy);
-                    }
-                    // successfully going left or right
-                    else if map[y][x + dx] == #char "."
-                    {
-                        x += dx;
-                    }
-                    // going left or right and hitting a wall
-                    else
-                    {
-                        assert(map[y][x + dx] == #char "#");
-                        break;
-                    }
+                    x, y, dx, dy = wrap(map, x, y, dx, dy);
                 }
-                // vertical move
+                // successfully moving
+                else if map[y + dy][x + dx] == #char "."
+                {
+                    x += dx;
+                    y += dy;
+                }
+                // hitting a wall
                 else
                 {
-                    // hitting the edge
-                    if y + dy >= map.count || y + dy < 0 || map[y + dy].count < x || map[y + dy][x] == #char " "
-                    {
-                        x, y, dx, dy = wrap(map, x, y, dx, dy);
-                    }
-                    // successfully going up or down
-                    else if map[y + dy][x] == #char "."
-                    {
-                        y += dy;
-                    }
-                    // going up or down and hitting a wall
-                    else
-                    {
-                        assert(map[y + dy][x] == #char "#");
-                        break;
-                    }
+                    break;
                 }
             }
         }
@@ -107,7 +84,7 @@ wrap_2d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s
     else if dx == -1
     {
         next_x = map[y].count - 1;
-        
+
         if map[y][next_x] == #char "#"
         {
             next_x = x;
@@ -262,20 +239,13 @@ wrap_3d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s
         next_dx = 1;
         next_dy = 0;
     }
-    else
-    {
-        assert(false);
-    }
 
     if map[next_y][next_x] == #char "."
     {
         return next_x, next_y, next_dx, next_dy;
     }
-    else
-    {
-        assert(map[next_y][next_x] == #char "#");
-        return x, y, dx, dy;
-    }
+
+    return x, y, dx, dy;
 }
 
 parse_input :: (input: string) -> []string, []s64, s64
@@ -283,7 +253,7 @@ parse_input :: (input: string) -> []string, []s64, s64
     parts := split(input, "\n\n");
     map  := split(parts[0], "\n");
     moves : [..]s64;
-    
+
     while true
     {
         array_add(*moves, read_s64(*parts[1]));
