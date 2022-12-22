@@ -1,15 +1,14 @@
 day22 :: (input: string) -> string, string
 {
     map, moves, x := parse_input(input);
-    password_2d := walk_2d(map, moves, x);
-    password_3d := walk_3d(map, moves, x);
+    password_2d := walk(map, moves, x, wrap_2d);
+    password_3d := walk(map, moves, x, wrap_3d);
     return tprint("%", password_2d), tprint("%", password_3d);
 }
 
 #scope_file
 
-
-walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
+walk :: (map: []string, moves: []s64, _x: s64, wrap: ([]string, s64, s64, s64, s64) -> (s64, s64, s64, s64)) -> s64
 {
     x, y, dx, dy := _x, 0, 1, 0;
     
@@ -25,7 +24,7 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
                     // hitting the edge
                     if (dx == 1 && x + dx >= map[y].count) || dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " ")
                     {
-                        x, y, dx, dy = wrap_3d(map, x, y, dx, dy);
+                        x, y, dx, dy = wrap(map, x, y, dx, dy);
                     }
                     // successfully going left or right
                     else if map[y][x + dx] == #char "."
@@ -45,7 +44,7 @@ walk_3d :: (map: []string, moves: []s64, _x: s64) -> s64
                     // hitting the edge
                     if (dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")) || (dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " "))
                     {
-                        x, y, dx, dy = wrap_3d(map, x, y, dx, dy);
+                        x, y, dx, dy = wrap(map, x, y, dx, dy);
                     }
                     // successfully going up or down
                     else if map[y + dy][x] == #char "."
@@ -277,81 +276,6 @@ wrap_3d :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64, s64, s
         assert(map[next_y][next_x] == #char "#");
         return x, y, dx, dy;
     }
-}
-
-walk_2d :: (map: []string, moves: []s64, _x: s64) -> s64
-{
-    x, y, dx, dy := _x, 0, 1, 0;
-
-    for move, move_index: moves
-    {
-        if move_index % 2 == 0
-        {
-            for 1..move
-            {
-                // horizontal move
-                if dx != 0
-                {
-                    // hitting the edge
-                    if (dx == 1 && x + dx >= map[y].count) || (dx == -1 && (x + dx < 0 || map[y][x + dx] == #char " "))
-                    {
-                        x, y, dx, dy = wrap_2d(map, x, y, dx, dy);
-                    }
-                    // successfully going left or right
-                    else if map[y][x + dx] == #char "."
-                    {
-                        x += dx;
-                    }
-                    // going left or right and hitting a wall
-                    else
-                    {
-                        assert(map[y][x + dx] == #char "#");
-                        break;
-                    }
-                }
-                // vertical move
-                else
-                {
-                    // hitting the edge
-                    if (dy == 1 && (y + dy >= map.count || map[y + dy].count < x || map[y + dy][x] == #char " ")) || (dy == -1 && (y + dy < 0 || map[y + dy][x] == #char " "))
-                    {
-                        x, y, dx, dy = wrap_2d(map, x, y, dx, dy);
-                    }
-                    // successfully going up or down
-                    else if map[y + dy][x] == #char "."
-                    {
-                        y += dy;
-                    }
-                    // going up or down and hitting a wall
-                    else
-                    {
-                        assert(map[y + dy][x] == #char "#");
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if move == #char "L"
-            {
-                if dx == 0 { dx =  dy; dy = 0; }
-                else       { dy = -dx; dx = 0; }
-            }
-            else
-            {
-                if dx == 0 { dx = -dy; dy = 0; }
-                else       { dy =  dx; dx = 0; }
-            }
-        }
-    }
-
-    password := 1000*(y+1) + 4*(x+1);
-    if      dy ==  1 password += 1;
-    else if dx == -1 password += 2;
-    else if dy == -1 password += 3;
-
-    return password;
 }
 
 parse_input :: (input: string) -> []string, []s64, s64
