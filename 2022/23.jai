@@ -10,14 +10,26 @@ day23 :: (input: string) -> string, string
         <<find_or_add(*curr, it.pos.hash) += 1;
     }
 
-    for round: 1..10
+    empty_10 := 0;
+    complete := 0;
+
+    for round: 1..S64_MAX
     {
         table_reset(*next);
+
+        all_happy := true;
 
         for * e: elves
         {
             e.next = calculate_next_move(e, curr, round);
             <<find_or_add(*next, e.next.hash) += 1;
+            if !e.happy  all_happy = false;
+        }
+
+        if all_happy
+        {
+            complete = round;
+            break;
         }
 
         // the curr and next cells could be cached on the elf between passes to avoid double table lookup
@@ -29,26 +41,12 @@ day23 :: (input: string) -> string, string
             e.pos = e.next;
             <<find_or_add(*curr, e.pos.hash) += 1;
         }
+
+        if round == 10 empty_10 = calculate_empty_cells(curr, elves);
     }
 
-    x1, x2, y1, y2 := S32_MAX, S32_MIN, S32_MAX, S32_MIN;
 
-    for curr
-    {
-        if it == 0 continue;
-        assert(it == 1);
-        p: V2;
-        p.hash = it_index;
-        x1 = min(x1, p.x);
-        x2 = max(x2, p.x);
-        y1 = min(y1, p.y);
-        y2 = max(y2, p.y);
-    }
-
-    area  := (x2-x1+1) * (y2-y1+1);
-    empty := area - elves.count;
-
-    return tprint("%", empty), tprint("%", "");
+    return tprint("%", empty_10), tprint("%", complete);
 }
 
 #scope_file
@@ -64,8 +62,9 @@ operator + :: (a: V2, b: V2) -> V2 { r := a; r.x += b.x; r.y += b.y; return r; }
 
 Elf :: struct
 {
-    pos  : V2;
-    next : V2;
+    pos   : V2;
+    next  : V2;
+    happy : bool;
 }
 
 moves :: ([]V2).[
@@ -85,19 +84,19 @@ calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
 {
     // this does some repeat table lookups which could be avoided if needed
 
-    wants_to_move := false;
+    e.happy = true;
 
     for dir: neighbours
     {
         cell := table_find_pointer(*map, (e.pos + dir).hash);
         if cell && <<cell
         {
-            wants_to_move = true;
+            e.happy = false;
             break;
         }
     }
 
-    if !wants_to_move return e.pos;
+    if e.happy return e.pos;
 
     for i: 0..3
     {
@@ -116,6 +115,26 @@ calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
     }
 
     return e.pos;
+}
+
+calculate_empty_cells :: (map: Table(s64, u8), elves: []Elf) -> s64
+{
+    x1, x2, y1, y2 := S32_MAX, S32_MIN, S32_MAX, S32_MIN;
+
+    for map
+    {
+        if it == 0 continue;
+        assert(it == 1);
+        p: V2;
+        p.hash = it_index;
+        x1 = min(x1, p.x);
+        x2 = max(x2, p.x);
+        y1 = min(y1, p.y);
+        y2 = max(y2, p.y);
+    }
+
+    area  := (x2-x1+1) * (y2-y1+1);
+    return area - elves.count;
 }
 
 parse_map :: (input: string) -> []Elf
