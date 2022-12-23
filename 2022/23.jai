@@ -2,46 +2,116 @@ day23 :: (input: string) -> string, string
 {
     elves := parse_map(input);
 
+    curr : Table(s64, u8); // pos => count
+    next : Table(s64, u8); // pos => count
+
+    for elves
+    {
+        <<find_or_add(*curr, it.pos.hash) += 1;
+    }
+
     for round: 1..10
     {
-        move := moves[round % 4];
+        for * e: elves
+        {
+            e.next  = calculate_next_move(e, curr, round);
+            <<find_or_add(*next, e.next.hash) += 1;
+        }
+
+        // the curr and next cells could be cached on the elf between passes to avoid double table lookup
 
         for * e: elves
         {
-
+            if <<table_find_pointer(*next, e.next.hash) > 1 continue;
+            <<table_find_pointer(*curr, e.pos.hash) -= 1;
+            e.pos = e.next;
+            <<find_or_add(*curr, e.pos.hash) += 1;
         }
     }
 
-    return tprint("%", elves), tprint("%", "");
+    return tprint("%", ""), tprint("%", "");
 }
 
 #scope_file
 
-Elf :: struct
+V2 :: struct
 {
-    x, y : s64;
+    x, y : s32;
+    #place x;
+    hash : s64;
 }
 
-moves :: ([][]s64).[
-    .[ .[ 1,  0], .[ 1, -1], .[ 1,  1] ], // E
-    .[ .[ 0, -1], .[ 1, -1], .[-1, -1] ], // N
-    .[ .[ 0,  1], .[ 1,  1], .[-1,  1] ], // S
-    .[ .[-1,  0], .[-1, -1], .[-1,  1] ], // W
+operator + :: (a: V2, b: V2) -> V2 { r := a; r.x += b.x; r.y += b.y; return r; }
+
+Elf :: struct
+{
+    pos  : V2;
+    next : V2;
+}
+
+moves :: ([]V2).[
+    .[ .{ 1,  0}, .{ 1, -1}, .{ 1,  1} ], // E
+    .[ .{ 0, -1}, .{ 1, -1}, .{-1, -1} ], // N
+    .[ .{ 0,  1}, .{ 1,  1}, .{-1,  1} ], // S
+    .[ .{-1,  0}, .{-1, -1}, .{-1,  1} ], // W
 ];
+
+neighbours :: V2.[
+    .{ 0, -1}, .{ 1, -1}, .{-1, -1},
+    .{-1,  0},            .{ 1,  0},
+    .{ 0,  1}, .{ 1,  1}, .{-1,  1},
+];
+
+calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
+{
+    // this does some repeat table lookups which could be avoided if needed
+
+    wants_to_move := false;
+
+    for dir: neighbours
+    {
+        cell := table_find_pointer(*map, (e.pos + dir).hash);
+        if cell && <<cell
+        {
+            wants_to_move = true;
+            break;
+        }
+    }
+
+    if !wants_to_move return e.pos;
+
+    for i: 0..3
+    {
+        move := moves[(round + i) % 4];
+
+        for dir: move
+        {
+            cell := table_find_pointer(*map, (e.pos + dir).hash);
+            if cell && <<cell
+            {
+                continue i;
+            }
+        }
+
+        return e.pos + move[0];
+    }
+
+    return e.pos;
+}
 
 parse_map :: (input: string) -> []Elf
 {
     elves : [..]Elf;
 
-    x, y := 0, 0;
+    x, y : s32;
 
     while input
     {
         if input[0] == #char "#"
         {
             elf := array_add(*elves);
-            elf.x = x;
-            elf.y = y;
+            elf.pos.x = x;
+            elf.pos.y = y;
             x += 1;
         }
         else if input[0] == #char "."
@@ -50,7 +120,7 @@ parse_map :: (input: string) -> []Elf
         }
         else if input[0] == #char "\n"
         {
-            x = 50;
+            x = 0;
             y += 1;
         }
 
