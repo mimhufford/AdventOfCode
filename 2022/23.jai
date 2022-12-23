@@ -12,9 +12,11 @@ day23 :: (input: string) -> string, string
 
     for round: 1..10
     {
+        table_reset(*next);
+
         for * e: elves
         {
-            e.next  = calculate_next_move(e, curr, round);
+            e.next = calculate_next_move(e, curr, round);
             <<find_or_add(*next, e.next.hash) += 1;
         }
 
@@ -74,9 +76,9 @@ moves :: ([]V2).[
 ];
 
 neighbours :: V2.[
-    .{ 0, -1}, .{ 1, -1}, .{-1, -1},
+    .{-1, -1}, .{ 0, -1}, .{ 1, -1},
     .{-1,  0},            .{ 1,  0},
-    .{ 0,  1}, .{ 1,  1}, .{-1,  1},
+    .{-1,  1}, .{ 0,  1}, .{ 1,  1},
 ];
 
 calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
