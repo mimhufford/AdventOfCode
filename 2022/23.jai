@@ -32,8 +32,6 @@ day23 :: (input: string) -> string, string
             break;
         }
 
-        // the curr and next cells could be cached on the elf between passes to avoid double table lookup
-
         for * e: elves
         {
             if <<table_find_pointer(*next, e.next.hash) > 1 continue;
@@ -44,7 +42,6 @@ day23 :: (input: string) -> string, string
 
         if round == 10 empty_10 = calculate_empty_cells(curr, elves);
     }
-
 
     return tprint("%", empty_10), tprint("%", complete);
 }
