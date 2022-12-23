@@ -29,7 +29,24 @@ day23 :: (input: string) -> string, string
         }
     }
 
-    return tprint("%", ""), tprint("%", "");
+    x1, x2, y1, y2 := S32_MAX, S32_MIN, S32_MAX, S32_MIN;
+
+    for curr
+    {
+        if it == 0 continue;
+        assert(it == 1);
+        p: V2;
+        p.hash = it_index;
+        x1 = min(x1, p.x);
+        x2 = max(x2, p.x);
+        y1 = min(y1, p.y);
+        y2 = max(y2, p.y);
+    }
+
+    area  := (x2-x1) * (y2-y1);
+    empty := area - elves.count;
+
+    return tprint("%", empty), tprint("%", "");
 }
 
 #scope_file
