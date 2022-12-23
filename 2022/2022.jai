@@ -4,10 +4,13 @@ main :: ()
 
     init_time();
 
+    args := get_command_line_arguments();
+
     total_time : float64;
 
     for days
     {
+        if args.count > 1 && tprint("%", it_index + 1) != args[1] continue;
         input := read_entire_file(tprint("input/%.txt", formatInt(it_index+1, minimum_digits=2)));
         day_start := get_time();
         part1, part2 := it(input);
