@@ -3,11 +3,7 @@ day21 :: (input: string) -> string, string
     root, humn, nodes := parse_nodes(input);
     resolve(root);
     part1 := root.value;
-
     part2 := 0;
-
-    // Part 2: every node is used exactly once, so the
-    //         expression can be flattened and simplified
 
     // NOTE: Found starting value via manual experimentation
     // Convert into something more automatic when I have time
@@ -76,6 +72,33 @@ parse_nodes :: (input: string) -> *Node, *Node, []*Node
             node.op     = read_word(*input)[0];
             node.ops[1] = find_or_add(*nodes, read_word(*input));
         }
+    }
+
+    // simplify the tree by resolving nodes that don't include humn
+    while true
+    {
+        delete : [..]*Node;
+        for n: nodes
+        {
+            if n.name == "humn"        continue;
+            if n.op == 0               continue; 
+            if n.ops[0].op   != 0      continue;
+            if n.ops[1].op   != 0      continue;
+            if n.ops[0].name == "humn" continue;
+            if n.ops[1].name == "humn" continue;
+            if n.op == #char "+" n.value = n.ops[0].value + n.ops[1].value;
+            if n.op == #char "-" n.value = n.ops[0].value - n.ops[1].value;
+            if n.op == #char "*" n.value = n.ops[0].value * n.ops[1].value;
+            if n.op == #char "/" n.value = n.ops[0].value / n.ops[1].value;
+            n.op = 0;
+            n.done = true;
+            array_add(*delete, n.ops[0]);
+            array_add(*delete, n.ops[1]);
+        }
+
+        if delete.count == 0 break;
+
+        for delete array_unordered_remove_by_value(*nodes, it);
     }
 
     return find_or_add(*nodes, "root"), find_or_add(*nodes, "humn"), nodes;
