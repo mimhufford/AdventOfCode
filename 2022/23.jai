@@ -45,7 +45,7 @@ day23 :: (input: string) -> string, string
         y2 = max(y2, p.y);
     }
 
-    area  := (x2-x1) * (y2-y1);
+    area  := (x2-x1+1) * (y2-y1+1);
     empty := area - elves.count;
 
     return tprint("%", empty), tprint("%", "");
