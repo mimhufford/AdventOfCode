@@ -5,18 +5,55 @@ day21 :: (input: string) -> string, string
     part1 := root.value;
     part2 := 0;
 
-    // NOTE: Found starting value via manual experimentation
-    // Convert into something more automatic when I have time
-    for i: 3916936800000..S64_MAX
+    humn_val := 0;
+
+    for inf: 0..S64_MAX
     {
-        for nodes if it.op != 0 it.done = false;
-        humn.value = i;
-        resolve(root);
-        if root.ops[0].value == root.ops[1].value
+        avg_diff_1 := 0;
+
+        for i: 1..10
         {
-            part2 = i;
-            break;
+            for nodes if it.op != 0 it.done = false;
+            humn.value = humn_val;
+            resolve(root);
+            diff := abs(root.ops[0].value - root.ops[1].value);
+
+            if diff == 0 
+            {
+                part2 = humn_val;
+                break inf;
+            }
+
+            avg_diff_1 += diff;
+
+            humn_val += 1;
         }
+
+        avg_diff_2 := 0;
+        for i: 1..10
+        {
+            for nodes if it.op != 0 it.done = false;
+            humn.value = humn_val;
+            resolve(root);
+            diff := abs(root.ops[0].value - root.ops[1].value);
+
+            if diff == 0 
+            {
+                part2 = humn_val;
+                break inf;
+            }
+
+            avg_diff_2 += diff;
+
+            humn_val += 1;
+        }
+
+        avg_diff_1 /= 10;
+        avg_diff_2 /= 10;
+
+        rough_amount_per_10 := avg_diff_1 - avg_diff_2;
+        amount_to_jump_to_get_about_half_way := avg_diff_2 / 2 / rough_amount_per_10;
+        humn_val += amount_to_jump_to_get_about_half_way;
     }
 
     return tprint("%", part1), tprint("%", part2);
