@@ -1,18 +1,19 @@
 day24 :: (input: string) -> string, string
 {
-    map, w, h, cycle := generate_map_for_each_cycle(input);
+    map, sx, sy, tx, ty := generate_map_for_each_cycle(input);
 
-    minutes := walk(map, 1, 0, xx (w-2), xx (h-1), 0);
+    goal_1 := walk(map, sx, sy, tx, ty, 0);
+    snacks := walk(map, tx, ty, sx, sy, goal_1);
+    goal_2 := walk(map, sx, sy, tx, ty, snacks);
 
-    return tprint("%", minutes), tprint("%", "");
+    return tprint("%", goal_1), tprint("%", goal_2);
 }
 
 #scope_file
 
 State :: struct
 {
-    x      : u16;
-    y      : u16;
+    x, y   : u16;
     minute : u32;
     #place x;
     hash   : u64;
@@ -22,6 +23,8 @@ history : Table(u64, u8);
 
 walk :: (map: [..][..][..]u8, x: u16, y: u16, tx: u16, ty: u16, minute: u32) -> u32
 {
+    table_reset(*history);
+
     w, h, c := map[0][0].count, map[0].count, map.count;
 
     queue : [..]State;
@@ -37,24 +40,24 @@ walk :: (map: [..][..][..]u8, x: u16, y: u16, tx: u16, ty: u16, minute: u32) -> 
         s := queue[it];
         if s.x == tx && s.y == ty return s.minute;
 
-        hash := s;
-        hash.minute %= cast(u32)c;
-        if table_find_pointer(*history, hash.hash) continue;
-        table_add(*history, hash.hash, 0);
+        cycled_s := s;
+        cycled_s.minute %= cast(u32)c;
+        if table_find_pointer(*history, cycled_s.hash) continue;
+        table_add(*history, cycled_s.hash, 0);
 
         s.minute += 1;
 
-        if s.x < w-1 && map[s.minute % cast(u32)c][ s.y ][s.x+1] == 0 { n := s;  n.x += 1;  array_add(*queue, n); }
-        if s.y < h-1 && map[s.minute % cast(u32)c][s.y+1][ s.x ] == 0 { n := s;  n.y += 1;  array_add(*queue, n); }
-        if s.x > 0   && map[s.minute % cast(u32)c][ s.y ][s.x-1] == 0 { n := s;  n.x -= 1;  array_add(*queue, n); }
-        if s.y > 0   && map[s.minute % cast(u32)c][s.y-1][ s.x ] == 0 { n := s;  n.y -= 1;  array_add(*queue, n); }
-        if              map[s.minute % cast(u32)c][ s.y ][ s.x ] == 0 { n := s;             array_add(*queue, n); }
+        if s.x < w-1 && map[s.minute % c][ s.y ][s.x+1] == 0 { n := s;  n.x += 1;  array_add(*queue, n); }
+        if s.y < h-1 && map[s.minute % c][s.y+1][ s.x ] == 0 { n := s;  n.y += 1;  array_add(*queue, n); }
+        if s.x > 0   && map[s.minute % c][ s.y ][s.x-1] == 0 { n := s;  n.x -= 1;  array_add(*queue, n); }
+        if s.y > 0   && map[s.minute % c][s.y-1][ s.x ] == 0 { n := s;  n.y -= 1;  array_add(*queue, n); }
+        if              map[s.minute % c][ s.y ][ s.x ] == 0 { n := s;             array_add(*queue, n); }
     }
 
-    return U32_MAX;
+    return 0;
 }
 
-generate_map_for_each_cycle :: (input: string) -> [..][..][..]u8, s64, s64, s64
+generate_map_for_each_cycle :: (input: string) -> [..][..][..]u8, u16, u16, u16, u16
 {
     map : [..][..][..]u8; // time, y, x
     _ := array_add(*map); // add entry for time = 0
@@ -104,7 +107,7 @@ generate_map_for_each_cycle :: (input: string) -> [..][..][..]u8, s64, s64, s64
         }
     }
 
-    return map, w, h, cycle;
+    return map, 1, 0, cast(u16)(w-2), cast(u16)(h-1);
 }
 
 X :: 0b_1111_0000;
