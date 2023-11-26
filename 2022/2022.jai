@@ -1,49 +1,95 @@
+results : [..]Day;
+start_time : Apollo_Time;
+
 main :: ()
 {
     #insert #run generate_days();
 
-    init_time();
+    array_reserve(*results, 25);
+    start_time = current_time_monotonic();
 
-    args := get_command_line_arguments();
-
-    total_time : float64;
+    thread_group : Thread_Group;
+    thread_group.logging = false;
+    init(*thread_group, 8, do_day);
+    start(*thread_group);
 
     for days
     {
-        if args.count > 1 && tprint("%", it_index + 1) != args[1] continue;
-        input := read_entire_file(tprint("input/%.txt", formatInt(it_index+1, minimum_digits=2)));
-        day_start := get_time();
-        part1, part2 := it(input);
-        day_time := get_time() - day_start;
-        total_time += day_time;
-        print("Day % ", formatInt(it_index+1, minimum_digits=2));
-        print("- %ms ", formatFloat(day_time*1000, width=7, trailing_width=3, zero_removal=.NO));
-        print("- % ", part1);
-        print("- %\n", part2);
+        day := array_add(*results);
+        day.day   = xx (it_index + 1);
+        day.input = read_entire_file(tprint("input/%.txt", formatInt(day.day, minimum_digits=2)));
+        day.proc  = it;
+        add_work(*thread_group, day);
     }
 
-    print("\nTotal time: %ms\n", total_time*1000);
+    output_results();
+
+    completed := 0;
+    while completed < results.count
+    {
+        sleep_milliseconds(1);
+        done := get_completed_work(*thread_group);
+        completed += done.count;
+        if done.count output_results();
+    }
+}
+
+output_results :: ()
+{
+    print("\x1B[2J\x1B[H"); // clear the console
+
+    total_time := current_time_monotonic() - start_time;
+    total_time_serial : Apollo_Time;
+
+    for results
+    {
+        if it.done total_time_serial += it.duration;
+
+        print("Day %: %ms - %\n",
+            formatInt(it.day, minimum_digits=2),
+            ifx it.done tprint("%", formatInt(to_milliseconds(it.duration), minimum_digits=4, padding=#char" ")) else "    ",
+            ifx it.done tprint("% - %", it.part1, it.part2)
+        );
+    }
+
+    print("\nTotal time: %ms (%ms)\n", to_milliseconds(total_time), to_milliseconds(total_time_serial));
+}
+
+do_day :: (group: *Thread_Group, thread: *Thread, work: *void) -> Thread_Continue_Status
+{
+    start := current_time_monotonic();
+    day := cast(*Day)work;
+    day.part1, day.part2 = day.proc(day.input);
+    day.duration = start - current_time_monotonic();
+    day.done = true;
+    return .CONTINUE;
+}
+
+Day :: struct
+{
+    day : u8;
+    input : string;
+    proc : (string) -> string, string;
+    part1, part2 : string;
+    duration : Apollo_Time;
+    done : bool;
 }
 
 generate_days :: () -> string
 {
-    code : String_Builder;
+    day_procs  : String_Builder;
+    file_loads : String_Builder;
 
-    append(*code, "days := #type (string) -> (string, string).[");
+    append(*day_procs, "days := #type (string) -> (string, string).[");
     for 1..25 {
         file := tprint("%.jai", formatInt(it, minimum_digits=2));
         if !file_exists(file) continue;
-        append(*code, tprint("day%,", it));
+        append(*day_procs, tprint("day%,", it));
+        append(*file_loads, tprint("#load \"../%.jai\";", formatInt(it, minimum_digits=2)));
     }
-    append(*code, "];");
+    append(*day_procs, "];");
 
-    for 1..25 {
-        file := tprint("%.jai", formatInt(it, minimum_digits=2));
-        if !file_exists(file) continue;
-        append(*code, tprint("#load \"%.jai\";", formatInt(it, minimum_digits=2)));
-    }
-
-    return builder_to_string(*code);
+    return tprint("%\n%\n", builder_to_string(*day_procs), builder_to_string(*file_loads));
 }
 
 #import "File";
