@@ -89,6 +89,16 @@ resolve :: (node: *Node)
 
 parse_nodes :: (input: string) -> *Node, *Node, []*Node
 {
+    find_or_add :: (nodes: *[..]*Node, name: string) -> *Node
+    {
+        for <<nodes if it.name == name return it;
+
+        node := New(Node);
+        node.name = name;
+        array_add(nodes, node);
+        return node;
+    }
+
     nodes : [..]*Node;
 
     while input
@@ -139,14 +149,4 @@ parse_nodes :: (input: string) -> *Node, *Node, []*Node
     }
 
     return find_or_add(*nodes, "root"), find_or_add(*nodes, "humn"), nodes;
-
-    find_or_add :: (nodes: *[..]*Node, name: string) -> *Node
-    {
-        for <<nodes if it.name == name return it;
-
-        node := New(Node);
-        node.name = name;
-        array_add(nodes, node);
-        return node;
-    }
 }

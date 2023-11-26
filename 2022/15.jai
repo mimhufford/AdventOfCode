@@ -63,14 +63,6 @@ find_beacon :: (readings: []Reading, limit: s64) -> s64
 {
     for r: readings
     {
-        s := r.sensor;
-        s.x += r.dist + 1;
-
-        for 0..r.dist { s.x -= 1; s.y -= 1; found, freq := search(s); if found return freq; }
-        for 0..r.dist { s.x -= 1; s.y += 1; found, freq := search(s); if found return freq; }
-        for 0..r.dist { s.x += 1; s.y += 1; found, freq := search(s); if found return freq; }
-        for 0..r.dist { s.x += 1; s.y -= 1; found, freq := search(s); if found return freq; }
-
         search :: (p: Point) -> bool, s64 #expand
         {
             if p.x < 0     return false, 0;
@@ -82,6 +74,14 @@ find_beacon :: (readings: []Reading, limit: s64) -> s64
 
             return true, (cast(s64)p.x) * 4_000_000 + p.y;
         }
+
+        s := r.sensor;
+        s.x += r.dist + 1;
+
+        for 0..r.dist { s.x -= 1; s.y -= 1; found, freq := search(s); if found return freq; }
+        for 0..r.dist { s.x -= 1; s.y += 1; found, freq := search(s); if found return freq; }
+        for 0..r.dist { s.x += 1; s.y += 1; found, freq := search(s); if found return freq; }
+        for 0..r.dist { s.x += 1; s.y -= 1; found, freq := search(s); if found return freq; }
     }
 
     assert(false);

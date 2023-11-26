@@ -1,7 +1,5 @@
 day6 :: (input: string) -> string, string
 {
-    return tprint("%", solve_for_window_size(4, input)), tprint("%", solve_for_window_size(14, input));
-
     solve_for_window_size :: (n: int, input: string) -> int
     {
         for i: 0..input.count
@@ -24,4 +22,6 @@ day6 :: (input: string) -> string, string
 
         return 0;
     }
+
+    return tprint("%", solve_for_window_size(4, input)), tprint("%", solve_for_window_size(14, input));
 }
