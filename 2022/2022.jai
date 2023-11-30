@@ -60,7 +60,7 @@ do_day :: (group: *Thread_Group, thread: *Thread, work: *void) -> Thread_Continu
     start := current_time_monotonic();
     day := cast(*Day)work;
     day.part1, day.part2 = day.proc(day.input);
-    day.duration = start - current_time_monotonic();
+    day.duration = current_time_monotonic() - start;
     day.done = true;
     return .CONTINUE;
 }
