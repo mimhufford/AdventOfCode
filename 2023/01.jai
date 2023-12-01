@@ -28,10 +28,10 @@ day1 :: (input: string) -> string, string
             else if starts_with(input, "eight") last_num = 8;
             else if starts_with(input, "nine")  last_num = 9;
 
-            advance(*input);
-
             if first_dig < 0 first_dig = last_dig;
             if first_num < 0 first_num = last_num;
+
+            advance(*input);
         }
 
         part1 += first_dig * 10 + last_dig;
