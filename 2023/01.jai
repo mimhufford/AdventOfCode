@@ -7,17 +7,9 @@ day1 :: (input: string) -> string, string
         first_dig, last_dig := -1, -1;
         first_num, last_num := -1, -1;
 
-        while input.count
+        while input.count && !is_whitespace(input[0])
         {   
-            if is_whitespace(input[0])
-            {
-                advance(*input);
-                break;
-            } 
-            else if is_digit(input[0])
-            {
-                last_dig, last_num = input[0] - #char "0";
-            }
+            if is_digit(input[0]) last_dig, last_num = input[0] - #char "0";
             else if starts_with(input, "one")   last_num = 1;
             else if starts_with(input, "two")   last_num = 2;
             else if starts_with(input, "three") last_num = 3;
@@ -33,6 +25,8 @@ day1 :: (input: string) -> string, string
 
             advance(*input);
         }
+
+        advance(*input);
 
         part1 += first_dig * 10 + last_dig;
         part2 += first_num * 10 + last_num;
