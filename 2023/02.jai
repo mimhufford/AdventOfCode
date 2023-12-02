@@ -1,6 +1,6 @@
 day2 :: (input: string) -> string, string
 {
-    part1 := 0;
+    part1, part2 := 0;
 
     while input.count
     {
@@ -8,6 +8,8 @@ day2 :: (input: string) -> string, string
         advance(*input, 5); // skip "Game "
         game_id := read_s64(*input);
         advance(*input, 2); // skip ": "
+
+        min_r, min_g, min_b := 0;
 
         while input[0] != #char "\n"
         {
@@ -17,9 +19,9 @@ day2 :: (input: string) -> string, string
             {
                 amount := read_s64(*input);
 
-                if      starts_with(input, "r") { r = amount; advance(*input, 3); }
-                else if starts_with(input, "g") { g = amount; advance(*input, 5); }
-                else                            { b = amount; advance(*input, 4); }
+                if      starts_with(input, "r") { r = amount; min_r = max(min_r, r); advance(*input, 3); }
+                else if starts_with(input, "g") { g = amount; min_g = max(min_g, g); advance(*input, 5); }
+                else                            { b = amount; min_b = max(min_b, b); advance(*input, 4); }
 
                 if input[0] == #char "\n" {                     break; }
                 if input[0] == #char ";"  { advance(*input, 2); break; }
@@ -30,9 +32,10 @@ day2 :: (input: string) -> string, string
         }
 
         if game_possible part1 += game_id;
+        part2 += min_r * min_g * min_b;
 
         advance(*input);
     }
 
-    return tprint("%", part1), tprint("%", part1);
+    return tprint("%", part1), tprint("%", part2);
 }
