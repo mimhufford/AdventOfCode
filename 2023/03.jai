@@ -41,20 +41,10 @@ day3 :: (input: string) -> string, string
 
 read_part_number :: (s: string, offset: int) -> s64, s64
 {
-    num, length := 0;
-
-    data := s;
-    advance(*data, offset);
-
-    while data.count && is_digit(data.data[0])
-    {
-        num *= 10;
-        num += data.data[0] - #char "0";
-        advance(*data);
-        length += 1;
-    }
-
-    return num, length;
+    data := advance(s, offset);
+    number := read_s64(*data);
+    length := data.data - (s.data + offset);
+    return number, length;
 }
 
 part_number_next_to_symbol :: (schematic: []string, y: int, x0: int, x1: int) -> u8, s64, s64
