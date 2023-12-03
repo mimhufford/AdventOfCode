@@ -1,9 +1,7 @@
 day3 :: (input: string) -> string, string
 {
-    gear_ratios : Table(s64, Gear_Ratio);
-
     part1, part2 := 0, 0;
-
+    gear_ratios : Table(s64, [..]s64);
     schematic := split(input, "\n");
 
     for row, y: schematic
@@ -23,33 +21,23 @@ day3 :: (input: string) -> string, string
                     if symbol == #char "*"
                     {
                         gear_ratio := find_or_add(*gear_ratios, sx << 32 | sy);
-                        gear_ratio.x = xx sx;
-                        gear_ratio.y = xx sy;
-                        array_add(*gear_ratio.gears, part_number);
+                        array_add(gear_ratio, part_number);
                     }
                 }
             }
         }
     }
 
-    for * gear_ratios
+    for gear_ratios
     {
-        if it.gears.count != 2 continue;
-        part2 += it.gears[0] * it.gears[1];
+        if it.count != 2 continue;
+        part2 += it[0] * it[1];
     }
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file;
-
-Gear_Ratio :: struct
-{
-    x, y : s32;
-    gears : [..]s64;
-    
-    #place x; id : s64;
-}
 
 read_part_number :: (s: string, offset: int) -> s64, s64
 {
