@@ -80,15 +80,13 @@ part_number_next_to_symbol :: (schematic: []string, y: int, x0: int, x1: int) ->
     if y > 0 for left..right
     {
         char := schematic[y-1][it];
-        if char == #char "." continue;
-        if !is_digit(char) return true, schematic[y-1][it], it, y-1;
+        if !is_digit(char) && char != #char "." return true, char, it, y-1;
     }
         
     if y < schematic.count-1 for left..right
     {
         char := schematic[y+1][it];
-        if char == #char "." continue;
-        if !is_digit(char) return true, schematic[y+1][it], it, y+1;
+        if !is_digit(char) && char != #char "." return true, char, it, y+1;
     }
 
     return false, 0, 0, 0;
