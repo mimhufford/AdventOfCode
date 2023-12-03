@@ -11,10 +11,10 @@ day3 :: (input: string) -> string, string
             if is_digit(row[x])
             {
                 part_number, length := read_part_number(row, x);
-                next_to_symbol, symbol, sx, sy := part_number_next_to_symbol(schematic, y, x, x + length - 1);
+                symbol, sx, sy := part_number_next_to_symbol(schematic, y, x, x + length - 1);
                 x += length;
 
-                if next_to_symbol
+                if symbol
                 {
                     part1 += part_number;
 
@@ -57,25 +57,25 @@ read_part_number :: (s: string, offset: int) -> s64, s64
     return num, length;
 }
 
-part_number_next_to_symbol :: (schematic: []string, y: int, x0: int, x1: int) -> bool, u8, s64, s64
+part_number_next_to_symbol :: (schematic: []string, y: int, x0: int, x1: int) -> u8, s64, s64
 {
     left  := max(x0 - 1, 0);
     right := min(x1 + 1, schematic[0].count-1);
 
-    if left  == x0-1 && schematic[y][left]  != #char "." return true, schematic[y][left],  left,  y;
-    if right == x1+1 && schematic[y][right] != #char "." return true, schematic[y][right], right, y;
+    if left  == x0-1 && schematic[y][left]  != #char "." return schematic[y][left],  left,  y;
+    if right == x1+1 && schematic[y][right] != #char "." return schematic[y][right], right, y;
 
     if y > 0 for left..right
     {
         char := schematic[y-1][it];
-        if !is_digit(char) && char != #char "." return true, char, it, y-1;
+        if !is_digit(char) && char != #char "." return char, it, y-1;
     }
         
     if y < schematic.count-1 for left..right
     {
         char := schematic[y+1][it];
-        if !is_digit(char) && char != #char "." return true, char, it, y+1;
+        if !is_digit(char) && char != #char "." return char, it, y+1;
     }
 
-    return false, 0, 0, 0;
+    return 0, 0, 0;
 }
