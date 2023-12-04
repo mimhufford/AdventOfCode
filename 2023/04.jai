@@ -10,8 +10,7 @@ day4 :: (input: string) -> string, string
         advance_then_skip_whitespace(*input, 2); // skip ": "
 
         winners : [10]u8;
-
-        for 0..9 winners[it] = read_u8(*input);
+        for * winners it.* = read_u8(*input);
 
         advance_then_skip_whitespace(*input, 1); // skip "|"
         
