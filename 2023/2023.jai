@@ -152,6 +152,12 @@ read_word :: (s: *string) -> string
     return word;
 }
 
+advance_then_skip_whitespace :: (s: *string, amount: s64)
+{
+    advance(s, amount);
+    skip_whitespace(s);
+}
+
 skip_whitespace :: (s: *string)
 {
     while s.count && is_whitespace(s.data[0])
