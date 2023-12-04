@@ -14,19 +14,15 @@ day4 :: (input: string) -> string, string
         advance(*input); // skip "|"
         skip_whitespace(*input);
         
-        score := 0;
+        matches := 0;
 
         for 0..24
         {
             number := read_u8(*input);
-            if array_find(winners, number)
-            {
-                if score score *= 2;
-                else     score  = 1;
-            }
+            if array_find(winners, number) matches += 1;
         }
 
-        part1 += score;
+        if matches part1 += 1 << (matches-1);
     }
     
     return tprint("%", part1), tprint("%", part2);
