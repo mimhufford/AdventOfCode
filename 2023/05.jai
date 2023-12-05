@@ -1,19 +1,17 @@
 day5 :: (input: string) -> string, string
 {
-    part1, part2 := S64_MAX, S64_MAX;
-
-    seeds : [..]s64;
-    seed_ranges : [..]Range;
+    seeds1, seeds2 : [..]Range;
     mappings : [..][..]Mapping;
 
     advance_then_skip_whitespace(*input, 7); // skip "seeds: "
     while is_digit(input[0])
     {
-        range := array_add(*seed_ranges);
-        range.start = read_s64(*input);
-        range.end = range.start + read_s64(*input) - 1;
-        array_add(*seeds, range.start);
-        array_add(*seeds, range.end - range.start + 1);
+        range1 := array_add(*seeds1);
+        range1.start = read_s64(*input);
+        range1.end = range1.start;
+        range2 := array_add(*seeds2);
+        range2.start = range1.start;
+        range2.end = range2.start + read_s64(*input) - 1;
     }
     
     while input.count
@@ -23,27 +21,36 @@ day5 :: (input: string) -> string, string
         while input.count && is_digit(input[0]) array_add(mapping, read_mapping(*input));
     }
 
-    for seed: seeds part1 = min(part1, map_seed_to_location(seed, mappings));
-
-    ranges : []Range = seed_ranges;
-    for group: mappings  ranges = map_range_to_ranges(ranges, group);
-    for range: ranges    part2 = min(part2, range.start);
+    part1 := lowest_location_for_seed_ranges(seeds1, mappings);
+    part2 := lowest_location_for_seed_ranges(seeds2, mappings);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
-map_range_to_ranges :: (ranges: []Range, group: []Mapping) -> []Range
+#scope_file
+
+lowest_location_for_seed_ranges :: (seeds: []Range, mappings: [][..]Mapping) -> s64
+{
+    result := S64_MAX;
+    ranges : []Range = seeds;
+    for group: mappings  ranges = process_ranges(ranges, group);
+    for range: ranges    result = min(result, range.start);
+    return result;
+}
+
+process_ranges :: (ranges: []Range, group: []Mapping) -> []Range
 {
     new_ranges  : [..]Range;
     ranges_left : [..]Range;
 
     array_add(*ranges_left, ..ranges);
 
-    while ranges_left.count
+    while ranges_left
     {
         r := pop(*ranges_left);
 
         remapped := false;
+
         for mapping: group
         {
             if mapping.start > r.end   continue;
@@ -73,25 +80,6 @@ map_range_to_ranges :: (ranges: []Range, group: []Mapping) -> []Range
     } 
 
     return new_ranges;
-}
-
-map_seed_to_location :: (seed: s64, mappings: [][..]Mapping) -> s64
-{
-    value := seed;
-
-    for group: mappings
-    {
-        for mapping: group
-        {
-            if value <= mapping.end && value >= mapping.start
-            {
-                value += mapping.offset;
-                break mapping;
-            }
-        }
-    }
-
-    return value;
 }
 
 Range :: struct
