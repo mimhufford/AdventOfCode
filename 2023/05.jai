@@ -23,10 +23,7 @@ day5 :: (input: string) -> string, string
         while input.count && is_digit(input[0]) array_add(mapping, read_mapping(*input));
     }
 
-    for seed: seeds
-    {
-        part1 = min(part1, map_seed_to_location(seed, mappings));
-    }
+    for seed: seeds part1 = min(part1, map_seed_to_location(seed, mappings));
 
     ranges : []Range = seed_ranges;
     for group: mappings  ranges = map_range_to_ranges(ranges, group);
@@ -72,10 +69,7 @@ map_range_to_ranges :: (ranges: []Range, group: []Mapping) -> []Range
             }
         }
 
-        if !remapped
-        {
-            array_add(*new_ranges, r);
-        }
+        if !remapped array_add(*new_ranges, r);
     } 
 
     return new_ranges;
