@@ -3,7 +3,7 @@ day5 :: (input: string) -> string, string
     seeds1, seeds2 : [..]Range;
     mappings : [..][..]Mapping;
 
-    advance_then_skip_whitespace(*input, 7); // skip "seeds: "
+    advance(*input, 7); // skip "seeds: "
     while is_digit(input[0])
     {
         range1 := array_add(*seeds1);
@@ -95,10 +95,10 @@ Mapping :: struct
 
 read_mapping :: (s: *string) -> Mapping
 {
-    m : Mapping;
     dest := read_s64(s);
-    m.range.start = read_s64(s);
-    m.range.end   = m.range.start + read_s64(s);
-    m.offset      = dest - m.range.start;
+    m : Mapping;
+    m.start  = read_s64(s);
+    m.end    = m.range.start + read_s64(s);
+    m.offset = dest - m.range.start;
     return m;
 }
