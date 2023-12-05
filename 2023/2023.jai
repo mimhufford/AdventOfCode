@@ -5,6 +5,9 @@ main :: ()
 {
     #insert #run generate_days();
 
+    args  := get_command_line_arguments();
+    debug := array_find(args, "debug");
+
     array_reserve(*results, 25);
     start_time = current_time_monotonic();
 
@@ -22,7 +25,7 @@ main :: ()
         add_work(*thread_group, day);
     }
 
-    output_results();
+    if !debug output_results();
 
     completed := 0;
     while completed < results.count
@@ -30,13 +33,15 @@ main :: ()
         sleep_milliseconds(1);
         done := get_completed_work(*thread_group);
         completed += done.count;
-        if done.count output_results();
+        if done.count && !debug output_results();
     }
+
+    if debug output_results(clear = false);
 }
 
-output_results :: ()
+output_results :: (clear := true)
 {
-    print("\x1B[2J\x1B[H"); // clear the console
+    if clear print("\x1B[2J\x1B[H"); // clear the console
 
     total_time := current_time_monotonic() - start_time;
     total_time_serial : Apollo_Time;
