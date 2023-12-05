@@ -32,31 +32,51 @@ day5 :: (input: string) -> string, string
     for group: mappings  ranges = map_range_to_ranges(ranges, group);
     for range: ranges    part2 = min(part2, range.start);
 
-    print("%\n", part1);
-    print("%\n", part2);
     return tprint("%", part1), tprint("%", part2);
 }
 
 map_range_to_ranges :: (ranges: []Range, group: []Mapping) -> []Range
 {
-    new_ranges : [..]Range;
+    new_ranges  : [..]Range;
+    ranges_left : [..]Range;
 
-    for r: ranges
+    array_add(*ranges_left, ..ranges);
+
+    while ranges_left.count
     {
-        print("Testing range: %\n", r);
+        r := pop(*ranges_left);
+
+        remapped := false;
         for mapping: group
         {
-            print("Intersecting with: %\n", mapping);
             if mapping.start > r.end   continue;
             if mapping.end   < r.start continue;
 
+            remapped = true;
             new_range := array_add(*new_ranges);
             new_range.start = max(r.start, mapping.start) + mapping.offset;
             new_range.end   = min(r.end,   mapping.end)   + mapping.offset;
+
+            if mapping.start > r.start
+            {
+                before := array_add(*ranges_left);
+                before.start = r.start;
+                before.end = mapping.start-1;
+            }
+
+            if mapping.end < r.end
+            {
+                after := array_add(*ranges_left);
+                after.start = mapping.end+1;
+                after.end = r.end;
+            }
+        }
+
+        if !remapped
+        {
+            array_add(*new_ranges, r);
         }
     } 
-
-    print("Resulting ranges are: %\n\n", new_ranges);
 
     return new_ranges;
 }
