@@ -20,7 +20,7 @@ day6 :: (input: string) -> string, string
     }
 
     part1 := 1;
-    for races part1 *= calculate_ways_to_win(it);
+    for race: races part1 *= calculate_ways_to_win(race);
 
     actual_race.time = string_to_int(builder_to_string(*time));
     actual_race.dist = string_to_int(builder_to_string(*dist));
@@ -33,13 +33,15 @@ day6 :: (input: string) -> string, string
 
 calculate_ways_to_win :: (r: Race) -> s64
 {
-    for 0..r.time
-    {
-        dist := it * (r.time - it);
-        if dist > r.dist return r.time - it - it + 1;
-    }
+    // Roots of a quadratic formula:
+    //  x = (-b ± √(b² – 4ac)) / 2a
 
-    return 0;
+    t := cast(float) r.time;
+    d := cast(float) r.dist;
+    discriminant := sqrt(t*t - 4*d);
+    high := floor((t + discriminant) / 2);
+    low  :=  ceil((t - discriminant) / 2);
+    return xx(high - low + 1);
 }
 
 Race :: struct
