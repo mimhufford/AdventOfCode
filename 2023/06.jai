@@ -1,38 +1,52 @@
 day6 :: (input: string) -> string, string
 {
     races : [..]Race;
+    actual_race : Race;
+    time, dist : String_Builder;
 
     advance_then_skip_whitespace(*input, 9); // skip "Time: "
     while is_digit(input[0])
     {
         race := array_add(*races);
         race.time = read_s64(*input);
+        append(*time, tprint("%", race.time));
     }
 
     advance_then_skip_whitespace(*input, 9); // skip "Distance: "
-    for * races it.distance = read_s64(*input);
-
-    for * r: races
+    for * race: races
     {
-        for 0..r.time
-        {
-            speed := it;
-            time_left := r.time - it;
-            distance := speed * time_left;
-            if distance > r.distance r.ways_to_win += 1;
-        }
+        race.dist = read_s64(*input);
+        append(*dist, tprint("%", race.dist));
     }
 
     part1 := 1;
-    for races part1 *= it.ways_to_win;
+    for races part1 *= calculate_ways_to_win(it);
+
+    actual_race.time = string_to_int(builder_to_string(*time));
+    actual_race.dist = string_to_int(builder_to_string(*dist));
+    part2 := calculate_ways_to_win(actual_race);
     
-    return tprint("%", part1), tprint("%", 0);
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
+calculate_ways_to_win :: (r: Race) -> s64
+{
+    ways_to_win := 0;
+
+    for 0..r.time
+    {
+        speed := it;
+        time_left := r.time - it;
+        dist := speed * time_left;
+        if dist > r.dist ways_to_win += 1;
+    }
+
+    return ways_to_win;
+}
+
 Race :: struct
 {
-    time, distance : s64;
-    ways_to_win : s64;
+    time, dist : s64;
 }
