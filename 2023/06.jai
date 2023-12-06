@@ -33,17 +33,13 @@ day6 :: (input: string) -> string, string
 
 calculate_ways_to_win :: (r: Race) -> s64
 {
-    ways_to_win := 0;
-
     for 0..r.time
     {
-        speed := it;
-        time_left := r.time - it;
-        dist := speed * time_left;
-        if dist > r.dist ways_to_win += 1;
+        dist := it * (r.time - it);
+        if dist > r.dist return r.time - it - it + 1;
     }
 
-    return ways_to_win;
+    return 0;
 }
 
 Race :: struct
