@@ -54,18 +54,18 @@ calculate_rank :: (h: *Hand, playing_with_jokers: bool) -> Rank
 
     for i: 0..4
     {
-        if h.cards[i] == 11
+        if h.cards[i] != 11 continue;
+        cards_to_try : [..]u8;
+        for h.cards if it != 11 array_add_if_unique(*cards_to_try, it);
+        if cards_to_try.count == 0 array_add(*cards_to_try, 14);
+        for c: cards_to_try
         {
             new_hand := h.*;
-            for c: 2..14
-            {
-                if c == 11 continue;
-                new_hand.cards[i] = xx c;
-                rank := calculate_rank(*new_hand, playing_with_jokers);
-                best_rank = max(best_rank, rank);
-            }
-            return best_rank;
+            new_hand.cards[i] = c;
+            rank := calculate_rank(*new_hand, playing_with_jokers);
+            best_rank = max(best_rank, rank);
         }
+        return best_rank;
     }
 
     return best_rank;
