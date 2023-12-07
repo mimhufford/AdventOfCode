@@ -18,8 +18,28 @@ day7 :: (input: string) -> string, string
 
 calculate_rank_2 :: (h: *Hand) -> Rank
 {
-    // TODO: permutations
-    return calculate_rank_1(h);
+    // early out for simple hands without a joker
+    contains_joker := false;
+    for 0..4 if h.cards[it] == 11 contains_joker = true;
+    if !contains_joker return calculate_rank_1(h);
+
+    best_rank := calculate_rank_1(h);
+    new_hand := h.*;
+    for i: 0..4
+    {
+        if new_hand.cards[i] == 11
+        {
+            for c: 2..14
+            {
+                if c == 11 continue;
+                new_hand.cards[i] = xx c;
+                rank := calculate_rank_2(*new_hand);
+                best_rank = max(best_rank, rank);
+            }
+        }
+    }    
+
+    return best_rank;
 }
 
 calculate_rank_1 :: (h: *Hand) -> Rank
@@ -72,9 +92,8 @@ compare_hands_with_jokers :: (a: Hand, b: Hand) -> s64
     if a.rank_2 > b.rank_2 return  1;
     for 0..4
     {
-        if a.cards[it] == 11 && b.cards[it] == 11 return 0;
-        if a.cards[it] == 11 return -1;
-        if b.cards[it] == 11 return  1;
+        if a.cards[it] == 11 && b.cards[it] != 11 return -1;
+        if a.cards[it] != 11 && b.cards[it] == 11 return  1;
         if a.cards[it] < b.cards[it] return -1;
         if a.cards[it] > b.cards[it] return  1;
     }
