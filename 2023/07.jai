@@ -24,7 +24,7 @@ calculate_rank :: (h: *Hand, playing_with_jokers: bool) -> Rank
     if !playing_with_jokers || !hand_has_joker
     {
         unique : [..]u8;
-        for 0..4 array_add_if_unique(*unique, h.cards[it]);
+        for h.cards array_add_if_unique(*unique, it);
         if unique.count == 1 return .FIVE_OF_A_KIND;
         if unique.count == 5 return .HIGH_CARD;
         if unique.count == 4 return .ONE_PAIR;
@@ -104,14 +104,7 @@ read_hand :: (s: *string) -> Hand
     assert(cards.count == 5);
     for 0..4
     {
-        if      cards[it] == #char "2" h.cards[it] = 2;
-        else if cards[it] == #char "3" h.cards[it] = 3;
-        else if cards[it] == #char "4" h.cards[it] = 4;
-        else if cards[it] == #char "5" h.cards[it] = 5;
-        else if cards[it] == #char "6" h.cards[it] = 6;
-        else if cards[it] == #char "7" h.cards[it] = 7;
-        else if cards[it] == #char "8" h.cards[it] = 8;
-        else if cards[it] == #char "9" h.cards[it] = 9;
+        if is_digit(cards[it]) h.cards[it] = cards[it] - #char "0";
         else if cards[it] == #char "T" h.cards[it] = 10;
         else if cards[it] == #char "J" h.cards[it] = 11;
         else if cards[it] == #char "Q" h.cards[it] = 12;
