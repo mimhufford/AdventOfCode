@@ -2,55 +2,27 @@ day7 :: (input: string) -> string, string
 {
     hands : [..]Hand;
 
-    while input.count
-    {
-        h := array_add(*hands);
-        cards := read_word(*input);
-        assert(cards.count == 5);
-        for 0..4
-        {
-            if      cards[it] == #char "2" h.cards[it] = 0;
-            else if cards[it] == #char "3" h.cards[it] = 1;
-            else if cards[it] == #char "4" h.cards[it] = 2;
-            else if cards[it] == #char "5" h.cards[it] = 3;
-            else if cards[it] == #char "6" h.cards[it] = 4;
-            else if cards[it] == #char "7" h.cards[it] = 5;
-            else if cards[it] == #char "8" h.cards[it] = 6;
-            else if cards[it] == #char "9" h.cards[it] = 7;
-            else if cards[it] == #char "T" h.cards[it] = 8;
-            else if cards[it] == #char "J" h.cards[it] = 9;
-            else if cards[it] == #char "Q" h.cards[it] = 10;
-            else if cards[it] == #char "K" h.cards[it] = 11;
-            else if cards[it] == #char "A" h.cards[it] = 12;
-            else assert(false);
-        }
-        h.bid   = read_s64(*input);
-        h.rank  = calculate_rank(h);
-    }
-
-    quick_sort(hands, compare_hands);
-
-    part1 := 0;
-    for hands part1 += it.bid * (it_index + 1);
+    while input.count array_add(*hands, read_hand(*input));
     
-    return tprint("%", part1), tprint("%", 0);
+    part1, part2 := 0;
+    quick_sort(hands, compare_hands_no_jokers);
+    for hands part1 += it.bid * (it_index + 1);
+
+    quick_sort(hands, compare_hands_with_jokers);
+    for hands part2 += it.bid * (it_index + 1);
+    
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-compare_hands :: (a: Hand, b: Hand) -> s64
+calculate_rank_2 :: (h: *Hand) -> Rank
 {
-    if a.rank < b.rank return -1;
-    if a.rank > b.rank return  1;
-    for 0..4
-    {
-        if a.cards[it] < b.cards[it] return -1;
-        if a.cards[it] > b.cards[it] return  1;
-    }
-    return 0;
+    // TODO: permutations
+    return calculate_rank_1(h);
 }
 
-calculate_rank :: (h: *Hand) -> Rank
+calculate_rank_1 :: (h: *Hand) -> Rank
 {
     unique : [..]u8;
     for 0..4 array_add_if_unique(*unique, h.cards[it]);
@@ -82,6 +54,62 @@ calculate_rank :: (h: *Hand) -> Rank
     return xx 0;
 }
 
+compare_hands_no_jokers :: (a: Hand, b: Hand) -> s64
+{
+    if a.rank_1 < b.rank_1 return -1;
+    if a.rank_1 > b.rank_1 return  1;
+    for 0..4
+    {
+        if a.cards[it] < b.cards[it] return -1;
+        if a.cards[it] > b.cards[it] return  1;
+    }
+    return 0;
+}
+
+compare_hands_with_jokers :: (a: Hand, b: Hand) -> s64
+{
+    if a.rank_2 < b.rank_2 return -1;
+    if a.rank_2 > b.rank_2 return  1;
+    for 0..4
+    {
+        if a.cards[it] == 11 && b.cards[it] == 11 return 0;
+        if a.cards[it] == 11 return -1;
+        if b.cards[it] == 11 return  1;
+        if a.cards[it] < b.cards[it] return -1;
+        if a.cards[it] > b.cards[it] return  1;
+    }
+    return 0;
+}
+
+read_hand :: (s: *string) -> Hand
+{
+    h: Hand;
+    cards := read_word(s);
+    assert(cards.count == 5);
+    for 0..4
+    {
+        if      cards[it] == #char "2" h.cards[it] = 2;
+        else if cards[it] == #char "3" h.cards[it] = 3;
+        else if cards[it] == #char "4" h.cards[it] = 4;
+        else if cards[it] == #char "5" h.cards[it] = 5;
+        else if cards[it] == #char "6" h.cards[it] = 6;
+        else if cards[it] == #char "7" h.cards[it] = 7;
+        else if cards[it] == #char "8" h.cards[it] = 8;
+        else if cards[it] == #char "9" h.cards[it] = 9;
+        else if cards[it] == #char "T" h.cards[it] = 10;
+        else if cards[it] == #char "J" h.cards[it] = 11;
+        else if cards[it] == #char "Q" h.cards[it] = 12;
+        else if cards[it] == #char "K" h.cards[it] = 13;
+        else if cards[it] == #char "A" h.cards[it] = 14;
+        else assert(false);
+    }
+    h.bid    = read_s64(s);
+    h.rank_1 = calculate_rank_1(*h);
+    h.rank_2 = calculate_rank_2(*h);
+
+    return h;
+}
+
 Rank :: enum
 {
     HIGH_CARD       :: 0;
@@ -95,7 +123,8 @@ Rank :: enum
 
 Hand :: struct
 {
-    cards : [5]u8;
-    rank  : Rank;
-    bid   : s64;
+    cards  : [5]u8;
+    rank_1 : Rank;
+    rank_2 : Rank;
+    bid    : s64;
 }
