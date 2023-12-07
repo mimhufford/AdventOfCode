@@ -16,14 +16,42 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
-calculate_rank_2 :: (h: *Hand) -> Rank
+calculate_rank :: (h: *Hand, playing_with_jokers: bool) -> Rank
 {
-    // early out for simple hands without a joker
-    contains_joker := false;
-    for 0..4 if h.cards[it] == 11 contains_joker = true;
-    if !contains_joker return calculate_rank_1(h);
+    hand_has_joker := false;
+    if playing_with_jokers for h.cards if it == 11 hand_has_joker = true;
 
-    best_rank := calculate_rank_1(h);
+    if !playing_with_jokers || !hand_has_joker
+    {
+        unique : [..]u8;
+        for 0..4 array_add_if_unique(*unique, h.cards[it]);
+        if unique.count == 1 return .FIVE_OF_A_KIND;
+        if unique.count == 5 return .HIGH_CARD;
+        if unique.count == 4 return .ONE_PAIR;
+        if unique.count == 3
+        {
+            for i: 0..4
+            {
+                count := 1;
+                for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
+                if count == 3 return .THREE_OF_A_KIND;
+            }
+            return .TWO_PAIR;
+        }
+        if unique.count == 2
+        {
+            for i: 0..4
+            {
+                count := 1;
+                for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
+                if count == 4 return .FOUR_OF_A_KIND;
+            }
+            return .FULL_HOUSE;
+        }
+    }
+
+    best_rank := Rank.HIGH_CARD;
+
     for i: 0..4
     {
         if h.cards[i] == 11
@@ -33,7 +61,7 @@ calculate_rank_2 :: (h: *Hand) -> Rank
             {
                 if c == 11 continue;
                 new_hand.cards[i] = xx c;
-                rank := calculate_rank_2(*new_hand);
+                rank := calculate_rank(*new_hand, playing_with_jokers);
                 best_rank = max(best_rank, rank);
             }
             return best_rank;
@@ -41,38 +69,6 @@ calculate_rank_2 :: (h: *Hand) -> Rank
     }
 
     return best_rank;
-}
-
-calculate_rank_1 :: (h: *Hand) -> Rank
-{
-    unique : [..]u8;
-    for 0..4 array_add_if_unique(*unique, h.cards[it]);
-    if unique.count == 1 return .FIVE_OF_A_KIND;
-    if unique.count == 5 return .HIGH_CARD;
-    if unique.count == 4 return .ONE_PAIR;
-    if unique.count == 3
-    {
-        for i: 0..4
-        {
-            count := 1;
-            for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
-            if count == 3 return .THREE_OF_A_KIND;
-        }
-        return .TWO_PAIR;
-    }
-    if unique.count == 2
-    {
-        for i: 0..4
-        {
-            count := 1;
-            for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
-            if count == 4 return .FOUR_OF_A_KIND;
-        }
-        return .FULL_HOUSE;
-    }
-
-    assert(false);
-    return xx 0;
 }
 
 compare_hands_no_jokers :: (a: Hand, b: Hand) -> s64
@@ -124,8 +120,8 @@ read_hand :: (s: *string) -> Hand
         else assert(false);
     }
     h.bid    = read_s64(s);
-    h.rank_1 = calculate_rank_1(*h);
-    h.rank_2 = calculate_rank_2(*h);
+    h.rank_1 = calculate_rank(*h, playing_with_jokers = false);
+    h.rank_2 = calculate_rank(*h, playing_with_jokers = true);
 
     return h;
 }
