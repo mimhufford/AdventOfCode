@@ -76,14 +76,7 @@ compare_hands :: (a: Hand, b: Hand) -> s64
 {
     if a.rank < b.rank return -1;
     if a.rank > b.rank return  1;
-
-    for 0..4
-    {
-        if a.cards[it] < b.cards[it] return -1;
-        if a.cards[it] > b.cards[it] return  1;
-    }
-
-    return 0;
+    return compare_strings(xx a.cards, xx b.cards);
 }
 
 read_hand :: (s: *string) -> Hand
