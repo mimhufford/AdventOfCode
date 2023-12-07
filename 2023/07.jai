@@ -3,14 +3,14 @@ day7 :: (input: string) -> string, string
     hands : [..]Hand;
 
     while input.count array_add(*hands, read_hand(*input));
-    
+
     part1, part2 := 0;
     quick_sort(hands, compare_hands_no_jokers);
     for hands part1 += it.bid * (it_index + 1);
 
     quick_sort(hands, compare_hands_with_jokers);
     for hands part2 += it.bid * (it_index + 1);
-    
+
     return tprint("%", part1), tprint("%", part2);
 }
 
@@ -24,11 +24,11 @@ calculate_rank_2 :: (h: *Hand) -> Rank
     if !contains_joker return calculate_rank_1(h);
 
     best_rank := calculate_rank_1(h);
-    new_hand := h.*;
     for i: 0..4
     {
-        if new_hand.cards[i] == 11
+        if h.cards[i] == 11
         {
+            new_hand := h.*;
             for c: 2..14
             {
                 if c == 11 continue;
@@ -36,8 +36,9 @@ calculate_rank_2 :: (h: *Hand) -> Rank
                 rank := calculate_rank_2(*new_hand);
                 best_rank = max(best_rank, rank);
             }
+            return best_rank;
         }
-    }    
+    }
 
     return best_rank;
 }
