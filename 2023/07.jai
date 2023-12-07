@@ -1,0 +1,101 @@
+day7 :: (input: string) -> string, string
+{
+    hands : [..]Hand;
+
+    while input.count
+    {
+        h := array_add(*hands);
+        cards := read_word(*input);
+        assert(cards.count == 5);
+        for 0..4
+        {
+            if      cards[it] == #char "2" h.cards[it] = 0;
+            else if cards[it] == #char "3" h.cards[it] = 1;
+            else if cards[it] == #char "4" h.cards[it] = 2;
+            else if cards[it] == #char "5" h.cards[it] = 3;
+            else if cards[it] == #char "6" h.cards[it] = 4;
+            else if cards[it] == #char "7" h.cards[it] = 5;
+            else if cards[it] == #char "8" h.cards[it] = 6;
+            else if cards[it] == #char "9" h.cards[it] = 7;
+            else if cards[it] == #char "T" h.cards[it] = 8;
+            else if cards[it] == #char "J" h.cards[it] = 9;
+            else if cards[it] == #char "Q" h.cards[it] = 10;
+            else if cards[it] == #char "K" h.cards[it] = 11;
+            else if cards[it] == #char "A" h.cards[it] = 12;
+            else assert(false);
+        }
+        h.bid   = read_s64(*input);
+        h.rank  = calculate_rank(h);
+    }
+
+    quick_sort(hands, compare_hands);
+
+    part1 := 0;
+    for hands part1 += it.bid * (it_index + 1);
+    
+    return tprint("%", part1), tprint("%", 0);
+}
+
+#scope_file
+
+compare_hands :: (a: Hand, b: Hand) -> s64
+{
+    if a.rank < b.rank return -1;
+    if a.rank > b.rank return  1;
+    for 0..4
+    {
+        if a.cards[it] < b.cards[it] return -1;
+        if a.cards[it] > b.cards[it] return  1;
+    }
+    return 0;
+}
+
+calculate_rank :: (h: *Hand) -> Rank
+{
+    unique : [..]u8;
+    for 0..4 array_add_if_unique(*unique, h.cards[it]);
+    if unique.count == 1 return .FIVE_OF_A_KIND;
+    if unique.count == 5 return .HIGH_CARD;
+    if unique.count == 4 return .ONE_PAIR;
+    if unique.count == 3
+    {
+        for i: 0..4
+        {
+            count := 1;
+            for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
+            if count == 3 return .THREE_OF_A_KIND;
+        }
+        return .TWO_PAIR;
+    }
+    if unique.count == 2
+    {
+        for i: 0..4
+        {
+            count := 1;
+            for j: i+1..4 if h.cards[i] == h.cards[j] count += 1;
+            if count == 4 return .FOUR_OF_A_KIND;
+        }
+        return .FULL_HOUSE;
+    }
+
+    assert(false);
+    return xx 0;
+}
+
+Rank :: enum
+{
+    HIGH_CARD       :: 0;
+    ONE_PAIR        :: 1;
+    TWO_PAIR        :: 2;
+    THREE_OF_A_KIND :: 3;
+    FULL_HOUSE      :: 4;
+    FOUR_OF_A_KIND  :: 5;
+    FIVE_OF_A_KIND  :: 6;
+}
+
+Hand :: struct
+{
+    cards : [5]u8;
+    rank  : Rank;
+    bid   : s64;
+}
