@@ -4,24 +4,30 @@ day7 :: (input: string) -> string, string
 
     while input.count array_add(*hands, read_hand(*input));
 
-    part1, part2 := 0;
-    quick_sort(hands, compare_hands_no_jokers);
-    for hands part1 += it.bid * (it_index + 1);
-
-    quick_sort(hands, compare_hands_with_jokers);
-    for hands part2 += it.bid * (it_index + 1);
+    part1 := calculate_winnings(hands, jokers = false);
+    part2 := calculate_winnings(hands, jokers = true);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-calculate_rank :: (h: *Hand, playing_with_jokers: bool) -> Rank
+calculate_winnings :: (hands: []Hand, jokers: bool) -> s64
+{
+    winnings := 0;
+    if jokers for *hands for *it.cards if it.* == 11 it.* = 0;
+    for *hands it.rank = calculate_rank(it);
+    quick_sort(hands, compare_hands);
+    for hands winnings += it.bid * (it_index + 1);
+    return winnings;
+}
+
+calculate_rank :: (h: *Hand) -> Rank
 {
     hand_has_joker := false;
-    if playing_with_jokers for h.cards if it == 11 hand_has_joker = true;
+    for h.cards if it == 0 hand_has_joker = true;
 
-    if !playing_with_jokers || !hand_has_joker
+    if !hand_has_joker
     {
         unique : [..]u8;
         for h.cards array_add_if_unique(*unique, it);
@@ -52,43 +58,31 @@ calculate_rank :: (h: *Hand, playing_with_jokers: bool) -> Rank
 
     best_rank := Rank.HIGH_CARD;
 
-    _, i := array_find(h.cards, 11);
+    _, i := array_find(h.cards, 0);
     cards_to_try : [..]u8;
-    for h.cards if it != 11 array_add_if_unique(*cards_to_try, it);
+    for h.cards if it != 0 array_add_if_unique(*cards_to_try, it);
     if cards_to_try.count == 0 array_add(*cards_to_try, 14);
     for c: cards_to_try
     {
         new_hand := h.*;
         new_hand.cards[i] = c;
-        rank := calculate_rank(*new_hand, playing_with_jokers);
+        rank := calculate_rank(*new_hand);
         best_rank = max(best_rank, rank);
     }
     return best_rank;
 }
 
-compare_hands_no_jokers :: (a: Hand, b: Hand) -> s64
+compare_hands :: (a: Hand, b: Hand) -> s64
 {
-    if a.rank_1 < b.rank_1 return -1;
-    if a.rank_1 > b.rank_1 return  1;
-    for 0..4
-    {
-        if a.cards[it] < b.cards[it] return -1;
-        if a.cards[it] > b.cards[it] return  1;
-    }
-    return 0;
-}
+    if a.rank < b.rank return -1;
+    if a.rank > b.rank return  1;
 
-compare_hands_with_jokers :: (a: Hand, b: Hand) -> s64
-{
-    if a.rank_2 < b.rank_2 return -1;
-    if a.rank_2 > b.rank_2 return  1;
     for 0..4
     {
-        if a.cards[it] == 11 && b.cards[it] != 11 return -1;
-        if a.cards[it] != 11 && b.cards[it] == 11 return  1;
         if a.cards[it] < b.cards[it] return -1;
         if a.cards[it] > b.cards[it] return  1;
     }
+
     return 0;
 }
 
@@ -96,7 +90,8 @@ read_hand :: (s: *string) -> Hand
 {
     h: Hand;
     cards := read_word(s);
-    assert(cards.count == 5);
+    h.bid  = read_s64(s);
+    
     for 0..4
     {
         if is_digit(cards[it]) h.cards[it] = cards[it] - #char "0";
@@ -105,11 +100,7 @@ read_hand :: (s: *string) -> Hand
         else if cards[it] == #char "Q" h.cards[it] = 12;
         else if cards[it] == #char "K" h.cards[it] = 13;
         else if cards[it] == #char "A" h.cards[it] = 14;
-        else assert(false);
     }
-    h.bid    = read_s64(s);
-    h.rank_1 = calculate_rank(*h, playing_with_jokers = false);
-    h.rank_2 = calculate_rank(*h, playing_with_jokers = true);
 
     return h;
 }
@@ -127,8 +118,7 @@ Rank :: enum
 
 Hand :: struct
 {
-    cards  : [5]u8;
-    rank_1 : Rank;
-    rank_2 : Rank;
-    bid    : s64;
+    cards : [5]u8;
+    rank  : Rank;
+    bid   : s64;
 }
