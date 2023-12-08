@@ -3,18 +3,17 @@ day8 :: (input: string) -> string, string
     part1, part2 := 0;
     directions := read_word(*input);
     map : Table(string, Node);
-    init(*map, 100000); // HACK: avoid reallocations
+    init(*map, 100_000); // HACK: avoid reallocations
 
     while input.count
     {
-        id := read_word(*input);
-        advance(*input, 3);
-        node := find_or_add(*map, id);
-        l := read_word(*input); l.count -= 1;
-        r := read_word(*input); r.count -= 1;
+        id := read_word(*input); advance(*input, 3);
+        l  := read_word(*input); l.count -= 1;
+        r  := read_word(*input); r.count -= 1;
+        node   := find_or_add(*map, id);
+        node.l  = find_or_add(*map, l);
+        node.r  = find_or_add(*map, r);
         node.id = id;
-        node.l = find_or_add(*map, l);
-        node.r = find_or_add(*map, r);
     }
 
     for * curr, id: map
