@@ -1,6 +1,3 @@
-results : [..]Day;
-start_time : Apollo_Time;
-
 main :: ()
 {
     #insert #run generate_days();
@@ -8,8 +5,9 @@ main :: ()
     args  := get_command_line_arguments();
     debug := array_find(args, "debug");
 
+    results : [..]Day;
     array_reserve(*results, 25);
-    start_time = current_time_monotonic();
+    start_time := current_time_monotonic();
 
     thread_group : Thread_Group;
     thread_group.logging = false;
@@ -25,7 +23,7 @@ main :: ()
         add_work(*thread_group, day);
     }
 
-    if !debug output_results();
+    if !debug output_results(results, start_time);
 
     completed := 0;
     while completed < results.count
@@ -33,102 +31,10 @@ main :: ()
         sleep_milliseconds(1);
         done := get_completed_work(*thread_group);
         completed += done.count;
-        if done.count && !debug output_results();
+        if done.count && !debug output_results(results, start_time);
     }
 
-    if debug output_results(clear = false);
-}
-
-output_results :: (clear := true)
-{
-    if clear print("\x1B[2J\x1B[H"); // clear the console
-
-    total_time := current_time_monotonic() - start_time;
-    total_time_serial : Apollo_Time;
-
-    for results
-    {
-        if it.done total_time_serial += it.duration;
-
-        print("Day %: %ms - %\n",
-            formatInt(it.day, minimum_digits=2),
-            ifx it.done tprint("%", formatInt(to_milliseconds(it.duration), minimum_digits=4, padding=#char" ")) else "    ",
-            ifx it.done tprint("% - %", it.part1, it.part2)
-        );
-    }
-
-    print("\nTotal time: %ms (%ms)\n", to_milliseconds(total_time), to_milliseconds(total_time_serial));
-}
-
-do_day :: (group: *Thread_Group, thread: *Thread, work: *void) -> Thread_Continue_Status
-{
-    start := current_time_monotonic();
-    day := cast(*Day)work;
-    day.part1, day.part2 = day.proc(day.input);
-    day.duration = current_time_monotonic() - start;
-    day.done = true;
-    return .CONTINUE;
-}
-
-Day :: struct
-{
-    day : u8;
-    input : string;
-    proc : (string) -> string, string;
-    part1, part2 : string;
-    duration : Apollo_Time;
-    done : bool;
-}
-
-generate_days :: () -> string
-{
-    day_procs  : String_Builder;
-    file_loads : String_Builder;
-
-    append(*day_procs, "days := #type (string) -> (string, string).[");
-    for 1..25 {
-        file := tprint("%.jai", formatInt(it, minimum_digits=2));
-        if !file_exists(file) continue;
-        append(*day_procs, tprint("day%,", it));
-        append(*file_loads, tprint("#load \"../%.jai\";", formatInt(it, minimum_digits=2)));
-    }
-    append(*day_procs, "];");
-
-    return tprint("%\n%\n", builder_to_string(*day_procs), builder_to_string(*file_loads));
-}
-
-#import "File";
-#import "Sort";
-#import "Math";
-#import "Basic";
-#import "String";
-#import "Thread";
-#import "Bit_Array";
-#import "Hash_Table";
-#import "File_Utilities";
-#import "Bit_Operations";
-
-// Iterators e.g. for u16s("234 543 984") print("%\n", it);
-u8s  :: s => ints(u8,  s);
-u16s :: s => ints(u16, s);
-u32s :: s => ints(u32, s);
-u64s :: s => ints(u64, s);
-s8s  :: s => ints(s8,  s);
-s16s :: s => ints(s16, s);
-s32s :: s => ints(s32, s);
-s64s :: s => ints(s64, s);
-
-for_expansion :: (i: *IntIterator, body: Code, flags: For_Flags) #expand
-{
-    `it_index := 0;
-
-    while i.s.count > 0
-    {
-        skip_whitespace(*i.s);
-        `it := read_number(i.T, *i.s);
-        #insert body;
-        `it_index += 1;
-    }
+    if debug output_results(results, start_time, clear = false);
 }
 
 // Consume elements from a string e.g. num := read_u8(*str);
@@ -219,16 +125,73 @@ read_number :: ($T: Type, s: *string, $skip_trailing_whitespace := true) -> T
 lcm :: (a: s64, b: s64) -> s64 { return a / gcd(a, b) * b; }
 gcd :: (a: s64, b: s64) -> s64 { if b return gcd(b, a % b); return a; }
 
-#scope_file;
+#import "File";
+#import "Sort";
+#import "Math";
+#import "Basic";
+#import "String";
+#import "Thread";
+#import "Bit_Array";
+#import "Hash_Table";
+#import "File_Utilities";
+#import "Bit_Operations";
 
-ints :: ($T: Type, s: string) -> IntIterator(T)
+#scope_file
+
+output_results :: (results : []Day, start_time : Apollo_Time, clear := true)
 {
-   i : IntIterator(T) = ---;
-   i.s = s;
-   return i;
+    if clear print("\x1B[2J\x1B[H"); // clear the console
+
+    total_time := current_time_monotonic() - start_time;
+    total_time_serial : Apollo_Time;
+
+    for results
+    {
+        if it.done total_time_serial += it.duration;
+
+        print("Day %: %ms - %\n",
+            formatInt(it.day, minimum_digits=2),
+            ifx it.done tprint("%", formatInt(to_milliseconds(it.duration), minimum_digits=4, padding=#char" ")) else "    ",
+            ifx it.done tprint("% - %", it.part1, it.part2)
+        );
+    }
+
+    print("\nTotal time: %ms (%ms)\n", to_milliseconds(total_time), to_milliseconds(total_time_serial));
 }
 
-IntIterator :: struct ($T: Type)
+do_day :: (group: *Thread_Group, thread: *Thread, work: *void) -> Thread_Continue_Status
 {
-    s: string;
+    start := current_time_monotonic();
+    day := cast(*Day)work;
+    day.part1, day.part2 = day.proc(day.input);
+    day.duration = current_time_monotonic() - start;
+    day.done = true;
+    return .CONTINUE;
+}
+
+Day :: struct
+{
+    day : u8;
+    input : string;
+    proc : (string) -> string, string;
+    part1, part2 : string;
+    duration : Apollo_Time;
+    done : bool;
+}
+
+generate_days :: () -> string
+{
+    day_procs  : String_Builder;
+    file_loads : String_Builder;
+
+    append(*day_procs, "days := #type (string) -> (string, string).[");
+    for 1..25 {
+        file := tprint("%.jai", formatInt(it, minimum_digits=2));
+        if !file_exists(file) continue;
+        append(*day_procs, tprint("day%,", it));
+        append(*file_loads, tprint("#load \"../%.jai\";", formatInt(it, minimum_digits=2)));
+    }
+    append(*day_procs, "];");
+
+    return tprint("%\n%\n", builder_to_string(*day_procs), builder_to_string(*file_loads));
 }
