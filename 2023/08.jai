@@ -1,6 +1,6 @@
 day8 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1, part2 := 1;
     directions := read_word(*input);
     map : Table(string, Node);
 
@@ -32,7 +32,7 @@ day8 :: (input: string) -> string, string
         }
 
         part1 = ifx id == "AAA" loop else part1;
-        part2 = ifx part2 == 0  loop else lcm(part2, loop);
+        part2 = lcm(part2, loop);
     }
 
     return tprint("%", part1), tprint("%", part2);
