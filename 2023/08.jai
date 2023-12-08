@@ -31,16 +31,14 @@ day8 :: (input: string) -> string, string
         if it_index[2] != #char "A" continue;
         
         curr := it;
-        loop := 0;
+        loop := array_add(*loops);
 
         while true
         {
             if curr.id[2] == #char "Z" break;
-            curr = ifx directions[loop % directions.count] == #char "L" curr.l else curr.r;
-            loop += 1;
+            curr = ifx directions[loop.* % directions.count] == #char "L" curr.l else curr.r;
+            loop.* += 1;
         }
-
-        array_add(*loops, loop);
     }
 
     part2 := lcm(loops[0], loops[1]);
