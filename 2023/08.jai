@@ -25,22 +25,24 @@ day8 :: (input: string) -> string, string
         part1 += 1;
     }
 
-    currs : [..]*Node;
-    for *map if it_index[2] == #char "A" array_add(*currs, it);
-    for 0..currs.count-1
+    loops : [..]s64;
+    for *map
     {
-        orig := currs[it];
+        if it_index[2] != #char "A" continue;
+        
+        curr := it;
+        loop := 0;
 
         while true
         {
-            if currs[it].id[2] == #char "Z" break;
-            currs[it] = ifx directions[orig.loop % directions.count] == #char "L" currs[it].l else currs[it].r;
-            orig.loop += 1;
+            if curr.id[2] == #char "Z" break;
+            curr = ifx directions[loop % directions.count] == #char "L" curr.l else curr.r;
+            loop += 1;
         }
+
+        array_add(*loops, loop);
     }
 
-    loops : [..]s64;
-    for *map if it_index[2] == #char "A" array_add(*loops, it.loop);
     part2 := lcm(loops[0], loops[1]);
     for 2..loops.count-1
     {
