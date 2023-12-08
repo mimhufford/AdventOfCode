@@ -216,6 +216,9 @@ read_number :: ($T: Type, s: *string, $skip_trailing_whitespace := true) -> T
     }
 }
 
+lcm :: (a: s64, b: s64) -> s64 { return a / gcd(a, b) * b; }
+gcd :: (a: s64, b: s64) -> s64 { if b return gcd(b, a % b); return a; }
+
 #scope_file;
 
 ints :: ($T: Type, s: string) -> IntIterator(T)

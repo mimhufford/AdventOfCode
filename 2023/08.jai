@@ -21,22 +21,38 @@ day8 :: (input: string) -> string, string
     while true
     {
         if curr.id == "ZZZ" break;
-        if directions[part1 % directions.count] == #char "L"
-        {
-            curr = curr.l;
-        }
-        else
-        {
-            curr = curr.r;
-        }
+        curr = ifx directions[part1 % directions.count] == #char "L" curr.l else curr.r;
         part1 += 1;
     }
 
-    return tprint("%", part1), tprint("%", 0);
+    currs : [..]*Node;
+    for *map if it_index[2] == #char "A" array_add(*currs, it);
+    for 0..currs.count-1
+    {
+        orig := currs[it];
+
+        while true
+        {
+            if currs[it].id[2] == #char "Z" break;
+            currs[it] = ifx directions[orig.loop % directions.count] == #char "L" currs[it].l else currs[it].r;
+            orig.loop += 1;
+        }
+    }
+
+    loops : [..]s64;
+    for *map if it_index[2] == #char "A" array_add(*loops, it.loop);
+    part2 := lcm(loops[0], loops[1]);
+    for 2..loops.count-1
+    {
+        part2 = lcm(part2, loops[it]);
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 Node :: struct
 {
     id : string;
     l, r : *Node;
+    loop : s64;
 }
