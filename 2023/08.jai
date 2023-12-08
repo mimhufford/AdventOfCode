@@ -17,22 +17,20 @@ day8 :: (input: string) -> string, string
         node.r = find_or_add(*map, r);
     }
 
-    for *map
+    for * curr, id: map
     {
-        if it_index[2] != #char "A" continue;
+        if id[2] != #char "A" continue;
         
-        curr := it;
         loop := 0;
 
-        while true
+        while curr.id[2] != #char "Z"
         {
-            if curr.id[2] == #char "Z" break;
             curr = ifx directions[loop % directions.count] == #char "L" curr.l else curr.r;
             loop += 1;
         }
 
-        if it_index == "AAA" part1 = loop;
-        part2 = ifx part2 == 0 loop else lcm(part2, loop);
+        part1 = ifx id == "AAA" loop else part1;
+        part2 = ifx part2 == 0  loop else lcm(part2, loop);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -42,5 +40,4 @@ Node :: struct
 {
     id : string;
     l, r : *Node;
-    loop : s64;
 }
