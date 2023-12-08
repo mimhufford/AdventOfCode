@@ -17,14 +17,6 @@ day8 :: (input: string) -> string, string
         node.r = find_or_add(*map, r);
     }
 
-    curr := find_or_add(*map, "AAA");
-    while true
-    {
-        if curr.id == "ZZZ" break;
-        curr = ifx directions[part1 % directions.count] == #char "L" curr.l else curr.r;
-        part1 += 1;
-    }
-
     for *map
     {
         if it_index[2] != #char "A" continue;
@@ -39,8 +31,8 @@ day8 :: (input: string) -> string, string
             loop += 1;
         }
 
-        if part2 == 0 part2 = loop;
-        else part2 = lcm(part2, loop);
+        if it_index == "AAA" part1 = loop;
+        part2 = ifx part2 == 0 loop else lcm(part2, loop);
     }
 
     return tprint("%", part1), tprint("%", part2);
