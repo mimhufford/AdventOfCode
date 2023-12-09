@@ -1,15 +1,17 @@
 day9 :: (input: string) -> string, string
 {
-    part1 := 0;
+    part1, part2 := 0;
 
     while input.count
     {
         seq : [..]s64;
         for 0..20 array_add(*seq, read_s64(*input));
         part1 += calculate_next(seq);
+        for 0..9 seq[it], seq[20-it] = seq[20-it], seq[it];
+        part2 += calculate_next(seq);
     }
 
-    return tprint("%", part1), tprint("%", 0);
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
