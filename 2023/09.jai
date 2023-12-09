@@ -20,7 +20,7 @@ calculate_next :: (seq : []s64) -> s64
 {
     all_zeros := true;
     for seq if it != 0 { all_zeros = false; break; }
-    if all_zeros return seq[seq.count-1];
+    if all_zeros return 0;
 
     next_seq : [..]s64;
     for 0..seq.count-2 array_add(*next_seq, seq[it+1] - seq[it]);
