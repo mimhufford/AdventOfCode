@@ -26,17 +26,7 @@ day10 :: (input: string) -> string, string
     {
         for x: 0..map[y].count-1
         {
-            // TODO: slow
-            overwrite := true;
-            for loop
-            {
-                if it.x == x && it.y == y
-                {
-                    overwrite = false;
-                    break;
-                }
-            }
-            if overwrite map[y][x] = #char " ";
+            if !table_contains(*loop, y << 32 | x) map[y][x] = #char " ";
         }
     }
 
@@ -61,25 +51,21 @@ day10 :: (input: string) -> string, string
 
 #scope_file
 
-walk :: (map: []string, sx: s64, sy: s64) -> []Point
+walk :: (map: []string, sx: s64, sy: s64) -> Table(s64, *void)
 {
     x, y := sx, sy;
     dir := Direction.N; // TODO: work out direction
 
-    loop : [..]Point;
-
-    p := array_add(*loop);
-    p.x, p.y = x, y;
+    loop : Table(s64, *void);
+    table_add(*loop, y << 32 | x, null);
 
     step(map, *x, *y, *dir);
-    p = array_add(*loop);
-    p.x, p.y = x, y;
+    table_add(*loop, y << 32 | x, null);
 
     while x != sx || y != sy
     {
         step(map, *x, *y, *dir);
-        p = array_add(*loop);
-        p.x, p.y = x, y;
+        table_add(*loop, y << 32 | x, null);
     }
 
     return loop;
@@ -113,11 +99,6 @@ step :: (map: []string, x: *s64, y: *s64, dir: *Direction)
         else if map[y.*][x.*] == #char "L" dir.* = .N;
         else if map[y.*][x.*] == #char "F" dir.* = .S;
     }
-}
-
-Point :: struct
-{
-    x, y: s64;
 }
 
 Direction :: enum { N; E; S; W; }
