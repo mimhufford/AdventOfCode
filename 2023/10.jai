@@ -50,52 +50,37 @@ day10 :: (input: string) -> string, string
 walk :: (map: []string, sx: s64, sy: s64) -> Table(s64, *void)
 {
     x, y := sx, sy;
+    dx, dy := 0, -1;       // TODO: work out direction
     map[y][x] = #char "L"; // TODO: hack
-    dir := Direction.N;    // TODO: work out direction
 
     loop : Table(s64, *void);
     table_add(*loop, y << 32 | x, null);
 
-    step(map, *x, *y, *dir);
-    table_add(*loop, y << 32 | x, null);
-
-    while x != sx || y != sy
+    while true
     {
-        step(map, *x, *y, *dir);
+        x += dx; y += dy;
+        dx, dy = step(map, x, y, dx, dy);
         table_add(*loop, y << 32 | x, null);
+        if x == sx && y == sy break;
     }
 
     return loop;
 }
 
-step :: (map: []string, x: *s64, y: *s64, dir: *Direction)
+step :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64
 {
-    if dir.* ==
-    {
-        case .N;
-        y.* -= 1;
-        if      map[y.*][x.*] == #char "|" dir.* = .N;
-        else if map[y.*][x.*] == #char "7" dir.* = .W;
-        else if map[y.*][x.*] == #char "F" dir.* = .E;
+    if dy == -1 && map[y][x] == #char "|" return  0, -1;
+    if dy == -1 && map[y][x] == #char "7" return -1,  0;
+    if dy == -1 && map[y][x] == #char "F" return  1,  0;
+    if dy ==  1 && map[y][x] == #char "|" return  0,  1;
+    if dy ==  1 && map[y][x] == #char "L" return  1,  0;
+    if dy ==  1 && map[y][x] == #char "J" return -1,  0;
+    if dx == -1 && map[y][x] == #char "-" return -1,  0;
+    if dx == -1 && map[y][x] == #char "L" return  0, -1;
+    if dx == -1 && map[y][x] == #char "F" return  0,  1;
+    if dx ==  1 && map[y][x] == #char "-" return  1,  0;
+    if dx ==  1 && map[y][x] == #char "7" return  0,  1;
+    if dx ==  1 && map[y][x] == #char "J" return  0, -1;
 
-        case .E;
-        x.* += 1;
-        if      map[y.*][x.*] == #char "-" dir.* = .E;
-        else if map[y.*][x.*] == #char "7" dir.* = .S;
-        else if map[y.*][x.*] == #char "J" dir.* = .N;
-
-        case .S;
-        y.* += 1;
-        if      map[y.*][x.*] == #char "|" dir.* = .S;
-        else if map[y.*][x.*] == #char "L" dir.* = .E;
-        else if map[y.*][x.*] == #char "J" dir.* = .W;
-
-        case .W;
-        x.* -= 1;
-        if      map[y.*][x.*] == #char "-" dir.* = .W;
-        else if map[y.*][x.*] == #char "L" dir.* = .N;
-        else if map[y.*][x.*] == #char "F" dir.* = .S;
-    }
+    return 0, 0;
 }
-
-Direction :: enum { N; E; S; W; }
