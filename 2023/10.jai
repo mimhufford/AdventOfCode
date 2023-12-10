@@ -26,64 +26,50 @@ day10 :: (input: string) -> string, string
 
 walk :: (map: []string, sx: s64, sy: s64) -> s64
 {
-    walkers : [2]Walker;
-    walkers[0].x = sx;
-    walkers[0].y = sy;
-    walkers[1].x = sx;
-    walkers[1].y = sy;
-
-    // TODO: work out directions programmatically
-    walkers[0].dir = .N;
-    walkers[1].dir = .E;
+    x := sx;
+    y := sy;
+    dir := Direction.N; // TODO: work out direction
 
     steps := 1;
-    step(map, *walkers[0]);
-    step(map, *walkers[1]);
+    step(map, *x, *y, *dir);
 
-    while walkers[0].x != walkers[1].x || walkers[0].y != walkers[1].y
+    while x != sx || y != sy
     {
         steps += 1;
-        step(map, *walkers[0]);
-        step(map, *walkers[1]);
+        step(map, *x, *y, *dir);
     }
 
-    return steps;
+    return steps / 2;
 }
 
-step :: (map: []string, w: *Walker)
+step :: (map: []string, x: *s64, y: *s64, dir: *Direction)
 {
-    if w.dir ==
+    if dir.* ==
     {
         case .N;
-        w.y -= 1;
-        if      map[w.y][w.x] == #char "|" w.dir = .N;
-        else if map[w.y][w.x] == #char "7" w.dir = .W;
-        else if map[w.y][w.x] == #char "F" w.dir = .E;
+        y.* -= 1;
+        if      map[y.*][x.*] == #char "|" dir.* = .N;
+        else if map[y.*][x.*] == #char "7" dir.* = .W;
+        else if map[y.*][x.*] == #char "F" dir.* = .E;
 
         case .E;
-        w.x += 1;
-        if      map[w.y][w.x] == #char "-" w.dir = .E;
-        else if map[w.y][w.x] == #char "7" w.dir = .S;
-        else if map[w.y][w.x] == #char "J" w.dir = .N;
+        x.* += 1;
+        if      map[y.*][x.*] == #char "-" dir.* = .E;
+        else if map[y.*][x.*] == #char "7" dir.* = .S;
+        else if map[y.*][x.*] == #char "J" dir.* = .N;
 
         case .S;
-        w.y += 1;
-        if      map[w.y][w.x] == #char "|" w.dir = .S;
-        else if map[w.y][w.x] == #char "L" w.dir = .E;
-        else if map[w.y][w.x] == #char "J" w.dir = .W;
+        y.* += 1;
+        if      map[y.*][x.*] == #char "|" dir.* = .S;
+        else if map[y.*][x.*] == #char "L" dir.* = .E;
+        else if map[y.*][x.*] == #char "J" dir.* = .W;
 
         case .W;
-        w.x -= 1;
-        if      map[w.y][w.x] == #char "-" w.dir = .W;
-        else if map[w.y][w.x] == #char "L" w.dir = .N;
-        else if map[w.y][w.x] == #char "F" w.dir = .S;
+        x.* -= 1;
+        if      map[y.*][x.*] == #char "-" dir.* = .W;
+        else if map[y.*][x.*] == #char "L" dir.* = .N;
+        else if map[y.*][x.*] == #char "F" dir.* = .S;
     }
-}
-
-Walker :: struct
-{
-    x, y : s64;
-    dir  : Direction;
 }
 
 Direction :: enum { N; E; S; W; }
