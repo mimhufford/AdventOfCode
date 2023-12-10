@@ -12,7 +12,6 @@ day10 :: (input: string) -> string, string
             {
                 sx = x;
                 sy = y;
-                map[y][x] = #char "L"; // TODO: hack
                 break;
             }
         }
@@ -38,10 +37,7 @@ day10 :: (input: string) -> string, string
         for x: 0..map[y].count-1
         {
             c := map[y][x];
-            if      c == #char "|" { inside = !inside; continue; }
-            else if c == #char "L" { inside = !inside; continue; }
-            else if c == #char "J" { inside = !inside; continue; }
-
+            if c == #char "|" || c == #char "L" || c == #char "J" inside = !inside;
             if inside && c == #char " " part2 += 1;
         }
     }
@@ -54,7 +50,8 @@ day10 :: (input: string) -> string, string
 walk :: (map: []string, sx: s64, sy: s64) -> Table(s64, *void)
 {
     x, y := sx, sy;
-    dir := Direction.N; // TODO: work out direction
+    map[y][x] = #char "L"; // TODO: hack
+    dir := Direction.N;    // TODO: work out direction
 
     loop : Table(s64, *void);
     table_add(*loop, y << 32 | x, null);
