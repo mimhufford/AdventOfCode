@@ -1,34 +1,7 @@
 day10 :: (input: string) -> string, string
 {
-    map := split(trim(input), "\n");
-
-    sx, sy := 0;
-
-    for y: 0..map.count-1
-    {
-        for x: 0..map[y].count-1
-        {
-            if map[y][x] == #char "S"
-            {
-                sx = x;
-                sy = y;
-                break;
-            }
-        }
-    }
-
-    loop := walk(map, sx, sy);
-    part1 := loop.count / 2;
-
-    // blank out all the cells not on the loop
-    for y: 0..map.count-1
-    {
-        for x: 0..map[y].count-1
-        {
-            if !table_contains(*loop, y << 32 | x) map[y][x] = #char " ";
-        }
-    }
-
+    map   := split(trim(input), "\n");
+    part1 := walk(map);
     part2 := 0;
     for y: 0..map.count-1
     {
@@ -47,8 +20,23 @@ day10 :: (input: string) -> string, string
 
 #scope_file
 
-walk :: (map: []string, sx: s64, sy: s64) -> Table(s64, *void)
+walk :: (map: []string) -> s64
 {
+    sx, sy := 0;
+
+    for y: 0..map.count-1
+    {
+        for x: 0..map[y].count-1
+        {
+            if map[y][x] == #char "S"
+            {
+                sx = x;
+                sy = y;
+                break;
+            }
+        }
+    }
+
     x, y := sx, sy;
     dx, dy := 0, -1;       // TODO: work out direction
     map[y][x] = #char "L"; // TODO: hack
@@ -64,7 +52,16 @@ walk :: (map: []string, sx: s64, sy: s64) -> Table(s64, *void)
         if x == sx && y == sy break;
     }
 
-    return loop;
+    // blank out all the cells not on the loop
+    for y: 0..map.count-1
+    {
+        for x: 0..map[y].count-1
+        {
+            if !table_contains(*loop, y << 32 | x) map[y][x] = #char " ";
+        }
+    }
+
+    return loop.count / 2;
 }
 
 step :: (map: []string, x: s64, y: s64, dx: s64, dy: s64) -> s64, s64
