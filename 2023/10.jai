@@ -17,29 +17,36 @@ day10 :: (input: string) -> string, string
         }
     }
 
-    part1 := walk(map, sx, sy);
+    loop := walk(map, sx, sy);
+    part1 := loop.count / 2;
 
     return tprint("%", part1), tprint("%", 0);
 }
 
 #scope_file
 
-walk :: (map: []string, sx: s64, sy: s64) -> s64
+walk :: (map: []string, sx: s64, sy: s64) -> []Point
 {
-    x := sx;
-    y := sy;
+    x, y := sx, sy;
     dir := Direction.N; // TODO: work out direction
 
-    steps := 1;
+    loop : [..]Point;
+
+    p := array_add(*loop);
+    p.x, p.y = sx, sy;
+
     step(map, *x, *y, *dir);
+    p = array_add(*loop);
+    p.x, p.y = sx, sy;
 
     while x != sx || y != sy
     {
-        steps += 1;
         step(map, *x, *y, *dir);
+        p = array_add(*loop);
+        p.x, p.y = sx, sy;
     }
 
-    return steps / 2;
+    return loop;
 }
 
 step :: (map: []string, x: *s64, y: *s64, dir: *Direction)
@@ -70,6 +77,11 @@ step :: (map: []string, x: *s64, y: *s64, dir: *Direction)
         else if map[y.*][x.*] == #char "L" dir.* = .N;
         else if map[y.*][x.*] == #char "F" dir.* = .S;
     }
+}
+
+Point :: struct
+{
+    x, y: s64;
 }
 
 Direction :: enum { N; E; S; W; }
