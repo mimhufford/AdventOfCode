@@ -151,7 +151,7 @@ output_results :: (results : []Day, start_time : Apollo_Time, clear := true)
 
         print("Day %: %ms - %\n",
             formatInt(it.day, minimum_digits=2),
-            ifx it.done tprint("%", formatInt(to_milliseconds(it.duration), minimum_digits=4, padding=#char" ")) else "    ",
+            ifx it.done tprint("%", formatFloat(0.001 * to_microseconds(it.duration), width=7, trailing_width=3, zero_removal=.NO)) else "    ",
             ifx it.done tprint("% - %", it.part1, it.part2)
         );
     }
