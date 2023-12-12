@@ -6,11 +6,8 @@ day12 :: (input: string) -> string, string
     for springs
     {
         table_reset(*cache);
-        conditions, amounts := read_spring_data(it);
-        part1 += count_combos(conditions, amounts);
-        conditions_x5 := tprint("%?%?%?%?%", conditions, conditions, conditions, conditions, conditions);
-        amounts_x5 : [..]s64;  for 0..4 for amounts array_add(*amounts_x5, it);
-        part2 += count_combos(conditions_x5, amounts_x5);
+        part1 += count_combos_for_spring_data(it, 1);
+        part2 += count_combos_for_spring_data(it, 5);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -70,11 +67,16 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
     }
 }
 
-read_spring_data :: (s: string) -> string, []s64
+count_combos_for_spring_data :: (s: string, copies: s64) -> s64
 {
     data := split(s, " ");
-    conditions, amount_data := data[0], data[1];
+    condition_data, amount_data := data[0], data[1];
+    conditions : String_Builder;
     amounts : [..]s64;
-    for split(amount_data, ",") array_add(*amounts, read_s64(*it));
-    return conditions, amounts;
+    for 1..copies
+    {
+        append(*conditions, ifx it < copies tprint("%?", condition_data) else condition_data);
+        for split(amount_data, ",") array_add(*amounts, read_s64(*it));
+    }
+    return count_combos(builder_to_string(*conditions), amounts);
 }
