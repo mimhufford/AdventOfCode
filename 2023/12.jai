@@ -28,29 +28,8 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
                                             return 0;
     }
 
-    if conditions[0] == #char "?"
+    end_the_current_run :: () -> s64 #expand
     {
-        // carry on the run
-        a := count_combos(advance(conditions), to_match, curr_run+1);
-
-        // end the run
-        if !curr_run return a + count_combos(advance(conditions), to_match, 0);
-        if curr_run && !to_match || curr_run != to_match[0] return a;
-        left_to_match := to_match;
-        left_to_match.data += 1;
-        left_to_match.count -= 1;
-        return a + count_combos(advance(conditions), left_to_match, 0);
-    }
-    else if conditions[0] == #char "#"
-    {
-        // carry on the run
-        if !to_match return 0;
-        if curr_run > to_match[0] return 0;
-        return count_combos(advance(conditions), to_match, curr_run+1);
-    }
-    else // "."
-    {
-        // end the run
         if !curr_run return count_combos(advance(conditions), to_match, 0);
         if curr_run && !to_match || curr_run != to_match[0] return 0;
         left_to_match := to_match;
@@ -58,6 +37,15 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
         left_to_match.count -= 1;
         return count_combos(advance(conditions), left_to_match, 0);
     }
+
+    continue_the_current_run :: () -> s64 #expand
+    {
+        return count_combos(advance(conditions), to_match, curr_run+1);
+    }
+
+    if      conditions[0] == #char "." return end_the_current_run();
+    else if conditions[0] == #char "#" return continue_the_current_run();
+    else                               return continue_the_current_run() + end_the_current_run();
 }
 
 read_spring_data :: (s: string) -> string, []s64
