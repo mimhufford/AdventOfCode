@@ -2,15 +2,17 @@ day12 :: (input: string) -> string, string
 {
     springs := split(trim(input), "\n");
 
-    part1 := 0;
+    part1, part2 := 0;
     for springs
     {
         conditions, amounts := read_spring_data(it);
-        combos := count_combos(conditions, amounts);
-        part1 += combos;
+        part1 += count_combos(conditions, amounts);
+        conditions_x5 := tprint("%?%?%?%?%", conditions, conditions, conditions, conditions, conditions);
+        amounts_x5 : [..]s64;  for 0..4 for amounts array_add(*amounts_x5, it);
+        part2 += count_combos(conditions_x5, amounts_x5);
     }
 
-    return tprint("%", part1), tprint("%", 0);
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
