@@ -5,6 +5,7 @@ day12 :: (input: string) -> string, string
     part1, part2 := 0;
     for springs
     {
+        table_reset(*cache);
         conditions, amounts := read_spring_data(it);
         part1 += count_combos(conditions, amounts);
         conditions_x5 := tprint("%?%?%?%?%", conditions, conditions, conditions, conditions, conditions);
@@ -17,8 +18,14 @@ day12 :: (input: string) -> string, string
 
 #scope_file
 
+cache : Table(u32, s64);
+
 count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
 {
+    hash   := get_hash(conditions) + get_hash(to_match) + get_hash(curr_run);
+    cached := table_find_pointer(*cache, hash);
+    if cached return cached.*;
+
     if !conditions
     {
         if to_match.count >= 2              return 0;
@@ -43,9 +50,24 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
         return count_combos(advance(conditions), to_match, curr_run+1);
     }
 
-    if      conditions[0] == #char "." return end_the_current_run();
-    else if conditions[0] == #char "#" return continue_the_current_run();
-    else                               return continue_the_current_run() + end_the_current_run();
+    if conditions[0] == #char "."
+    {
+        result := end_the_current_run();
+        table_add(*cache, hash, result);
+        return result;
+    }
+    else if conditions[0] == #char "#"
+    {
+        result := continue_the_current_run();
+        table_add(*cache, hash, result);
+        return result;
+    }
+    else                              
+    {
+        result := continue_the_current_run() + end_the_current_run();
+        table_add(*cache, hash, result);
+        return result;
+    }
 }
 
 read_spring_data :: (s: string) -> string, []s64
