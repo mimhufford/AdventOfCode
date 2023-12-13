@@ -21,6 +21,7 @@ day13 :: (input: string) -> string, string
                     yb := cast(s64)(2*ym - ya);
                     if yb >= w continue;
                     if rows[row][ya] != rows[row][yb] errors += 1;
+                    if errors > 1 continue col;
                 }
             }
 
@@ -40,6 +41,7 @@ day13 :: (input: string) -> string, string
                     xb := cast(s64)(2*xm - xa);
                     if xb >= h continue;
                     if rows[xa][col] != rows[xb][col] errors += 1;
+                    if errors > 1 continue row;
                 }
             }
 
