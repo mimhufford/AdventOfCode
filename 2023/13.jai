@@ -1,10 +1,8 @@
 day13 :: (input: string) -> string, string
 {
-    maps := split(trim(input), "\n\n");
-
     part1, part2 := 0;
 
-    for maps
+    for split(trim(input), "\n\n")
     {
         rows := split(it, "\n");
         w, h := rows[0].count, rows.count;
