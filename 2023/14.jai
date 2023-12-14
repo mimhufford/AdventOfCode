@@ -56,17 +56,27 @@ do_a_round :: (map: []string)
 
 tilt_north :: (map: []string)
 {
-    for y: 0..map.count-1
+    for x: 0..map[0].count-1
     {
-        for x: 0..map[y].count-1
-        {
-            if map[y][x] != #char "O" continue;
+        y := 0;
 
-            for < ny: y-1..0
+        while y < map.count
+        {
+            while y < map.count && map[y][x] == #char "#" y += 1;
+            start_y := y;
+            count := 0;
+            while y < map.count
             {
-                if map[ny][x] != #char "." break;
-                map[ny  ][x] = #char "O";
-                map[ny+1][x] = #char ".";
+                defer y += 1;
+
+                if map[y][x] == #char "#" break;
+                
+                if map[y][x] == #char "O"
+                {
+                    map[y][x] = #char ".";
+                    map[start_y+count][x] = #char "O";
+                    count += 1;
+                }
             }
         }
     }
@@ -74,17 +84,27 @@ tilt_north :: (map: []string)
 
 tilt_south :: (map: []string)
 {
-    for < y: map.count-1..0
+    for x: 0..map[0].count-1
     {
-        for x: 0..map[y].count-1
-        {
-            if map[y][x] != #char "O" continue;
+        y := map.count-1;
 
-            for ny: y+1..map.count-1
+        while y >= 0
+        {
+            while y >= 0 && map[y][x] == #char "#" y -= 1;
+            start_y := y;
+            count := 0;
+            while y >= 0
             {
-                if map[ny][x] != #char "." break;
-                map[ny  ][x] = #char "O";
-                map[ny-1][x] = #char ".";
+                defer y -= 1;
+
+                if map[y][x] == #char "#" break;
+                
+                if map[y][x] == #char "O"
+                {
+                    map[y][x] = #char ".";
+                    map[start_y-count][x] = #char "O";
+                    count += 1;
+                }
             }
         }
     }
@@ -92,17 +112,27 @@ tilt_south :: (map: []string)
 
 tilt_west :: (map: []string)
 {
-    for x: 0..map[0].count-1
+    for y: 0..map.count-1
     {
-        for y: 0..map.count-1
-        {
-            if map[y][x] != #char "O" continue;
+        x := 0;
 
-            for < nx: x-1..0
+        while x < map[0].count
+        {
+            while x < map[0].count && map[y][x] == #char "#" x += 1;
+            start_x := x;
+            count := 0;
+            while x < map[0].count
             {
-                if map[y][nx] != #char "." break;
-                map[y][nx] = #char "O";
-                map[y][nx+1] = #char ".";
+                defer x += 1;
+
+                if map[y][x] == #char "#" break;
+                
+                if map[y][x] == #char "O"
+                {
+                    map[y][x] = #char ".";
+                    map[y][start_x+count] = #char "O";
+                    count += 1;
+                }
             }
         }
     }
@@ -110,17 +140,27 @@ tilt_west :: (map: []string)
 
 tilt_east :: (map: []string)
 {
-    for < x: map[0].count-1..0
+    for y: 0..map.count-1
     {
-        for y: 0..map.count-1
-        {
-            if map[y][x] != #char "O" continue;
+        x := map[0].count-1;
 
-            for nx: x+1..map[0].count-1
+        while x >= 0
+        {
+            while x >= 0 && map[y][x] == #char "#" x -= 1;
+            start_x := x;
+            count := 0;
+            while x >= 0
             {
-                if map[y][nx] != #char "." break;
-                map[y][nx] = #char "O";
-                map[y][nx-1] = #char ".";
+                defer x -= 1;
+
+                if map[y][x] == #char "#" break;
+                
+                if map[y][x] == #char "O"
+                {
+                    map[y][x] = #char ".";
+                    map[y][start_x-count] = #char "O";
+                    count += 1;
+                }
             }
         }
     }
