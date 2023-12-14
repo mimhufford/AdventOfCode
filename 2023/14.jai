@@ -9,32 +9,18 @@ day14 :: (input: string) -> string, string
     tilt_east(map);
 
     // do 200 to let it settle (already done 1)
-    for 2..200
-    {
-        tilt_north(map);
-        tilt_west(map);
-        tilt_south(map);
-        tilt_east(map);
-    }
+    for 2..200 do_a_round(map);
 
     // calculate the hash
-    load := calculate_total_load(map);
-    hash_to_find := get_hash(load);
-    for map hash_to_find = get_hash(hash_to_find + get_hash(it));
+    hash_to_find := calculate_hash(map);
     cycle := 0;
 
     // find the cycle
     while true
     {
-        tilt_north(map);
-        tilt_west(map);
-        tilt_south(map);
-        tilt_east(map);
         cycle += 1;
-        load := calculate_total_load(map);
-        hash := get_hash(load);
-        for map hash = get_hash(hash + get_hash(it));
-        if hash == hash_to_find break;
+        do_a_round(map);
+        if calculate_hash(map) == hash_to_find break;
     }
 
     // calculate how many rounds left
@@ -43,13 +29,7 @@ day14 :: (input: string) -> string, string
     rounds_left %= cycle;
 
     // do the last rounds
-    for 1..rounds_left
-    {
-        tilt_north(map);
-        tilt_west(map);
-        tilt_south(map);
-        tilt_east(map);
-    }
+    for 1..rounds_left do_a_round(map);
 
     part2 := calculate_total_load(map);
 
@@ -57,6 +37,22 @@ day14 :: (input: string) -> string, string
 }
 
 #scope_file
+
+calculate_hash :: (map: []string) -> u32
+{
+    load := calculate_total_load(map);
+    hash := get_hash(load);
+    for map hash = get_hash(hash + get_hash(it));
+    return hash;
+}
+
+do_a_round :: (map: []string)
+{
+    tilt_north(map);
+    tilt_west(map);
+    tilt_south(map);
+    tilt_east(map);
+}
 
 tilt_north :: (map: []string)
 {
