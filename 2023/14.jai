@@ -65,18 +65,15 @@ tilt_north :: (map: []string)
             while y < map.count && map[y][x] == #char "#" y += 1;
             start_y := y;
             count := 0;
-            while y < map.count
+            while y < map.count && map[y][x] != #char "#"
             {
-                defer y += 1;
-
-                if map[y][x] == #char "#" break;
-                
                 if map[y][x] == #char "O"
                 {
                     map[y][x] = #char ".";
                     map[start_y+count][x] = #char "O";
                     count += 1;
                 }
+                y += 1;
             }
         }
     }
@@ -93,18 +90,15 @@ tilt_south :: (map: []string)
             while y >= 0 && map[y][x] == #char "#" y -= 1;
             start_y := y;
             count := 0;
-            while y >= 0
+            while y >= 0 && map[y][x] != #char "#"
             {
-                defer y -= 1;
-
-                if map[y][x] == #char "#" break;
-                
                 if map[y][x] == #char "O"
                 {
                     map[y][x] = #char ".";
                     map[start_y-count][x] = #char "O";
                     count += 1;
                 }
+                y -= 1;
             }
         }
     }
@@ -121,18 +115,15 @@ tilt_west :: (map: []string)
             while x < map[0].count && map[y][x] == #char "#" x += 1;
             start_x := x;
             count := 0;
-            while x < map[0].count
+            while x < map[0].count && map[y][x] != #char "#"
             {
-                defer x += 1;
-
-                if map[y][x] == #char "#" break;
-                
                 if map[y][x] == #char "O"
                 {
                     map[y][x] = #char ".";
                     map[y][start_x+count] = #char "O";
                     count += 1;
                 }
+                x += 1;
             }
         }
     }
@@ -149,18 +140,15 @@ tilt_east :: (map: []string)
             while x >= 0 && map[y][x] == #char "#" x -= 1;
             start_x := x;
             count := 0;
-            while x >= 0
+            while x >= 0 && map[y][x] != #char "#"
             {
-                defer x -= 1;
-
-                if map[y][x] == #char "#" break;
-                
                 if map[y][x] == #char "O"
                 {
                     map[y][x] = #char ".";
                     map[y][start_x-count] = #char "O";
                     count += 1;
                 }
+                x -= 1;
             }
         }
     }
