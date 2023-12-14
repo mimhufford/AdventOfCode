@@ -37,12 +37,12 @@ day14 :: (input: string) -> string, string
         if hash == hash_to_find break;
     }
 
-    // calculate how many cycles left
+    // calculate how many rounds left
     rounds_done := 500 + cycle;
     rounds_left := 1000000000 - rounds_done;
     rounds_left %= cycle;
 
-    // do the last cycles
+    // do the last rounds
     for 1..rounds_left
     {
         tilt_north(map);
