@@ -41,9 +41,7 @@ day14 :: (input: string) -> string, string
 calculate_hash :: (map: []string) -> u32
 {
     load := calculate_total_load(map);
-    hash := get_hash(load);
-    for map hash = get_hash(hash + get_hash(it));
-    return hash;
+    return sdbm_hash(map[0].data, map.count * map[0].count + map.count, xx load);
 }
 
 do_a_round :: (map: []string)
