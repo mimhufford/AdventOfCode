@@ -8,8 +8,8 @@ day14 :: (input: string) -> string, string
     tilt_south(map);
     tilt_east(map);
 
-    // do 500 to let it settle (already done 1)
-    for 2..500
+    // do 200 to let it settle (already done 1)
+    for 2..200
     {
         tilt_north(map);
         tilt_west(map);
@@ -38,7 +38,7 @@ day14 :: (input: string) -> string, string
     }
 
     // calculate how many rounds left
-    rounds_done := 500 + cycle;
+    rounds_done := 200 + cycle;
     rounds_left := 1000000000 - rounds_done;
     rounds_left %= cycle;
 
