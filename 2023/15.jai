@@ -21,30 +21,14 @@ day15 :: (input: string) -> string, string
         if word[word.count-1] != #char "-"
         {
             key := word; key.count -= 2;
-            found := false;
-            for * slot: map[hash]
-            {
-                if slot.key == key
-                {
-                    slot.value = word[word.count-1] - #char "0";
-                    found = true;
-                    break;
-                }
-            }
-            if !found array_add(*map[hash], .{key, hash, word[word.count-1] - #char "0"});
+            index, item := find_item(map[hash], key);
+            if item item.value = word[word.count-1] - #char "0";
+            else array_add(*map[hash], .{key, hash, word[word.count-1] - #char "0"});
         }
         else
         {
             key := word; key.count -= 1;
-            index := -1;
-            for * slot, slot_index: map[hash]
-            {
-                if slot.key == key
-                {
-                    index = slot_index;
-                    break;
-                }
-            }
+            index := find_item(map[hash], key);
             if index >=0 array_ordered_remove_by_index(*map[hash], index);
         }
 
@@ -60,6 +44,19 @@ day15 :: (input: string) -> string, string
 }
 
 #scope_file
+
+find_item :: (box: []Item, key: string) -> s64, *Item
+{
+    for * slot, slot_index: box
+    {
+        if slot.key == key
+        {
+            return slot_index, slot;
+        }
+    }
+
+    return -1, null;
+}
 
 Item :: struct
 {
