@@ -18,19 +18,12 @@ day15 :: (input: string) -> string, string
             hash *= 17;
         }
         
-        if word[word.count-1] != #char "-"
-        {
-            key := word; key.count -= 2;
-            index, item := find_item(map[hash], key);
-            if item item.val = word[word.count-1] - #char "0";
-            else array_add(*map[hash], .{key, word[word.count-1] - #char "0"});
-        }
-        else
-        {
-            key := word; key.count -= 1;
-            index := find_item(map[hash], key);
-            if index >= 0 array_ordered_remove_by_index(*map[hash], index);
-        }
+        key := word;
+        key.count -= ifx word[word.count-1] == #char "-" then 1 else 2;
+        index, item := find_item(map[hash], key);
+        if word[word.count-1] != #char "-" && item item.val = word[word.count-1] - #char "0";
+        if word[word.count-1] != #char "-" && !item array_add(*map[hash], .{key, word[word.count-1] - #char "0"});
+        if word[word.count-1] == #char "-" && index >= 0 array_ordered_remove_by_index(*map[hash], index);
 
         part1 += full_hash;
     }
