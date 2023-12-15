@@ -6,7 +6,6 @@ day15 :: (input: string) -> string, string
     for word: split(trim(input), ",")
     {
         full_hash, hash: u8;
-        type : enum { SET; REM; } = ifx word[word.count-1] == #char "-" then .REM else .SET;
         
         for 0..word.count-1
         {
@@ -19,7 +18,7 @@ day15 :: (input: string) -> string, string
             hash *= 17;
         }
         
-        if type == .SET
+        if word[word.count-1] != #char "-"
         {
             key := word; key.count -= 2;
             found := false;
