@@ -29,7 +29,7 @@ day15 :: (input: string) -> string, string
         {
             key := word; key.count -= 1;
             index := find_item(map[hash], key);
-            if index >=0 array_ordered_remove_by_index(*map[hash], index);
+            if index >= 0 array_ordered_remove_by_index(*map[hash], index);
         }
 
         part1 += full_hash;
