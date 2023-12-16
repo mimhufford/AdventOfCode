@@ -3,7 +3,7 @@ day16 :: (input: string) -> string, string
     map := split(trim(input), "\n");
 
     history : [..]Direction;
-    for map for 0..it.count-1 array_add(*history, .N);
+    for map for 0..it.count-1 array_add(*history, 0);
 
     part1 := shoot_photon(map, history, -1, 0, .R);
     part2 := 0;
@@ -30,14 +30,7 @@ Photon :: struct
     d : Direction;
 }
 
-Direction :: enum_flags u8
-{
-    N :: 0b0000;
-    L :: 0b0001;
-    R :: 0b0010;
-    U :: 0b0100;
-    D :: 0b1000;
-}
+Direction :: enum_flags u8 { L; R; U; D; }
 
 direction_to_dx_dy :: (d: Direction) -> s8, s8
 {
@@ -49,7 +42,7 @@ direction_to_dx_dy :: (d: Direction) -> s8, s8
 
 shoot_photon :: (map: []string, history: [..]Direction, x: s8, y: s8, d: Direction) -> s64
 {
-    for 0..history.count-1 history[it] = .N;
+    for 0..history.count-1 history[it] = 0;
 
     photons : [..]Photon;
     array_add(*photons, .{x, y, d});
