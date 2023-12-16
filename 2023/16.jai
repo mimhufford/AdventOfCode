@@ -1,21 +1,9 @@
 day16 :: (input: string) -> string, string
 {
     map := split(trim(input), "\n");
-    history : [..][..]Direction;
+    part1 := shoot_photon(map, -1, 0, .R);
 
-    for map
-    {
-        row := array_add(*history);
-        for 0..it.count-1 array_add(row, .N);
-    }
-
-    shoot_photon(map, history, -1, 0, .R);
-
-    part1, part2 := 0;
-
-    for history for it if it part1 += 1;
-
-    return tprint("%", part1), tprint("%", part2);
+    return tprint("%", part1), tprint("%", 0);
 }
 
 #scope_file
@@ -43,8 +31,16 @@ direction_to_dx_dy :: (d: Direction) -> s64, s64
                return  0,  1;
 }
 
-shoot_photon :: (map: []string, history: [..][..]Direction, x: s64, y: s64, d: Direction)
+shoot_photon :: (map: []string, x: s64, y: s64, d: Direction) -> s64
 {
+    history : [..][..]Direction;
+
+    for map
+    {
+        row := array_add(*history);
+        for 0..it.count-1 array_add(row, .N);
+    }
+
     photons : [..]Photon;
     array_add(*photons, .{x, y, d});
 
@@ -116,4 +112,8 @@ shoot_photon :: (map: []string, history: [..][..]Direction, x: s64, y: s64, d: D
             array_add(*photons, .{ p.x, p.y, .R });
         }
     }
+
+    energy := 0;
+    for history for it if it energy += 1;
+    return energy;
 }
