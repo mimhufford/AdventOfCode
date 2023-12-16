@@ -20,6 +20,12 @@ day16 :: (input: string) -> string, string
 
 #scope_file
 
+Photon :: struct
+{
+    x, y : s64;
+    d : Direction;
+}
+
 Direction :: enum_flags u8
 {
     N :: 0b0000;
@@ -37,69 +43,77 @@ direction_to_dx_dy :: (d: Direction) -> s64, s64
                return  0,  1;
 }
 
-shoot_photon :: (map: []string, history: [..][..]Direction, _x: s64, _y: s64, d: Direction)
+shoot_photon :: (map: []string, history: [..][..]Direction, x: s64, y: s64, d: Direction)
 {
-    dx, dy := direction_to_dx_dy(d);
-     x,  y := _x + dx, _y + dy;
+    photons : [..]Photon;
+    array_add(*photons, .{x, y, d});
 
-    if x < 0 || x >= map[0].count return;
-    if y < 0 || y >= map.count    return;
-    if history[y][x] & d          return;
+    while photons.count
+    {
+        p := pop(*photons);
+        dx, dy := direction_to_dx_dy(p.d);
+        p.x += dx;
+        p.y += dy;
 
-    history[y][x] |= d;
+        if p.x < 0 || p.x >= map[0].count continue;
+        if p.y < 0 || p.y >= map.count    continue;
+        if history[p.y][p.x] & p.d        continue;
 
-    if map[y][x] == #char "."
-    {
-        shoot_photon(map, history, x, y, d);
-    }
-    else if map[y][x] == #char "|" && (d == .U || d == .D)
-    {
-        shoot_photon(map, history, x, y, d);
-    }
-    else if map[y][x] == #char "-" && (d == .L || d == .R)
-    {
-        shoot_photon(map, history, x, y, d);
-    }
-    else if map[y][x] == #char "|" && (d == .L || d == .R)
-    {
-        shoot_photon(map, history, x, y, .U);
-        shoot_photon(map, history, x, y, .D);
-    }
-    else if map[y][x] == #char "-" && (d == .U || d == .D)
-    {
-        shoot_photon(map, history, x, y, .L);
-        shoot_photon(map, history, x, y, .R);
-    }
-    else if map[y][x] == #char "/" && (d == .R)
-    {
-        shoot_photon(map, history, x, y, .U);
-    }
-    else if map[y][x] == #char "/" && (d == .L)
-    {
-        shoot_photon(map, history, x, y, .D);
-    }
-    else if map[y][x] == #char "/" && (d == .U)
-    {
-        shoot_photon(map, history, x, y, .R);
-    }
-    else if map[y][x] == #char "/" && (d == .D)
-    {
-        shoot_photon(map, history, x, y, .L);
-    }
-    else if map[y][x] == #char "\\" && (d == .R)
-    {
-        shoot_photon(map, history, x, y, .D);
-    }
-    else if map[y][x] == #char "\\" && (d == .L)
-    {
-        shoot_photon(map, history, x, y, .U);
-    }
-    else if map[y][x] == #char "\\" && (d == .U)
-    {
-        shoot_photon(map, history, x, y, .L);
-    }
-    else if map[y][x] == #char "\\" && (d == .D)
-    {
-        shoot_photon(map, history, x, y, .R);
+        history[p.y][p.x] |= p.d;
+
+        if map[p.y][p.x] == #char "."
+        {
+            array_add(*photons, .{ p.x, p.y, p.d });
+        }
+        else if map[p.y][p.x] == #char "|" && (p.d == .U || p.d == .D)
+        {
+            array_add(*photons, .{ p.x, p.y, p.d });
+        }
+        else if map[p.y][p.x] == #char "-" && (p.d == .L || p.d == .R)
+        {
+            array_add(*photons, .{ p.x, p.y, p.d });
+        }
+        else if map[p.y][p.x] == #char "|" && (p.d == .L || p.d == .R)
+        {
+            array_add(*photons, .{ p.x, p.y, .U });
+            array_add(*photons, .{ p.x, p.y, .D });
+        }
+        else if map[p.y][p.x] == #char "-" && (p.d == .U || p.d == .D)
+        {
+            array_add(*photons, .{ p.x, p.y, .L });
+            array_add(*photons, .{ p.x, p.y, .R });
+        }
+        else if map[p.y][p.x] == #char "/" && (p.d == .R)
+        {
+            array_add(*photons, .{ p.x, p.y, .U });
+        }
+        else if map[p.y][p.x] == #char "/" && (p.d == .L)
+        {
+            array_add(*photons, .{ p.x, p.y, .D });
+        }
+        else if map[p.y][p.x] == #char "/" && (p.d == .U)
+        {
+            array_add(*photons, .{ p.x, p.y, .R });
+        }
+        else if map[p.y][p.x] == #char "/" && (p.d == .D)
+        {
+            array_add(*photons, .{ p.x, p.y, .L });
+        }
+        else if map[p.y][p.x] == #char "\\" && (p.d == .R)
+        {
+            array_add(*photons, .{ p.x, p.y, .D });
+        }
+        else if map[p.y][p.x] == #char "\\" && (p.d == .L)
+        {
+            array_add(*photons, .{ p.x, p.y, .U });
+        }
+        else if map[p.y][p.x] == #char "\\" && (p.d == .U)
+        {
+            array_add(*photons, .{ p.x, p.y, .L });
+        }
+        else if map[p.y][p.x] == #char "\\" && (p.d == .D)
+        {
+            array_add(*photons, .{ p.x, p.y, .R });
+        }
     }
 }
