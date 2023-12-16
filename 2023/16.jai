@@ -2,18 +2,21 @@ day16 :: (input: string) -> string, string
 {
     map := split(trim(input), "\n");
 
-    part1 := shoot_photon(map, -1, 0, .R);
+    history : [..]Direction;
+    for map for 0..it.count-1 array_add(*history, .N);
+
+    part1 := shoot_photon(map, history, -1, 0, .R);
     part2 := 0;
 
     for x: 0..map[0].count-1
     {
-        part2 = max(part2, shoot_photon(map, xx x,           -1, .D));
-        part2 = max(part2, shoot_photon(map, xx x, xx map.count, .U));
+        part2 = max(part2, shoot_photon(map, history, xx x,           -1, .D));
+        part2 = max(part2, shoot_photon(map, history, xx x, xx map.count, .U));
     }
     for y: 0..map.count-1
     {
-        part2 = max(part2, shoot_photon(map,              -1, xx y, .R));
-        part2 = max(part2, shoot_photon(map, xx map[0].count, xx y, .L));
+        part2 = max(part2, shoot_photon(map, history,              -1, xx y, .R));
+        part2 = max(part2, shoot_photon(map, history, xx map[0].count, xx y, .L));
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -44,15 +47,9 @@ direction_to_dx_dy :: (d: Direction) -> s8, s8
                return  0,  1;
 }
 
-shoot_photon :: (map: []string, x: s8, y: s8, d: Direction) -> s64
+shoot_photon :: (map: []string, history: [..]Direction, x: s8, y: s8, d: Direction) -> s64
 {
-    history : [..][..]Direction;
-
-    for map
-    {
-        row := array_add(*history);
-        for 0..it.count-1 array_add(row, .N);
-    }
+    for 0..history.count-1 history[it] = .N;
 
     photons : [..]Photon;
     array_add(*photons, .{x, y, d});
@@ -64,11 +61,11 @@ shoot_photon :: (map: []string, x: s8, y: s8, d: Direction) -> s64
         p.x += dx;
         p.y += dy;
 
-        if p.x < 0 || p.x >= map[0].count continue;
-        if p.y < 0 || p.y >= map.count    continue;
-        if history[p.y][p.x] & p.d        continue;
+        if p.x < 0 || p.x >= map[0].count      continue;
+        if p.y < 0 || p.y >= map.count         continue;
+        if history[p.y*map[0].count+p.x] & p.d continue;
 
-        history[p.y][p.x] |= p.d;
+        history[p.y*map[0].count+p.x] |= p.d;
 
         if map[p.y][p.x] == #char "."
         {
@@ -127,6 +124,6 @@ shoot_photon :: (map: []string, x: s8, y: s8, d: Direction) -> s64
     }
 
     energy := 0;
-    for history for it if it energy += 1;
+    for history if it energy += 1;
     return energy;
 }
