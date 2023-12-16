@@ -7,13 +7,13 @@ day16 :: (input: string) -> string, string
 
     for x: 0..map[0].count-1
     {
-        part2 = max(part2, shoot_photon(map, x,        -1, .D));
-        part2 = max(part2, shoot_photon(map, x, map.count, .U));
+        part2 = max(part2, shoot_photon(map, xx x,           -1, .D));
+        part2 = max(part2, shoot_photon(map, xx x, xx map.count, .U));
     }
     for y: 0..map.count-1
     {
-        part2 = max(part2, shoot_photon(map, -1,           y, .R));
-        part2 = max(part2, shoot_photon(map, map[0].count, y, .L));
+        part2 = max(part2, shoot_photon(map,              -1, xx y, .R));
+        part2 = max(part2, shoot_photon(map, xx map[0].count, xx y, .L));
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -23,7 +23,7 @@ day16 :: (input: string) -> string, string
 
 Photon :: struct
 {
-    x, y : s64;
+    x, y : s8;
     d : Direction;
 }
 
@@ -36,7 +36,7 @@ Direction :: enum_flags u8
     D :: 0b1000;
 }
 
-direction_to_dx_dy :: (d: Direction) -> s64, s64
+direction_to_dx_dy :: (d: Direction) -> s8, s8
 {
     if d == .L return -1,  0;
     if d == .R return  1,  0;
@@ -44,7 +44,7 @@ direction_to_dx_dy :: (d: Direction) -> s64, s64
                return  0,  1;
 }
 
-shoot_photon :: (map: []string, x: s64, y: s64, d: Direction) -> s64
+shoot_photon :: (map: []string, x: s8, y: s8, d: Direction) -> s64
 {
     history : [..][..]Direction;
 
