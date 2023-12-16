@@ -1,9 +1,22 @@
 day16 :: (input: string) -> string, string
 {
     map := split(trim(input), "\n");
-    part1 := shoot_photon(map, -1, 0, .R);
 
-    return tprint("%", part1), tprint("%", 0);
+    part1 := shoot_photon(map, -1, 0, .R);
+    part2 := 0;
+
+    for x: 0..map[0].count-1
+    {
+        part2 = max(part2, shoot_photon(map, x,        -1, .D));
+        part2 = max(part2, shoot_photon(map, x, map.count, .U));
+    }
+    for y: 0..map.count-1
+    {
+        part2 = max(part2, shoot_photon(map, -1,           y, .R));
+        part2 = max(part2, shoot_photon(map, map[0].count, y, .L));
+    }
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
