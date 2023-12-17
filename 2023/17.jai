@@ -1,6 +1,8 @@
 day17 :: (input: string) -> string, string
 {
     map := split(trim(input), "\n");
+    seen : [..][3][4]s64;
+    for 1..map.count*map[0].count array_add(*seen, .[.[S64_MAX,S64_MAX,S64_MAX,S64_MAX],.[S64_MAX,S64_MAX,S64_MAX,S64_MAX],.[S64_MAX,S64_MAX,S64_MAX,S64_MAX]]);
 
     part1 := S64_MAX;
 
@@ -25,8 +27,11 @@ day17 :: (input: string) -> string, string
         s.x = xx (cast(s64)s.x + dx);
         s.y = xx (cast(s64)s.y + dy);
         s.cost += map[s.y][s.x] - #char "0";
+        if s.cost >= part1 continue;
+        if s.cost >= seen[s.y*map[0].count+s.x][s.d_count][s.d] continue;
+        seen[s.y*map[0].count+s.x][s.d_count][s.d] = s.cost;
 
-        if s.x == map[0].count-1 && s.y == map.count-1 && s.cost < part1
+        if s.x == map[0].count-1 && s.y == map.count-1
         {
             part1 = s.cost;
             continue;
