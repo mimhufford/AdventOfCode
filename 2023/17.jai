@@ -5,6 +5,8 @@ day17 :: (input: string) -> string, string
     return tprint("%", part1), tprint("%", part2);
 }
 
+#scope_file
+
 find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 {
     map := split(trim(input), "\n");
@@ -86,8 +88,6 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 
     return result;
 }
-
-#scope_file
 
 State :: struct
 {
