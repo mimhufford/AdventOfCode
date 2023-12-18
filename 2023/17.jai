@@ -7,50 +7,89 @@ day17 :: (input: string) -> string, string
 
 #scope_file
 
+Priority_Queue :: struct
+{
+    v : [..]State;
+    p : [..]s64;
+}
+
+insert :: (pq: *Priority_Queue, v: State, p: s64)
+{
+    array_add(*pq.v, v);
+    array_add(*pq.p, p);
+}
+
+pop :: (pq: *Priority_Queue) -> State
+{
+    highest_i := 0;
+    highest_v := pq.v[0];
+    highest_p := pq.p[0];
+    for 1..pq.v.count-1
+    {
+        if pq.p[it] < highest_p
+        {
+            highest_i = it;
+            highest_v = pq.v[it];
+            highest_p = pq.p[it];
+        }
+    }
+    array_unordered_remove_by_index(*pq.v, highest_i);
+    array_unordered_remove_by_index(*pq.p, highest_i);
+    return highest_v;
+}
+
 find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 {
     map := split(trim(input), "\n");
-    seen : [..][4]s64;
-    for 1..map.count*map[0].count array_add(*seen, .[S64_MAX, S64_MAX, S64_MAX, S64_MAX]);
+    w := map[0].count;
+    h := map.count;
 
-    result := S64_MAX;
+    dist : [..][4]s64;
+    queue : Priority_Queue;
 
-    queue : [..]State;
-    array_add(*queue, .{0, 0, .R, 0});
-    array_add(*queue, .{0, 0, .D, 0});
+    for 0..w*h array_add(*dist, .[S64_MAX, S64_MAX, S64_MAX, S64_MAX]);
+    dist[0][0], dist[0][1], dist[0][2], dist[0][3] = 0;
+    insert(*queue, .{0, 0, .R, 0}, 0);
+    insert(*queue, .{0, 0, .D, 0}, 0);
 
-    while queue.count
+    while queue.v.count
     {
         s := pop(*queue);
-        if s.cost >= seen[s.y*map[0].count+s.x][s.d] continue;
-        if s.cost + map[0].count-1-s.x + map.count-1-s.y >= result continue;
-        seen[s.y*map[0].count+s.x][s.d] = s.cost;
 
-        if s.x == map[0].count-1 && s.y == map.count-1
-        {
-            result = s.cost;
-            continue;
-        }
+        if s.x == w-1 && s.y == h-1 return dist[s.y*w + s.x][s.d];
 
         dx, dy := dir_to_dx_dy(s.d);
         turns  := dir_to_turns(s.d);
-        for 1..max_steps
+        for t: turns 
         {
-            x := cast(u8)(cast(s64)s.x + it*dx);
-            y := cast(u8)(cast(s64)s.y + it*dy);
-            if x < 0 break;
-            if y < 0 break;
-            if x >= map[0].count break;
-            if y >= map.count break;
-            s.cost += map[y][x] - #char "0";
-            if s.cost >= result break;
-            if it < min_steps continue;
-            array_add(*queue, .{x, y, turns[0], s.cost});
-            array_add(*queue, .{x, y, turns[1], s.cost});
+            cost := s.cost;
+            for 1..max_steps
+            {
+                x := cast(s64)s.x + it*dx;
+                y := cast(s64)s.y + it*dy;
+                if x < 0 break;
+                if y < 0 break;
+                if x >= w break;
+                if y >= h break;
+                cost += map[y][x] - #char "0";
+                if it < min_steps continue;
+                if cost < dist[y*w + x][t]
+                {
+                    dist[y*w + x][t] = cost;
+                    found := false;
+                    for * queue.v if it.x == x && it.y == y && it.d == t
+                    {
+                        found = true;
+                        it.cost = cost;
+                        break;
+                    }
+                    if !found insert(*queue, .{xx x, xx y, t, cost}, cost);
+                }
+            }
         }
     }
 
-    return result;
+    return 0;
 }
 
 State :: struct
