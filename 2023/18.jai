@@ -1,10 +1,10 @@
 day18 :: (input: string) -> string, string
 {
-    DIM :: 600;
-    l, r, t, b := DIM, 0, DIM, 0;
-    map : [DIM][DIM]u8;
-    x, y := DIM / 2;
-    map[y][x] = 1;
+    steps1, steps2 : s64;
+    points1, points2: [..][2]s64;
+    array_add(*points1, .[0, 0]);
+    array_add(*points2, .[0, 0]);
+    x1, y1, x2, y2 := 0;
 
     while input.count
     {
@@ -21,38 +21,37 @@ day18 :: (input: string) -> string, string
         dir2.count = 1;
         skip_to_next_line(*input);
 
-        if      dir1 == "L" for 1..dist1 { x -= 1; map[y][x] = 1; }
-        else if dir1 == "R" for 1..dist1 { x += 1; map[y][x] = 1; }
-        else if dir1 == "U" for 1..dist1 { y -= 1; map[y][x] = 1; }
-        else                for 1..dist1 { y += 1; map[y][x] = 1; }
+        if      dir1 == "L" x1 -= dist1;
+        else if dir1 == "R" x1 += dist1;
+        else if dir1 == "U" y1 -= dist1;
+        else                y1 += dist1;
+        array_add(*points1, .[x1, y1]);
+        steps1 += dist1;
 
-        l = min(l,x);
-        r = max(r,x);
-        t = min(t,y);
-        b = max(b,y);
+        if      dir2 == "2" x2 -= dist2;
+        else if dir2 == "0" x2 += dist2;
+        else if dir2 == "3" y2 -= dist2;
+        else                y2 += dist2;
+        array_add(*points2, .[x2, y2]);
+        steps2 += dist2;
     }
 
     part1, part2 := 0, 0;
-    
-    seen : Table(u32,u8);
-    queue : [..]u32;
-    array_add(*queue, 0);
-    while queue.count
+    for i: 0..points1.count-1
     {
-        current := pop(*queue);
-        if table_find_pointer(*seen, current) continue;
-        table_add(*seen, current, 0);
-        cy := current >> 16;
-        cx := current & 0xFFFF;
-        if map[cy][cx] == 1 continue;
-
-        part1 += 1;
-        
-        if cx > 0     array_add(*queue, (cy << 16) | (cx - 1));
-        if cy > 0     array_add(*queue, ((cy-1) << 16) | (cx));
-        if cx < DIM-1 array_add(*queue, (cy << 16) | (cx + 1));
-        if cy < DIM-1 array_add(*queue, ((cy+1) << 16) | (cx));
+        a := points1[i];
+        b := points1[(i+points1.count-1)%points1.count];
+        part1 += b[0] * a[1] - b[1] * a[0];
     }
+    part1 = part1 / 2 + steps1 / 2 + 1;
 
-    return tprint("%", DIM*DIM-part1), tprint("%", part2);
+    for i: 0..points2.count-1
+    {
+        a := points2[i];
+        b := points2[(i+points2.count-1)%points2.count];
+        part2 += b[0] * a[1] - b[1] * a[0];
+    }
+    part2 = part2 / 2 + steps2 / 2 + 1;
+
+    return tprint("%", part1), tprint("%", part2);
 }
