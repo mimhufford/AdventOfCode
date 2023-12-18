@@ -1,9 +1,9 @@
 day17 :: (input: string) -> string, string
 {
-    return day17partoneslow(input), day17parttwoslow(input);
+    return day17partoneslow(input, 1, 3), day17parttwoslow(input, 4, 10);
 }
 
-day17partoneslow :: (input: string) -> string
+day17partoneslow :: (input: string, min_steps: s64, max_steps: s64) -> string
 {
     map := split(trim(input), "\n");
     seen : [..][3][4]s64;
@@ -22,7 +22,7 @@ day17partoneslow :: (input: string) -> string
     {
         s := pop(*queue);
         if s.cost >= part1 continue;
-        if s.d_count == 3 continue;
+        if s.d_count == max_steps continue;
         min_possible := s.cost + map[0].count-1-s.x + map.count-1-s.y;
         if min_possible >= part1 continue;
 
@@ -39,7 +39,7 @@ day17partoneslow :: (input: string) -> string
         if s.cost >= seen[s.y*map[0].count+s.x][s.d_count][s.d] continue;
         seen[s.y*map[0].count+s.x][s.d_count][s.d] = s.cost;
 
-        if s.x == map[0].count-1 && s.y == map.count-1 && s.d_count >= 0
+        if s.x == map[0].count-1 && s.y == map.count-1 && s.d_count >= min_steps-1
         {
             part1 = s.cost;
             continue;
@@ -47,33 +47,34 @@ day17partoneslow :: (input: string) -> string
         
         if s.d == .L
         {
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .U, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .U, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .L, s.cost});
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .D, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .D, s.cost});
         }
         else if s.d == .U
         {
             array_add(*queue, .{s.x, s.y, s.d_count+1, .U, s.cost});
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .L, s.cost});
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .R, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .L, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .R, s.cost});
         }
         else if s.d == .R
         {
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .U, s.cost});
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .D, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .U, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .D, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .R, s.cost});
         }
         else if s.d == .D
         {
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .L, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .L, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .D, s.cost});
-            if s.d_count >= 0 array_add(*queue, .{s.x, s.y, 0,           .R, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .R, s.cost});
         }
     }
 
     return tprint("%", part1);
 }
-day17parttwoslow :: (input: string) -> string
+
+day17parttwoslow :: (input: string, min_steps: s64, max_steps: s64) -> string
 {
     map := split(trim(input), "\n");
     seen : [..][10][4]s64;
@@ -99,7 +100,7 @@ day17parttwoslow :: (input: string) -> string
     {
         s := pop(*queue);
         if s.cost >= part1 continue;
-        if s.d_count == 10 continue;
+        if s.d_count == max_steps continue;
         min_possible := s.cost + map[0].count-1-s.x + map.count-1-s.y;
         if min_possible >= part1 continue;
 
@@ -116,7 +117,7 @@ day17parttwoslow :: (input: string) -> string
         if s.cost >= seen[s.y*map[0].count+s.x][s.d_count][s.d] continue;
         seen[s.y*map[0].count+s.x][s.d_count][s.d] = s.cost;
 
-        if s.x == map[0].count-1 && s.y == map.count-1 && s.d_count >= 3
+        if s.x == map[0].count-1 && s.y == map.count-1 && s.d_count >= min_steps-1
         {
             part1 = s.cost;
             continue;
@@ -124,27 +125,27 @@ day17parttwoslow :: (input: string) -> string
         
         if s.d == .L
         {
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .U, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .U, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .L, s.cost});
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .D, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .D, s.cost});
         }
         else if s.d == .U
         {
             array_add(*queue, .{s.x, s.y, s.d_count+1, .U, s.cost});
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .L, s.cost});
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .R, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .L, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .R, s.cost});
         }
         else if s.d == .R
         {
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .U, s.cost});
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .D, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .U, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .D, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .R, s.cost});
         }
         else if s.d == .D
         {
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .L, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .L, s.cost});
             array_add(*queue, .{s.x, s.y, s.d_count+1, .D, s.cost});
-            if s.d_count >= 3 array_add(*queue, .{s.x, s.y, 0,           .R, s.cost});
+            if s.d_count >= min_steps-1 array_add(*queue, .{s.x, s.y, 0, .R, s.cost});
         }
     }
 
