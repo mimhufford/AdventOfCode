@@ -31,7 +31,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
             result = s.cost;
             continue;
         }
-        
+
         dx, dy := dir_to_dx_dy(s.d);
         turns  := dir_to_turns(s.d);
         for 1..max_steps
