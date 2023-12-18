@@ -23,9 +23,8 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
     {
         s := pop(*queue);
         if s.cost >= result continue;
-        min_possible := s.cost + map[0].count-1-s.x + map.count-1-s.y;
-        if min_possible >= result continue;
         if s.cost >= seen[s.y*map[0].count+s.x][s.d] continue;
+        if s.cost + map[0].count-1-s.x + map.count-1-s.y >= result continue;
         seen[s.y*map[0].count+s.x][s.d] = s.cost;
 
         if s.x == map[0].count-1 && s.y == map.count-1
@@ -34,53 +33,20 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
             continue;
         }
         
-        if s.d == .L
+        dx, dy := dir_to_dx_dy(s.d);
+        turns  := dir_to_turns(s.d);
+        for 1..max_steps
         {
-            cost_to_move := 0;
-            for 1..max_steps
-            {
-                if s.x - it < 0 break;
-                cost_to_move += map[s.y][s.x - it] - #char "0";
-                if it < min_steps continue;
-                array_add(*queue, .{cast(u8)(cast(s64)s.x - it), s.y, .U, s.cost + cost_to_move});
-                array_add(*queue, .{cast(u8)(cast(s64)s.x - it), s.y, .D, s.cost + cost_to_move});
-            }
-        }
-        else if s.d == .U
-        {
-            cost_to_move := 0;
-            for 1..max_steps
-            {
-                if s.y - it < 0 break;
-                cost_to_move += map[s.y - it][s.x] - #char "0";
-                if it < min_steps continue;
-                array_add(*queue, .{s.x, cast(u8)(cast(s64)s.y - it), .L, s.cost + cost_to_move});
-                array_add(*queue, .{s.x, cast(u8)(cast(s64)s.y - it), .R, s.cost + cost_to_move});
-            }
-        }
-        else if s.d == .R
-        {
-            cost_to_move := 0;
-            for 1..max_steps
-            {
-                if s.x + it >= map[0].count break;
-                cost_to_move += map[s.y][s.x + it] - #char "0";
-                if it < min_steps continue;
-                array_add(*queue, .{cast(u8)(cast(s64)s.x + it), s.y, .U, s.cost + cost_to_move});
-                array_add(*queue, .{cast(u8)(cast(s64)s.x + it), s.y, .D, s.cost + cost_to_move});
-            }
-        }
-        else if s.d == .D
-        {
-            cost_to_move := 0;
-            for 1..max_steps
-            {
-                if s.y + it >= map.count break;
-                cost_to_move += map[s.y + it][s.x] - #char "0";
-                if it < min_steps continue;
-                array_add(*queue, .{s.x, cast(u8)(cast(s64)s.y + it), .L, s.cost + cost_to_move});
-                array_add(*queue, .{s.x, cast(u8)(cast(s64)s.y + it), .R, s.cost + cost_to_move});
-            }
+            x := cast(u8)(cast(s64)s.x + it*dx);
+            y := cast(u8)(cast(s64)s.y + it*dy);
+            if x < 0 break;
+            if y < 0 break;
+            if x >= map[0].count break;
+            if y >= map.count break;
+            s.cost += map[y][x] - #char "0";
+            if it < min_steps continue;
+            array_add(*queue, .{x, y, turns[0], s.cost});
+            array_add(*queue, .{x, y, turns[1], s.cost});
         }
     }
 
@@ -92,6 +58,22 @@ State :: struct
     x, y : u8;
     d : Direction;
     cost : s64;
+}
+
+dir_to_dx_dy :: (d: Direction) -> s8, s8
+{
+    if d == .L return -1,  0;
+    if d == .R return  1,  0;
+    if d == .U return  0, -1;
+               return  0,  1;
+}
+
+dir_to_turns :: (d: Direction) -> [2]Direction
+{
+    if d == .L return .[.U, .D];
+    if d == .R return .[.U, .D];
+    if d == .U return .[.L, .R];
+               return .[.L, .R];
 }
 
 Direction :: enum u8 { L; R; U; D; }
