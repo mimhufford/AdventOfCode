@@ -25,8 +25,6 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
         if s.cost >= result continue;
         min_possible := s.cost + map[0].count-1-s.x + map.count-1-s.y;
         if min_possible >= result continue;
-
-        if s.cost >= result continue;
         if s.cost >= seen[s.y*map[0].count+s.x][s.d] continue;
         seen[s.y*map[0].count+s.x][s.d] = s.cost;
 
