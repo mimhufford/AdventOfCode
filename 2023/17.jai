@@ -19,7 +19,7 @@ insert :: (pq: *Priority_Queue, v: State, p: s64)
     array_add(*pq.p, p);
 }
 
-pop :: (pq: *Priority_Queue) -> State
+pop :: (pq: *Priority_Queue) -> State, s64
 {
     highest_i := 0;
     highest_v := pq.v[0];
@@ -35,7 +35,7 @@ pop :: (pq: *Priority_Queue) -> State
     }
     array_unordered_remove_by_index(*pq.v, highest_i);
     array_unordered_remove_by_index(*pq.p, highest_i);
-    return highest_v;
+    return highest_v, highest_p;
 }
 
 find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
@@ -49,12 +49,12 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 
     for 0..w*h array_add(*dist, .[S64_MAX, S64_MAX, S64_MAX, S64_MAX]);
     dist[0][0], dist[0][1], dist[0][2], dist[0][3] = 0;
-    insert(*queue, .{0, 0, .R, 0}, 0);
-    insert(*queue, .{0, 0, .D, 0}, 0);
+    insert(*queue, .{0, 0, .R}, 0);
+    insert(*queue, .{0, 0, .D}, 0);
 
     while queue.v.count
     {
-        s := pop(*queue);
+        s, c := pop(*queue);
 
         if s.x == w-1 && s.y == h-1 return dist[s.y*w + s.x][s.d];
 
@@ -62,7 +62,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
         turns  := dir_to_turns(s.d);
         for t: turns 
         {
-            cost := s.cost;
+            cost := c;
             for 1..max_steps
             {
                 x := cast(s64)s.x + it*dx;
@@ -80,10 +80,10 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
                     for * queue.v if it.x == x && it.y == y && it.d == t
                     {
                         found = true;
-                        it.cost = cost;
+                        queue.p[it_index] = cost;
                         break;
                     }
-                    if !found insert(*queue, .{xx x, xx y, t, cost}, cost);
+                    if !found insert(*queue, .{xx x, xx y, t}, cost);
                 }
             }
         }
@@ -96,7 +96,6 @@ State :: struct
 {
     x, y : u8;
     d : Direction;
-    cost : s64;
 }
 
 dir_to_dx_dy :: (d: Direction) -> s8, s8
