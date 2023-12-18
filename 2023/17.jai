@@ -22,7 +22,6 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
     while queue.count
     {
         s := pop(*queue);
-        if s.cost >= result continue;
         if s.cost >= seen[s.y*map[0].count+s.x][s.d] continue;
         if s.cost + map[0].count-1-s.x + map.count-1-s.y >= result continue;
         seen[s.y*map[0].count+s.x][s.d] = s.cost;
@@ -44,6 +43,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
             if x >= map[0].count break;
             if y >= map.count break;
             s.cost += map[y][x] - #char "0";
+            if s.cost >= result break;
             if it < min_steps continue;
             array_add(*queue, .{x, y, turns[0], s.cost});
             array_add(*queue, .{x, y, turns[1], s.cost});
