@@ -8,16 +8,24 @@ day18 :: (input: string) -> string, string
 
     while input.count
     {
-        dir := input;
-        dir.count = 1;
+        dir1 := input;
+        dir1.count = 1;
         advance(*input, 2);
-        dist := read_u8(*input);
+        dist1 := read_u8(*input);
+        advance(*input, 2);
+        dist2str := input;
+        dist2str.count = 5;
+        dist2 := string_to_int(dist2str, base=16);
+        advance(*input, 5);
+        dir2 := input;
+        dir2.count = 1;
         skip_to_next_line(*input);
 
-        if      dir == "L" for 1..dist { x -= 1; map[y][x] = 1; }
-        else if dir == "R" for 1..dist { x += 1; map[y][x] = 1; }
-        else if dir == "U" for 1..dist { y -= 1; map[y][x] = 1; }
-        else               for 1..dist { y += 1; map[y][x] = 1; }
+        if      dir1 == "L" for 1..dist1 { x -= 1; map[y][x] = 1; }
+        else if dir1 == "R" for 1..dist1 { x += 1; map[y][x] = 1; }
+        else if dir1 == "U" for 1..dist1 { y -= 1; map[y][x] = 1; }
+        else                for 1..dist1 { y += 1; map[y][x] = 1; }
+
         l = min(l,x);
         r = max(r,x);
         t = min(t,y);
