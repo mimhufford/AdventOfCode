@@ -21,7 +21,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
     insert(*queue, .{0, 0, .R}, 0);
     insert(*queue, .{0, 0, .D}, 0);
 
-    while queue.count
+    while true
     {
         s, c := pop(*queue);
 
@@ -72,19 +72,17 @@ dir_to_dx_dy_and_turns :: (d: Direction) -> s8, s8, [2]Direction
 Priority_Queue :: struct
 {
     q : [2000][..]State;
-    top, count := 0;
+    top := 0;
 }
 
 insert :: (pq: *Priority_Queue, v: State, p: s64)
 {
     array_add(*pq.q[p], v);
-    pq.count += 1;
     pq.top = min(p, pq.top);
 }
 
 pop :: (pq: *Priority_Queue) -> State, s64
 {
-    pq.count -= 1;
     best_state := pop(*pq.q[pq.top]);
     best_priority := pq.top;
     while pq.q[pq.top].count == 0 pq.top += 1;
