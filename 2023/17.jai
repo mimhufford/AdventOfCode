@@ -23,10 +23,10 @@ insert :: (pq: *Priority_Queue, v: State, p: s64)
 pop :: (pq: *Priority_Queue) -> State, s64
 {
     pq.count -= 1;
-    highest_v := pop(*pq.q[pq.top]);
-    highest_p := pq.top;
+    best_state := pop(*pq.q[pq.top]);
+    best_priority := pq.top;
     while pq.q[pq.top].count == 0 pq.top += 1;
-    return highest_v, highest_p;
+    return best_state, best_priority;
 }
 
 find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
