@@ -7,28 +7,6 @@ day17 :: (input: string) -> string, string
 
 #scope_file
 
-Priority_Queue :: struct
-{
-    q : [2000][..]State;
-    top, count := 0;
-}
-
-insert :: (pq: *Priority_Queue, v: State, p: s64)
-{
-    array_add(*pq.q[p], v);
-    pq.count += 1;
-    pq.top = min(p, pq.top);
-}
-
-pop :: (pq: *Priority_Queue) -> State, s64
-{
-    pq.count -= 1;
-    best_state := pop(*pq.q[pq.top]);
-    best_priority := pq.top;
-    while pq.q[pq.top].count == 0 pq.top += 1;
-    return best_state, best_priority;
-}
-
 find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 {
     map := split(trim(input), "\n");
@@ -49,8 +27,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
 
         if s.x == w-1 && s.y == h-1 return dist[s.y*w + s.x][s.d];
 
-        dx, dy := dir_to_dx_dy(s.d);
-        turns  := dir_to_turns(s.d);
+        dx, dy, turns := dir_to_dx_dy_and_turns(s.d);
         for t: turns 
         {
             cost := c;
@@ -82,20 +59,34 @@ State :: struct
     d : Direction;
 }
 
-dir_to_dx_dy :: (d: Direction) -> s8, s8
-{
-    if d == .L return -1,  0;
-    if d == .R return  1,  0;
-    if d == .U return  0, -1;
-               return  0,  1;
-}
-
-dir_to_turns :: (d: Direction) -> [2]Direction
-{
-    if d == .L return .[.U, .D];
-    if d == .R return .[.U, .D];
-    if d == .U return .[.L, .R];
-               return .[.L, .R];
-}
-
 Direction :: enum u8 { L; R; U; D; }
+
+dir_to_dx_dy_and_turns :: (d: Direction) -> s8, s8, [2]Direction
+{
+    if d == .L return -1,  0, .[.U, .D];
+    if d == .R return  1,  0, .[.U, .D];
+    if d == .U return  0, -1, .[.L, .R];
+               return  0,  1, .[.L, .R];
+}
+
+Priority_Queue :: struct
+{
+    q : [2000][..]State;
+    top, count := 0;
+}
+
+insert :: (pq: *Priority_Queue, v: State, p: s64)
+{
+    array_add(*pq.q[p], v);
+    pq.count += 1;
+    pq.top = min(p, pq.top);
+}
+
+pop :: (pq: *Priority_Queue) -> State, s64
+{
+    pq.count -= 1;
+    best_state := pop(*pq.q[pq.top]);
+    best_priority := pq.top;
+    while pq.q[pq.top].count == 0 pq.top += 1;
+    return best_state, best_priority;
+}
