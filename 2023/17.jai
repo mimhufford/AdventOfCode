@@ -9,32 +9,23 @@ day17 :: (input: string) -> string, string
 
 Priority_Queue :: struct
 {
-    v : [..]State;
-    p : [..]s64;
+    q : [2000][..]State;
+    top, count := 0;
 }
 
 insert :: (pq: *Priority_Queue, v: State, p: s64)
 {
-    array_add(*pq.v, v);
-    array_add(*pq.p, p);
+    array_add(*pq.q[p], v);
+    pq.count += 1;
+    pq.top = min(p, pq.top);
 }
 
 pop :: (pq: *Priority_Queue) -> State, s64
 {
-    highest_i := 0;
-    highest_v := pq.v[0];
-    highest_p := pq.p[0];
-    for 1..pq.v.count-1
-    {
-        if pq.p[it] < highest_p
-        {
-            highest_i = it;
-            highest_v = pq.v[it];
-            highest_p = pq.p[it];
-        }
-    }
-    array_unordered_remove_by_index(*pq.v, highest_i);
-    array_unordered_remove_by_index(*pq.p, highest_i);
+    pq.count -= 1;
+    highest_v := pop(*pq.q[pq.top]);
+    highest_p := pq.top;
+    while pq.q[pq.top].count == 0 pq.top += 1;
     return highest_v, highest_p;
 }
 
@@ -52,7 +43,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
     insert(*queue, .{0, 0, .R}, 0);
     insert(*queue, .{0, 0, .D}, 0);
 
-    while queue.v.count
+    while queue.count
     {
         s, c := pop(*queue);
 
@@ -76,14 +67,7 @@ find_shortest_path :: (input: string, min_steps: s64, max_steps: s64) -> s64
                 if cost < dist[y*w + x][t]
                 {
                     dist[y*w + x][t] = cost;
-                    found := false;
-                    for * queue.v if it.x == x && it.y == y && it.d == t
-                    {
-                        found = true;
-                        queue.p[it_index] = cost;
-                        break;
-                    }
-                    if !found insert(*queue, .{xx x, xx y, t}, cost);
+                    insert(*queue, .{xx x, xx y, t}, cost);
                 }
             }
         }
