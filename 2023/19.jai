@@ -44,12 +44,38 @@ day19 :: (input: string) -> string, string
         part1 += process_part(in, x, m, a, s);
     }
 
-    return tprint("%", part1), tprint("%", 0);
+    part2 := process_ranges(in, .[1, 4000], .[1, 4000], .[1, 4000], .[1, 4000]);
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
     
 workflows : Table(string, [..]Rule);
+
+process_ranges :: (rules: *[]Rule, x: [2]s64, m: [2]s64, a: [2]s64, s: [2]s64) -> s64
+{
+    for r: rules.*
+    {
+        if r.var == 0 && r.dst == null
+        {
+            if !r.accept return 0;
+            return (x[1]-x[0]+1) + (m[1]-m[0]+1) + (a[1]-a[0]+1) + (s[1]-s[0]+1);
+        }
+        else if r.var == 0 && r.dst != null
+        {
+            return process_ranges(r.dst, x, m, a, s);
+        }
+        else
+        {
+            // TODO
+            return 0;
+        }
+    }
+
+    assert(false);
+    return 0;
+}
 
 process_part :: (rules: *[]Rule, x: s64, m: s64, a: s64, s: s64) -> s64
 {
