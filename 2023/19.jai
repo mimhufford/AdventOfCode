@@ -2,37 +2,8 @@ day19 :: (input: string) -> string, string
 {
     parts := split(trim(input), "\n\n");
 
-    init(*workflows, 600);
+    first := parse_workflows(parts[0]);
 
-    for * workflow: split(parts[0], "\n")
-    {
-        id := read_up_to(workflow, #char "{");
-        rules := find_or_add(*workflows, id);
-
-        advance(workflow);
-        workflow.count -= 1;
-
-        for rule: split(workflow.*, ",")
-        {
-            r := array_add(rules);
-
-            if contains(rule, #char ":")
-            {
-                r.var = rule[0];         advance(*rule);
-                r.op  = rule[0];         advance(*rule);
-                r.val = read_s64(*rule); advance(*rule);
-                if      rule[0] == #char "A" r.accept = true;
-                else if rule[0] == #char "R" r.accept = false;
-                else    r.dst = find_or_add(*workflows, rule);
-
-            }
-            else if rule[0] == #char "A" r.accept = true;
-            else if rule[0] == #char "R" r.accept = false;
-            else    r.dst = find_or_add(*workflows, rule);
-        }
-    }
-
-    in := table_find_pointer(*workflows, "in");
     part1 := 0;
 
     for part: split(parts[1], "\n")
@@ -41,10 +12,10 @@ day19 :: (input: string) -> string, string
         advance(*part, 3); m := read_s64(*part);
         advance(*part, 3); a := read_s64(*part);
         advance(*part, 3); s := read_s64(*part);
-        part1 += process_part(in, x, m, a, s);
+        part1 += process_part(first, x, m, a, s);
     }
 
-    part2 := process_ranges(in, .[1, 4000], .[1, 4000], .[1, 4000], .[1, 4000]);
+    part2 := process_ranges(first, .[1, 4000], .[1, 4000], .[1, 4000], .[1, 4000]);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -125,6 +96,41 @@ process_part :: (rules: *[]Rule, x: s64, m: s64, a: s64, s: s64) -> s64
 
     assert(false);
     return 0;
+}
+
+parse_workflows :: (s: string) -> *[]Rule
+{
+    init(*workflows, 600);
+
+    for * workflow: split(s, "\n")
+    {
+        id := read_up_to(workflow, #char "{");
+        rules := find_or_add(*workflows, id);
+
+        advance(workflow);
+        workflow.count -= 1;
+
+        for rule: split(workflow.*, ",")
+        {
+            r := array_add(rules);
+
+            if contains(rule, #char ":")
+            {
+                r.var = rule[0];         advance(*rule);
+                r.op  = rule[0];         advance(*rule);
+                r.val = read_s64(*rule); advance(*rule);
+                if      rule[0] == #char "A" r.accept = true;
+                else if rule[0] == #char "R" r.accept = false;
+                else    r.dst = find_or_add(*workflows, rule);
+
+            }
+            else if rule[0] == #char "A" r.accept = true;
+            else if rule[0] == #char "R" r.accept = false;
+            else    r.dst = find_or_add(*workflows, rule);
+        }
+    }
+
+    return table_find_pointer(*workflows, "in");
 }
 
 Rule :: struct
