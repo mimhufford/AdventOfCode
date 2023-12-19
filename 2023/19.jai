@@ -59,13 +59,10 @@ process_part :: (x:s64, m:s64, a:s64, s:s64) -> s64
     {
         r := w.rules[rid];
 
-        if r.var == 0 && r.dst == null && r.accept == true
+        if r.var == 0 && r.dst == null
         {
+            if !r.accept return 0;
             return x + m + a + s;
-        }
-        else if r.var == 0 && r.dst == null && r.accept == false
-        {
-            return 0;
         }
         else if r.var == 0 && r.dst != null
         {
@@ -89,13 +86,10 @@ process_part :: (x:s64, m:s64, a:s64, s:s64) -> s64
                     rid = 0;
                     continue;
                 }
-                else if r.accept == true
-                {
-                    return x + m + a + s;
-                }
                 else
                 {
-                    return 0;
+                    if !r.accept return 0;
+                    return x + m + a + s;
                 }
             }
             else
