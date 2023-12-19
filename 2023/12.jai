@@ -15,7 +15,7 @@ day12 :: (input: string) -> string, string
 
 #scope_file
 
-cache : Table(s64, s64);
+cache : Table(s32, s64);
 
 count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
 {
@@ -53,7 +53,7 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
     }
     else                              
     {
-        hash   := conditions.count << 48 + curr_run << 32 + to_match.count;
+        hash := cast(s32)(conditions.count << 20 + curr_run << 10 + to_match.count);
         cached := table_find_pointer(*cache, hash);
         if cached return cached.*;
         result := continue_the_current_run() + end_the_current_run();
