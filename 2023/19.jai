@@ -80,7 +80,7 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
                 if r.dst != null accumulator += process_ranges(r.dst, nx, m, a, s);
                 else if r.accept accumulator += (nx[1]-nx[0]+1) * (m[1]-m[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
             }
-            if r.var == #char "m"
+            else if r.var == #char "m"
             {
                 nm := m;
                 if (r.op == #char ">") { nm[0] = r.val+1; m[1] = r.val; }
@@ -89,7 +89,7 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
                 if r.dst != null accumulator += process_ranges(r.dst, x, nm, a, s);
                 else if r.accept accumulator += (x[1]-x[0]+1) * (nm[1]-nm[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
             }
-            if r.var == #char "a"
+            else if r.var == #char "a"
             {
                 na := a;
                 if (r.op == #char ">") { na[0] = r.val+1; a[1] = r.val; }
@@ -98,7 +98,7 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
                 if r.dst != null accumulator += process_ranges(r.dst, x, m, na, s);
                 else if r.accept accumulator += (x[1]-x[0]+1) * (m[1]-m[0]+1) * (na[1]-na[0]+1) * (s[1]-s[0]+1);
             }
-            if r.var == #char "s"
+            else
             {
                 ns := s;
                 if (r.op == #char ">") { ns[0] = r.val+1; s[1] = r.val; }
