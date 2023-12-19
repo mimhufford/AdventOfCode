@@ -19,10 +19,6 @@ cache : Table(s64, s64);
 
 count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
 {
-    hash   := conditions.count << 48 + curr_run << 32 + to_match.count;
-    cached := table_find_pointer(*cache, hash);
-    if cached return cached.*;
-
     if !conditions
     {
         if to_match.count >= 2              return 0;
@@ -49,18 +45,17 @@ count_combos :: (conditions: string, to_match: []s64, curr_run := 0) -> s64
 
     if conditions[0] == #char "."
     {
-        result := end_the_current_run();
-        table_add(*cache, hash, result);
-        return result;
+        return end_the_current_run();
     }
     else if conditions[0] == #char "#"
     {
-        result := continue_the_current_run();
-        table_add(*cache, hash, result);
-        return result;
+        return continue_the_current_run();
     }
     else                              
     {
+        hash   := conditions.count << 48 + curr_run << 32 + to_match.count;
+        cached := table_find_pointer(*cache, hash);
+        if cached return cached.*;
         result := continue_the_current_run() + end_the_current_run();
         table_add(*cache, hash, result);
         return result;
