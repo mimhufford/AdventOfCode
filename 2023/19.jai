@@ -72,27 +72,15 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
         else
         {
             nx, nm, na, ns := x, m, a, s;
+            next, prev : *[2]s64;
 
-            if r.var == #char "x"
-            {
-                if (r.op == #char ">") { nx[0] = r.val+1; x[1] = r.val; }
-                else                   { nx[1] = r.val-1; x[0] = r.val; }
-            }
-            else if r.var == #char "m"
-            {
-                if (r.op == #char ">") { nm[0] = r.val+1; m[1] = r.val; }
-                else                   { nm[1] = r.val-1; m[0] = r.val; }
-            }
-            else if r.var == #char "a"
-            {
-                if (r.op == #char ">") { na[0] = r.val+1; a[1] = r.val; }
-                else                   { na[1] = r.val-1; a[0] = r.val; }
-            }
-            else
-            {
-                if (r.op == #char ">") { ns[0] = r.val+1; s[1] = r.val; }
-                else                   { ns[1] = r.val-1; s[0] = r.val; }
-            }
+            if      r.var == #char "x" { next = *nx; prev = *x; }
+            else if r.var == #char "m" { next = *nm; prev = *m; }
+            else if r.var == #char "a" { next = *na; prev = *a; }
+            else                       { next = *ns; prev = *s; }
+
+            if (r.op == #char ">") { next.*[0] = r.val+1; prev.*[1] = r.val; }
+            else                   { next.*[1] = r.val-1; prev.*[0] = r.val; }
 
             if r.dst != null accumulator += process_ranges(r.dst, nx, nm, na, ns);
             else if r.accept accumulator += (nx[1]-nx[0]+1) * (nm[1]-nm[0]+1) * (na[1]-na[0]+1) * (ns[1]-ns[0]+1);
