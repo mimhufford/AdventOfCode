@@ -71,42 +71,31 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
         }
         else
         {
+            nx, nm, na, ns := x, m, a, s;
+
             if r.var == #char "x"
             {
-                nx := x;
                 if (r.op == #char ">") { nx[0] = r.val+1; x[1] = r.val; }
                 else                   { nx[1] = r.val-1; x[0] = r.val; }
-
-                if r.dst != null accumulator += process_ranges(r.dst, nx, m, a, s);
-                else if r.accept accumulator += (nx[1]-nx[0]+1) * (m[1]-m[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
             }
             else if r.var == #char "m"
             {
-                nm := m;
                 if (r.op == #char ">") { nm[0] = r.val+1; m[1] = r.val; }
                 else                   { nm[1] = r.val-1; m[0] = r.val; }
-
-                if r.dst != null accumulator += process_ranges(r.dst, x, nm, a, s);
-                else if r.accept accumulator += (x[1]-x[0]+1) * (nm[1]-nm[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
             }
             else if r.var == #char "a"
             {
-                na := a;
                 if (r.op == #char ">") { na[0] = r.val+1; a[1] = r.val; }
                 else                   { na[1] = r.val-1; a[0] = r.val; }
-
-                if r.dst != null accumulator += process_ranges(r.dst, x, m, na, s);
-                else if r.accept accumulator += (x[1]-x[0]+1) * (m[1]-m[0]+1) * (na[1]-na[0]+1) * (s[1]-s[0]+1);
             }
             else
             {
-                ns := s;
                 if (r.op == #char ">") { ns[0] = r.val+1; s[1] = r.val; }
                 else                   { ns[1] = r.val-1; s[0] = r.val; }
-
-                if r.dst != null accumulator += process_ranges(r.dst, x, m, a, ns);
-                else if r.accept accumulator += (x[1]-x[0]+1) * (m[1]-m[0]+1) * (a[1]-a[0]+1) * (ns[1]-ns[0]+1);
             }
+
+            if r.dst != null accumulator += process_ranges(r.dst, nx, nm, na, ns);
+            else if r.accept accumulator += (nx[1]-nx[0]+1) * (nm[1]-nm[0]+1) * (na[1]-na[0]+1) * (ns[1]-ns[0]+1);
         }
     }
 
