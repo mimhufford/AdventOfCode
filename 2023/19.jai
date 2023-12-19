@@ -62,8 +62,7 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
     {
         if r.var == 0 && r.dst == null
         {
-            if !r.accept return accumulator;
-            else return accumulator + (x[1]-x[0]+1) * (m[1]-m[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
+            return accumulator + cast(s64)r.accept * (x[1]-x[0]+1) * (m[1]-m[0]+1) * (a[1]-a[0]+1) * (s[1]-s[0]+1);
         }
         else if r.var == 0 && r.dst != null
         {
@@ -83,7 +82,7 @@ process_ranges :: (rules: *[]Rule, _x: [2]s64, _m: [2]s64, _a: [2]s64, _s: [2]s6
             else                   { next.*[1] = r.val-1; prev.*[0] = r.val; }
 
             if r.dst != null accumulator += process_ranges(r.dst, nx, nm, na, ns);
-            else if r.accept accumulator += (nx[1]-nx[0]+1) * (nm[1]-nm[0]+1) * (na[1]-na[0]+1) * (ns[1]-ns[0]+1);
+            else accumulator += cast(s64)r.accept * (nx[1]-nx[0]+1) * (nm[1]-nm[0]+1) * (na[1]-na[0]+1) * (ns[1]-ns[0]+1);
         }
     }
 
@@ -97,8 +96,7 @@ process_part :: (rules: *[]Rule, x: s64, m: s64, a: s64, s: s64) -> s64
     {
         if r.var == 0 && r.dst == null
         {
-            if !r.accept return 0;
-            return x + m + a + s;
+            return cast(s64)r.accept * (x + m + a + s);
         }
         else if r.var == 0 && r.dst != null
         {
@@ -119,8 +117,7 @@ process_part :: (rules: *[]Rule, x: s64, m: s64, a: s64, s: s64) -> s64
                 }
                 else
                 {
-                    if !r.accept return 0;
-                    return x + m + a + s;
+                    return cast(s64)r.accept * (x + m + a + s);
                 }
             }
         }
