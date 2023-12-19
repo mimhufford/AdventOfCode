@@ -32,6 +32,7 @@ day19 :: (input: string) -> string, string
         }
     }
 
+    in := table_find_pointer(*workflows, "in");
     part1 := 0;
 
     for part: split(parts[1], "\n")
@@ -40,7 +41,7 @@ day19 :: (input: string) -> string, string
         advance(*part, 3); m := read_s64(*part);
         advance(*part, 3); a := read_s64(*part);
         advance(*part, 3); s := read_s64(*part);
-        part1 += process_part(x, m, a, s);
+        part1 += process_part(in, x, m, a, s);
     }
 
     return tprint("%", part1), tprint("%", 0);
@@ -50,15 +51,10 @@ day19 :: (input: string) -> string, string
     
 workflows : Table(string, Workflow);
 
-process_part :: (x:s64, m:s64, a:s64, s:s64) -> s64
+process_part :: (w: *Workflow, x: s64, m: s64, a: s64, s: s64) -> s64
 {
-    w := table_find_pointer(*workflows, "in");
-    rid := 0;
-
-    while true
+    for r: w.rules
     {
-        r := w.rules[rid];
-
         if r.var == 0 && r.dst == null
         {
             if !r.accept return 0;
@@ -66,9 +62,7 @@ process_part :: (x:s64, m:s64, a:s64, s:s64) -> s64
         }
         else if r.var == 0 && r.dst != null
         {
-            w = r.dst;
-            rid = 0;
-            continue;
+            return process_part(r.dst, x, m, a, s);
         }
         else
         {
@@ -77,24 +71,17 @@ process_part :: (x:s64, m:s64, a:s64, s:s64) -> s64
             else if r.var == #char "a" val = a;
             else if r.var == #char "s" val = s;
 
-            if (r.op == #char ">" && val > r.val) ||
-               (r.op == #char "<" && val < r.val)
+            if (r.op == #char ">" && val > r.val) || (r.op == #char "<" && val < r.val)
             {
                 if r.dst != null
                 {
-                    w = r.dst;
-                    rid = 0;
-                    continue;
+                    return process_part(r.dst, x, m, a, s);
                 }
                 else
                 {
                     if !r.accept return 0;
                     return x + m + a + s;
                 }
-            }
-            else
-            {
-                rid += 1;
             }
         }
     }
