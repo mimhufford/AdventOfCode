@@ -63,6 +63,20 @@ read_word :: (s: *string) -> string
     return word;
 }
 
+read_up_to :: (s: *string, end: u8) -> string
+{
+    result := <<s;
+    result.count = 0;
+
+    while s.count && s.data[0] != end
+    {
+        result.count += 1;
+        advance(s);
+    }
+
+    return result;
+}
+
 advance_then_skip_whitespace :: (s: *string, amount: s64)
 {
     advance(s, amount);
