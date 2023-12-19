@@ -7,14 +7,14 @@ day19 :: (input: string) -> string, string
     for * workflow: split(parts[0], "\n")
     {
         id := read_up_to(workflow, #char "{");
-        w  := find_or_add(*workflows, id);
+        rules := find_or_add(*workflows, id);
 
         advance(workflow);
         workflow.count -= 1;
 
         for rule: split(workflow.*, ",")
         {
-            r := array_add(*w.rules);
+            r := array_add(rules);
 
             if contains(rule, #char ":")
             {
@@ -49,11 +49,11 @@ day19 :: (input: string) -> string, string
 
 #scope_file
     
-workflows : Table(string, Workflow);
+workflows : Table(string, [..]Rule);
 
-process_part :: (w: *Workflow, x: s64, m: s64, a: s64, s: s64) -> s64
+process_part :: (rules: *[]Rule, x: s64, m: s64, a: s64, s: s64) -> s64
 {
-    for r: w.rules
+    for r: rules.*
     {
         if r.var == 0 && r.dst == null
         {
@@ -90,16 +90,11 @@ process_part :: (w: *Workflow, x: s64, m: s64, a: s64, s: s64) -> s64
     return 0;
 }
 
-Workflow :: struct
-{
-    rules : [..]Rule;
-}
-
 Rule :: struct
 {
     var : u8;
     op : u8;
     val : s64;
-    dst : *Workflow;
+    dst : *[]Rule;
     accept : bool;
 }
