@@ -23,6 +23,7 @@ day20 :: (input: string) -> string, string
         }
     }
 
+    // TODO: hardcoded, instead get inputs to input of rx
     mr := name_to_index("mr");
     kv := name_to_index("kv");
     rz := name_to_index("rz");
