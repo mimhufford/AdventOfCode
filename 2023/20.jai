@@ -95,7 +95,7 @@ Module :: struct
     type: u8;
     dsts: [..]s16;
     srcs: [..]s16;   // for conjuction modules only
-    last: [26*26]s8; // for conjuction modules only (TODO: wasteful, test a bitarray instead)
+    last: [26*26]s8; // for conjuction modules only
     state: s8;
 }
 
