@@ -23,15 +23,10 @@ day20 :: (input: string) -> string, string
         }
     }
 
-    // TODO: hardcoded, instead get inputs to input of rx
-    mr := name_to_index("mr");
-    kv := name_to_index("kv");
-    rz := name_to_index("rz");
-    jg := name_to_index("jg");
-    mrc, kvc, rzc, jgc := 0;
-
     lo, hi := 0;
-
+    rx := name_to_index("rx");         assert(modules[rx].srcs.count == 1);
+    rx_input := modules[rx].srcs[0];   assert(modules[rx_input].srcs.count == 4);
+    cycles : [26*26]s64;
     queue : [..]Pulse;
 
     for presses: 1..S64_MAX
@@ -69,16 +64,19 @@ day20 :: (input: string) -> string, string
                 for m.dsts array_add(*queue, .{p.dst, it, to_send});
             }
 
-            if p.dst == mr && p.state == 0 && mrc == 0 mrc = presses;
-            if p.dst == kv && p.state == 0 && kvc == 0 kvc = presses;
-            if p.dst == rz && p.state == 0 && rzc == 0 rzc = presses;
-            if p.dst == jg && p.state == 0 && jgc == 0 jgc = presses;
-            if mrc && kvc && rzc && jgc break presses;
+            if p.state == 0
+            {
+                for modules[rx_input].srcs if p.dst == it && cycles[it] == 0 cycles[it] = presses;
+                all_set := true;
+                for modules[rx_input].srcs if cycles[it] == 0 { all_set = false; break; }
+                if all_set break presses;
+            }
         }
     }
 
     part1 := lo*hi;
-    part2 := lcm(lcm(lcm(mrc, kvc), rzc), jgc);
+    part2 := 1;
+    for modules[rx_input].srcs part2 = lcm(part2, cycles[it]);
 
     return tprint("%", part1), tprint("%", part2);
 }
