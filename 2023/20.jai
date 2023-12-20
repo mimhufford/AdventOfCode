@@ -14,7 +14,6 @@ day20 :: (input: string) -> string, string
             advance(*name);
         }
         index := name_to_index(name);
-        modules[index].name = name;
         modules[index].type = type;
         for dsts
         {
@@ -24,11 +23,20 @@ day20 :: (input: string) -> string, string
         }
     }
 
-    head := 0;
+    mr := name_to_index("mr");
+    kv := name_to_index("kv");
+    rz := name_to_index("rz");
+    jg := name_to_index("jg");
+    mrc, kvc, rzc, jgc := 0;
+
+    lo, hi := 0;
+
     queue : [..]Pulse;
 
-    for 1..1000
+    for presses: 1..S64_MAX
     {
+        array_reset_keeping_memory(*queue);
+        head := 0;
         array_add(*queue, .{-1, 0, 0});
 
         while head < queue.count
@@ -37,7 +45,11 @@ day20 :: (input: string) -> string, string
             m := *modules[p.dst];
             head += 1;
 
-            // print("[%] pulse % sent to % from %\n", head, p.state, m.name, p.src);
+            if presses <= 1000
+            {
+                lo += 1 - p.state;
+                hi += p.state;
+            }
 
             if p.dst == 0
             {
@@ -55,12 +67,17 @@ day20 :: (input: string) -> string, string
                 for m.srcs if m.last[it] == 0 { to_send = 1; break; }
                 for m.dsts array_add(*queue, .{p.dst, it, to_send});
             }
+
+            if p.dst == mr && p.state == 0 && mrc == 0 mrc = presses;
+            if p.dst == kv && p.state == 0 && kvc == 0 kvc = presses;
+            if p.dst == rz && p.state == 0 && rzc == 0 rzc = presses;
+            if p.dst == jg && p.state == 0 && jgc == 0 jgc = presses;
+            if mrc && kvc && rzc && jgc break presses;
         }
     }
 
-    lo, hi := 0;
-    for queue if it.state == 1 hi += 1; else lo += 1;
-    part1, part2 := lo*hi;
+    part1 := lo*hi;
+    part2 := lcm(lcm(lcm(mrc, kvc), rzc), jgc);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -74,7 +91,6 @@ Pulse :: struct
 
 Module :: struct
 {
-    name: string; // TODO: debug only, delete
     type: u8;
     dsts: [..]s16;
     srcs: [..]s16;   // for conjuction modules only
