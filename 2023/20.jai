@@ -81,6 +81,8 @@ day20 :: (input: string) -> string, string
     return tprint("%", part1), tprint("%", part2);
 }
 
+#scope_file
+
 Pulse :: struct
 {
     src: s16;
