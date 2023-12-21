@@ -7,10 +7,10 @@ day21 :: (input: string) -> string, string
     qc, qn := *q1, *q2;
     table_set(qc, Point.{65, 65}.hash, 0);
 
-    t1, t2, t3 := 0;
+    terms : [..]s64;
     part1 := 0;
 
-    for 1..65 + w*2
+    for 1..S64_MAX
     {
         for _, curr: qc
         {
@@ -26,17 +26,20 @@ day21 :: (input: string) -> string, string
             }
         }
 
-        if it == 65 + w*0 part1 = qc.count;
         qc, qn = qn, qc;
-        if it == 65 + w*0 t1 = qc.count;
-        if it == 65 + w*1 t2 = qc.count;
-        if it == 65 + w*2 t3 = qc.count;
+
+        if it == 64 part1 = qc.count;
+        if it % 131 == 65
+        {
+            array_add(*terms, qc.count);
+            if terms.count == 3 break;
+        }
     }
 
     n := 26501365 / w;
-    b0 := t1;
-    b1 := t2-t1;
-    b2 := t3-t2;
+    b0 := terms[0];
+    b1 := terms[1]-terms[0];
+    b2 := terms[2]-terms[1];
     part2 := b0 + b1*n + (n*(n-1)/2)*(b2-b1);
 
     return tprint("%", part1), tprint("%", part2);
