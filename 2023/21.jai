@@ -3,9 +3,9 @@ day21 :: (input: string) -> string, string
     map := split(trim(input), "\n");
     w, h := map[0].count, map.count;
 
-    q1, q2 : Table(Point, u8, given_compare_function=compare_points, given_hash_function=hash_point);
+    q1, q2 : Table(u32, u8);
     qc, qn := *q1, *q2;
-    table_set(qc, .{65, 65}, 0);
+    table_set(qc, Point.{65, 65}.hash, 0);
 
     t1, t2, t3 := 0;
     part1 := 0;
@@ -14,14 +14,16 @@ day21 :: (input: string) -> string, string
     {
         for _, curr: qc
         {
-            x, y := curr.x, curr.y;
+            p : Point;
 
             for dir: [2]s16.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
             {
-                nx, ny := x + dir[0], y + dir[1];
-                if map[((ny%h)+h)%h][((nx%w)+w)%w] != #char "#"
+                p.hash = curr;
+                p.x += dir[0];
+                p.y += dir[1];
+                if map[((p.y%h)+h)%h][((p.x%w)+w)%w] != #char "#"
                 {
-                    table_set(qn, .{nx, ny}, 0);
+                    table_set(qn, p.hash, 0);
                 }
             }
         }
@@ -47,14 +49,4 @@ Point :: struct
     x, y: s16;
     #place x;
     hash: u32;
-}
-
-compare_points :: (a: Point, b: Point) -> bool
-{
-    return a.x == b.x && a.y == b.y;
-}
-
-hash_point :: (p: Point) -> u32
-{
-    return get_hash(p.hash);
 }
