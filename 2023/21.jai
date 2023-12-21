@@ -21,10 +21,8 @@ day21 :: (input: string) -> string, string
                 p.hash = curr;
                 p.x += dir[0];
                 p.y += dir[1];
-                if map[((p.y%h)+h)%h][((p.x%w)+w)%w] != #char "#"
-                {
-                    table_set(qn, p.hash, 0);
-                }
+                if map[((p.y%h)+h)%h][((p.x%w)+w)%w] == #char "#" continue;
+                table_set(qn, p.hash, 0);
             }
         }
 
@@ -43,6 +41,8 @@ day21 :: (input: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
+
+#scope_file
 
 Point :: struct
 {
