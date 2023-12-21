@@ -4,8 +4,8 @@ day21 :: (input: string) -> string, string
     w, h := map[0].count, map.count;
 
     s1, s2 : Table(u32, u8);
-    q1, q2 : [..]u32;
-    array_add(*q1, Point.{65, 65}.hash);
+    q1, q2 : Table(u32, u8);
+    table_set(*q1, Point.{65, 65}.hash, 0);
 
     terms : [..]s64;
     part1 := 0;
@@ -17,9 +17,8 @@ day21 :: (input: string) -> string, string
         queue_curr := ifx it % 2 == 0 then *q1 else *q2;
         queue_next := ifx it % 2 == 1 then *q1 else *q2;
 
-        while queue_curr.count
+        for _, curr: queue_curr
         {
-            curr := pop(queue_curr);
             table_set(seen_curr, curr, 0);
 
             for dir: [2]s16.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
@@ -29,9 +28,11 @@ day21 :: (input: string) -> string, string
                 p.y += dir[1];
                 if map[((p.y%h)+h)%h][((p.x%w)+w)%w] == #char "#" continue;
                 if table_contains(seen_prev, p.hash) continue;
-                array_add_if_unique(queue_next, p.hash);
+                table_set(queue_next, p.hash, 0);
             }
         }
+
+        table_reset(queue_curr);
 
         if it == 64 part1 = seen_curr.count;
         if it % 131 == 65
