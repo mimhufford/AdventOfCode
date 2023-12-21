@@ -45,6 +45,8 @@ day21 :: (input: string) -> string, string
 Point :: struct
 {
     x, y: s16;
+    #place x;
+    hash: u32;
 }
 
 compare_points :: (a: Point, b: Point) -> bool
@@ -54,5 +56,5 @@ compare_points :: (a: Point, b: Point) -> bool
 
 hash_point :: (p: Point) -> u32
 {
-    return get_hash(get_hash(p.x) + cast,no_check(u32)p.y);
+    return get_hash(p.hash);
 }
