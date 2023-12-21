@@ -3,17 +3,16 @@ day21 :: (input: string) -> string, string
     map := split(trim(input), "\n");
     w, h := map[0].count, map.count;
 
-    q1, q2 : [..]s64;
+    q1, q2 : Table(s64, u8);
     qc, qn := *q1, *q2;
-    array_add(qc, 65*w + 65);
+    table_set(qc, 65*w + 65, 0);
 
     part1, part2 := 0;
 
     for 1..64
     {
-        while qc.count
+        for _, curr: qc
         {
-            curr := pop(qc);
             x, y := curr % w, curr / w;
 
             for dir: [2]s64.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
@@ -22,7 +21,7 @@ day21 :: (input: string) -> string, string
                 if nx < 0 || nx >= w continue;
                 if ny < 0 || ny >= h continue;
                 if map[ny][nx] == #char "#" continue;
-                array_add_if_unique(qn, ny*w + nx); // TODO: slow
+                table_set(qn, ny*w + nx, 0);
             }
         }
 
