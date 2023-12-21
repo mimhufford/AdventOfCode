@@ -49,7 +49,7 @@ Point :: struct
 
 compare_points :: (a: Point, b: Point) -> bool
 {
-    return true;
+    return a.x == b.x && a.y == b.y;
 }
 
 hash_point :: (p: Point) -> u32
