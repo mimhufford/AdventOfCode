@@ -3,16 +3,16 @@ day21 :: (input: string) -> string, string
     map := split(trim(input), "\n");
     w, h := map[0].count, map.count;
 
-    q : Table(Point, u8, given_compare_function=compare_points, given_hash_function=hash_point);
-    table_set(*q, .{65, 65}, 0);
+    q1, q2 : Table(Point, u8, given_compare_function=compare_points, given_hash_function=hash_point);
+    qc, qn := *q1, *q2;
+    table_set(qc, .{65, 65}, 0);
 
     t1, t2, t3 := 0;
     part1 := 0;
 
     for 1..65 + w*2
     {
-        qn : Table(Point, u8, given_compare_function=compare_points, given_hash_function=hash_point);
-        for _, curr: q
+        for _, curr: qc
         {
             x, y := curr.x, curr.y;
 
@@ -21,16 +21,16 @@ day21 :: (input: string) -> string, string
                 nx, ny := x + dir[0], y + dir[1];
                 if map[((ny%h)+h)%h][((nx%w)+w)%w] != #char "#"
                 {
-                    table_set(*qn, .{nx, ny}, 0);
+                    table_set(qn, .{nx, ny}, 0);
                 }
             }
         }
 
-        if it == 65 + w*0 part1 = q.count;
-        q = qn;
-        if it == 65 + w*0 t1 = q.count;
-        if it == 65 + w*1 t2 = q.count;
-        if it == 65 + w*2 t3 = q.count;
+        if it == 65 + w*0 part1 = qc.count;
+        qc, qn = qn, qc;
+        if it == 65 + w*0 t1 = qc.count;
+        if it == 65 + w*1 t2 = qc.count;
+        if it == 65 + w*2 t3 = qc.count;
     }
 
     n := 26501365 / w;
