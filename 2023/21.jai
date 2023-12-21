@@ -16,7 +16,7 @@ day21 :: (input: string) -> string, string
         {
             x, y := curr.x, curr.y;
 
-            for dir: [2]s64.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
+            for dir: [2]s16.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
             {
                 nx, ny := x + dir[0], y + dir[1];
                 if map[((ny%h)+h)%h][((nx%w)+w)%w] != #char "#"
@@ -44,7 +44,7 @@ day21 :: (input: string) -> string, string
 
 Point :: struct
 {
-    x, y: s64;
+    x, y: s16;
 }
 
 compare_points :: (a: Point, b: Point) -> bool
@@ -54,5 +54,5 @@ compare_points :: (a: Point, b: Point) -> bool
 
 hash_point :: (p: Point) -> u32
 {
-    return get_hash(get_hash(p.x) + p.y);
+    return get_hash(get_hash(p.x) + cast,no_check(u32)p.y);
 }
