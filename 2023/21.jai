@@ -3,35 +3,40 @@ day21 :: (input: string) -> string, string
     map := split(trim(input), "\n");
     w, h := map[0].count, map.count;
 
-    q1, q2 : Table(u32, u8);
-    qc, qn := *q1, *q2;
-    table_set(qc, Point.{65, 65}.hash, 0);
+    s1, s2 : Table(u32, u8);
+    q1, q2 : [..]u32;
+    array_add(*q1, Point.{65, 65}.hash);
 
     terms : [..]s64;
     part1 := 0;
 
-    for 1..S64_MAX
+    for 0..S64_MAX
     {
-        for _, curr: qc
+        seen_curr  := ifx it % 2 == 0 then *s1 else *s2;
+        seen_prev  := ifx it % 2 == 1 then *s1 else *s2;
+        queue_curr := ifx it % 2 == 0 then *q1 else *q2;
+        queue_next := ifx it % 2 == 1 then *q1 else *q2;
+
+        while queue_curr.count
         {
-            p : Point;
+            curr := pop(queue_curr);
+            table_set(seen_curr, curr, 0);
 
             for dir: [2]s16.[.[-1, 0], .[1, 0], .[0, -1], .[0, 1]]
             {
-                p.hash = curr;
+                p := Point.{hash = curr};
                 p.x += dir[0];
                 p.y += dir[1];
                 if map[((p.y%h)+h)%h][((p.x%w)+w)%w] == #char "#" continue;
-                table_set(qn, p.hash, 0);
+                if table_contains(seen_prev, p.hash) continue;
+                array_add_if_unique(queue_next, p.hash);
             }
         }
 
-        qc, qn = qn, qc;
-
-        if it == 64 part1 = qc.count;
+        if it == 64 part1 = seen_curr.count;
         if it % 131 == 65
         {
-            array_add(*terms, qc.count);
+            array_add(*terms, seen_curr.count);
             if terms.count == 3 break;
         }
     }
