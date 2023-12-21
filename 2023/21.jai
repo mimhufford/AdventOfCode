@@ -32,5 +32,3 @@ day21 :: (input: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
-
-// 3535 too low
