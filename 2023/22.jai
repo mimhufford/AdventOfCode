@@ -17,6 +17,8 @@ day22 :: (input: string) -> string, string
 
     quick_sort(bricks, b => b.z1);
 
+    // TODO: this whole alogirthm is slow
+
     // fall
     while true
     {
@@ -35,8 +37,6 @@ day22 :: (input: string) -> string, string
     }
 
     can_disintegrate : Table(*Brick, u8);
-
-    // TODO: this whole alogirthm is slow
 
     // for each brick that has 2 or more supports, add those supports
     for b, i: bricks
