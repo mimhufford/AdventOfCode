@@ -36,32 +36,22 @@ day22 :: (input: string) -> string, string
         if !changed break;
     }
 
-    can_disintegrate : Table(*Brick, u8);
-
-    // for each brick that has 2 or more supports, add those supports
-    for b, i: bricks
+    // populate graph
+    for i: 0..bricks.count-1
     {
-        below : [..]*Brick;
-        for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
-        if below.count >= 2 for below table_set(*can_disintegrate, it, 0);
+        a := *bricks[i];
+        for j: 0..i-1
+        {
+            b := *bricks[j];
+            if supported(a, b)
+            {
+                array_add(*a.below, b);
+                array_add(*b.above, a);
+            }
+        }
     }
-
-    // for each brick that has 1 or fewer supports, remove those supports, they cannot be disintegrated
-    for b, i: bricks
-    {
-        below : [..]*Brick;
-        for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
-        if below.count <= 1 for below table_remove(*can_disintegrate, it);
-    }
-
-    // add each brick that is sitting on top and not supporting anything
-    for b, i: bricks
-    {
-        for j: i+1..bricks.count-1 if supports(b, bricks[j]) continue b;
-        table_set(*can_disintegrate, *b, 0);
-    }
-
-    part1 = can_disintegrate.count;
+        
+    for bricks if can_disintegrate(it) part1 += 1;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -71,6 +61,7 @@ day22 :: (input: string) -> string, string
 Brick :: struct
 {
     x1, x2, y1, y2, z1, z2 : s64;
+    above, below: [..]*Brick;
 }
 
 supported :: (a: Brick, b: Brick) -> bool
@@ -80,9 +71,9 @@ supported :: (a: Brick, b: Brick) -> bool
            a.z1-1 <= b.z2 && a.z2-1 >= b.z1;
 }
 
-supports :: (a: Brick, b: Brick) -> bool
+can_disintegrate :: (b: Brick) -> bool
 {
-    return a.x1   <= b.x2 && a.x2   >= b.x1 &&
-           a.y1   <= b.y2 && a.y2   >= b.y1 &&
-           a.z1+1 <= b.z2 && a.z2+1 >= b.z1;
+    if b.above.count == 0 return true;
+    for b.above if it.below.count == 1 return false;
+    return true;
 }
