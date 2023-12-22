@@ -15,8 +15,6 @@ day22 :: (input: string) -> string, string
 
     quick_sort(bricks, b => b.z1);
 
-    // TODO: this whole alogirthm is slow
-
     // fall
     while true
     {
@@ -25,7 +23,10 @@ day22 :: (input: string) -> string, string
         for * b, i: bricks
         {
             if b.z1 == 1 continue;
-            for j: 0..i-1 if supported(b, bricks[j]) continue b;
+
+            // HACK: avoid O(n^2) by only look at maximum of 100 below
+            // TODO: some sort of proper spatial partition
+            for j: max(i-100,0)..i-1 if supported(b, bricks[j]) continue b;
             b.z1 -= 1;
             b.z2 -= 1;
             changed = true;
