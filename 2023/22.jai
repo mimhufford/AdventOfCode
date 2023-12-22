@@ -13,8 +13,6 @@ day22 :: (input: string) -> string, string
         b.z2 = read_s64(*it);
     }
 
-    part1, part2 := 0;
-
     quick_sort(bricks, b => b.z1);
 
     // TODO: this whole alogirthm is slow
@@ -50,8 +48,15 @@ day22 :: (input: string) -> string, string
             }
         }
     }
-        
-    for bricks if can_disintegrate(it) part1 += 1;
+
+    part1, part2 := 0;
+
+    for bricks
+    {
+        chaos := count_chaos(it);
+        part1 += ifx chaos 0 else 1;
+        part2 += chaos;
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -69,6 +74,30 @@ supported :: (a: Brick, b: Brick) -> bool
     return a.x1   <= b.x2 && a.x2   >= b.x1 &&
            a.y1   <= b.y2 && a.y2   >= b.y1 &&
            a.z1-1 <= b.z2 && a.z2-1 >= b.z1;
+}
+
+count_chaos :: (b: Brick) -> s64
+{
+    if can_disintegrate(b) return 0;
+
+    drops : Table(*Brick, u8);
+    queue : [..]*Brick;
+
+    array_add(*queue, *b);
+
+    while queue
+    {
+        cur := pop(*queue);
+        table_set(*drops, cur, 0);
+
+        for cur.above
+        {
+            if table_contains(*drops, it) continue;
+            array_add(*queue, it);
+        }
+    }
+
+    return drops.count - 1;
 }
 
 can_disintegrate :: (b: Brick) -> bool
