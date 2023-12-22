@@ -82,16 +82,16 @@ count_chaos :: (b: *Brick) -> s64
 
     drops : Table(*Brick, u8);
     queue : [..]*Brick;
-    first : s64;
+    index : s64;
 
     array_add(*queue, b);
 
-    while first < queue.count
+    while index < queue.count
     {
-        cur := queue[first];
-        first += 1;
+        cur := queue[index];
+        index += 1;
 
-        if cur != b && is_still_supported(*drops, cur) continue;
+        if index > 1 && is_still_supported(*drops, cur) continue;
 
         table_set(*drops, cur, 0);
 
@@ -107,9 +107,8 @@ count_chaos :: (b: *Brick) -> s64
 
 is_still_supported :: (drops: *Table(*Brick, u8), b: *Brick) -> bool
 {
-    supports := b.below.count;
-    for b.below if table_contains(drops, it) supports -= 1;
-    return supports > 0;
+    for b.below if !table_contains(drops, it) return true;
+    return false;
 }
 
 can_disintegrate :: (b: Brick) -> bool
