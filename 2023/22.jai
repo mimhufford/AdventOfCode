@@ -18,7 +18,7 @@ day22 :: (input: string) -> string, string
     // order by lowest z first
     quick_sort(bricks, b => b.z1);
 
-    // fall
+    // fall, build fast z lookup, and populate graph
     for * b: bricks
     {
         z := 0;
@@ -28,18 +28,11 @@ day22 :: (input: string) -> string, string
         b.z2 -= dz;
         for x: b.x1..b.x2 for y: b.y1..b.y2 xy2z[x][y] = b.z2;
         for z: b.z1..b.z2 array_add(*zlut[z], b);
-    }
-
-    // populate graph
-    for * a: bricks
-    {
-        for b: zlut[a.z1-1]
+        for u: zlut[b.z1-1]
         {
-            if supported(a, b)
-            {
-                array_add(*a.below, b);
-                array_add(*b.above, a);
-            }
+            if !supported(b, u) continue;
+            array_add(*b.below, u);
+            array_add(*u.above, b);
         }
     }
 
