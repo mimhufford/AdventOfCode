@@ -25,7 +25,7 @@ day22 :: (input: string) -> string, string
     {
         changed := false;
 
-        for * b, i: bricks
+        for * b: bricks
         {
             while true
             {
