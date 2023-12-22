@@ -19,7 +19,7 @@ day22 :: (input: string) -> string, string
 
     // build zmap
     for * b: bricks for z: b.z1..b.z2 array_add(*zmap[z], b);
-    
+
     // fall
     while true
     {
@@ -27,14 +27,16 @@ day22 :: (input: string) -> string, string
 
         for * b, i: bricks
         {
-            if b.z1 == 1 continue;
-
-            for zmap[b.z1-1] if supported(b, it) continue b;
-            array_unordered_remove_by_value(*zmap[b.z2], b);
-            b.z1 -= 1;
-            b.z2 -= 1;
-            array_add(*zmap[b.z1], b);
-            changed = true;
+            while true
+            {
+                if b.z1 == 1 continue b;
+                for zmap[b.z1-1] if supported(b, it) continue b;
+                array_unordered_remove_by_value(*zmap[b.z2], b);
+                b.z1 -= 1;
+                b.z2 -= 1;
+                array_add(*zmap[b.z1], b);
+                changed = true;
+            }
         }
 
         if !changed break;
