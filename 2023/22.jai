@@ -1,6 +1,7 @@
 day22 :: (input: string) -> string, string
 {
     bricks : [..]Brick;
+    zmap : [1500][..]*Brick;
 
     for split(trim(input), "\n")
     {
@@ -13,8 +14,12 @@ day22 :: (input: string) -> string, string
         b.z2 = read_s64(*it);
     }
 
+    // order by lowest z first
     quick_sort(bricks, b => b.z1);
 
+    // build zmap
+    for * b: bricks for z: b.z1..b.z2 array_add(*zmap[z], b);
+    
     // fall
     while true
     {
@@ -24,11 +29,11 @@ day22 :: (input: string) -> string, string
         {
             if b.z1 == 1 continue;
 
-            // HACK: avoid O(n^2) by only look at maximum of 100 below
-            // TODO: some sort of proper spatial partition
-            for j: max(i-100,0)..i-1 if supported(b, bricks[j]) continue b;
+            for zmap[b.z1-1] if supported(b, it) continue b;
+            array_unordered_remove_by_value(*zmap[b.z2], b);
             b.z1 -= 1;
             b.z2 -= 1;
+            array_add(*zmap[b.z1], b);
             changed = true;
         }
 
@@ -36,12 +41,10 @@ day22 :: (input: string) -> string, string
     }
 
     // populate graph
-    for i: 0..bricks.count-1
+    for * a: bricks
     {
-        a := *bricks[i];
-        for j: 0..i-1
+        for b: zmap[a.z1-1]
         {
-            b := *bricks[j];
             if supported(a, b)
             {
                 array_add(*a.below, b);
