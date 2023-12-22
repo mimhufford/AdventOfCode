@@ -17,6 +17,7 @@ day22 :: (input: string) -> string, string
 
     quick_sort(bricks, b => b.z1);
 
+    // fall
     while true
     {
         changed := false;
@@ -33,27 +34,31 @@ day22 :: (input: string) -> string, string
         if !changed break;
     }
 
-    // TODO: slow
-    can_disintegrate : [..]*Brick;
+    can_disintegrate : Table(*Brick, u8);
 
+    // TODO: this whole alogirthm is slow
+
+    // for each brick that has 2 or more supports, add those supports
     for b, i: bricks
     {
         below : [..]*Brick;
         for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
-        if below.count >= 2 for below array_add_if_unique(*can_disintegrate, it);
+        if below.count >= 2 for below table_set(*can_disintegrate, it, 0);
     }
 
+    // for each brick that has 1 or fewer supports, remove those supports, they cannot be disintegrated
     for b, i: bricks
     {
         below : [..]*Brick;
         for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
-        if below.count <= 1 for below array_unordered_remove_by_value(*can_disintegrate, it);
+        if below.count <= 1 for below table_remove(*can_disintegrate, it);
     }
 
+    // add each brick that is sitting on top and not supporting anything
     for b, i: bricks
     {
         for j: i+1..bricks.count-1 if supports(b, bricks[j]) continue b;
-        array_add_if_unique(*can_disintegrate, *b);
+        table_set(*can_disintegrate, *b, 0);
     }
 
     part1 = can_disintegrate.count;
