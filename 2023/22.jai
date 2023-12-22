@@ -1,7 +1,8 @@
 day22 :: (input: string) -> string, string
 {
     bricks : [..]Brick;
-    zmap : [1500][..]*Brick;
+    zlut : [1500][..]*Brick;
+    xy2z : [10][10]s64;
 
     for split(trim(input), "\n")
     {
@@ -17,35 +18,22 @@ day22 :: (input: string) -> string, string
     // order by lowest z first
     quick_sort(bricks, b => b.z1);
 
-    // build zmap
-    for * b: bricks for z: b.z1..b.z2 array_add(*zmap[z], b);
-
     // fall
-    while true
+    for * b: bricks
     {
-        changed := false;
-
-        for * b: bricks
-        {
-            while true
-            {
-                if b.z1 == 1 continue b;
-                for zmap[b.z1-1] if supported(b, it) continue b;
-                array_unordered_remove_by_value(*zmap[b.z2], b);
-                b.z1 -= 1;
-                b.z2 -= 1;
-                array_add(*zmap[b.z1], b);
-                changed = true;
-            }
-        }
-
-        if !changed break;
+        z := 0;
+        for x: b.x1..b.x2 for y: b.y1..b.y2 z = max(xy2z[x][y], z);
+        dz := b.z1 - z - 1;
+        b.z1 -= dz;
+        b.z2 -= dz;
+        for x: b.x1..b.x2 for y: b.y1..b.y2 xy2z[x][y] = b.z2;
+        for z: b.z1..b.z2 array_add(*zlut[z], b);
     }
 
     // populate graph
     for * a: bricks
     {
-        for b: zmap[a.z1-1]
+        for b: zlut[a.z1-1]
         {
             if supported(a, b)
             {
