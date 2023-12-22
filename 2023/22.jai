@@ -2,18 +2,61 @@ day22 :: (input: string) -> string, string
 {
     bricks : [..]Brick;
 
-    while input
+    for split(trim(input), "\n")
     {
         b := array_add(*bricks);
-        b.x1 = read_s64(*input);          advance(*input);
-        b.y1 = read_s64(*input);          advance(*input);
-        b.z1 = read_s64(*input);          advance(*input);
-        b.x2 = read_s64(*input);          advance(*input);
-        b.y2 = read_s64(*input);          advance(*input);
-        b.z2 = read_s64(*input); if input advance(*input);
+        b.x1 = read_s64(*it); advance(*it);
+        b.y1 = read_s64(*it); advance(*it);
+        b.z1 = read_s64(*it); advance(*it);
+        b.x2 = read_s64(*it); advance(*it);
+        b.y2 = read_s64(*it); advance(*it);
+        b.z2 = read_s64(*it);
     }
 
     part1, part2 := 0;
+
+    quick_sort(bricks, b => b.z1);
+
+    while true
+    {
+        changed := false;
+
+        for * b, i: bricks
+        {
+            if b.z1 == 1 continue;
+            for j: 0..i-1 if supported(b, bricks[j]) continue b;
+            b.z1 -= 1;
+            b.z2 -= 1;
+            changed = true;
+        }
+
+        if !changed break;
+    }
+
+    // TODO: slow
+    can_disintegrate : [..]*Brick;
+
+    for b, i: bricks
+    {
+        below : [..]*Brick;
+        for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
+        if below.count >= 2 for below array_add_if_unique(*can_disintegrate, it);
+    }
+
+    for b, i: bricks
+    {
+        below : [..]*Brick;
+        for j: 0..i-1 if supported(b, bricks[j]) array_add(*below, *bricks[j]);
+        if below.count <= 1 for below array_unordered_remove_by_value(*can_disintegrate, it);
+    }
+
+    for b, i: bricks
+    {
+        for j: i+1..bricks.count-1 if supports(b, bricks[j]) continue b;
+        array_add_if_unique(*can_disintegrate, *b);
+    }
+
+    part1 = can_disintegrate.count;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -23,4 +66,18 @@ day22 :: (input: string) -> string, string
 Brick :: struct
 {
     x1, x2, y1, y2, z1, z2 : s64;
+}
+
+supported :: (a: Brick, b: Brick) -> bool
+{
+    return a.x1   <= b.x2 && a.x2   >= b.x1 &&
+           a.y1   <= b.y2 && a.y2   >= b.y1 &&
+           a.z1-1 <= b.z2 && a.z2-1 >= b.z1;
+}
+
+supports :: (a: Brick, b: Brick) -> bool
+{
+    return a.x1   <= b.x2 && a.x2   >= b.x1 &&
+           a.y1   <= b.y2 && a.y2   >= b.y1 &&
+           a.z1+1 <= b.z2 && a.z2+1 >= b.z1;
 }
