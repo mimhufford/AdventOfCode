@@ -51,7 +51,7 @@ day22 :: (input: string) -> string, string
 
     part1, part2 := 0;
 
-    for bricks
+    for * bricks
     {
         chaos := count_chaos(it);
         part1 += ifx chaos 0 else 1;
@@ -76,18 +76,23 @@ supported :: (a: Brick, b: Brick) -> bool
            a.z1-1 <= b.z2 && a.z2-1 >= b.z1;
 }
 
-count_chaos :: (b: Brick) -> s64
+count_chaos :: (b: *Brick) -> s64
 {
     if can_disintegrate(b) return 0;
 
     drops : Table(*Brick, u8);
     queue : [..]*Brick;
+    first : s64;
 
-    array_add(*queue, *b);
+    array_add(*queue, b);
 
-    while queue
+    while first < queue.count
     {
-        cur := pop(*queue);
+        cur := queue[first];
+        first += 1;
+
+        if cur != b && is_still_supported(*drops, cur) continue;
+
         table_set(*drops, cur, 0);
 
         for cur.above
@@ -98,6 +103,13 @@ count_chaos :: (b: Brick) -> s64
     }
 
     return drops.count - 1;
+}
+
+is_still_supported :: (drops: *Table(*Brick, u8), b: *Brick) -> bool
+{
+    supports := b.below.count;
+    for b.below if table_contains(drops, it) supports -= 1;
+    return supports > 0;
 }
 
 can_disintegrate :: (b: Brick) -> bool
