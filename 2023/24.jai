@@ -5,9 +5,9 @@ day24 :: (input: string) -> string, string
     for split(trim(input), "\n")
     {
         h := array_add(*hailstones);
-        h.p.x = xx read_s64(*it); advance(*it, 2);
-        h.p.y = xx read_s64(*it); advance(*it, 2);
-        h.p.z = xx read_s64(*it); advance(*it, 2);
+        h.p.x = xx read_u64(*it); advance(*it, 2);
+        h.p.y = xx read_u64(*it); advance(*it, 2);
+        h.p.z = xx read_u64(*it); advance(*it, 2);
         h.v.x = xx read_s64(*it); advance(*it, 2);
         h.v.y = xx read_s64(*it); advance(*it, 2);
         h.v.z = xx read_s64(*it);
@@ -18,32 +18,27 @@ day24 :: (input: string) -> string, string
     for i: 0..hailstones.count-1
     {
         h1 := hailstones[i];
-        x1 := h1.p.x;
-        x2 := h1.v.x + x1;
-        y1 := h1.p.y;
-        y2 := h1.v.y + y1;
+        s1 := h1.v.y / h1.v.x;
 
         for j: i+1..hailstones.count-1
         {
             h2 := hailstones[j];
-            x3 := h2.p.x;
-            x4 := h2.v.x + x3;
-            y3 := h2.p.y;
-            y4 := h2.v.y + y3;
+            s2 := h2.v.y / h2.v.x;
 
-            denominator := ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-            if denominator == 0 continue;
-            x := ((x1*y2 - y1*x2) * (x3 - x4) - (x1 - x2) * (x3*y4 - y3*x4)) / denominator;
-            y := ((x1*y2 - y1*x2) * (y3 - y4) - (y1 - y2) * (x3*y4 - y3*x4)) / denominator;
+            if s1 == s2 continue; // parallel
 
-            lo := cast(float64)200000000000000;
-            hi := cast(float64)400000000000000;
-            if x < lo continue;
-            if y < lo continue;
-            if x > hi continue;
-            if y > hi continue;
-            if (x > x1) != (x2 > x1) continue;
-            if (x > x3) != (x4 > x3) continue;
+            lo := cast(float)200000000000000;
+            hi := cast(float)400000000000000;
+
+            x := ((s2 * h2.p.x) - (s1 * h1.p.x) + h1.p.y - h2.p.y) / (s2 - s1);
+            if x < lo || x > hi continue; // out of range
+
+            y := s1 * (x - h1.p.x) + h1.p.y;
+            if y < lo || y > hi continue; // out of range
+
+            if (x - h1.p.x) / h1.v.x < 0 continue; // backward in time
+            if (x - h2.p.x) / h2.v.x < 0 continue; // backward in time
+
             part1 += 1;
         }
     }
@@ -53,12 +48,7 @@ day24 :: (input: string) -> string, string
 
 #scope_file
 
-V3 :: struct
-{
-    x, y, z : float64;
-}
-
 Hailstone :: struct
 {
-    p, v : V3;
+    p, v : Vector3;
 }
