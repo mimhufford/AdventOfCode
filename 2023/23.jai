@@ -3,7 +3,8 @@ day23 :: (input: string) -> string, string
     map := split(trim(input), "\n");
 
     walk1(map, 1, 0, 0, 1);
-    walk2(map, 1, 0, 0, 1);
+    // TODO: re-enable
+    // walk2(map, 1, 0, 0, 1);
 
     return tprint("%", part1), tprint("%", part2);
 }
