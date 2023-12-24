@@ -5,12 +5,12 @@ day24 :: (input: string) -> string, string
     for split(trim(input), "\n")
     {
         h := array_add(*hailstones);
-        h.p.x = read_s64(*it); advance(*it, 2);
-        h.p.y = read_s64(*it); advance(*it, 2);
-        h.p.z = read_s64(*it); advance(*it, 2);
-        h.v.x = read_s64(*it); advance(*it, 2);
-        h.v.y = read_s64(*it); advance(*it, 2);
-        h.v.z = read_s64(*it);
+        h.p.x = xx read_s64(*it); advance(*it, 2);
+        h.p.y = xx read_s64(*it); advance(*it, 2);
+        h.p.z = xx read_s64(*it); advance(*it, 2);
+        h.v.x = xx read_s64(*it); advance(*it, 2);
+        h.v.y = xx read_s64(*it); advance(*it, 2);
+        h.v.z = xx read_s64(*it);
     }
 
     part1, part2 := 0;
@@ -36,13 +36,14 @@ day24 :: (input: string) -> string, string
             x := ((x1*y2 - y1*x2) * (x3 - x4) - (x1 - x2) * (x3*y4 - y3*x4)) / denominator;
             y := ((x1*y2 - y1*x2) * (y3 - y4) - (y1 - y2) * (x3*y4 - y3*x4)) / denominator;
 
-            lo := 200000000000000;
-            hi := 400000000000000;
+            lo := cast(float64)200000000000000;
+            hi := cast(float64)400000000000000;
             if x < lo continue;
             if y < lo continue;
             if x > hi continue;
             if y > hi continue;
-
+            if (x > x1) != (x2 > x1) continue;
+            if (x > x3) != (x4 > x3) continue;
             part1 += 1;
         }
     }
@@ -54,7 +55,7 @@ day24 :: (input: string) -> string, string
 
 V3 :: struct
 {
-    x, y, z : s64;
+    x, y, z : float64;
 }
 
 Hailstone :: struct
