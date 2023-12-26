@@ -12,8 +12,13 @@ day23 :: (input: string) -> string, string
         if it.y == map.count-1 end = it;
     }
 
-    part1 := find_longest_route(start, end, can_go_uphill = false);
-    part2 := find_longest_route(start, end, can_go_uphill = true);
+    extra_steps := 0;
+    for 0..3 if start.edges[it] { extra_steps += start.steps[it]; start = start.edges[it]; break; }
+    for 0..3 if end.edges[it]   { extra_steps += end.steps[it];   end   = end.edges[it];   break; }
+
+    part1 := extra_steps + find_longest_route(start, end, can_go_uphill = false);
+    part2 := extra_steps + find_longest_route(start, end, can_go_uphill = true);
+
     return tprint("%", part1), tprint("%", part2);
 }
 
