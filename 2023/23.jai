@@ -95,8 +95,6 @@ build_graph :: (map: []string) -> []Node
             {
                 dx, dy := direction_to_dx_dy(dir);
 
-                // print("Checking (%,%) in direction (%,%)\n", start.x, start.y, dx, dy);
-
                 x, y := start.x + dx, start.y + dy;
                 if y < 0                  continue; // off the map
                 if y > map.count-1        continue; // off the map
@@ -136,8 +134,6 @@ build_graph :: (map: []string) -> []Node
                     }
                     else
                     {
-                        // print(" - Ended at (%,%) with options: %, uphill: %\n", x, y, options, start.uphill[dir]);
-
                         end : *Node;
                         for * other: nodes
                         {
