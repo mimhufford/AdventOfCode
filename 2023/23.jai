@@ -12,14 +12,14 @@ day23 :: (input: string) -> string, string
         if it.y == map.count-1 end = it;
     }
 
-    part1, part2 := 0;
-    part1 = find_longest_route(start, end);
+    part1 := find_longest_route(start, end, can_go_uphill = false);
+    part2 := find_longest_route(start, end, can_go_uphill = true);
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-find_longest_route :: (start: *Node, end: *Node) -> s64
+find_longest_route :: (start: *Node, end: *Node, can_go_uphill: bool) -> s64
 {
     Walk :: struct
     {
@@ -48,7 +48,7 @@ find_longest_route :: (start: *Node, end: *Node) -> s64
         for dir: 0..3
         {
             if w.current.edges[dir] == null                continue;
-            if w.current.uphill[dir]                       continue;
+            if !can_go_uphill && w.current.uphill[dir]     continue;
             if array_find(w.history, w.current.edges[dir]) continue;
 
             next : Walk;
