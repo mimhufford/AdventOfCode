@@ -57,6 +57,8 @@ find_longest_route :: (start: *Node, end: *Node, can_go_uphill: bool) -> s64
             for w.history array_add(*next.history, it);
             array_add(*queue, next);
         }
+
+        array_free(w.history);
     }
 
     return longest;
