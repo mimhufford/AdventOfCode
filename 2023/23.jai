@@ -29,7 +29,7 @@ find_longest_route :: (start: *Node, end: *Node, can_go_uphill: bool) -> s64
     Walk :: struct
     {
         current : *Node;
-        history : [..]*Node;
+        history : u64;
         steps   : s64;
     }
 
@@ -48,22 +48,19 @@ find_longest_route :: (start: *Node, end: *Node, can_go_uphill: bool) -> s64
             continue;
         }
 
-        array_add(*w.history, w.current);
+        w.history |= (cast(u64)1 << w.current.index);
 
         for dir: 0..3
         {
-            if w.current.edges[dir] == null                continue;
-            if !can_go_uphill && w.current.uphill[dir]     continue;
-            if array_find(w.history, w.current.edges[dir]) continue;
+            if w.current.edges[dir] == null                           continue;
+            if !can_go_uphill && w.current.uphill[dir]                continue;
+            if w.history & (cast(u64)1 << w.current.edges[dir].index) continue;
 
-            next : Walk;
+            next := w;
             next.current = w.current.edges[dir];
-            next.steps   = w.steps + w.current.steps[dir];
-            for w.history array_add(*next.history, it);
+            next.steps  += w.current.steps[dir];
             array_add(*queue, next);
         }
-
-        array_free(w.history);
     }
 
     return longest;
@@ -71,6 +68,7 @@ find_longest_route :: (start: *Node, end: *Node, can_go_uphill: bool) -> s64
 
 Node :: struct
 {
+    index : s64;
     x, y : s64;
     checked : bool;
     // 0=L, 1=R, 2=U, 3=D
@@ -86,6 +84,7 @@ build_graph :: (map: []string) -> []Node
     {
         n := array_add(*nodes);
         n.x, n.y = 1, 0;
+        n.index = nodes.count-1;
     }
 
     while true
@@ -150,8 +149,12 @@ build_graph :: (map: []string) -> []Node
                                 break;
                             }
                         }
-                        if !end end = array_add(*nodes);
-                        end.x, end.y = x, y;
+                        if !end
+                        {
+                            end = array_add(*nodes);
+                            end.index = nodes.count-1;
+                            end.x, end.y = x, y;
+                        }
 
                         start.edges[dir] = end;
 
