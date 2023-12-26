@@ -19,8 +19,8 @@ part1, part2 := 0;
 Node :: struct
 {
     x, y : s64;
+    checked : bool;
     // 0=L, 1=R, 2=U, 3=D
-    checked : [4]bool;
     uphill  : [4]bool;
     edges   : [4]*Node;
     steps   : [4]s64;
@@ -41,13 +41,12 @@ build_graph :: (map: []string) -> []Node
 
         for * start: nodes
         {
+            if start.checked continue; // already checked
+            start.checked = true;
+            done = false;
+
             for dir: 0..3
             {
-                if start.checked[dir] continue; // already checked
-
-                start.checked[dir] = true;
-                done = false;
-
                 dx, dy := direction_to_dx_dy(dir);
 
                 print("Checking (%,%) in direction (%,%)\n", start.x, start.y, dx, dy);
