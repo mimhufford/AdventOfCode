@@ -4,16 +4,63 @@ day23 :: (input: string) -> string, string
 
     nodes := build_graph(map);
 
-    for nodes print("%\n", it);
+    start, end : *Node;
 
-    // walk(map, 1, 0, 0, 1, slopes=true);
-    // walk(map, 1, 0, 0, 1, slopes=false);
+    for * nodes
+    {
+        if it.y == 0         start = it;
+        if it.y == map.count-1 end = it;
+    }
 
     part1, part2 := 0;
+    part1 = find_longest_route(start, end);
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
+
+find_longest_route :: (start: *Node, end: *Node) -> s64
+{
+    Walk :: struct
+    {
+        current : *Node;
+        history : [..]*Node;
+        steps   : s64;
+    }
+
+    longest := 0;
+    queue : [..]Walk;
+    first := array_add(*queue);
+    first.current = start;
+
+    while queue.count
+    {
+        w := pop(*queue);
+
+        if w.current == end
+        {
+            longest = max(longest, w.steps);
+            continue;
+        }
+
+        array_add(*w.history, w.current);
+
+        for dir: 0..3
+        {
+            if w.current.edges[dir] == null                continue;
+            if w.current.uphill[dir]                       continue;
+            if array_find(w.history, w.current.edges[dir]) continue;
+
+            next : Walk;
+            next.current = w.current.edges[dir];
+            next.steps   = w.steps + w.current.steps[dir];
+            for w.history array_add(*next.history, it);
+            array_add(*queue, next);
+        }
+    }
+
+    return longest;
+}
 
 Node :: struct
 {
@@ -48,7 +95,7 @@ build_graph :: (map: []string) -> []Node
             {
                 dx, dy := direction_to_dx_dy(dir);
 
-                print("Checking (%,%) in direction (%,%)\n", start.x, start.y, dx, dy);
+                // print("Checking (%,%) in direction (%,%)\n", start.x, start.y, dx, dy);
 
                 x, y := start.x + dx, start.y + dy;
                 if y < 0                  continue; // off the map
@@ -89,7 +136,7 @@ build_graph :: (map: []string) -> []Node
                     }
                     else
                     {
-                        print(" - Ended at (%,%) with options: %, uphill: %\n", x, y, options, start.uphill[dir]);
+                        // print(" - Ended at (%,%) with options: %, uphill: %\n", x, y, options, start.uphill[dir]);
 
                         end : *Node;
                         for * other: nodes
@@ -104,7 +151,7 @@ build_graph :: (map: []string) -> []Node
                         end.x, end.y = x, y;
 
                         start.edges[dir] = end;
-                        
+
                         break;
                     }
                 }
