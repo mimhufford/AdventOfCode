@@ -55,6 +55,11 @@ build_graph :: (map: []string) -> []Node
                 if y < 0                  continue; // off the map
                 if y > map.count-1        continue; // off the map
                 if map[y][x] == #char "#" continue; // wall
+                if map[y][x] == #char ">" && dx == -1 start.uphill[dir] = true;
+                if map[y][x] == #char "<" && dx ==  1 start.uphill[dir] = true;
+                if map[y][x] == #char "^" && dy ==  1 start.uphill[dir] = true;
+                if map[y][x] == #char "v" && dy == -1 start.uphill[dir] = true;
+
                 start.steps[dir] += 1;
 
                 while true
@@ -78,10 +83,14 @@ build_graph :: (map: []string) -> []Node
                         dx = options[0].dx;
                         dy = options[0].dy;
                         start.steps[dir] += 1;
+                        if map[y][x] == #char ">" && dx == -1 start.uphill[dir] = true;
+                        if map[y][x] == #char "<" && dx ==  1 start.uphill[dir] = true;
+                        if map[y][x] == #char "^" && dy ==  1 start.uphill[dir] = true;
+                        if map[y][x] == #char "v" && dy == -1 start.uphill[dir] = true;
                     }
                     else
                     {
-                        print(" - Ended at (%,%) with options: %\n", x, y, options);
+                        print(" - Ended at (%,%) with options: %, uphill: %\n", x, y, options, start.uphill[dir]);
 
                         end : *Node;
                         for * other: nodes
