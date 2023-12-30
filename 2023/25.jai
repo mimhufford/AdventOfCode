@@ -11,31 +11,29 @@ day25 :: (input: string) -> string, string
         for split(advance(it, 2), " ")
         {
             end := find_or_add_component(it);
-            array_add(*components[start].conns, end);
-            array_add(*components[end].conns, start);
+            array_add(*components[start].connections, end);
+            array_add(*components[end].connections, start);
         }
     }
 
     for 1..500
     {
         lo, hi := 1.0, -1.0;
+
         for * c: components
         {
-            for c.conns c.scratch += components[it].value;
-            c.scratch /= c.conns.count;
+            for c.connections c.scratch += components[it].value;
+            c.scratch /= c.connections.count;
             lo = min(lo, c.scratch);
             hi = max(hi, c.scratch);
         }
 
-        for * c: components
-        {
-            c.value = -1.0 + (c.scratch - lo) * (2.0) / (hi - lo);
-        }
+        for * c: components c.value = -1.0 + (c.scratch - lo) * 2.0 / (hi - lo);
     }
 
-    a,b := 0;
-    for components if it.value < 0 a += 1; else b += 1;
-    part1 := a * b;
+    left, right := 0;
+    for components if it.value < 0 left += 1; else right += 1;
+    part1 := left * right;
     
     return tprint("%", part1), "2023";
 }
@@ -58,5 +56,5 @@ Component :: struct
     name : string;
     value : float;
     scratch : float;
-    conns : [..]s64;
+    connections : [..]s64;
 }
