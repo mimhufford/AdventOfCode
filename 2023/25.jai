@@ -1,8 +1,7 @@
 day25 :: (input: string) -> string, string
 {
-    components   : [..]string;
-    connections  : [..]Edge;
-    index_lookup : Table(string, s64);
+    components  : Table(string, s64);
+    connections : [..]Edge;
 
     for split(trim(input), "\n")
     {
@@ -62,10 +61,9 @@ min_cut :: (components: s64, connections: [..]Edge) -> s64
 
 find_or_add_component :: (name: string) -> s64 #expand
 {
-    cache := table_find_pointer(*`index_lookup, name);
-    if cache return cache.*;
-    array_add(*`components, name);
-    table_add(*`index_lookup, name, `components.count - 1);
+    index := table_find_pointer(*`components, name);
+    if index return index.*;
+    table_add(*`components, name, `components.count);
     return `components.count - 1;
 }
 
