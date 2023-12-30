@@ -15,49 +15,50 @@ day25 :: (input: string) -> string, string
         }
     }
 
-    part1 := min_cut(components.count, connections);
+    Comp :: struct
+    {
+        name : string;
+        value : float;
+        scratch : float;
+        conns : [..]s64;
+    }
+    test := NewArray(components.count, Comp);
+    for components
+    {
+        test[it].name = it_index;
+        test[it].value = random_get_within_range(-1, 1);
+    }
+    for connections
+    {
+        array_add(*test[it.a].conns, it.b);
+        array_add(*test[it.b].conns, it.a);
+    }
+
+    for 1..500
+    {
+        lo, hi := 1.0, -1.0;
+        for * c: test
+        {
+            for c.conns c.scratch += test[it].value;
+            c.scratch /= c.conns.count;
+            lo = min(lo, c.scratch);
+            hi = max(hi, c.scratch);
+        }
+
+        for * c: test
+        {
+            c.value = -1.0 + (c.scratch - lo) * (2.0) / (hi - lo);
+        }
+    }
+
+    a,b := 0;
+    for test if it.value < 0 a += 1; else b += 1;
+    part1 := a * b;
     
     return tprint("%", part1), "2023";
 }
 
 #scope_file
-
-min_cut :: (components: s64, connections: [..]Edge) -> s64
-{
-    random_seed(cast(u64)to_microseconds(current_time_monotonic()));
-    while true
-    {
-        nodes : [..]s64;  for 1..components array_add(*nodes, 1);
-        edges : [..]Edge; for connections   array_add(*edges, it);
-        count := components;
-
-        while count > 2
-        {
-            edge_index := abs(cast(s64)random_get()) % edges.count;
-            edge := edges[edge_index];
-            
-            count -= 1;
-            array_add(*nodes, nodes[edge.a] + nodes[edge.b]);
-
-            array_unordered_remove_by_index(*edges, edge_index);
-            for * edges
-            {
-                if it.a == edge.a it.a = nodes.count-1;
-                if it.a == edge.b it.a = nodes.count-1;
-                if it.b == edge.a it.b = nodes.count-1;
-                if it.b == edge.b it.b = nodes.count-1;
-                if it.a == it.b remove it;
-            }
-        }
-
-        count1 := nodes[edges[0].a];
-        count2 := nodes[edges[0].b];
-
-        if count1 > 100 && count2 > 100 return count1 * count2;
-    }
-
-    return 0;
-}
 
 find_or_add_component :: (name: string) -> s64 #expand
 {
