@@ -16,12 +16,13 @@ day25 :: (input: string) -> string, string
         }
     }
 
-    for 1..500
+    for 1..50
     {
         lo, hi := 1.0, -1.0;
 
         for * c: components
         {
+            c.scratch = 0;
             for c.connections c.scratch += components[it].value;
             c.scratch /= c.connections.count;
             lo = min(lo, c.scratch);
