@@ -135,16 +135,17 @@ day24 :: (input: string) -> string, string
     part2 := 0;
 
     {
-        RVX, RVY, RVZ := potential_x_set[0], potential_y_set[0], potential_z_set[0];
+        r : Hailstone;
+        r.v.x, r.v.y, r.v.z = xx potential_x_set[0], xx potential_y_set[0], xx potential_z_set[0];
         a, b := hailstones[0], hailstones[1];
-        MA := (a.v.y-RVY)/(a.v.x-RVX);
-        MB := (b.v.y-RVY)/(b.v.x-RVX);
+        MA := (a.v.y-r.v.y)/(a.v.x-r.v.x);
+        MB := (b.v.y-r.v.y)/(b.v.x-r.v.x);
         CA := a.p.y - (MA*a.p.x);
         CB := b.p.y - (MB*b.p.x);
         XPos := cast(s64)((CB-CA)/(MA-MB));
         YPos := cast(s64)(MA*XPos + CA);
-        Time := (XPos - cast(s64)a.p.x) / (cast(s64)a.v.x-RVX);
-        ZPos := cast(s64)a.p.z + (cast(s64)a.v.z - RVZ)*Time;
+        Time := (XPos - cast(s64)a.p.x) / (cast(s64)a.v.x-cast(s64)r.v.x);
+        ZPos := cast(s64)a.p.z + (cast(s64)a.v.z - cast(s64)r.v.z)*Time;
         part2 = XPos + YPos + ZPos;
     }
 
