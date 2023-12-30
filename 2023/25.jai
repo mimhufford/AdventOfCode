@@ -1,6 +1,6 @@
 day25 :: (input: string) -> string, string
 {
-    components   : [..]Component;
+    components   : [..]string;
     connections  : [..]Edge;
     index_lookup : Table(string, s64);
 
@@ -64,15 +64,9 @@ find_or_add_component :: (name: string) -> s64 #expand
 {
     cache := table_find_pointer(*`index_lookup, name);
     if cache return cache.*;
-    c := array_add(*`components);
-    c.name = name;
+    array_add(*`components, name);
     table_add(*`index_lookup, name, `components.count - 1);
     return `components.count - 1;
-}
-
-Component :: struct
-{
-    name : string;
 }
 
 Edge :: struct
