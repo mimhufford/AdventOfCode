@@ -54,81 +54,27 @@ day24 :: (input: string) -> string, string
             a := hailstones[i];
             b := hailstones[j];
 
-            if a.v.x == b.v.x && abs(a.v.x) > 100
+            find_possible_for_axis :: (possibilities: *[..]s64, p1: float64, p2: float64, v1: float64, v2: float64)
             {
-                new_x_set : [..]s64;
-                difference := cast(s64)b.p.x - cast(s64)a.p.x;
+                if v1 != v2 return;
+                if abs(v1) <= 100 return;
+
+                set : [..]s64;
+                difference := cast(s64)p2 - cast(s64)p1;
                 for v: -1000..1000
                 {
-                    if v == cast(s64)a.v.x continue;
-                    if difference % (v-cast(s64)a.v.x) == 0
-                    {
-                        array_add(*new_x_set, v);
-                    }
+                    if v == cast(s64)v1 continue;
+                    if difference % (v-cast(s64)v1) != 0 continue;
+                    array_add(*set, v);
                 }
 
-                if potential_x_set.count == 0
-                {
-                    for new_x_set array_add(*potential_x_set, it);
-                }
-                else
-                {
-                    for * potential_x_set
-                    {
-                        if array_find(new_x_set, it.*) == false remove it;
-                    }
-                }
+                if possibilities.count == 0 for set array_add(possibilities, it);
+                else for * possibilities.* if array_find(set, it.*) == false remove it;
             }
-            if a.v.y == b.v.y && abs(a.v.y) > 100
-            {
-                new_y_set : [..]s64;
-                difference := cast(s64)b.p.y - cast(s64)a.p.y;
-                for v: -1000..1000
-                {
-                    if v == cast(s64)a.v.y continue;
-                    if difference % (v-cast(s64)a.v.y) == 0
-                    {
-                        array_add(*new_y_set, v);
-                    }
-                }
 
-                if potential_y_set.count == 0
-                {
-                    for new_y_set array_add(*potential_y_set, it);
-                }
-                else
-                {
-                    for * potential_y_set
-                    {
-                        if array_find(new_y_set, it.*) == false remove it;
-                    }
-                }
-            }
-            if a.v.z == b.v.z && abs(a.v.z) > 100
-            {
-                new_z_set : [..]s64;
-                difference := cast(s64)b.p.z - cast(s64)a.p.z;
-                for v: -1000..1000
-                {
-                    if v == cast(s64)a.v.z continue;
-                    if difference % (v-cast(s64)a.v.z) == 0
-                    {
-                        array_add(*new_z_set, v);
-                    }
-                }
-
-                if potential_z_set.count == 0
-                {
-                    for new_z_set array_add(*potential_z_set, it);
-                }
-                else
-                {
-                    for * potential_z_set
-                    {
-                        if array_find(new_z_set, it.*) == false remove it;
-                    }
-                }
-            }
+            find_possible_for_axis(*potential_x_set, a.p.x, b.p.x, a.v.x, b.v.x);
+            find_possible_for_axis(*potential_y_set, a.p.y, b.p.y, a.v.y, b.v.y);
+            find_possible_for_axis(*potential_z_set, a.p.z, b.p.z, a.v.z, b.v.z);
         }
     }
 
