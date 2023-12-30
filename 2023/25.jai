@@ -16,21 +16,21 @@ day25 :: (input: string) -> string, string
         }
     }
 
-    part1 := min_cut(components, connections);
+    part1 := min_cut(components.count, connections);
     
     return tprint("%", part1), "2023";
 }
 
 #scope_file
 
-min_cut :: (components: [..]Component, connections: [..]Edge) -> s64
+min_cut :: (components: s64, connections: [..]Edge) -> s64
 {
     random_seed(cast(u64)to_microseconds(current_time_monotonic()));
     while true
     {
-        nodes : [..]s64; for components array_add(*nodes, 1);
-        edges : [..]Edge; for connections array_add(*edges, it);
-        count := components.count;
+        nodes : [..]s64;  for 1..components array_add(*nodes, 1);
+        edges : [..]Edge; for connections   array_add(*edges, it);
+        count := components;
 
         while count > 2
         {
