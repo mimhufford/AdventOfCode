@@ -28,7 +28,7 @@ min_cut :: (components: [..]Component, connections: [..]Edge) -> s64
     random_seed(cast(u64)to_microseconds(current_time_monotonic()));
     while true
     {
-        nodes : [..]Component; for components array_add(*nodes, it);
+        nodes : [..]s64; for components array_add(*nodes, 1);
         edges : [..]Edge; for connections array_add(*edges, it);
         count := components.count;
 
@@ -38,7 +38,7 @@ min_cut :: (components: [..]Component, connections: [..]Edge) -> s64
             edge := edges[edge_index];
             
             count -= 1;
-            array_add(*nodes, .{"a", nodes[edge.a].count + nodes[edge.b].count});
+            array_add(*nodes, nodes[edge.a] + nodes[edge.b]);
 
             array_unordered_remove_by_index(*edges, edge_index);
             for * edges
@@ -51,8 +51,8 @@ min_cut :: (components: [..]Component, connections: [..]Edge) -> s64
             }
         }
 
-        count1 := nodes[edges[0].a].count;
-        count2 := nodes[edges[0].b].count;
+        count1 := nodes[edges[0].a];
+        count2 := nodes[edges[0].b];
 
         if count1 > 100 && count2 > 100 return count1 * count2;
     }
@@ -73,7 +73,6 @@ find_or_add_component :: (name: string) -> s64 #expand
 Component :: struct
 {
     name : string;
-    count := 1;
 }
 
 Edge :: struct
