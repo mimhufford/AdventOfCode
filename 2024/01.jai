@@ -1,6 +1,5 @@
 day1 :: (input: string) -> string, string
 {
-    part1, part2 := 0, 0;
     left, right : [..]s64;
 
     while input
@@ -12,7 +11,7 @@ day1 :: (input: string) -> string, string
     quick_sort(left,  compare);
     quick_sort(right, compare);
 
-    right_i := 0;
+    right_i, part1, part2 : s64;
 
     for l, i: left
     {
@@ -26,6 +25,8 @@ day1 :: (input: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
+
+#scope_file
 
 compare :: (a: s64, b: s64) -> s64
 {
