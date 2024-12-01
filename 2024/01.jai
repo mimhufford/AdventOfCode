@@ -11,8 +11,8 @@ day1 :: (input: string) -> string, string
         array_add(*right, read_s64(*input));
     }
 
-    quick_sort(left,  compare_numbers);
-    quick_sort(right, compare_numbers);
+    quick_sort(left,  i => i);
+    quick_sort(right, i => i);
 
     right_i, part1, part2 : s64;
 
