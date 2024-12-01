@@ -2,6 +2,9 @@ day1 :: (input: string) -> string, string
 {
     left, right : [..]s64;
 
+    array_reserve(*left, 1000);
+    array_reserve(*right, 1000);
+
     while input
     {
         array_add(*left,  read_s64(*input));
