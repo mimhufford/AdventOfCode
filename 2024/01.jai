@@ -12,14 +12,16 @@ day1 :: (input: string) -> string, string
     quick_sort(left,  compare);
     quick_sort(right, compare);
 
-    for 0..left.count-1
-    {
-        part1 += abs(left[it] - right[it]);
+    right_i := 0;
 
-        id := left[it];
-        right_count := 0;
-        for right if it == id right_count += 1;
-        part2 += id * right_count;
+    for l, i: left
+    {
+        part1 += abs(l - right[i]);
+
+        count := 0;
+        while right_i < right.count-1 && right[right_i]  < l { right_i += 1; }
+        while right_i < right.count-1 && right[right_i] == l { right_i += 1; count += 1; }
+        part2 += l * count;
     }
 
     return tprint("%", part1), tprint("%", part2);
