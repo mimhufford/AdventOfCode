@@ -11,8 +11,8 @@ day1 :: (input: string) -> string, string
         array_add(*right, read_s64(*input));
     }
 
-    quick_sort(left,  compare);
-    quick_sort(right, compare);
+    quick_sort(left,  compare_numbers);
+    quick_sort(right, compare_numbers);
 
     right_i, part1, part2 : s64;
 
@@ -27,13 +27,4 @@ day1 :: (input: string) -> string, string
     }
 
     return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-compare :: (a: s64, b: s64) -> s64
-{
-    if a < b return -1;
-    if a > b return 1;
-    return 0;
 }
