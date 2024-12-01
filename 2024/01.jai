@@ -15,6 +15,11 @@ day1 :: (input: string) -> string, string
     for 0..left.count-1
     {
         part1 += abs(left[it] - right[it]);
+
+        id := left[it];
+        right_count := 0;
+        for right if it == id right_count += 1;
+        part2 += id * right_count;
     }
 
     return tprint("%", part1), tprint("%", part2);
