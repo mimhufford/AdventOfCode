@@ -44,7 +44,7 @@ check :: (nums: []s64) -> s64
         if abs(a - b) > 3 return 0;
         if b >= a  desc = false;
         if b <= a   asc = false;
-        if asc == false && desc == false return 0;
+        if !asc && !desc  return 0;
     }
 
     return 1;
