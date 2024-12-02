@@ -31,6 +31,8 @@ day2 :: (input: string) -> string, string
     return tprint("%", part1), tprint("%", part2);
 }
 
+#scope_file
+
 check :: (nums: []s64) -> s64
 {
     asc, desc := true;
