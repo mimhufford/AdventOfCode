@@ -26,38 +26,20 @@ check :: (nums: []s64) -> s64, s64
 {
     for index_to_skip: -1..nums.count-1
     {
-        if index_to_skip == -1
+        asc, desc := true;
+
+        for 0..nums.count - 2 - ifx index_to_skip >= 0 then 1
         {
-            asc, desc := true;
-            for 0..nums.count-2
-            {
-                a, b := nums[it], nums[it+1];
+            a_index := it +0+ ifx index_to_skip >= 0 && it+0 >= index_to_skip then 1;
+            b_index := it +1+ ifx index_to_skip >= 0 && it+1 >= index_to_skip then 1;
+            a, b := nums[a_index], nums[b_index];
 
-                if abs(a - b) > 3 continue index_to_skip;
-                if b >= a  desc = false;
-                if b <= a   asc = false;
-                if !asc && !desc  continue index_to_skip;
-            }
-
-            return 1, 1;
+            if abs(a - b) > 3 continue index_to_skip;
+            if b >= a  desc = false;
+            if b <= a   asc = false;
+            if !asc && !desc  continue index_to_skip;
         }
-        else
-        {
-            asc, desc := true;
-            for 0..nums.count-3
-            {
-                ai, bi := it, it + 1;
-                if ai >= index_to_skip then ai += 1;
-                if bi >= index_to_skip then bi += 1;
-                a, b := nums[ai], nums[bi];
-
-                if abs(a - b) > 3 continue index_to_skip;
-                if b >= a  desc = false;
-                if b <= a   asc = false;
-                if !asc && !desc  continue index_to_skip;
-            }
-            return 0, 1;
-        }
+        return ifx index_to_skip == -1 then 1 else 0, 1;
     }
 
     return 0, 0;
