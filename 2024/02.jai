@@ -12,8 +12,15 @@ day2 :: (input: string) -> string, string
             array_add(*numbers, read_number(s64, *input, skip_trailing_whitespace = false));
         }
 
-        part1 += check(numbers);
-        part2 += check_combos(numbers);
+        if check(numbers)
+        {
+            part1 += 1;
+            part2 += 1;
+        }
+        else if check_combos(numbers)
+        {
+            part2 += 1;
+        }
 
         skip_whitespace(*input);
     }
@@ -23,19 +30,19 @@ day2 :: (input: string) -> string, string
 
 #scope_file
 
-check_combos :: (nums: []s64) -> s64
+check_combos :: (nums: []s64) -> bool
 {
     for 0..nums.count-1
     {
         new_nums := array_copy(nums);
         array_ordered_remove_by_index(*new_nums, it);
-        if check(new_nums) return 1;
+        if check(new_nums) return true;
     }
 
-    return 0;
+    return false;
 }
 
-check :: (nums: []s64) -> s64
+check :: (nums: []s64) -> bool
 {
     asc, desc := true;
 
@@ -43,11 +50,11 @@ check :: (nums: []s64) -> s64
     {
         a, b := nums[it], nums[it+1];
 
-        if abs(a - b) > 3 return 0;
+        if abs(a - b) > 3 return false;
         if b >= a  desc = false;
         if b <= a   asc = false;
-        if !asc && !desc  return 0;
+        if !asc && !desc  return false;
     }
 
-    return 1;
+    return true;
 }
