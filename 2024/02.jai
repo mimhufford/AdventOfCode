@@ -30,8 +30,8 @@ check :: (nums: []s64) -> s64, s64
 
         for 0..nums.count - 2 - ifx index_to_skip >= 0 then 1
         {
-            a_index := it +0+ ifx index_to_skip >= 0 && it+0 >= index_to_skip then 1;
-            b_index := it +1+ ifx index_to_skip >= 0 && it+1 >= index_to_skip then 1;
+            a_index := it + 0 + ifx index_to_skip >= 0 && it + 0 >= index_to_skip then 1;
+            b_index := it + 1 + ifx index_to_skip >= 0 && it + 1 >= index_to_skip then 1;
             a, b := nums[a_index], nums[b_index];
 
             if abs(a - b) > 3 continue index_to_skip;
