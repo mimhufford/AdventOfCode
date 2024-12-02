@@ -1,21 +1,20 @@
 day2 :: (input: string) -> string, string
 {
+    numbers : [..]s64;
     part1, part2 := 0;
 
     while input
     {
-        numbers : [..]s64;
-
         while input[0] != #char "\n"
         {
             skip_whitespace(*input);
             array_add(*numbers, read_number(s64, *input, skip_trailing_whitespace = false));
         }
 
-        if check(numbers)      part1, part2 += 1;
-        else if check_combos(numbers) part2 += 1;
+        part1, part2 += check(numbers);
 
         skip_whitespace(*input);
+        array_reset_keeping_memory(*numbers);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -23,31 +22,43 @@ day2 :: (input: string) -> string, string
 
 #scope_file
 
-check_combos :: (nums: []s64) -> bool
+check :: (nums: []s64) -> s64, s64
 {
-    for 0..nums.count-1
+    for index_to_skip: -1..nums.count-1
     {
-        new_nums := array_copy(nums);
-        array_ordered_remove_by_index(*new_nums, it);
-        if check(new_nums) return true;
+        if index_to_skip == -1
+        {
+            asc, desc := true;
+            for 0..nums.count-2
+            {
+                a, b := nums[it], nums[it+1];
+
+                if abs(a - b) > 3 continue index_to_skip;
+                if b >= a  desc = false;
+                if b <= a   asc = false;
+                if !asc && !desc  continue index_to_skip;
+            }
+
+            return 1, 1;
+        }
+        else
+        {
+            asc, desc := true;
+            for 0..nums.count-3
+            {
+                ai, bi := it, it + 1;
+                if ai >= index_to_skip then ai += 1;
+                if bi >= index_to_skip then bi += 1;
+                a, b := nums[ai], nums[bi];
+
+                if abs(a - b) > 3 continue index_to_skip;
+                if b >= a  desc = false;
+                if b <= a   asc = false;
+                if !asc && !desc  continue index_to_skip;
+            }
+            return 0, 1;
+        }
     }
 
-    return false;
-}
-
-check :: (nums: []s64) -> bool
-{
-    asc, desc := true;
-
-    for 0..nums.count-2
-    {
-        a, b := nums[it], nums[it+1];
-
-        if abs(a - b) > 3 return false;
-        if b >= a  desc = false;
-        if b <= a   asc = false;
-        if !asc && !desc  return false;
-    }
-
-    return true;
+    return 0, 0;
 }
