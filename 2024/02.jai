@@ -6,24 +6,14 @@ day2 :: (input: string) -> string, string
     {
         numbers : [..]s64;
 
-        while input && input[0] != #char "\n"
+        while input[0] != #char "\n"
         {
             skip_whitespace(*input);
             array_add(*numbers, read_number(s64, *input, skip_trailing_whitespace = false));
         }
 
         part1 += check(numbers);
-
-        for 0..numbers.count-1
-        {
-            new_numbers := array_copy(numbers);
-            array_ordered_remove_by_index(*new_numbers, it);
-            if check(new_numbers)
-            {
-                part2 += 1;
-                break;
-            }
-        }
+        part2 += check_combos(numbers);
 
         skip_whitespace(*input);
     }
@@ -32,6 +22,18 @@ day2 :: (input: string) -> string, string
 }
 
 #scope_file
+
+check_combos :: (nums: []s64) -> s64
+{
+    for 0..nums.count-1
+    {
+        new_nums := array_copy(nums);
+        array_ordered_remove_by_index(*new_nums, it);
+        if check(new_nums) return 1;
+    }
+
+    return 0;
+}
 
 check :: (nums: []s64) -> s64
 {
