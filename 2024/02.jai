@@ -12,15 +12,8 @@ day2 :: (input: string) -> string, string
             array_add(*numbers, read_number(s64, *input, skip_trailing_whitespace = false));
         }
 
-        if check(numbers)
-        {
-            part1 += 1;
-            part2 += 1;
-        }
-        else if check_combos(numbers)
-        {
-            part2 += 1;
-        }
+        if check(numbers)      part1, part2 += 1;
+        else if check_combos(numbers) part2 += 1;
 
         skip_whitespace(*input);
     }
