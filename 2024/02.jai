@@ -39,6 +39,7 @@ check :: (nums: []s64) -> s64, s64
             if b <= a   asc = false;
             if !asc && !desc  continue index_to_skip;
         }
+
         return ifx index_to_skip == -1 then 1 else 0, 1;
     }
 
