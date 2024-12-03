@@ -5,16 +5,16 @@ day3 :: (input: string) -> string, string
 
     while input
     {
-        if input[0] == #char "m"
+        if input[0] == #char "m" && starts_with(input, "mul(")
         {
-            amount := parse_mul(input);
+            amount := parse_mul(advance(input, 4));
             part1 += amount;
             if active part2 += amount;
         }
         else if input[0] == #char "d"
         {
-            if parse_do(input)   active = true;
-            if parse_dont(input) active = false;
+            if starts_with(input, "do()")    active = true;
+            if starts_with(input, "don't()") active = false;
         }
 
         advance(*input);
@@ -27,11 +27,6 @@ day3 :: (input: string) -> string, string
 
 parse_mul :: (s: string) -> s64
 {
-    if s.count < 8 return 0;
-    if s[0] != #char "m" return 0; advance(*s);
-    if s[0] != #char "u" return 0; advance(*s);
-    if s[0] != #char "l" return 0; advance(*s);
-    if s[0] != #char "(" return 0; advance(*s);
     if s[0] <  #char "0" return 0;
     if s[0] >  #char "9" return 0;
     num1 := read_number(s64, *s, skip_trailing_whitespace = false);
@@ -41,29 +36,4 @@ parse_mul :: (s: string) -> s64
     num2 := read_number(s64, *s, skip_trailing_whitespace = false);
     if s[0] != #char ")" return 0;
     return num1 * num2;
-}
-
-parse_do :: (s: string) -> bool
-{
-    if s.count < 4 return false;
-    if s[0] != #char "d" return false; advance(*s);
-    if s[0] != #char "o" return false; advance(*s);
-    if s[0] != #char "(" return false; advance(*s);
-    if s[0] != #char ")" return false;
-    print("do");
-    return true;
-}
-
-parse_dont :: (s: string) -> bool
-{
-    if s.count < 7 return false;
-    if s[0] != #char "d" return false; advance(*s);
-    if s[0] != #char "o" return false; advance(*s);
-    if s[0] != #char "n" return false; advance(*s);
-    if s[0] != #char "'" return false; advance(*s);
-    if s[0] != #char "t" return false; advance(*s);
-    if s[0] != #char "(" return false; advance(*s);
-    if s[0] != #char ")" return false;
-    print("dont");
-    return true;
 }
