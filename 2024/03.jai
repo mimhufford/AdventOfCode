@@ -8,8 +8,7 @@ day3 :: (input: string) -> string, string
         if input[0] == #char "m" && starts_with(input, "mul(")
         {
             amount := parse_mul(advance(input, 4));
-            part1 += amount;
-            if active part2 += amount;
+            part1, part2 += amount, ifx active then amount;
         }
         else if input[0] == #char "d"
         {
