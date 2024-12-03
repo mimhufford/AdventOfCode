@@ -27,12 +27,11 @@ day3 :: (input: string) -> string, string
 
 parse_mul :: (s: string) -> s64
 {
-    if s[0] <  #char "0" return 0;
-    if s[0] >  #char "9" return 0;
+    if !is_digit(s[0]) return 0;
     num1 := read_number(s64, *s, skip_trailing_whitespace = false);
-    if s[0] != #char "," return 0; advance(*s);
-    if s[0] <  #char "0" return 0;
-    if s[0] >  #char "9" return 0;
+    if s[0] != #char "," return 0;
+    advance(*s);
+    if !is_digit(s[0]) return 0;
     num2 := read_number(s64, *s, skip_trailing_whitespace = false);
     if s[0] != #char ")" return 0;
     return num1 * num2;
