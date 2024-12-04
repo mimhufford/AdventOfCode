@@ -29,10 +29,13 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
         return cast(string)word == "XMAS" || cast(string)word == "SAMX";
     }
 
-    if x <= SIZE-4 &&                xmas_match(1)        then xmas += 1;
-    if                y <= SIZE-4 && xmas_match(SIZE + 1) then xmas += 1;
-    if x <= SIZE-4 && y <= SIZE-4 && xmas_match(SIZE + 2) then xmas += 1;
-    if x >= 3      && y <= SIZE-4 && xmas_match(SIZE)     then xmas += 1;
+    if s[index] == #char "X" || s[index] == #char "S"
+    {
+        if x <= SIZE-4 &&                xmas_match(1)        then xmas += 1;
+        if                y <= SIZE-4 && xmas_match(SIZE + 1) then xmas += 1;
+        if x <= SIZE-4 && y <= SIZE-4 && xmas_match(SIZE + 2) then xmas += 1;
+        if x >= 3      && y <= SIZE-4 && xmas_match(SIZE)     then xmas += 1;
+    }
 
     x_mas_match :: (offset: s64) -> bool #expand
     {
@@ -41,7 +44,7 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
         return cast(string)word == "MAS" || cast(string)word == "SAM";
     }
 
-    if x >= 1 && x < SIZE-1 && y >= 1 && y < SIZE-1 && x_mas_match(SIZE+2) && x_mas_match(SIZE) then x_mas += 1;
+    if s[index] == #char "A" && x >= 1 && x < SIZE-1 && y >= 1 && y < SIZE-1 && x_mas_match(SIZE+2) && x_mas_match(SIZE) then x_mas += 1;
 
     return xmas, x_mas;
 }
