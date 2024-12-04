@@ -25,10 +25,7 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
     match :: (offset: s64) -> bool #expand
     {
         word : [4]u8;
-        word[0] = s[index + 0*offset];
-        word[1] = s[index + 1*offset];
-        word[2] = s[index + 2*offset];
-        word[3] = s[index + 3*offset];
+        for 0..3 word[it] = s[index + it*offset];
         return cast(string)word == "XMAS" || cast(string)word == "SAMX";
     }
 
