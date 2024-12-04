@@ -46,8 +46,8 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
         b[1] = s[index];
         b[2] = s[index + SIZE];
 
-        if cast(string)a == "MAS" || cast(string)a == "SAM" &&
-           cast(string)b == "MAS" || cast(string)b == "SAM"
+        if (cast(string)a == "MAS" || cast(string)a == "SAM") &&
+           (cast(string)b == "MAS" || cast(string)b == "SAM")
         {
             x_mas += 1;
         }
