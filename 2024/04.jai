@@ -44,7 +44,7 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
         return cast(string)word == "MAS" || cast(string)word == "SAM";
     }
 
-    if s[index] == #char "A" && x >= 1 && x < SIZE-1 && y >= 1 && y < SIZE-1 && x_mas_match(SIZE+2) && x_mas_match(SIZE) then x_mas += 1;
+    if s[index] == #char "A" && x > 0 && x < SIZE-1 && y > 0 && y < SIZE-1 && x_mas_match(SIZE+2) && x_mas_match(SIZE) then x_mas += 1;
 
     return xmas, x_mas;
 }
