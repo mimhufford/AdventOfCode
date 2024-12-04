@@ -22,41 +22,20 @@ check :: (s: string, x: s64, y: s64) -> s64, s64
     index := y * (SIZE+1) + x;
     xmas, x_mas := 0;
 
-    if x <= SIZE-4
+    match :: (offset: s64) -> bool #expand
     {
-        horz := slice(s, index, 4);
-        if horz == "XMAS" || horz == "SAMX" xmas += 1;
+        word : [4]u8;
+        word[0] = s[index + 0*offset];
+        word[1] = s[index + 1*offset];
+        word[2] = s[index + 2*offset];
+        word[3] = s[index + 3*offset];
+        return cast(string)word == "XMAS" || cast(string)word == "SAMX";
     }
 
-    if y <= SIZE-4
-    {
-        vert : [4]u8;
-        vert[0] = s[index + 0*(SIZE+1)];
-        vert[1] = s[index + 1*(SIZE+1)];
-        vert[2] = s[index + 2*(SIZE+1)];
-        vert[3] = s[index + 3*(SIZE+1)];
-        if cast(string)vert == "XMAS" || cast(string)vert == "SAMX" xmas += 1;
-    }
-
-    if x <= SIZE-4 && y <= SIZE-4
-    {
-        diag : [4]u8;
-        diag[0] = s[index + 0*(SIZE+2)];
-        diag[1] = s[index + 1*(SIZE+2)];
-        diag[2] = s[index + 2*(SIZE+2)];
-        diag[3] = s[index + 3*(SIZE+2)];
-        if cast(string)diag == "XMAS" || cast(string)diag == "SAMX" xmas += 1;
-    }
-
-    if x >= 3 && y <= SIZE-4
-    {
-        diag : [4]u8;
-        diag[0] = s[index + 0*SIZE];
-        diag[1] = s[index + 1*SIZE];
-        diag[2] = s[index + 2*SIZE];
-        diag[3] = s[index + 3*SIZE];
-        if cast(string)diag == "XMAS" || cast(string)diag == "SAMX" xmas += 1;
-    }
+    if x <= SIZE-4 && match(1)        then xmas += 1;
+    if y <= SIZE-4 && match(SIZE + 1) then xmas += 1;
+    if x <= SIZE-4 && y <= SIZE-4 && match(SIZE + 2) then xmas += 1;
+    if x >= 3 && y <= SIZE-4 && match(SIZE) then xmas += 1;
 
     return xmas, x_mas;
 }
