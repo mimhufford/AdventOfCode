@@ -24,7 +24,7 @@ day5 :: (input: string) -> string, string
             else { skip_whitespace(*input); break; }
         }
 
-        part1 += middle_value_or_0_if_sorted(update);
+        part1, part2 += get_middle_values(update);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -34,15 +34,20 @@ day5 :: (input: string) -> string, string
 
 rules : [100][100]bool;
 
-middle_value_or_0_if_sorted :: (update: []s64) -> s64
+get_middle_values :: (update: []s64) -> s64, s64
 {
     for i: 0..update.count-1
     {
         for j: i+1..update.count-1
         {
-            if rules[update[j]][update[i]] return 0;
+            if rules[update[j]][update[i]] return 0, sort_and_get_middle_value(update);
         }
     }
 
-    return update[update.count / 2];
+    return update[update.count / 2], 0;
+}
+
+sort_and_get_middle_value :: (update: []s64) -> s64
+{
+    return 1;
 }
