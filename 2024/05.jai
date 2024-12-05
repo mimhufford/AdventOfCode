@@ -40,14 +40,20 @@ get_middle_values :: (update: []s64) -> s64, s64
     {
         for j: i+1..update.count-1
         {
-            if rules[update[j]][update[i]] return 0, sort_and_get_middle_value(update);
+            if rules[update[j]][update[i]]
+            {
+                sort :: (a: s64, b: s64) -> s64
+                {
+                    if rules[a][b] return -1;
+                    if rules[b][a] return 1;
+                    return 0;
+                }
+
+                quick_sort(update, sort);
+                return 0, update[update.count / 2];
+            }
         }
     }
 
     return update[update.count / 2], 0;
-}
-
-sort_and_get_middle_value :: (update: []s64) -> s64
-{
-    return 1;
 }
