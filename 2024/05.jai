@@ -44,6 +44,5 @@ middle_value_or_0_if_sorted :: (update: []s64) -> s64
         }
     }
 
-    assert(update.count % 2 == 1);
     return update[update.count / 2];
 }
