@@ -15,17 +15,28 @@ day6 :: (input: string) -> string, string
     _, part1 := walk(map);
 
     part2 : s64;
+    changed_map := split(input, "\n");
+    changed_map.count -= 1;
+
     for r: 0..map.count-1 for c: 0..map[0].count-1
     {
         if r == start_y && c == start_x continue;
         if map[r][c] == #char "#" continue;
         if map[r][c] == #char "." continue;
 
-        changed_map := split(tprint("%", input), "\n");
-        changed_map.count -= 1;
-        changed_map[r][c] = #char "#";
+        // reset the changed map
+        for * char: input
+        {
+            if char.* == #char "#" continue;
+            if char.* == #char "." continue;
+            char.* = #char ".";
+        }
+
+        changed_map[r][c] = #char "#"; // add the new obstacle
 
         if walk(changed_map) part2 += 1;
+
+        changed_map[r][c] = #char "."; // remove it ready for next time
     }
 
     return tprint("%", part1), tprint("%", part2);
