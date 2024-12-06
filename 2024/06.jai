@@ -15,17 +15,18 @@ day6 :: (input: string) -> string, string
     _, part1 := walk(map);
 
     part2 : s64;
-    // for r: 0..map.count-1 for c: 0..map[0].count-1
-    // {
-    //     if r == start_y && c == start_x continue;
-    //     if map[r][c] == #char "#" continue;
-    //     if map[r][c] == #char "." continue;
+    for r: 0..map.count-1 for c: 0..map[0].count-1
+    {
+        if r == start_y && c == start_x continue;
+        if map[r][c] == #char "#" continue;
+        if map[r][c] == #char "." continue;
 
-    //     x, y, dir = start_x, start_y, 0;
-    //     changed_map := split(tprint("%", input), "\n");
-    //     changed_map.count -= 1;
-    //     changed_map[r][c] = #char "#";
-    // }
+        changed_map := split(tprint("%", input), "\n");
+        changed_map.count -= 1;
+        changed_map[r][c] = #char "#";
+
+        if walk(changed_map) part2 += 1;
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -52,6 +53,10 @@ walk :: (map: []string) -> bool, s64
         if map[y+dy][x+dx] == #char "#"
         {
             dir = (dir+1) % 4;
+        }
+        else if map[y+dy][x+dx] == dir_chars[dir]
+        {
+            return true, 0;
         }
         else
         {
