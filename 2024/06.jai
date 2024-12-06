@@ -8,12 +8,7 @@ day6 :: (input: string) -> string, string
     for line, y: map for cell, x: line
     {
         if cell == #char "^" start_x, start_y = x, y;
-        if cell == #char "#"
-        {
-            array_add(*walls, .{x, y});
-            array_add(*x_walls[x], *walls[walls.count-1]);
-            array_add(*y_walls[y], *walls[walls.count-1]);
-        }
+        if cell == #char "#" add_wall(x, y);
     }
 
     part1, part2 := walk(map), 0;
@@ -24,13 +19,9 @@ day6 :: (input: string) -> string, string
         if map[y][x] == #char "#"       continue;
         if map[y][x] == #char "."       continue;
 
-        array_add(*walls, .{x, y});
-        array_add(*x_walls[x], *walls[walls.count-1]);
-        array_add(*y_walls[y], *walls[walls.count-1]);
+        add_wall(x, y);
         if has_cycle(map) part2 += 1;
-        walls.count -= 1;
-        x_walls[x].count -= 1;
-        y_walls[y].count -= 1;
+        remove_last_wall(x, y);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -43,8 +34,21 @@ walls : [..]Position;
 x_walls : [130][..]*Position; // fast lookup
 y_walls : [130][..]*Position; // fast lookup
 start_x, start_y : s64;
-dir_chars :: "^>V<";
 dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
+
+add_wall :: (x: s64, y: s64)
+{
+    array_add(*walls, .{x, y});
+    array_add(*x_walls[x], *walls[walls.count-1]);
+    array_add(*y_walls[y], *walls[walls.count-1]);
+}
+
+remove_last_wall :: (x: s64, y: s64)
+{
+    walls.count -= 1;
+    x_walls[x].count -= 1;
+    y_walls[y].count -= 1;
+}
 
 walk :: (map: []string) -> s64
 {
@@ -69,7 +73,7 @@ walk :: (map: []string) -> s64
 
             if map[y][x] == #char "."
             {
-                map[y][x] = dir_chars[dir];
+                map[y][x] = #char "X";
                 visited += 1;
             }
         }
@@ -114,5 +118,5 @@ has_cycle :: (map: []string) -> bool
     }
 
     assert(false);
-    return falses
+    return false;
 }
