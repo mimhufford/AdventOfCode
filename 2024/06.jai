@@ -3,10 +3,17 @@ day6 :: (input: string) -> string, string
     map := split(input, "\n");
     map.count -= 1;
 
+    array_reserve(*walls, 1024);
+
     for line, y: map for cell, x: line
     {
         if cell == #char "^" start_x, start_y = x, y;
-        if cell == #char "#" array_add(*walls, .{x, y});
+        if cell == #char "#"
+        {
+            array_add(*walls, .{x, y});
+            array_add(*x_walls[x], *walls[walls.count-1]);
+            array_add(*y_walls[y], *walls[walls.count-1]);
+        }
     }
 
     part1, part2 := walk(map), 0;
@@ -17,9 +24,13 @@ day6 :: (input: string) -> string, string
         if map[y][x] == #char "#"       continue;
         if map[y][x] == #char "."       continue;
 
-        array_add(*walls, .{x, y}); // add the new obstacle
+        array_add(*walls, .{x, y});
+        array_add(*x_walls[x], *walls[walls.count-1]);
+        array_add(*y_walls[y], *walls[walls.count-1]);
         if has_cycle(map) part2 += 1;
-        walls.count -= 1; // remove it ready for next time
+        walls.count -= 1;
+        x_walls[x].count -= 1;
+        y_walls[y].count -= 1;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -29,6 +40,8 @@ day6 :: (input: string) -> string, string
 
 Position :: struct { x, y : s64; }
 walls : [..]Position;
+x_walls : [130][..]*Position; // fast lookup
+y_walls : [130][..]*Position; // fast lookup
 start_x, start_y : s64;
 dir_chars :: "^>V<";
 dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
@@ -75,22 +88,22 @@ has_cycle :: (map: []string) -> bool
         if dir == {
             case 0; // up
                 wall : *Position;
-                for * walls if it.x == x && it.y < y && (!wall || wall.y < it.y) wall = it;
+                for x_walls[x] if it.y < y && (!wall || wall.y < it.y) wall = it;
                 if !wall return false;
                 y = wall.y + 1;
             case 1; // right
                 wall : *Position;
-                for * walls if it.y == y && it.x > x && (!wall || wall.x > it.x) wall = it;
+                for y_walls[y] if it.x > x && (!wall || wall.x > it.x) wall = it;
                 if !wall return false;
                 x = wall.x - 1;
             case 2; // down
                 wall : *Position;
-                for * walls if it.x == x && it.y > y && (!wall || wall.y > it.y) wall = it;
+                for x_walls[x] if it.y > y && (!wall || wall.y > it.y) wall = it;
                 if !wall return false;
                 y = wall.y - 1;
             case 3; // left
                 wall : *Position;
-                for * walls if it.y == y && it.x < x && (!wall || wall.x < it.x) wall = it;
+                for y_walls[y] if it.x < x && (!wall || wall.x < it.x) wall = it;
                 if !wall return false;
                 x = wall.x + 1;
         }
@@ -101,5 +114,5 @@ has_cycle :: (map: []string) -> bool
     }
 
     assert(false);
-    return false;
+    return falses
 }
