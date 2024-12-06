@@ -1,42 +1,25 @@
 day6 :: (input: string) -> string, string
 {
-    map := split(tprint("%", input), "\n");
+    map := split(input, "\n");
     map.count -= 1;
 
-    for row, r: map for char, c: row
+    for line, y: map for cell, x: line
     {
-        if char == #char "^"
-        {
-            start_x, start_y = c, r;
-            break;
-        }
+        if cell == #char "^" start_x, start_y = x, y;
+        if cell == #char "#" array_add(*walls, .{x, y});
     }
 
-    _, part1 := walk(map);
+    part1, part2 := walk(map), 0;
 
-    part2 : s64;
-    changed_map := split(input, "\n");
-    changed_map.count -= 1;
-
-    for r: 0..map.count-1 for c: 0..map[0].count-1
+    for y: 0..map.count-1 for x: 0..map[0].count-1
     {
-        if r == start_y && c == start_x continue;
-        if map[r][c] == #char "#" continue;
-        if map[r][c] == #char "." continue;
+        if y == start_y && x == start_x continue;
+        if map[y][x] == #char "#"       continue;
+        if map[y][x] == #char "."       continue;
 
-        // reset the changed map
-        for * char: input
-        {
-            if char.* == #char "#" continue;
-            if char.* == #char "." continue;
-            char.* = #char ".";
-        }
-
-        changed_map[r][c] = #char "#"; // add the new obstacle
-
-        if walk(changed_map) part2 += 1;
-
-        changed_map[r][c] = #char "."; // remove it ready for next time
+        array_add(*walls, .{x, y}); // add the new obstacle
+        if has_cycle(map) part2 += 1;
+        walls.count -= 1; // remove it ready for next time
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -44,11 +27,13 @@ day6 :: (input: string) -> string, string
 
 #scope_file
 
+Position :: struct { x, y : s64; }
+walls : [..]Position;
 start_x, start_y : s64;
 dir_chars :: "^>V<";
-dirs      :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
+dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
 
-walk :: (map: []string) -> bool, s64
+walk :: (map: []string) -> s64
 {
     x, y, dir, visited := start_x, start_y, 0, 1;
 
@@ -65,10 +50,6 @@ walk :: (map: []string) -> bool, s64
         {
             dir = (dir+1) % 4;
         }
-        else if map[y+dy][x+dx] == dir_chars[dir]
-        {
-            return true, 0;
-        }
         else
         {
             x, y += dx, dy;
@@ -81,5 +62,44 @@ walk :: (map: []string) -> bool, s64
         }
     }
 
-    return false, visited;
+    return visited;
+}
+
+has_cycle :: (map: []string) -> bool
+{
+    x, y, dir := start_x, start_y, 0;
+    history : [130][130][4]bool;
+
+    while true
+    {
+        if dir == {
+            case 0; // up
+                wall : *Position;
+                for * walls if it.x == x && it.y < y && (!wall || wall.y < it.y) wall = it;
+                if !wall return false;
+                y = wall.y + 1;
+            case 1; // right
+                wall : *Position;
+                for * walls if it.y == y && it.x > x && (!wall || wall.x > it.x) wall = it;
+                if !wall return false;
+                x = wall.x - 1;
+            case 2; // down
+                wall : *Position;
+                for * walls if it.x == x && it.y > y && (!wall || wall.y > it.y) wall = it;
+                if !wall return false;
+                y = wall.y - 1;
+            case 3; // left
+                wall : *Position;
+                for * walls if it.y == y && it.x < x && (!wall || wall.x < it.x) wall = it;
+                if !wall return false;
+                x = wall.x + 1;
+        }
+
+        if history[y][x][dir] return true;
+        history[y][x][dir] = true;
+        dir = (dir + 1) % 4;
+    }
+
+    assert(false);
+    return false;
 }
