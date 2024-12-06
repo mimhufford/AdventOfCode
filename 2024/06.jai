@@ -5,7 +5,8 @@ day6 :: (input: string) -> string, string
     map := split(input, "\n");
     map.count -= 1;
 
-    dirs := [2]s64.[
+    dir_chars :: "^>V<";
+    dirs :: [2]s64.[
         .[ 0, -1],
         .[ 1,  0],
         .[ 0,  1],
@@ -19,7 +20,7 @@ day6 :: (input: string) -> string, string
         if char == #char "^"
         {
             x, y = c, r;
-            map[r][c] = #char "X";
+            map[y][x] = dir_chars[dir];
             part1 += 1;
             break;
         }
@@ -42,9 +43,9 @@ day6 :: (input: string) -> string, string
         {
             x, y += dx, dy;
 
-            if map[y][x] != #char "X"
+            if map[y][x] == #char "."
             {
-                map[y][x] = #char "X";
+                map[y][x] = dir_chars[dir];
                 part1 += 1;
             }
         }
