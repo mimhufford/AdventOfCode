@@ -3,8 +3,6 @@ day6 :: (input: string) -> string, string
     map := split(input, "\n");
     map.count -= 1;
 
-    array_reserve(*walls, 1024);
-
     for line, y: map for cell, x: line
     {
         if cell == #char "^" start_x, start_y = x, y;
@@ -30,22 +28,19 @@ day6 :: (input: string) -> string, string
 #scope_file
 
 Position :: struct { x, y : s64; }
-walls : [..]Position;
-x_walls : [130][..]*Position; // fast lookup
-y_walls : [130][..]*Position; // fast lookup
+x_walls : [130][..]Position;
+y_walls : [130][..]Position;
 start_x, start_y : s64;
 dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
 
 add_wall :: (x: s64, y: s64)
 {
-    array_add(*walls, .{x, y});
-    array_add(*x_walls[x], *walls[walls.count-1]);
-    array_add(*y_walls[y], *walls[walls.count-1]);
+    array_add(*x_walls[x], .{x, y});
+    array_add(*y_walls[y], .{x, y});
 }
 
 remove_last_wall :: (x: s64, y: s64)
 {
-    walls.count -= 1;
     x_walls[x].count -= 1;
     y_walls[y].count -= 1;
 }
@@ -92,22 +87,22 @@ has_cycle :: (map: []string) -> bool
         if dir == {
             case 0; // up
                 wall : *Position;
-                for x_walls[x] if it.y < y && (!wall || wall.y < it.y) wall = it;
+                for * x_walls[x] if it.y < y && (!wall || wall.y < it.y) wall = it;
                 if !wall return false;
                 y = wall.y + 1;
             case 1; // right
                 wall : *Position;
-                for y_walls[y] if it.x > x && (!wall || wall.x > it.x) wall = it;
+                for * y_walls[y] if it.x > x && (!wall || wall.x > it.x) wall = it;
                 if !wall return false;
                 x = wall.x - 1;
             case 2; // down
                 wall : *Position;
-                for x_walls[x] if it.y > y && (!wall || wall.y > it.y) wall = it;
+                for * x_walls[x] if it.y > y && (!wall || wall.y > it.y) wall = it;
                 if !wall return false;
                 y = wall.y - 1;
             case 3; // left
                 wall : *Position;
-                for y_walls[y] if it.x < x && (!wall || wall.x < it.x) wall = it;
+                for * y_walls[y] if it.x < x && (!wall || wall.x < it.x) wall = it;
                 if !wall return false;
                 x = wall.x + 1;
         }
