@@ -11,15 +11,11 @@ day6 :: (input: string) -> string, string
 
     part1, part2 := walk(map), 0;
 
-    for y: 0..map.count-1 for x: 0..map[0].count-1
+    for loop_starts
     {
-        if y == start_y && x == start_x continue;
-        if map[y][x] == #char "#"       continue;
-        if map[y][x] == #char "."       continue;
-
-        add_wall(x, y);
-        if has_cycle(map) part2 += 1;
-        remove_last_wall(x, y);
+        add_wall(it.wx, it.wy);
+        if has_cycle(map, it.sx, it.sy, it.sd) part2 += 1;
+        remove_last_wall(it.wx, it.wy);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -32,6 +28,7 @@ x_walls : [130][..]Position;
 y_walls : [130][..]Position;
 start_x, start_y : s64;
 dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
+loop_starts : [..]struct { sx, sy, sd, wx, wy: s64; };
 
 add_wall :: (x: s64, y: s64)
 {
@@ -68,6 +65,7 @@ walk :: (map: []string) -> s64
 
             if map[y][x] == #char "."
             {
+                array_add(*loop_starts, .{ x-dx, y-dy, dir, x, y });
                 map[y][x] = #char "X";
                 visited += 1;
             }
@@ -77,9 +75,9 @@ walk :: (map: []string) -> s64
     return visited;
 }
 
-has_cycle :: (map: []string) -> bool
+has_cycle :: (map: []string, sx: s64, sy: s64, sd: s64) -> bool
 {
-    x, y, dir := start_x, start_y, 0;
+    x, y, dir := sx, sy, sd;
     history : [130][130][4]bool;
 
     while true
