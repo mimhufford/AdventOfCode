@@ -27,7 +27,7 @@ day6 :: (input: string) -> string, string
 
 #scope_file
 
-Position :: struct { x, y : s64; }
+Position :: struct { x, y : u8; }
 x_walls : [130][..]Position;
 y_walls : [130][..]Position;
 start_x, start_y : s64;
@@ -35,8 +35,8 @@ dirs :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
 
 add_wall :: (x: s64, y: s64)
 {
-    array_add(*x_walls[x], .{x, y});
-    array_add(*y_walls[y], .{x, y});
+    array_add(*x_walls[x], .{cast(u8)x, cast(u8)y});
+    array_add(*y_walls[y], .{cast(u8)x, cast(u8)y});
 }
 
 remove_last_wall :: (x: s64, y: s64)
