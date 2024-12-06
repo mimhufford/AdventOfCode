@@ -1,30 +1,44 @@
 day6 :: (input: string) -> string, string
 {
-    part1, part2 : s64;
-
-    map := split(input, "\n");
+    map := split(tprint("%", input), "\n");
     map.count -= 1;
-
-    dir_chars :: "^>V<";
-    dirs :: [2]s64.[
-        .[ 0, -1],
-        .[ 1,  0],
-        .[ 0,  1],
-        .[-1,  0],
-    ];
-
-    x, y, dir : s64;
 
     for row, r: map for char, c: row
     {
         if char == #char "^"
         {
-            x, y = c, r;
-            map[y][x] = dir_chars[dir];
-            part1 += 1;
+            start_x, start_y = c, r;
             break;
         }
     }
+
+    _, part1 := walk(map);
+
+    part2 : s64;
+    // for r: 0..map.count-1 for c: 0..map[0].count-1
+    // {
+    //     if r == start_y && c == start_x continue;
+    //     if map[r][c] == #char "#" continue;
+    //     if map[r][c] == #char "." continue;
+
+    //     x, y, dir = start_x, start_y, 0;
+    //     changed_map := split(tprint("%", input), "\n");
+    //     changed_map.count -= 1;
+    //     changed_map[r][c] = #char "#";
+    // }
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+start_x, start_y : s64;
+dir_chars :: "^>V<";
+dirs      :: []s64.[ .[0, -1], .[1, 0], .[0, 1], .[-1, 0] ];
+
+walk :: (map: []string) -> bool, s64
+{
+    x, y, dir, visited := start_x, start_y, 0, 1;
 
     while true
     {
@@ -46,10 +60,10 @@ day6 :: (input: string) -> string, string
             if map[y][x] == #char "."
             {
                 map[y][x] = dir_chars[dir];
-                part1 += 1;
+                visited += 1;
             }
         }
     }
 
-    return tprint("%", part1), tprint("%", part2);
+    return false, visited;
 }
