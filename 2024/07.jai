@@ -15,8 +15,8 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "\n" break;
         }
 
-        if check_2_ops(total, .{numbers.count-1, numbers.data+1}, numbers[0]) part1 += total;
-        if check_3_ops(total, .{numbers.count-1, numbers.data+1}, numbers[0]) part2 += total;
+        if check(total, .{numbers.count-1, numbers.data+1}, numbers[0], false) part1 += total;
+        if check(total, .{numbers.count-1, numbers.data+1}, numbers[0], true)  part2 += total;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -24,27 +24,21 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
-check_2_ops :: (target: s64, nums: []s64, accum: s64) -> bool
+check :: (target: s64, nums: []s64, accum: s64, third_op: bool) -> bool
 {
     if nums.count == 0 && accum == target return true;
     if nums.count == 0 return false;
     if accum > target return false;
 
-    return check_2_ops(target, .{nums.count-1, nums.data+1}, accum + nums[0]) ||
-           check_2_ops(target, .{nums.count-1, nums.data+1}, accum * nums[0]);
+    if third_op
+    {
+        return check(target, .{nums.count-1, nums.data+1}, accum + nums[0], third_op) ||
+               check(target, .{nums.count-1, nums.data+1}, accum * nums[0], third_op) ||
+               check(target, .{nums.count-1, nums.data+1}, concat(accum, nums[0]), third_op);
+    }
 
-}
-
-check_3_ops :: (target: s64, nums: []s64, accum: s64) -> bool
-{
-    if nums.count == 0 && accum == target return true;
-    if nums.count == 0 return false;
-    if accum > target return false;
-
-    return check_3_ops(target, .{nums.count-1, nums.data+1}, accum + nums[0]) ||
-           check_3_ops(target, .{nums.count-1, nums.data+1}, accum * nums[0]) ||
-           check_3_ops(target, .{nums.count-1, nums.data+1}, concat(accum, nums[0]));
-
+    return check(target, .{nums.count-1, nums.data+1}, accum + nums[0], third_op) ||
+           check(target, .{nums.count-1, nums.data+1}, accum * nums[0], third_op);
 }
 
 concat :: (a: s64, b: s64) -> s64
