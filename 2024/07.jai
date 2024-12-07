@@ -33,7 +33,7 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
 
     if third_op
     {
-        cat := ends_with(tprint("%", target), tprint("%", n));
+        cat := number_ends_with(target, n);
         if cat
         {
             tar := tprint("%", target);
@@ -47,4 +47,16 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
     if mul && check3(target / n, next, third_op) return true;
 
     return check3(target - n, next, third_op);
+}
+
+number_ends_with :: (n: s64, suffix: s64) -> bool
+{
+    suffix_length := 0;
+    s := suffix;
+    while s { s /= 10; suffix_length += 1; }
+
+    divisor := 1;
+    for 0..suffix_length-1 divisor *= 10;
+
+    return n % divisor == suffix;
 }
