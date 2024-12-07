@@ -24,7 +24,7 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
-check :: (target: s64, nums: []s64, accum: s64, third_op: bool) -> bool
+check :: (target: s64, nums: []s64, accum: s64, $third_op: bool) -> bool
 {
     if nums.count == 0 return accum == target;
     if accum > target return false;
