@@ -15,8 +15,8 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "\n" break;
         }
 
-        part1 += ifx check(total, .{numbers.count-1, numbers.data+1}, numbers[0], false) total;
-        part2 += ifx check(total, .{numbers.count-1, numbers.data+1}, numbers[0], true)  total;
+        part1 += ifx check3(total, numbers, false) total;
+        part2 += ifx check3(total, numbers, true)  total;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -24,20 +24,24 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
-check :: (target: s64, nums: []s64, accum: s64, $third_op: bool) -> bool
+check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
 {
-    if nums.count == 0 return accum == target;
-    if accum > target return false;
+    if nums.count == 1 return target == nums[0];
 
-    next := []s64.{ nums.count - 1, nums.data + 1};
-    return check(target, next, accum + nums[0], third_op) ||
-           check(target, next, accum * nums[0], third_op) ||
-           ifx third_op check(target, next, concat(accum, nums[0]), third_op);
-}
+    next := []s64.{ nums.count - 1, nums.data };
+    n := nums[nums.count-1];
 
-concat :: (a: s64, b: s64) -> s64
-{
-    multiplier := 1;
-    while b >= multiplier multiplier *= 10;
-    return a * multiplier + b;
+    if third_op
+    {
+        cat := ends_with(tprint("%", target), tprint("%", n));
+        tar := tprint("%", target);
+        tar.count -= tprint("%", n).count;
+        nwt := ifx cat then read_s64(*tar) else target;
+        if cat && check3(nwt, next, third_op) return true;
+    }
+
+    mul := target % n == 0;
+    if mul && check3(target / n, next, third_op) return true;
+
+    return check3(target - n, next, third_op);
 }
