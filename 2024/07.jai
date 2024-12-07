@@ -15,8 +15,8 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "\n" break;
         }
 
-        if check(total, .{numbers.count-1, numbers.data+1}, numbers[0], false) part1 += total;
-        if check(total, .{numbers.count-1, numbers.data+1}, numbers[0], true)  part2 += total;
+        part1 += ifx check(total, .{numbers.count-1, numbers.data+1}, numbers[0], false) total;
+        part2 += ifx check(total, .{numbers.count-1, numbers.data+1}, numbers[0], true)  total;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -26,8 +26,7 @@ day7 :: (input: string) -> string, string
 
 check :: (target: s64, nums: []s64, accum: s64, third_op: bool) -> bool
 {
-    if nums.count == 0 && accum == target return true;
-    if nums.count == 0 return false;
+    if nums.count == 0 return accum == target;
     if accum > target return false;
 
     next := []s64.{ nums.count - 1, nums.data + 1};
