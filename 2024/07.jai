@@ -31,16 +31,12 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
     next := []s64.{ nums.count - 1, nums.data };
     n := nums[nums.count-1];
 
-    if third_op
+    if third_op && number_ends_with(target, n)
     {
-        cat := number_ends_with(target, n);
-        if cat
-        {
-            tar := tprint("%", target);
-            tar.count -= tprint("%", n).count;
-            nwt := read_s64(*tar);
-            if check3(nwt, next, third_op) return true;
-        }
+        tar := tprint("%", target);
+        tar.count -= tprint("%", n).count;
+        nwt := read_s64(*tar);
+        if check3(nwt, next, third_op) return true;
     }
 
     if target % n == 0 && check3(target / n, next, third_op) return true;
