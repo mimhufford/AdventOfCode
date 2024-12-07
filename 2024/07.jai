@@ -31,22 +31,21 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
     next := []s64.{ nums.count - 1, nums.data };
     n := nums[nums.count-1];
 
-    if third_op && number_ends_with(target, n)
-    {
-        tar := tprint("%", target);
-        tar.count -= tprint("%", n).count;
-        nwt := read_s64(*tar);
-        if check3(nwt, next, third_op) return true;
-    }
-
+    if third_op && ends_with(target, n) && check3(unconcat(target, n), next, third_op) return true;
     if target % n == 0 && check3(target / n, next, third_op) return true;
-
     return check3(target - n, next, third_op);
 }
 
-number_ends_with :: (n: s64, suffix: s64) -> bool
+ends_with :: (n: s64, suffix: s64) -> bool
 {
     length, s := 0.0, suffix;
     while s { s /= 10; length += 1; }
     return n % cast(s64)pow(10, length) == suffix;
+}
+
+unconcat :: (n: s64, suffix: s64) -> s64
+{
+    length, s := 0.0, suffix;
+    while s { s /= 10; length += 1; }
+    return n / cast(s64)pow(10, length);
 }
