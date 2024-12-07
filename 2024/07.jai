@@ -15,13 +15,8 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "\n" break;
         }
 
-        first := numbers[0];
-        numbers.data += 1;
-        numbers.count -= 1;
-        if check_2_ops(total, numbers, first) part1 += total;
-        if check_3_ops(total, numbers, first) part2 += total;
-        numbers.data -= 1;
-        numbers.count += 1;
+        if check_2_ops(total, .{numbers.count-1, numbers.data+1}, numbers[0]) part1 += total;
+        if check_3_ops(total, .{numbers.count-1, numbers.data+1}, numbers[0]) part2 += total;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -35,11 +30,8 @@ check_2_ops :: (target: s64, nums: []s64, accum: s64) -> bool
     if nums.count == 0 return false;
     if accum > target return false;
 
-    next_nums := nums;
-    next_nums.data += 1;
-    next_nums.count -= 1;
-    return check_2_ops(target, next_nums, accum + nums[0]) ||
-           check_2_ops(target, next_nums, accum * nums[0]);
+    return check_2_ops(target, .{nums.count-1, nums.data+1}, accum + nums[0]) ||
+           check_2_ops(target, .{nums.count-1, nums.data+1}, accum * nums[0]);
 
 }
 
@@ -49,12 +41,9 @@ check_3_ops :: (target: s64, nums: []s64, accum: s64) -> bool
     if nums.count == 0 return false;
     if accum > target return false;
 
-    next_nums := nums;
-    next_nums.data += 1;
-    next_nums.count -= 1;
-    return check_3_ops(target, next_nums, accum + nums[0]) ||
-           check_3_ops(target, next_nums, accum * nums[0]) ||
-           check_3_ops(target, next_nums, concat(accum, nums[0]));
+    return check_3_ops(target, .{nums.count-1, nums.data+1}, accum + nums[0]) ||
+           check_3_ops(target, .{nums.count-1, nums.data+1}, accum * nums[0]) ||
+           check_3_ops(target, .{nums.count-1, nums.data+1}, concat(accum, nums[0]));
 
 }
 
