@@ -15,8 +15,8 @@ day7 :: (input: string) -> string, string
             if input[0] == #char "\n" break;
         }
 
-        part1 += ifx check3(total, numbers, false) total;
-        part2 += ifx check3(total, numbers, true)  total;
+        part1 += ifx check(total, numbers, false) total;
+        part2 += ifx check(total, numbers, true)  total;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -24,28 +24,26 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
-check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
+check :: (target: s64, nums: []s64, $third_op: bool) -> bool
 {
     if nums.count == 1 return target == nums[0];
 
     next := []s64.{ nums.count - 1, nums.data };
     n := nums[nums.count-1];
 
-    if third_op && ends_with(target, n) && check3(unconcat(target, n), next, third_op) return true;
-    if target % n == 0 && check3(target / n, next, third_op) return true;
-    return check3(target - n, next, third_op);
+    if third_op
+    {
+        ok, new_target := unconcat(target, n);
+        if ok && check(new_target, next, third_op) return true;
+    }
+    if target % n == 0 && check(target / n, next, third_op) return true;
+    return check(target - n, next, third_op);
 }
 
-ends_with :: (n: s64, suffix: s64) -> bool
+unconcat :: (n: s64, suffix: s64) -> bool, s64
 {
     length, s := 0.0, suffix;
     while s { s /= 10; length += 1; }
-    return n % cast(s64)pow(10, length) == suffix;
-}
-
-unconcat :: (n: s64, suffix: s64) -> s64
-{
-    length, s := 0.0, suffix;
-    while s { s /= 10; length += 1; }
-    return n / cast(s64)pow(10, length);
+    divisor := cast(s64)pow(10, length);
+    return n % divisor == suffix, n / divisor;
 }
