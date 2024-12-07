@@ -19,7 +19,7 @@ day7 :: (input: string) -> string, string
         {
             value := numbers[0];
             
-            for bit: 0..numbers.count-1
+            for bit: 0..numbers.count-2
             {
                 op := (ops >> bit) & 1;
                 if op == 0 value += numbers[bit+1];
