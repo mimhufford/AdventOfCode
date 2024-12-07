@@ -30,15 +30,10 @@ check :: (target: s64, nums: []s64, accum: s64, third_op: bool) -> bool
     if nums.count == 0 return false;
     if accum > target return false;
 
-    if third_op
-    {
-        return check(target, .{nums.count-1, nums.data+1}, accum + nums[0], third_op) ||
-               check(target, .{nums.count-1, nums.data+1}, accum * nums[0], third_op) ||
-               check(target, .{nums.count-1, nums.data+1}, concat(accum, nums[0]), third_op);
-    }
-
-    return check(target, .{nums.count-1, nums.data+1}, accum + nums[0], third_op) ||
-           check(target, .{nums.count-1, nums.data+1}, accum * nums[0], third_op);
+    next := []s64.{ nums.count - 1, nums.data + 1};
+    return check(target, next, accum + nums[0], third_op) ||
+           check(target, next, accum * nums[0], third_op) ||
+           ifx third_op check(target, next, concat(accum, nums[0]), third_op);
 }
 
 concat :: (a: s64, b: s64) -> s64
