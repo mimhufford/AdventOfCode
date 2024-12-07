@@ -31,19 +31,17 @@ check :: (target: s64, nums: []s64, $third_op: bool) -> bool
     next := []s64.{ nums.count - 1, nums.data };
     n := nums[nums.count-1];
 
-    if third_op
-    {
-        ok, new_target := unconcat(target, n);
-        if ok && check(new_target, next, third_op) return true;
-    }
+    if third_op        && unconcat(target, n, next)         return true;
     if target % n == 0 && check(target / n, next, third_op) return true;
-    return check(target - n, next, third_op);
+    if target >= n     && check(target - n, next, third_op) return true;
+    return false;
 }
 
-unconcat :: (n: s64, suffix: s64) -> bool, s64
+unconcat :: (target: s64, num: s64, nums: []s64) -> bool
 {
-    length, s := 0.0, suffix;
-    while s { s /= 10; length += 1; }
+    length, n := 0.0, num;
+    while n { n /= 10; length += 1; }
     divisor := cast(s64)pow(10, length);
-    return n % divisor == suffix, n / divisor;
+    if target % divisor != num return false;
+    return check(target / divisor, nums, true);
 }
