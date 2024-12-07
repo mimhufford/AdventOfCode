@@ -43,20 +43,14 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
         }
     }
 
-    mul := target % n == 0;
-    if mul && check3(target / n, next, third_op) return true;
+    if target % n == 0 && check3(target / n, next, third_op) return true;
 
     return check3(target - n, next, third_op);
 }
 
 number_ends_with :: (n: s64, suffix: s64) -> bool
 {
-    suffix_length := 0;
-    s := suffix;
-    while s { s /= 10; suffix_length += 1; }
-
-    divisor := 1;
-    for 0..suffix_length-1 divisor *= 10;
-
-    return n % divisor == suffix;
+    length, s := 0.0, suffix;
+    while s { s /= 10; length += 1; }
+    return n % cast(s64)pow(10, length) == suffix;
 }
