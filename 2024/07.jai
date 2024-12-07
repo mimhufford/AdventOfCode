@@ -34,10 +34,13 @@ check3 :: (target: s64, nums: []s64, third_op: bool) -> bool
     if third_op
     {
         cat := ends_with(tprint("%", target), tprint("%", n));
-        tar := tprint("%", target);
-        tar.count -= tprint("%", n).count;
-        nwt := ifx cat then read_s64(*tar) else target;
-        if cat && check3(nwt, next, third_op) return true;
+        if cat
+        {
+            tar := tprint("%", target);
+            tar.count -= tprint("%", n).count;
+            nwt := read_s64(*tar);
+            if check3(nwt, next, third_op) return true;
+        }
     }
 
     mul := target % n == 0;
