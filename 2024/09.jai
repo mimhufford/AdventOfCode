@@ -1,12 +1,24 @@
 day9 :: (input: string) -> string, string
 {
     part1 := greedy_defrag(input);
-    part2 := 0;
+    part2 := actual_defrag(input);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
+
+actual_defrag :: (input: string) -> s64
+{
+    data := tprint("%", input);
+    data.count -= 1;
+    checksum := 0;
+
+    return checksum;
+}
+
+// 6272445324928 too low
+// 7775234723467 too high
 
 greedy_defrag :: (input: string) -> s64
 {
