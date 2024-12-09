@@ -52,21 +52,37 @@ actual_defrag_linked_list :: (input: string) -> s64
             if gap.type != .GAP continue;
             if gap.size < file.size continue;
 
-            gap.size -= file.size;
+            if gap.size == file.size
+            {
+                // simple switcheroo without having to create new blocks
 
-            // move the file
-            new_gap := New(Block);
-            new_gap.type = .GAP;
-            new_gap.size = file.size;
-            new_gap.prev = file.prev;
-            new_gap.next = file.next;
+                gap.type = .FILE;
+                gap.id = file.id;
+                gap.attempted_move = true;
+                file.type = .GAP;
+            }
+            else
+            {
+                // more of a complex operation where a new gap block needs creating
 
-            gap.prev.next = file;
-            file.prev.next = new_gap;
-            if file.next file.next.prev = new_gap;
-            file.prev = gap.prev;
-            file.next = gap;
-            gap.prev = file;
+                // shrink the gap
+                gap.size -= file.size;
+
+                // create a new gap
+                new_gap := New(Block);
+                new_gap.type = .GAP;
+                new_gap.size = file.size;
+                new_gap.prev = file.prev;
+                new_gap.next = file.next;
+
+                // swizzle all the pointers
+                gap.prev.next = file;
+                file.prev.next = new_gap;
+                if file.next file.next.prev = new_gap;
+                file.prev = gap.prev;
+                file.next = gap;
+                gap.prev = file;
+            }
 
             break;
         }
