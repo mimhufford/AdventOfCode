@@ -10,9 +10,69 @@ day9 :: (input: string) -> string, string
 
 actual_defrag :: (input: string) -> s64
 {
-    data := tprint("%", input);
-    data.count -= 1;
-    checksum := 0;
+    Block :: struct
+    {
+        id: s64;
+        type: enum u8 { FILE; GAP; };
+        size: s64;
+        attempted_move: bool;
+    }
+
+    blocks : [..]Block;
+    array_reserve(*blocks, input.count*10);
+
+    for i: 0..input.count-2 array_add(*blocks, .{ i/2, ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
+
+    for blocks print("%\n", it);
+
+    print("===============\n");
+
+    right := blocks.count-1;
+
+    while right > 0
+    {
+        defer right -= 1;
+
+        file := blocks[right];
+        if file.type == .GAP continue;
+        if file.attempted_move continue;
+
+        file.attempted_move = true;
+
+        for * gap, gap_index: blocks if gap.type == .GAP
+        {
+            if gap.size >= file.size
+            {
+                // move the file
+                array_ordered_remove_by_index(*blocks, right);
+                array_insert_at(*blocks, file, gap_index);
+
+                // reduce the gap size
+                gap.size -= file.size;
+
+                break;
+            }
+        }
+    }
+
+    for blocks print("%\n", it);
+
+    checksum, position := 0;
+    for block: blocks
+    {
+        if block.id % 2
+        {
+            position += block.size;
+        }
+        else
+        {
+            for 1..block.size
+            {
+                checksum += block.id * position;
+                position += 1;
+            }
+        }
+    }
 
     return checksum;
 }
