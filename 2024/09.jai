@@ -43,12 +43,15 @@ actual_defrag :: (input: string) -> s64
         {
             if gap.size >= file.size
             {
+                // reduce the gap size
+                gap.size -= file.size;
+
                 // move the file
                 array_ordered_remove_by_index(*blocks, right);
                 array_insert_at(*blocks, file, gap_index);
 
-                // reduce the gap size
-                gap.size -= file.size;
+                // insert a gap where the file used to be
+                array_insert_at(*blocks, .{0, .GAP, file.size, false}, right+1);
 
                 break;
             }
