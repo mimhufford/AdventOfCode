@@ -1,47 +1,57 @@
 day9 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1 := greedy_defrag(input);
+    part2 := 0;
 
-    test := input;
-    test.count -= 1;
+    return tprint("%", part1), tprint("%", part2);
+}
 
-    position, l, r := 0, 0, test.count-1;
+#scope_file
+
+greedy_defrag :: (input: string) -> s64
+{
+    data := tprint("%", input);
+    data.count -= 1;
+    checksum, position, l, r := 0, 0, 0, data.count-1;
 
     while true
     {
-        // file
-        {
-            id := l / 2;
-            blocks := test[l] - #char "0";
+        // read file
+        id := l / 2;
+        blocks := data[l] - #char "0";
 
-            // add checksum for file
-            for 1..blocks
-            {
-                part1 += id * position;
-                position += 1;
-            }
+        // add checksum for file
+        for 1..blocks
+        {
+            checksum += id * position;
+            position += 1;
         }
 
-        // move left pointer
+        // update left pointer
         l += 1;
-        if l >= test.count-1 break;
+        if l >= data.count-1 break;
+
+        // read gap
+        free_blocks := data[l] - #char "0";
 
         // fill the gap
-        free_blocks := test[l] - #char "0";
         while free_blocks > 0 && r > l
         {
+            // read last file
             id := r / 2;
-            blocks := test[r] - #char "0";
+            blocks := data[r] - #char "0";
 
             if blocks > 0
             {
-                test[r] -= 1;
-                part1 += id * position;
+                // move block
+                data[r] -= 1;
+                checksum += id * position;
                 position += 1;
                 free_blocks -= 1;
             }
             else
             {
+                // update right pointer
                 r -= 2;
             }
         }
@@ -49,5 +59,5 @@ day9 :: (input: string) -> string, string
         l += 1;
     }
 
-    return tprint("%", part1), tprint("%", part2);
+    return checksum;
 }
