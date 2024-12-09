@@ -12,16 +12,16 @@ actual_defrag :: (input: string) -> s64
 {
     Block :: struct
     {
-        id: s64;
+        id: u16;
         type: enum u8 { FILE; GAP; };
-        size: s64;
+        size: u8;
         attempted_move: bool;
     }
 
     blocks : [..]Block;
     array_reserve(*blocks, input.count);
 
-    for i: 0..input.count-2 array_add(*blocks, .{ i/2, ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
+    for i: 0..input.count-2 array_add(*blocks, .{ xx(i/2), ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
 
     right := blocks.count-1;
 
@@ -73,9 +73,6 @@ actual_defrag :: (input: string) -> s64
 
     return checksum;
 }
-
-// 6272445324928 too low
-// 7775234723467 too high
 
 greedy_defrag :: (input: string) -> s64
 {
