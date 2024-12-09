@@ -51,8 +51,6 @@ actual_defrag :: (input: string) -> s64
                 // insert a gap where the file used to be
                 array_insert_at(*blocks, .{0, .GAP, file.size, false}, right+1);
 
-                right = blocks.count; // defensive, making sure full thing is searched again
-
                 break;
             }
         }
