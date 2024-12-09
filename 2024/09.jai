@@ -29,18 +29,16 @@ actual_defrag :: (input: string) -> s64
     {
         defer right -= 1;
 
-        file := blocks[right];
-        if file.type == .GAP continue;
-        if file.attempted_move continue;
-
-        // messy due to copy and potential realloc when inserting into array
+        if blocks[right].type == .GAP continue;
+        if blocks[right].attempted_move continue;
         blocks[right].attempted_move = true;
-        file.attempted_move = true;
 
         for * gap, gap_index: blocks if gap.type == .GAP
         {
-            if gap_index < right && gap.size >= file.size
+            if gap_index < right && gap.size >= blocks[right].size
             {
+                file := blocks[right];
+
                 // reduce the gap size
                 gap.size -= file.size;
 
