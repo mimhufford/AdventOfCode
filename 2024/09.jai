@@ -63,6 +63,7 @@ actual_defrag :: (input: string) -> s64
         }
         else
         {
+            // TODO: can do some triangular number equation thing here
             for 1..block.size
             {
                 checksum += block.id * position;
