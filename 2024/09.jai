@@ -13,20 +13,21 @@ actual_defrag :: (input: string) -> s64
     Block :: struct
     {
         id: u16;
-        type: enum u8 { FILE; GAP; };
         size: u8;
-        attempted_move: bool;
+        gap: u8;
+        done: bool;
         prev, next: *Block;
     }
 
     head, tail: *Block;
 
-    for i: 0..input.count-2
+    for 0..(input.count-1)/2
     {
+        i := it * 2;
         b := New(Block);
-        b.id = xx(i/2);
-        b.type = ifx i % 2 then .GAP else .FILE;
+        b.id = xx it;
         b.size = input[i] - #char "0";
+        b.gap = ifx i+1 < input.count-1 input[i+1] - #char "0";
         b.prev = tail;
 
         if tail tail.next = b;
@@ -40,49 +41,28 @@ actual_defrag :: (input: string) -> s64
         next := file.prev;
         defer file = next;
 
-        if file.type == .GAP continue;
-        if file.attempted_move continue;
-        file.attempted_move = true;
+        if file.done continue;
+        file.done = true;
 
         gap := head;
         while gap
         {
             defer gap = gap.next;
             if gap == file break;
-            if gap.type != .GAP continue;
-            if gap.size < file.size continue;
+            if gap.gap < file.size continue;
 
-            if gap.size == file.size
-            {
-                // simple switcheroo without having to create new blocks
+            // update the gaps
+            file.prev.gap += file.size + file.gap;
+            file.gap      =  gap.gap - file.size;
+            gap.gap       =  0;
 
-                gap.type = .FILE;
-                gap.id = file.id;
-                gap.attempted_move = true;
-                file.type = .GAP;
-            }
-            else
-            {
-                // more of a complex operation where a new gap block needs creating
-
-                // shrink the gap
-                gap.size -= file.size;
-
-                // create a new gap
-                new_gap := New(Block);
-                new_gap.type = .GAP;
-                new_gap.size = file.size;
-                new_gap.prev = file.prev;
-                new_gap.next = file.next;
-
-                // swizzle all the pointers
-                gap.prev.next = file;
-                file.prev.next = new_gap;
-                if file.next file.next.prev = new_gap;
-                file.prev = gap.prev;
-                file.next = gap;
-                gap.prev = file;
-            }
+            // swizzle the pointers
+            file.prev.next = file.next;
+            if file.next file.next.prev = file.prev;
+            file.prev = gap;
+            file.next = gap.next;
+            gap.next.prev = file;
+            gap.next = file;
 
             break;
         }
@@ -92,13 +72,9 @@ actual_defrag :: (input: string) -> s64
     block := head;
     while block
     {
-        if block.type == .FILE
-        {
-            mul := block.size * (position + position + block.size - 1) / 2;
-            checksum += block.id * mul;
-        }
-
-        position += block.size;
+        mul := block.size * (position + position + block.size - 1) / 2;
+        checksum += block.id * mul;
+        position += block.size + block.gap;
         block = block.next;
     }
 
