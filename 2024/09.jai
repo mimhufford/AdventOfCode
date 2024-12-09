@@ -38,8 +38,8 @@ actual_defrag :: (input: string) -> s64
     file := tail;
     while file
     {
-        next := file.prev;
-        defer file = next;
+        next_file := file.prev;
+        defer file = next_file;
 
         if file.done continue;
         file.done = true;
