@@ -19,7 +19,7 @@ actual_defrag :: (input: string) -> s64
     }
 
     blocks : [..]Block;
-    array_reserve(*blocks, input.count*10);
+    array_reserve(*blocks, input.count);
 
     for i: 0..input.count-2 array_add(*blocks, .{ i/2, ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
 
