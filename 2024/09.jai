@@ -1,14 +1,14 @@
 day9 :: (input: string) -> string, string
 {
     part1 := greedy_refrag(input);
-    part2 := actual_defrag_linked_list(input);
+    part2 := actual_defrag(input);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-actual_defrag_linked_list :: (input: string) -> s64
+actual_defrag :: (input: string) -> s64
 {
     Block :: struct
     {
@@ -100,66 +100,6 @@ actual_defrag_linked_list :: (input: string) -> s64
 
         position += block.size;
         block = block.next;
-    }
-
-    return checksum;
-}
-
-actual_defrag_array :: (input: string) -> s64
-{
-    Block :: struct
-    {
-        id: u16;
-        type: enum u8 { FILE; GAP; };
-        size: u8;
-        attempted_move: bool;
-    }
-
-    blocks : [..]Block;
-    array_reserve(*blocks, input.count);
-
-    for i: 0..input.count-2 array_add(*blocks, .{ xx(i/2), ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
-
-    right := blocks.count-1;
-
-    while right > 0
-    {
-        defer right -= 1;
-
-        if blocks[right].type == .GAP continue;
-        if blocks[right].attempted_move continue;
-        blocks[right].attempted_move = true;
-
-        for * gap, gap_index: blocks if gap.type == .GAP
-        {
-            if gap_index < right && gap.size >= blocks[right].size
-            {
-                file := blocks[right];
-
-                // reduce the gap size
-                gap.size -= file.size;
-
-                // move the file
-                array_ordered_remove_by_index(*blocks, right);
-                array_insert_at(*blocks, file, gap_index);
-
-                // insert a gap where the file used to be
-                array_insert_at(*blocks, .{0, .GAP, file.size, false}, right+1);
-
-                break;
-            }
-        }
-    }
-
-    checksum, position := 0;
-    for block: blocks
-    {
-        if block.type == .FILE
-        {
-            mul := block.size * (position + position + block.size - 1) / 2;
-            checksum += block.id * mul;
-        }
-        position += block.size;
     }
 
     return checksum;
