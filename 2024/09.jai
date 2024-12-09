@@ -10,72 +10,31 @@ day9 :: (input: string) -> string, string
 
 actual_defrag :: (input: string) -> s64
 {
-    File :: struct
+    files, gaps : [..]struct { size: s64; index: s64; };
+    index, checksum := 0;
+
+    for 0..input.count-2
     {
-        id: u16;
-        size: u8;
-        gap: u8;
-        done: bool;
-        prev, next: *File;
+        size := input[it] - #char "0";
+        if size == 0 continue;
+        if it % 2 array_add(*gaps,  .{ size, index });
+        else      array_add(*files, .{ size, index });
+        index += size;
     }
 
-    head, tail: *File;
-
-    for 0..(input.count-1)/2
+    for * < f: files
     {
-        i := it * 2;
-        f := New(File);
-        f.id = xx it;
-        f.size = input[i] - #char "0";
-        f.gap = ifx i+1 < input.count-1 input[i+1] - #char "0";
-        f.prev = tail;
-
-        if tail tail.next = f;
-        if i == 0 head = f;
-        tail = f;
-    }
-
-    file := tail;
-    while file
-    {
-        next_file := file.prev;
-        defer file = next_file;
-
-        if file.done continue;
-        file.done = true;
-
-        other := head;
-        while other
+        for * g: gaps
         {
-            defer other = other.next;
-            if other == file break;
-            if other.gap < file.size continue;
-
-            // update the gaps
-            file.prev.gap += file.size + file.gap;
-            file.gap      =  other.gap - file.size;
-            other.gap     =  0;
-
-            // swizzle the pointers
-            file.prev.next = file.next;
-            if file.next file.next.prev = file.prev;
-            file.prev = other;
-            file.next = other.next;
-            other.next.prev = file;
-            other.next = file;
-
+            if g.index >= f.index break;
+            if g.size < f.size continue;
+            f.index = g.index;
+            g.size -= f.size;
+            g.index += f.size;
             break;
         }
-    }
 
-    checksum, position := 0;
-    file = head;
-    while file
-    {
-        mul := file.size * (position + position + file.size - 1) / 2;
-        checksum += file.id * mul;
-        position += file.size + file.gap;
-        file = file.next;
+        checksum += it_index * f.size * (2 * f.index + f.size - 1) / 2;
     }
 
     return checksum;
