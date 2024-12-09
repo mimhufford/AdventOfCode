@@ -1,7 +1,7 @@
 day9 :: (input: string) -> string, string
 {
     part1 := greedy_refrag(input);
-    part2 := actual_defrag(input);
+    part2 := actual_defrag_linked_list(input);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -33,20 +33,6 @@ actual_defrag_linked_list :: (input: string) -> s64
         if i == 0 head = b;
         tail = b;
     }
-
-    print_list :: (h: *Block)
-    {
-        print("==========\n");
-        curr := h;
-        while curr
-        {
-            print("% % % %\n", curr.id, curr.type, curr.size, curr.attempted_move);
-            curr = curr.next;
-        }
-        print("==========\n");
-    }
-
-    // print_list(head);
 
     file := tail;
     while file
@@ -85,8 +71,6 @@ actual_defrag_linked_list :: (input: string) -> s64
             break;
         }
     }
-
-    // print_list(head);
 
     checksum, position := 0;
     block := head;
