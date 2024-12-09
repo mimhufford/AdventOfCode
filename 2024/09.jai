@@ -10,29 +10,29 @@ day9 :: (input: string) -> string, string
 
 actual_defrag :: (input: string) -> s64
 {
-    Block :: struct
+    File :: struct
     {
         id: u16;
         size: u8;
         gap: u8;
         done: bool;
-        prev, next: *Block;
+        prev, next: *File;
     }
 
-    head, tail: *Block;
+    head, tail: *File;
 
     for 0..(input.count-1)/2
     {
         i := it * 2;
-        b := New(Block);
-        b.id = xx it;
-        b.size = input[i] - #char "0";
-        b.gap = ifx i+1 < input.count-1 input[i+1] - #char "0";
-        b.prev = tail;
+        f := New(File);
+        f.id = xx it;
+        f.size = input[i] - #char "0";
+        f.gap = ifx i+1 < input.count-1 input[i+1] - #char "0";
+        f.prev = tail;
 
-        if tail tail.next = b;
-        if i == 0 head = b;
-        tail = b;
+        if tail tail.next = f;
+        if i == 0 head = f;
+        tail = f;
     }
 
     file := tail;
@@ -44,38 +44,38 @@ actual_defrag :: (input: string) -> s64
         if file.done continue;
         file.done = true;
 
-        gap := head;
-        while gap
+        other := head;
+        while other
         {
-            defer gap = gap.next;
-            if gap == file break;
-            if gap.gap < file.size continue;
+            defer other = other.next;
+            if other == file break;
+            if other.gap < file.size continue;
 
             // update the gaps
             file.prev.gap += file.size + file.gap;
-            file.gap      =  gap.gap - file.size;
-            gap.gap       =  0;
+            file.gap      =  other.gap - file.size;
+            other.gap     =  0;
 
             // swizzle the pointers
             file.prev.next = file.next;
             if file.next file.next.prev = file.prev;
-            file.prev = gap;
-            file.next = gap.next;
-            gap.next.prev = file;
-            gap.next = file;
+            file.prev = other;
+            file.next = other.next;
+            other.next.prev = file;
+            other.next = file;
 
             break;
         }
     }
 
     checksum, position := 0;
-    block := head;
-    while block
+    file = head;
+    while file
     {
-        mul := block.size * (position + position + block.size - 1) / 2;
-        checksum += block.id * mul;
-        position += block.size + block.gap;
-        block = block.next;
+        mul := file.size * (position + position + file.size - 1) / 2;
+        checksum += file.id * mul;
+        position += file.size + file.gap;
+        file = file.next;
     }
 
     return checksum;
