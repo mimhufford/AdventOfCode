@@ -89,7 +89,7 @@ actual_defrag_linked_list :: (input: string) -> s64
     return checksum;
 }
 
-actual_defrag :: (input: string) -> s64
+actual_defrag_array :: (input: string) -> s64
 {
     Block :: struct
     {
