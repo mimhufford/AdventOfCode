@@ -76,20 +76,13 @@ actual_defrag_linked_list :: (input: string) -> s64
     block := head;
     while block
     {
-        if block.type == .GAP
+        if block.type == .FILE
         {
-            position += block.size;
-        }
-        else
-        {
-            // TODO: can do some triangular number equation thing here
-            for 1..block.size
-            {
-                checksum += block.id * position;
-                position += 1;
-            }
+            mul := block.size * (position + position + block.size - 1) / 2;
+            checksum += block.id * mul;
         }
 
+        position += block.size;
         block = block.next;
     }
 
@@ -145,19 +138,12 @@ actual_defrag :: (input: string) -> s64
     checksum, position := 0;
     for block: blocks
     {
-        if block.type == .GAP
+        if block.type == .FILE
         {
-            position += block.size;
+            mul := block.size * (position + position + block.size - 1) / 2;
+            checksum += block.id * mul;
         }
-        else
-        {
-            // TODO: can do some triangular number equation thing here
-            for 1..block.size
-            {
-                checksum += block.id * position;
-                position += 1;
-            }
-        }
+        position += block.size;
     }
 
     return checksum;
