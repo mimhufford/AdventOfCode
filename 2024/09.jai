@@ -13,12 +13,10 @@ day9 :: (input: string) -> string, string
         {
             id := l / 2;
             blocks := test[l] - #char "0";
-            // print("file [%]: % blocks\n", id, blocks);
 
             // add checksum for file
             for 1..blocks
             {
-                // print("-adding %*% (%)\n", id, position, id*position);
                 part1 += id * position;
                 position += 1;
             }
@@ -30,8 +28,6 @@ day9 :: (input: string) -> string, string
 
         // fill the gap
         free_blocks := test[l] - #char "0";
-        // print("free: % blocks\n", free_blocks);
-
         while free_blocks > 0 && r > l
         {
             id := r / 2;
@@ -40,7 +36,6 @@ day9 :: (input: string) -> string, string
             if blocks > 0
             {
                 test[r] -= 1;
-                // print("-adding %*% (%)\n", id, position, id*position);
                 part1 += id * position;
                 position += 1;
                 free_blocks -= 1;
@@ -53,7 +48,6 @@ day9 :: (input: string) -> string, string
 
         l += 1;
     }
-
 
     return tprint("%", part1), tprint("%", part2);
 }
