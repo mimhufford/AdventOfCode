@@ -1,6 +1,6 @@
 day9 :: (input: string) -> string, string
 {
-    part1 := greedy_defrag(input);
+    part1 := greedy_refrag(input);
     part2 := actual_defrag(input);
 
     return tprint("%", part1), tprint("%", part2);
@@ -75,7 +75,7 @@ actual_defrag :: (input: string) -> s64
     return checksum;
 }
 
-greedy_defrag :: (input: string) -> s64
+greedy_refrag :: (input: string) -> s64
 {
     data := tprint("%", input);
     data.count -= 1;
