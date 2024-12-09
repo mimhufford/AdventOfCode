@@ -23,9 +23,6 @@ actual_defrag :: (input: string) -> s64
 
     for i: 0..input.count-2 array_add(*blocks, .{ i/2, ifx i%2 then .GAP else .FILE, input[i] - #char "0", false });
 
-    for blocks print("%\n", it);
-    print("===============\n");
-
     right := blocks.count-1;
 
     while right > 0
@@ -40,13 +37,10 @@ actual_defrag :: (input: string) -> s64
         blocks[right].attempted_move = true;
         file.attempted_move = true;
 
-        print("attempting to move file %\n", file.id);
-
         for * gap, gap_index: blocks if gap.type == .GAP
         {
             if gap_index < right && gap.size >= file.size
             {
-                print("moving file % from % to %\n", file.id, right, gap_index);
                 // reduce the gap size
                 gap.size -= file.size;
 
@@ -59,21 +53,15 @@ actual_defrag :: (input: string) -> s64
 
                 right = blocks.count; // defensive, making sure full thing is searched again
 
-                for blocks print("%\n", it);
-                print("===============\n");
-
                 break;
             }
         }
     }
 
-    for blocks print("%\n", it);
-    print("===============\n");
-
     checksum, position := 0;
     for block: blocks
     {
-        if block.id % 2
+        if block.type == .GAP
         {
             position += block.size;
         }
