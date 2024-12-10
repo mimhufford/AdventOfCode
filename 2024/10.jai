@@ -19,7 +19,7 @@ SIZE :: 50;
 
 walk_unique :: (map: string, x: s64, y: s64) -> s64
 {
-    walk :: (map: string, x: s64, y: s64, result: *[..]s64)
+    walk :: (map: string, x: s64, y: s64, ends: *[..]s64)
     {
         for dirs
         {
@@ -31,14 +31,14 @@ walk_unique :: (map: string, x: s64, y: s64) -> s64
             ci :=  y*(SIZE+1) +  x;
             ni := ny*(SIZE+1) + nx;
             if map[ci] + 1 != map[ni] continue;
-            if map[ni] == #char "9" array_add_if_unique(result, ni);
-            else walk(map, nx, ny, result);
+            if map[ni] == #char "9" array_add_if_unique(ends, ni);
+            else walk(map, nx, ny, ends);
         }
     }
 
-    result : [..]s64;
-    walk(map, x, y, *result);
-    return result.count;
+    ends : [..]s64;
+    walk(map, x, y, *ends);
+    return ends.count;
 }
 
 walk_combos :: (map: string, x: s64, y: s64) -> s64
