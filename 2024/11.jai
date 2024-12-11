@@ -15,25 +15,25 @@ day11 :: (input: string) -> string, string
 
 cache : Table(u64, s64);
 
-blink :: (stone: u64, iterations: u64) -> s64
+blink :: (stone: u64, blinks_left: u64) -> s64
 {
-    if iterations == 0 return 1;
+    if blinks_left == 0 return 1;
 
-    key := stone << 7 | iterations;
+    key := stone << 7 | blinks_left;
     cached_result := table_find_pointer(*cache, key);
     if cached_result return cached_result.*;
 
     result :: (r: s64) -> s64 #expand { table_add(*cache, key, r); return r; }
 
     // Rule 1
-    if stone == 0 return result(blink(1, iterations - 1));
+    if stone == 0 return result(blink(1, blinks_left - 1));
 
     // Rule 2
     did_split, a, b := attempt_split(stone);
-    if did_split return result(blink(a, iterations - 1) + blink(b, iterations - 1));
+    if did_split return result(blink(a, blinks_left - 1) + blink(b, blinks_left - 1));
 
     // Rule 3
-    return result(blink(stone * 2024, iterations - 1));
+    return result(blink(stone * 2024, blinks_left - 1));
 }
 
 attempt_split :: (n: u64) -> bool, u64, u64
