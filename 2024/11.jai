@@ -14,7 +14,7 @@ day11 :: (input: string) -> string, string
 
     for 1..25 blink(head);
     part1 :=  count(head);
-    for 1..50 blink(head); // hello virtual memory
+    // for 1..50 blink(head); // hello virtual memory
     part2 :=  count(head);
 
     return tprint("%", part1), tprint("%", part2);
@@ -28,7 +28,7 @@ Stone :: struct
     next: *Stone;
 }
 
-count :: (head: *Stone)
+count :: (head: *Stone) -> s64
 {
     count := 0;
     curr := head;
