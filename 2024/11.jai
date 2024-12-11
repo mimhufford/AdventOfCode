@@ -32,14 +32,15 @@ blink :: (s: u64, iterations: u64) -> s64
 {
     if iterations == 0 return 1;
 
-    cached_result := table_find_pointer(*cache, pack_key(s, iterations));
+    key := pack_key(s, iterations);
+    cached_result := table_find_pointer(*cache, key);
     if cached_result return cached_result.*;
 
     // Rule 1
     if s == 0
     {
         result := blink(1, iterations - 1);
-        table_add(*cache, pack_key(s, iterations), result);
+        table_add(*cache, key, result);
         return result;
     }
 
@@ -50,7 +51,7 @@ blink :: (s: u64, iterations: u64) -> s64
     // Rule 3
     {
         result := blink(s * 2024, iterations - 1);
-        table_add(*cache, pack_key(s, iterations), result);
+        table_add(*cache, key, result);
         return result;
     }
 }
