@@ -1,76 +1,31 @@
 day11 :: (input: string) -> string, string
 {
-    head := New(Stone);
-    head.value = read_s64(*input);
+    stones : [..]s64;
     
-    last := head;
-    while input
-    {
-        curr := New(Stone);
-        curr.value = read_s64(*input);
-        last.next = curr;
-        last = curr;
-    }
+    while input array_add(*stones, read_s64(*input));
 
-    for 1..25 blink(head);
-    part1 :=  count(head);
-    // for 1..50 blink(head); // hello virtual memory
-    part2 :=  count(head);
+    part1, part2 := 0;
+    for stones part1 += blink(it, 25);
+    for stones part2 += blink(it, 75);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-Stone :: struct
+blink :: (s: s64, iterations: s64) -> s64
 {
-    value: s64;
-    next: *Stone;
-}
+    if iterations == 0 return 1;
 
-count :: (head: *Stone) -> s64
-{
-    count := 0;
-    curr := head;
-    while curr
-    {
-        count += 1;
-        curr = curr.next;
-    }
-    return count;
-}
+    // Rule 1
+    if s == 0 return blink(1, iterations - 1);
 
-blink :: (head: *Stone)
-{
-    curr := head;
+    // Rule 2
+    did_split, a, b := attempt_split(s);
+    if did_split return blink(a, iterations - 1) + blink(b, iterations - 1);
 
-    while curr
-    {
-        // Rule 1
-        if curr.value == 0
-        {
-            curr.value = 1;
-            curr = curr.next;
-            continue;
-        }
-
-        // Rule 2
-        did_split, a, b := attempt_split(curr.value);
-        if did_split
-        {
-            curr.value = a;
-            next := New(Stone);
-            next.value = b;
-            next.next = curr.next;
-            curr.next = next;
-            curr = next.next;
-            continue;
-        }
-
-        // Rule 3
-        curr.value *= 2024;
-        curr = curr.next;
-    }
+    // Rule 3
+    return blink(s * 2024, iterations - 1);
 }
 
 log10 :: #run log(10.0);
