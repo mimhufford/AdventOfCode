@@ -15,19 +15,11 @@ day11 :: (input: string) -> string, string
 
 cache : Table(u64, s64);
 
-pack_key :: (s: u64, iterations: u64) -> u64
-{
-    key := s;
-    key <<= 7;
-    key |= iterations;
-    return key;
-}
-
 blink :: (s: u64, iterations: u64) -> s64
 {
     if iterations == 0 return 1;
 
-    key := pack_key(s, iterations);
+    key := s << 7 | iterations;
     cached_result := table_find_pointer(*cache, key);
     if cached_result return cached_result.*;
 
