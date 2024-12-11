@@ -38,10 +38,10 @@ blink :: (stone: u64, blinks_left: u64) -> s64
 
 attempt_split :: (n: u64) -> bool, u64, u64
 {
+    pow10 :: u64.[1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000];
     log10 :: #run log(10.0);
     digits := cast(u64)(log(n*1.0) / log10) + 1;
     if digits % 2 return false, 0, 0;
-    pow10 := u64.[1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000];
     splitter := pow10[digits/2];
     return true, n / splitter, n % splitter;
 }
