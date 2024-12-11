@@ -5,8 +5,9 @@ day11 :: (input: string) -> string, string
     while input array_add(*stones, read_s64(*input));
 
     for 1..25 blink(*stones);
-
-    part1, part2 := stones.count, 0;
+    part1 := stones.count;
+    // for 1..50 blink(*stones);
+    part2 := stones.count;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -21,23 +22,34 @@ blink :: (s: *[..]s64)
     {
         defer i += 1;
 
+        // Rule 1
         if s.*[i] == 0
         {
             s.*[i] = 1;
+            continue;
         }
-        // sloooowwwwww but just getting logic right first
-        else if tprint("%", s.*[i]).count % 2 == 0
+
+        // Rule 2
+        did_split, a, b := attempt_split(s.*[i]);
+        if did_split
         {
-            t := tprint("%", s.*[i]);
-            a := t; a.count /= 2;
-            b := t; advance(*b, b.count / 2);
-            s.*[i] = read_s64(*a);
-            array_insert_at(s, read_s64(*b), i+1);
+            s.*[i] = a;
+            array_insert_at(s, b, i+1);
             i += 1;
+            continue;
         }
-        else
-        {
-            s.*[i] *= 2024;
-        }
+
+        // Rule 3
+        s.*[i] *= 2024;
     }
+}
+
+log10 :: #run log(10.0);
+
+attempt_split :: (n: s64) -> bool, s64, s64
+{
+    digits := cast(s64)(log(n*1.0) / log10) + 1;
+    if digits % 2 return false, 0, 0;
+    splitter := cast(s64)pow(10.0, digits*0.5);
+    return true, n / splitter, n % splitter;
 }
