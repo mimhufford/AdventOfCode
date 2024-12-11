@@ -41,11 +41,9 @@ blink :: (s: u64, iterations: u64) -> s64
     }
 
     // Rule 3
-    {
-        result := blink(s * 2024, iterations - 1);
-        table_add(*cache, key, result);
-        return result;
-    }
+    result := blink(s * 2024, iterations - 1);
+    table_add(*cache, key, result);
+    return result;
 }
 
 log10 :: #run log(10.0);
