@@ -46,7 +46,12 @@ blink :: (s: u64, iterations: u64) -> s64
 
     // Rule 2
     did_split, a, b := attempt_split(s);
-    if did_split return blink(a, iterations - 1) + blink(b, iterations - 1);
+    if did_split
+    {
+        result := blink(a, iterations - 1) + blink(b, iterations - 1);
+        table_add(*cache, key, result);
+        return result;
+    }
 
     // Rule 3
     {
