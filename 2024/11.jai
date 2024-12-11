@@ -23,27 +23,17 @@ blink :: (s: u64, iterations: u64) -> s64
     cached_result := table_find_pointer(*cache, key);
     if cached_result return cached_result.*;
 
+    result :: (r: s64) -> s64 #expand { table_add(*cache, key, r); return r; }
+
     // Rule 1
-    if s == 0
-    {
-        result := blink(1, iterations - 1);
-        table_add(*cache, key, result);
-        return result;
-    }
+    if s == 0 return result(blink(1, iterations - 1));
 
     // Rule 2
     did_split, a, b := attempt_split(s);
-    if did_split
-    {
-        result := blink(a, iterations - 1) + blink(b, iterations - 1);
-        table_add(*cache, key, result);
-        return result;
-    }
+    if did_split return result(blink(a, iterations - 1) + blink(b, iterations - 1));
 
     // Rule 3
-    result := blink(s * 2024, iterations - 1);
-    table_add(*cache, key, result);
-    return result;
+    return result(blink(s * 2024, iterations - 1));
 }
 
 log10 :: #run log(10.0);
