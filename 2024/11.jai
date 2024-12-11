@@ -23,11 +23,6 @@ pack_key :: (s: u64, iterations: u64) -> u64
     return key;
 }
 
-unpack_key :: (key: u64) -> u64, u64
-{
-    return key >> 7, key & 0b1111111;
-}
-
 blink :: (s: u64, iterations: u64) -> s64
 {
     if iterations == 0 return 1;
