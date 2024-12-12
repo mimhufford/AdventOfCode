@@ -19,11 +19,10 @@ Position :: struct { x: s64; y: s64; side_counted: [4]bool; };
 
 flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
 {
-    flood_fill :: (map: string, x: s64, y: s64, area: *s64, perimeter: *s64, region: *[..]Position)
+    flood_fill :: (map: string, x: s64, y: s64, perimeter: *s64, region: *[..]Position)
     {
         if visited[y][x] return;
         visited[y][x] = true;
-        area.* += 1;
         array_add(region, .{x, y, .[]});
 
         for dirs
@@ -33,7 +32,7 @@ flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
             if ny < 0 || ny >= SIZE { perimeter.* += 1; continue; }
             ci :=  y*(SIZE+1) +  x;
             ni := ny*(SIZE+1) + nx;
-            if map[ci] == map[ni] flood_fill(map, nx, ny, area, perimeter, region);
+            if map[ci] == map[ni] flood_fill(map, nx, ny, perimeter, region);
             else perimeter.* += 1;
         }
     }
@@ -41,9 +40,9 @@ flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
     if visited[y][x] return 0, 0;
 
     region : [..]Position;
-    area, perimeter := 0, 0;
-    flood_fill(map, x, y, *area, *perimeter, *region);
-    return area * perimeter, area * count_sides(map, region);
+    perimeter := 0;
+    flood_fill(map, x, y, *perimeter, *region);
+    return region.count * perimeter, region.count * count_sides(map, region);
 }
 
 count_sides :: (map: string, region: []Position) -> s64
@@ -68,9 +67,10 @@ count_sides :: (map: string, region: []Position) -> s64
 
             mark_all_connected_sides_in_direction :: (d: []s64) #expand
             {
-                // Bad asymptotic, but region size is never big enough to care
                 for i: 1..S64_MAX
                 {
+                    // Terrible way to look for neighbouring cells
+                    // but region size is never big enough to care
                     for * o: region
                     {
                         if o.x != r.x + d[0]*i continue;
