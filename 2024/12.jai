@@ -38,8 +38,7 @@ flood_fill :: (x: s64, y: s64) -> s64, s64
         for dirs
         {
             nx, ny := x+it[0], y+it[1];
-            if nx < 0 || nx >= SIZE { perimeter.* += 1; continue; }
-            if ny < 0 || ny >= SIZE { perimeter.* += 1; continue; }
+            if !in_bounds(nx, ny) { perimeter.* += 1; continue; }
             if map[y][x].plant == map[ny][nx].plant flood_fill(nx, ny, area, perimeter, region);
             else perimeter.* += 1;
         }
