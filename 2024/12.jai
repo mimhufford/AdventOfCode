@@ -28,18 +28,17 @@ in_bounds :: (x, y) => x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 
 flood_fill :: (x: s64, y: s64) -> s64, s64
 {
-    flood_fill :: (x: s64, y: s64, area: *s64, perimeter: *s64, region: *[..]*Position)
+    flood_fill :: (x: s64, y: s64, perimeter: *s64, region: *[..]*Position)
     {
         if map[y][x].region > 0 return;
         map[y][x].region = next_region_id;
-        area.* += 1;
         array_add(region, *map[y][x]);
 
         for dirs
         {
             nx, ny := x+it[0], y+it[1];
             if !in_bounds(nx, ny) { perimeter.* += 1; continue; }
-            if map[y][x].plant == map[ny][nx].plant flood_fill(nx, ny, area, perimeter, region);
+            if map[y][x].plant == map[ny][nx].plant flood_fill(nx, ny, perimeter, region);
             else perimeter.* += 1;
         }
     }
@@ -47,10 +46,10 @@ flood_fill :: (x: s64, y: s64) -> s64, s64
     if map[y][x].region > 0 return 0, 0;
 
     region : [..]*Position;
-    area, perimeter := 0;
-    flood_fill(x, y, *area, *perimeter, *region);
+    perimeter := 0;
+    flood_fill(x, y, *perimeter, *region);
     next_region_id += 1;
-    return area * perimeter, area * count_sides(region);
+    return region.count * perimeter, region.count * count_sides(region);
 }
 
 count_sides :: (region: []*Position) -> s64
@@ -73,12 +72,10 @@ count_sides :: (region: []*Position) -> s64
             {
                 for i: 1..S64_MAX
                 {
-                    nx := r.x + d[0] * i;
-                    ny := r.y + d[1] * i;
+                    nx, ny := r.x + d[0] * i, r.y + d[1] * i;
                     if !in_bounds(nx, ny) break;
                     if map[ny][nx].region != map[r.y][r.x].region break;
-                    onx := nx + dir[0];
-                    ony := ny + dir[1];
+                    onx, ony := nx + dir[0], ny + dir[1];
                     if in_bounds(onx, ony) && map[ony][onx].region == map[r.y][r.x].region break;
                     map[ny][nx].side_counted[dir_id] = true;
                 }
