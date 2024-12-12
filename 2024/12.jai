@@ -74,6 +74,11 @@ count_sides :: (map: string, region: []Position) -> s64
                     {
                         if o.x != r.x + d[0]*i continue;
                         if o.y != r.y + d[1]*i continue;
+                        onx := o.x + dir[0];
+                        ony := o.y + dir[1];
+                        in_bounds := onx >= 0 && onx < SIZE && ony >= 0 && ony < SIZE;
+                        oni := ony *(SIZE+1) + onx;
+                        if in_bounds && map[oni] == map[ci] break;
                         o.side_counted[dir_id] = true;
                         continue i;
                     }
@@ -89,5 +94,3 @@ count_sides :: (map: string, region: []Position) -> s64
 
     return sides;
 }
-
-// 742717 too low
