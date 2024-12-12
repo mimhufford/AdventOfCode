@@ -68,6 +68,8 @@ count_sides :: (map: string, region: []Position) -> s64
 
             // TODO: find all cells directly connected to this one in the two
             //       90 degree directions and mark their side as counted too
+            dir_r := s64.[-dir[1], dir[0]];
+            dir_l := s64.[dir[1], -dir[0]];
         }
     }
 
