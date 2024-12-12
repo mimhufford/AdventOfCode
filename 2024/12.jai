@@ -1,7 +1,7 @@
 day12 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    
+
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
         part1, part2 += flood_fill(input, x, y);
@@ -14,7 +14,8 @@ day12 :: (input: string) -> string, string
 
 SIZE :: 140;
 visited : [SIZE][SIZE]bool;
-Position :: struct { x:s64; y:s64; };
+dirs :: []s64.[.[-1,0], .[1,0], .[0,-1], .[0,1]];
+Position :: struct { x: s64; y: s64; side_counted: [4]bool; };
 
 flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
 {
@@ -23,9 +24,9 @@ flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
         if visited[y][x] return;
         visited[y][x] = true;
         area.* += 1;
-        array_add(region, .{x, y});
+        array_add(region, .{x, y, .[]});
 
-        for []s64.[.[-1,0], .[1,0], .[0,-1], .[0,1]]
+        for dirs
         {
             nx, ny := x+it[0], y+it[1];
             if nx < 0 || nx >= SIZE { perimeter.* += 1; continue; }
@@ -42,10 +43,33 @@ flood_fill :: (map: string, x: s64, y: s64) -> s64, s64
     region : [..]Position;
     area, perimeter := 0, 0;
     flood_fill(map, x, y, *area, *perimeter, *region);
-    return area * perimeter, area * count_sides(region);
+    return area * perimeter, area * count_sides(map, region);
 }
 
-count_sides :: (region: []Position) -> s64
+count_sides :: (map: string, region: []Position) -> s64
 {
-    return 1;
+    sides := 0;
+
+    for * r: region
+    {
+        for dir, dir_id: dirs
+        {
+            if r.side_counted[dir_id] continue;
+            r.side_counted[dir_id] = true;
+
+            nx, ny := r.x + dir[0], r.y + dir[1];
+            ci := r.y *(SIZE+1) + r.x;
+            ni :=  ny *(SIZE+1) + nx;
+
+            in_bounds := nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE;
+            if in_bounds && map[ci] == map[ni] continue;
+
+            sides += 1;
+
+            // TODO: find all cells directly connected to this one in the two
+            //       90 degree directions and mark their side as counted too
+        }
+    }
+
+    return sides;
 }
