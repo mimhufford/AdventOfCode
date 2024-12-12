@@ -58,32 +58,29 @@ count_sides :: (region: []*Position) -> s64
 
     for r: region
     {
-        for dir, dir_id: dirs
+        is_different :: (x: s64, y: s64) -> bool #expand
         {
-            if r.side_counted[dir_id] continue;
-            r.side_counted[dir_id] = true;
-
-            nx, ny := r.x + dir[0], r.y + dir[1];
-            if in_bounds(nx, ny) && map[r.y][r.x].region == map[ny][nx].region continue;
-
-            sides += 1;
-
-            mark_all_connected_sides_in_direction :: (d: []s64) #expand
-            {
-                for i: 1..S64_MAX
-                {
-                    nx, ny := r.x + d[0] * i, r.y + d[1] * i;
-                    if !in_bounds(nx, ny) break;
-                    if map[ny][nx].region != map[r.y][r.x].region break;
-                    onx, ony := nx + dir[0], ny + dir[1];
-                    if in_bounds(onx, ony) && map[ony][onx].region == map[r.y][r.x].region break;
-                    map[ny][nx].side_counted[dir_id] = true;
-                }
-            }
-            
-            mark_all_connected_sides_in_direction(.[-dir[1], dir[0]]);
-            mark_all_connected_sides_in_direction(.[dir[1], -dir[0]]);
+            if !in_bounds(x, y) return true;
+            return map[y][x].region != r.region;
         }
+
+        u_diff  := is_different(r.x + 0, r.y - 1);
+        l_diff  := is_different(r.x - 1, r.y + 0);
+        d_diff  := is_different(r.x + 0, r.y + 1);
+        r_diff  := is_different(r.x + 1, r.y + 0);
+        ul_diff := is_different(r.x - 1, r.y - 1);
+        ur_diff := is_different(r.x + 1, r.y - 1);
+        dl_diff := is_different(r.x - 1, r.y + 1);
+        dr_diff := is_different(r.x + 1, r.y + 1);
+
+        sides += xx (l_diff && u_diff);
+        sides += xx (u_diff && r_diff);
+        sides += xx (r_diff && d_diff);
+        sides += xx (d_diff && l_diff);
+        sides += xx (!l_diff && !u_diff && ul_diff);
+        sides += xx (!u_diff && !r_diff && ur_diff);
+        sides += xx (!r_diff && !d_diff && dr_diff);
+        sides += xx (!d_diff && !l_diff && dl_diff);
     }
 
     return sides;
