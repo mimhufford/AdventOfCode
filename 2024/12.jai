@@ -24,6 +24,7 @@ next_region_id := 1;
 map : [SIZE][SIZE]Position;
 Position :: struct { x: s64; y: s64; plant: u8; region: s64; side_counted: [4]bool; };
 dirs :: []s64.[.[-1,0], .[1,0], .[0,-1], .[0,1]];
+in_bounds :: (x, y) => x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 
 flood_fill :: (x: s64, y: s64) -> s64, s64
 {
@@ -65,11 +66,7 @@ count_sides :: (region: []*Position) -> s64
             r.side_counted[dir_id] = true;
 
             nx, ny := r.x + dir[0], r.y + dir[1];
-            ci := r.y *(SIZE+1) + r.x;
-            ni :=  ny *(SIZE+1) + nx;
-
-            in_bounds := nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE;
-            if in_bounds && map[r.y][r.x].region == map[ny][nx].region continue;
+            if in_bounds(nx, ny) && map[r.y][r.x].region == map[ny][nx].region continue;
 
             sides += 1;
 
@@ -79,12 +76,11 @@ count_sides :: (region: []*Position) -> s64
                 {
                     nx := r.x + d[0] * i;
                     ny := r.y + d[1] * i;
-                    if !(nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE) break;
+                    if !in_bounds(nx, ny) break;
                     if map[ny][nx].region != map[r.y][r.x].region break;
                     onx := nx + dir[0];
                     ony := ny + dir[1];
-                    in_bounds := onx >= 0 && onx < SIZE && ony >= 0 && ony < SIZE;
-                    if in_bounds && map[ony][onx].region == map[r.y][r.x].region break;
+                    if in_bounds(onx, ony) && map[ony][onx].region == map[r.y][r.x].region break;
                     map[ny][nx].side_counted[dir_id] = true;
                 }
             }
