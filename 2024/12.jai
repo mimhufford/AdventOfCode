@@ -1,18 +1,11 @@
 day12 :: (input: string) -> string, string
 {
+    for y: 0..SIZE-1 for x: 0..SIZE-1 map[y][x].plant = input[y * (SIZE+1) + x];
+    for y: 0..SIZE-1 for x: 0..SIZE-1 fill_region(x, y);
+    for y: 0..SIZE-1 for x: 0..SIZE-1 count_sides(x, y);
+
     part1, part2 := 0;
-
-    for y: 0..SIZE-1 for x: 0..SIZE-1
-    {
-        map[y][x].plant = input[y * (SIZE+1) + x];
-        map[y][x].y = y;
-        map[y][x].x = x;
-    }
-
-    for y: 0..SIZE-1 for x: 0..SIZE-1
-    {
-        part1, part2 += flood_fill(x, y);
-    }
+    for regions part1, part2 += it.area * it.perimeter, it.area * it.sides;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -21,67 +14,55 @@ day12 :: (input: string) -> string, string
 
 SIZE :: 140;
 next_region_id := 1;
-map : [SIZE][SIZE]Position;
-Position :: struct { x: s64; y: s64; plant: u8; region: s64; side_counted: [4]bool; };
-dirs :: []s64.[.[-1,0], .[1,0], .[0,-1], .[0,1]];
+map : [SIZE][SIZE] struct { plant: u8; region: s64; };
+regions : [1000] struct { area: s64; perimeter: s64; sides: s64; };
 in_bounds :: (x, y) => x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 
-flood_fill :: (x: s64, y: s64) -> s64, s64
+fill_region :: (x: s64, y: s64)
 {
-    flood_fill :: (x: s64, y: s64, perimeter: *s64, region: *[..]*Position)
+    if map[y][x].region != 0 return;
+
+    flood_fill :: (x: s64, y: s64)
     {
         if map[y][x].region > 0 return;
         map[y][x].region = next_region_id;
-        array_add(region, *map[y][x]);
+        regions[next_region_id].area += 1;
 
-        for dirs
+        for []s64.[.[-1,0], .[1,0], .[0,-1], .[0,1]]
         {
             nx, ny := x+it[0], y+it[1];
-            if !in_bounds(nx, ny) { perimeter.* += 1; continue; }
-            if map[y][x].plant == map[ny][nx].plant flood_fill(nx, ny, perimeter, region);
-            else perimeter.* += 1;
+            if in_bounds(nx, ny) && map[y][x].plant == map[ny][nx].plant then flood_fill(nx, ny);
+            else regions[next_region_id].perimeter += 1;
         }
     }
 
-    if map[y][x].region > 0 return 0, 0;
-
-    region : [..]*Position;
-    perimeter := 0;
-    flood_fill(x, y, *perimeter, *region);
+    flood_fill(x, y);
     next_region_id += 1;
-    return region.count * perimeter, region.count * count_sides(region);
 }
 
-count_sides :: (region: []*Position) -> s64
+count_sides :: (x: s64, y: s64)
 {
-    sides := 0;
-
-    for r: region
+    is_different :: (nx: s64, ny: s64) -> bool #expand
     {
-        is_different :: (x: s64, y: s64) -> bool #expand
-        {
-            if !in_bounds(x, y) return true;
-            return map[y][x].region != r.region;
-        }
-
-        u_diff  := is_different(r.x + 0, r.y - 1);
-        l_diff  := is_different(r.x - 1, r.y + 0);
-        d_diff  := is_different(r.x + 0, r.y + 1);
-        r_diff  := is_different(r.x + 1, r.y + 0);
-        ul_diff := is_different(r.x - 1, r.y - 1);
-        ur_diff := is_different(r.x + 1, r.y - 1);
-        dl_diff := is_different(r.x - 1, r.y + 1);
-        dr_diff := is_different(r.x + 1, r.y + 1);
-
-        sides += xx (l_diff && u_diff);
-        sides += xx (u_diff && r_diff);
-        sides += xx (r_diff && d_diff);
-        sides += xx (d_diff && l_diff);
-        sides += xx (!l_diff && !u_diff && ul_diff);
-        sides += xx (!u_diff && !r_diff && ur_diff);
-        sides += xx (!r_diff && !d_diff && dr_diff);
-        sides += xx (!d_diff && !l_diff && dl_diff);
+        if !in_bounds(nx, ny) return true;
+        return map[y][x].region != map[ny][nx].region;
     }
 
-    return sides;
+    u_diff  := is_different(x + 0, y - 1);
+    l_diff  := is_different(x - 1, y + 0);
+    d_diff  := is_different(x + 0, y + 1);
+    r_diff  := is_different(x + 1, y + 0);
+    ul_diff := is_different(x - 1, y - 1);
+    ur_diff := is_different(x + 1, y - 1);
+    dl_diff := is_different(x - 1, y + 1);
+    dr_diff := is_different(x + 1, y + 1);
+
+    regions[map[y][x].region].sides += xx (l_diff && u_diff);
+    regions[map[y][x].region].sides += xx (u_diff && r_diff);
+    regions[map[y][x].region].sides += xx (r_diff && d_diff);
+    regions[map[y][x].region].sides += xx (d_diff && l_diff);
+    regions[map[y][x].region].sides += xx (!l_diff && !u_diff && ul_diff);
+    regions[map[y][x].region].sides += xx (!u_diff && !r_diff && ur_diff);
+    regions[map[y][x].region].sides += xx (!r_diff && !d_diff && dr_diff);
+    regions[map[y][x].region].sides += xx (!d_diff && !l_diff && dl_diff);
 }
