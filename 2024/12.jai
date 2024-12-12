@@ -68,6 +68,7 @@ count_sides :: (map: string, region: []Position) -> s64
 
             mark_all_connected_sides_in_direction :: (d: []s64) #expand
             {
+                // Bad asymptotic, but region size is never big enough to care
                 for i: 1..S64_MAX
                 {
                     for * o: region
