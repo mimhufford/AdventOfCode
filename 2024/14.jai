@@ -20,7 +20,7 @@ day14 :: (input: string) -> string, string
     }
 
     part1 := counts[0] * counts[1] * counts[2] * counts[3];
-    part2 := 8280; // found manually by dumping the maps into a file and looking through it
+    part2 := 8280; // found manually by dumping the maps into images and looking at them
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -31,37 +31,22 @@ HEIGHT :: 103;
 WIDTH  :: 101;
 robots : [..] struct { x: s64; y: s64; dx: s64; dy: s64; };
 
-dump_state :: (seconds: s64)
+dump_images :: (seconds: s64)
 {
+    #import "stb_image_write";
+
     map : [HEIGHT][WIDTH]u8;
-    for y: 0..HEIGHT-1 for x: 0..WIDTH-1 map[y][x] = #char " ";
 
-    buffer : String_Builder;
-
-    for s: 0..seconds
+    for s: 1..seconds
     {
-        append(*buffer, tprint("==================== % ====================\n", s+1));
-
         for * r: robots
         {
-            map[r.y][r.x] = #char " ";
+            map[r.y][r.x] = 0;
             r.x = (((r.x + r.dx) % WIDTH)  + WIDTH)  % WIDTH;
             r.y = (((r.y + r.dy) % HEIGHT) + HEIGHT) % HEIGHT;
-            map[r.y][r.x] = #char "#";
+            map[r.y][r.x] = 255;
         }
 
-        for y: 0..HEIGHT-1
-        {
-            for x: 0..WIDTH-1
-            {
-                append(*buffer, map[y][x]);
-            }
-
-            append(*buffer, "\n");
-        }
-
-        append(*buffer, tprint("==================== % ====================\n\n", s+1));
+        stbi_write_png(tprint("images/%.png\0", s).data, WIDTH, HEIGHT, 1, map.data, WIDTH);
     }
-
-    write_entire_file("dump.txt", builder_to_string(*buffer));
 }
