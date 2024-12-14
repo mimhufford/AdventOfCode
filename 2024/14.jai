@@ -20,7 +20,7 @@ day14 :: (input: string) -> string, string
     }
 
     part1 := counts[0] * counts[1] * counts[2] * counts[3];
-    part2 := 8280; // found manually by dumping the results into a file and look through it
+    part2 := 8280; // found manually by dumping the maps into a file and looking through it
 
     return tprint("%", part1), tprint("%", part2);
 }
