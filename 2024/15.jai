@@ -1,7 +1,9 @@
 day15 :: (input: string) -> string, string
 {
-    map : [SIZE][SIZE]u8;
-    x, y := 0;
+    map1 : [SIZE][SIZE]u8;
+    map2 : [SIZE][SIZE*2]u8;
+    x1, y1 := 0;
+    x2, y2 := 0;
 
     for my: 0..SIZE-1
     {
@@ -9,12 +11,22 @@ day15 :: (input: string) -> string, string
         {
             if input[0] == #char "@"
             {
-                x, y = mx, my;
-                map[my][mx] = #char ".";
+                x1, y1 = mx, my;
+                x2, y2 = mx*2, my;
+                map1[my][mx] = #char ".";
+                map2[my][mx+0] = #char ".";
+                map2[my][mx+1] = #char ".";
             }
             else
             {
-                map[my][mx] = input[0];
+                map1[my][mx] = input[0];
+                
+                if input[0] ==
+                {
+                    case #char "."; map2[my][mx] = #char "."; map2[my][mx+1] = #char ".";
+                    case #char "#"; map2[my][mx] = #char "#"; map2[my][mx+1] = #char "#";
+                    case #char "O"; map2[my][mx] = #char "["; map2[my][mx+1] = #char "]";
+                }
             }
 
             advance(*input);
@@ -27,10 +39,18 @@ day15 :: (input: string) -> string, string
     {
         if input[0] ==
         {
-            case #char "<"; move(*map, *x, *y, -1, +0);
-            case #char ">"; move(*map, *x, *y, +1, +0);
-            case #char "^"; move(*map, *x, *y, +0, -1);
-            case #char "v"; move(*map, *x, *y, +0, +1);
+            case #char "<";
+                move1(*map1, *x1, *y1, -1, +0);
+                move2(*map2, *x2, *y2, -1, +0);
+            case #char ">";
+                move1(*map1, *x1, *y1, +1, +0);
+                move2(*map2, *x2, *y2, +1, +0);
+            case #char "^";
+                move1(*map1, *x1, *y1, +0, -1);
+                move2(*map2, *x2, *y2, +0, -1);
+            case #char "v";
+                move1(*map1, *x1, *y1, +0, +1);
+                move2(*map2, *x2, *y2, +0, +1);
         }
 
         advance(*input);
@@ -40,9 +60,17 @@ day15 :: (input: string) -> string, string
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
-        if map[y][x] == #char "O"
+        if map1[y][x] == #char "O"
         {
             part1 += 100*y + x;
+        }
+    }
+
+    for y: 0..SIZE-1 for x: 0..SIZE*2-1
+    {
+        if map2[y][x] == #char "["
+        {
+            part2 += 100*y + x;
         }
     }
 
@@ -53,7 +81,7 @@ day15 :: (input: string) -> string, string
 
 SIZE :: 50;
 
-move :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
+move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
     push :: (map: *[SIZE][SIZE]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
     {
@@ -67,4 +95,8 @@ move :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
     if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
     rx.*, ry.* += dx, dy;
     map.*[ry.*][rx.*] = #char ".";
+}
+
+move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
+{
 }
