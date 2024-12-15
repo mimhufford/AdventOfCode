@@ -69,11 +69,13 @@ move :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
     if !gap return;
 
     // there was a gap, so move everything along
-    x, y -= dx, dy;
     while true
     {
         if x == rx.* && y == ry.* break;
         map.*[y][x] = map.*[y-dy][x-dx];
         x, y -= dx, dy;
     }
+
+    // and update the robot's position
+    rx.*, ry.* += dx, dy;
 }
