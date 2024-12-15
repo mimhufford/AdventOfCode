@@ -41,19 +41,15 @@ day15 :: (input: string) -> string, string
             case #char "<";
                 move1(*map1, *x1, *y1, -1, +0);
                 move2(*map2, *x2, *y2, -1, +0);
-                dump(map2, x2, y2, input[0]);
             case #char ">";
                 move1(*map1, *x1, *y1, +1, +0);
                 move2(*map2, *x2, *y2, +1, +0);
-                dump(map2, x2, y2, input[0]);
             case #char "^";
                 move1(*map1, *x1, *y1, +0, -1);
                 move2(*map2, *x2, *y2, +0, -1);
-                dump(map2, x2, y2, input[0]);
             case #char "v";
                 move1(*map1, *x1, *y1, +0, +1);
                 move2(*map2, *x2, *y2, +0, +1);
-                dump(map2, x2, y2, input[0]);
         }
 
         advance(*input);
@@ -70,23 +66,6 @@ day15 :: (input: string) -> string, string
 #scope_file
 
 SIZE :: 50;
-
-dump :: (map : [SIZE][SIZE*2]u8, rx: s64, ry: s64, dir: u8)
-{
-    for y: 0..SIZE-1
-    {
-        for x: 0..SIZE*2-1
-        {
-            c : string = ---;
-            c.count = 1;
-            if x == rx && y == ry c.data = *dir;
-            else                  c.data = *map[y][x];
-            print("%", c);
-        }
-        print("\n");
-    }
-    print("\n");
-}
 
 move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
@@ -107,7 +86,9 @@ move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 
 move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
-    push :: (map: *[SIZE][SIZE*2]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
+    Position :: struct { x: s64; y: s64; };
+
+    can_push :: (to_push: *[..]Position, map: *[SIZE][SIZE*2]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
     {
         if map.*[y][x] == #char "." return true;
         if map.*[y][x] == #char "#" return false;
@@ -115,28 +96,33 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         // it's a box, so recurse to see if it can be pushed
         if dy == 0 // it's a left or right push
         {
-            if !push(map, x+dx, y, dx, dy) return false;
-            map.*[y][x+dx] = map.*[y][x];
-            map.*[y][x] = #char ".";
+            if !can_push(to_push, map, x+dx, y, dx, dy) return false;
+            array_add(to_push, .{x, y});
             return true;
         }
         else // it's an up down push, we need to branch down two paths
         {
-            // TODO: there's a bug in here somewhere, I think when we branch
-            // half of the path will successfully push, even if the other doesn't
             other_x := x + ifx map.*[y][x] == #char "[" then 1 else -1;
-            if !push(map,       x, y+dy, dx, dy) return false;
-            if !push(map, other_x, y+dy, dx, dy) return false;
-            map.*[y+dy][      x] = map.*[y][      x];
-            map.*[y+dy][other_x] = map.*[y][other_x];
-            map.*[y][      x] = #char ".";
-            map.*[y][other_x] = #char ".";
+            if !can_push(to_push, map,       x, y+dy, dx, dy) return false;
+            if !can_push(to_push, map, other_x, y+dy, dx, dy) return false;
+            found := false;
+            for to_push.* if it.x == x && it.y == y { found = true; break; }
+            if !found array_add(to_push, .{x, y});
+            found = false;
+            for to_push.* if it.x == other_x && it.y == y { found = true; break; }
+            if !found array_add(to_push, .{other_x, y});
             return true;
         }
     }
 
-    if push(map, rx.* + dx, ry.* + dy, dx, dy) rx.*, ry.* += dx, dy;
+    to_push : [..]Position;
+    if can_push(*to_push, map, rx.* + dx, ry.* + dy, dx, dy)
+    {
+        for to_push
+        {
+            map.*[it.y+dy][it.x+dx] = map.*[it.y][it.x];
+            map.*[it.y][it.x] = #char ".";
+        }
+        rx.*, ry.* += dx, dy;
+    }
 }
-
-// 1399035 too low
-// 1435840 too high
