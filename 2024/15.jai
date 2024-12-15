@@ -55,8 +55,8 @@ day15 :: (input: string) -> string, string
 
     part1, part2 := 0;
 
-    for y: 0..SIZE-1 for x: 0..SIZE-1   if map1[y][x] == #char "O" part1 += 100*y + x;
-    for y: 0..SIZE-1 for x: 0..SIZE*2-1 if map2[y][x] == #char "[" part2 += 100*y + x;
+    for r, y: map1 for c, x: r if c == #char "O" part1 += 100*y + x;
+    for r, y: map2 for c, x: r if c == #char "[" part2 += 100*y + x;
 
     return tprint("%", part1), tprint("%", part2);
 }
