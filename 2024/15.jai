@@ -55,27 +55,16 @@ SIZE :: 50;
 
 move :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
-    // walk until we hit and wall or a gap
-    gap := false;
-    x, y := rx.*, ry.*;
-    while true
+    push :: (map: *[SIZE][SIZE]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
     {
-        x, y += dx, dy;
-        if map.*[y][x] == #char "." { gap = true; break; }
-        if map.*[y][x] == #char "#" { break; }
+        if map.*[y][x] == #char "." return true;
+        if map.*[y][x] == #char "#" return false;
+        if !push(map, x+dx, y+dy, dx, dy) return false;
+        map.*[y+dy][x+dx] = map.*[y][x];
+        return true;
     }
 
-    // if there was no gap there's nothing to do
-    if !gap return;
-
-    // there was a gap, so move everything along
-    while true
-    {
-        if x == rx.* && y == ry.* break;
-        map.*[y][x] = map.*[y-dy][x-dx];
-        x, y -= dx, dy;
-    }
-
-    // and update the robot's position
+    if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
     rx.*, ry.* += dx, dy;
+    map.*[ry.*][rx.*] = #char ".";
 }
