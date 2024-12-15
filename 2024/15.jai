@@ -66,17 +66,16 @@ day15 :: (input: string) -> string, string
 #scope_file
 
 SIZE :: 50;
-Position :: struct { x: s64; y: s64; };
-to_push : [..]Position;
+to_push : [..]u16;
 
 move :: ($WIDTH: s64, map: *[SIZE][WIDTH]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
-    can_push :: (to_push: *[..]Position, map: *[SIZE][WIDTH]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
+    can_push :: (to_push: *[..]u16, map: *[SIZE][WIDTH]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
     {
         if map.*[y][x] == #char "." return true;
         if map.*[y][x] == #char "#" return false;
 
-        if dy == 0 // it's a left or right push which neven splits, so just deal with it here
+        if dy == 0 // it's a left or right push which never splits, so just deal with it here
         {
             if !can_push(to_push, map, x+dx, y, dx, dy) return false;
             map.*[y+dy][x+dx] = map.*[y][x];
@@ -85,24 +84,20 @@ move :: ($WIDTH: s64, map: *[SIZE][WIDTH]u8, rx: *s64, ry: *s64, dx: s64, dy: s6
         }
         else // it's an up down push
         {
-            if map.*[y][x] == #char "O" // we're in 1-wide land, so just deal with it here
+            if WIDTH == SIZE // we're in 1-wide land, so just deal with it here
             {
                 if !can_push(to_push, map, x+dx, y+dy, dx, dy) return false;
                 map.*[y+dy][x+dx] = map.*[y][x];
                 map.*[y][x] = #char ".";
                 return true;
             }
-            else // it's 2-wide world so we collect moves and deal with them later if all moves are possible
+            else // it's 2-wide world so collect moves and deal with them later if all moves are possible
             {
                 other_x := x + ifx map.*[y][x] == #char "[" then 1 else -1;
                 if !can_push(to_push, map,       x, y+dy, dx, dy) return false;
                 if !can_push(to_push, map, other_x, y+dy, dx, dy) return false;
-                found := false;
-                for to_push.* if it.x == x && it.y == y { found = true; break; }
-                if !found array_add(to_push, .{x, y});
-                found = false;
-                for to_push.* if it.x == other_x && it.y == y { found = true; break; }
-                if !found array_add(to_push, .{other_x, y});
+                array_add_if_unique(to_push, ((cast(u16)x)       << 8) | cast(u16)y);
+                array_add_if_unique(to_push, ((cast(u16)other_x) << 8) | cast(u16)y);
                 return true;
             }
         }
@@ -113,8 +108,9 @@ move :: ($WIDTH: s64, map: *[SIZE][WIDTH]u8, rx: *s64, ry: *s64, dx: s64, dy: s6
 
     for to_push
     {
-        map.*[it.y+dy][it.x+dx] = map.*[it.y][it.x];
-        map.*[it.y][it.x] = #char ".";
+        x, y := cast(s64)(it >> 8), cast(s64)(it & 0xFF);
+        map.*[y+dy][x+dx] = map.*[y][x];
+        map.*[y][x] = #char ".";
     }
 
     rx.*, ry.* += dx, dy;
