@@ -65,8 +65,6 @@ day15 :: (input: string) -> string, string
 
 #scope_file
 
-SIZE :: 50;
-
 move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
     push :: (map: *[SIZE][SIZE]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
@@ -84,10 +82,12 @@ move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
     if push(map, rx.* + dx, ry.* + dy, dx, dy) rx.*, ry.* += dx, dy;
 }
 
+SIZE :: 50;
+Position :: struct { x: s64; y: s64; };
+to_push : [..]Position;
+
 move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
-    Position :: struct { x: s64; y: s64; };
-
     can_push :: (to_push: *[..]Position, map: *[SIZE][SIZE*2]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
     {
         if map.*[y][x] == #char "." return true;
@@ -115,7 +115,7 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         }
     }
 
-    to_push : [..]Position;
+    array_reset_keeping_memory(*to_push);
     if can_push(*to_push, map, rx.* + dx, ry.* + dy, dx, dy)
     {
         for to_push
