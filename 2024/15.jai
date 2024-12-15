@@ -13,8 +13,8 @@ day15 :: (input: string) -> string, string
                 x1, y1 = mx, my;
                 x2, y2 = mx*2, my;
                 map1[my][mx] = #char ".";
-                map2[my][mx+0] = #char ".";
-                map2[my][mx+1] = #char ".";
+                map2[my][mx*2+0] = #char ".";
+                map2[my][mx*2+1] = #char ".";
             }
             else
             {
@@ -22,9 +22,9 @@ day15 :: (input: string) -> string, string
                 
                 if input[0] ==
                 {
-                    case #char "."; map2[my][mx] = #char "."; map2[my][mx+1] = #char ".";
-                    case #char "#"; map2[my][mx] = #char "#"; map2[my][mx+1] = #char "#";
-                    case #char "O"; map2[my][mx] = #char "["; map2[my][mx+1] = #char "]";
+                    case #char "."; map2[my][mx*2] = #char "."; map2[my][mx*2+1] = #char ".";
+                    case #char "#"; map2[my][mx*2] = #char "#"; map2[my][mx*2+1] = #char "#";
+                    case #char "O"; map2[my][mx*2] = #char "["; map2[my][mx*2+1] = #char "]";
                 }
             }
 
@@ -66,6 +66,22 @@ day15 :: (input: string) -> string, string
 #scope_file
 
 SIZE :: 50;
+
+dump :: (map : [SIZE][SIZE*2]u8)
+{
+    for y: 0..SIZE-1
+    {
+        for x: 0..SIZE*2-1
+        {
+            c : string = ---;
+            c.count = 1;
+            c.data = *map[y][x];
+            print("%", c);
+        }
+        print("\n");
+    }
+    print("\n");
+}
 
 move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
@@ -116,3 +132,4 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 }
 
 // 1399035 too low
+// 1435840 too high
