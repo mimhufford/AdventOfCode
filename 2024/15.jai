@@ -34,9 +34,9 @@ day15 :: (input: string) -> string, string
         advance(*input);
     }
 
-    while input
+    for input
     {
-        if input[0] ==
+        if it ==
         {
             case #char "<";
                 move(SIZE,   *map1, *x1, *y1, -1, +0);
@@ -51,8 +51,6 @@ day15 :: (input: string) -> string, string
                 move(SIZE,   *map1, *x1, *y1, +0, +1);
                 move(SIZE*2, *map2, *x2, *y2, +0, +1);
         }
-
-        advance(*input);
     }
 
     part1, part2 := 0;
