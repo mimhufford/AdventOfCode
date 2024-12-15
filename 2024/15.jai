@@ -94,7 +94,7 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         // it's a box, so recurse to see if it can be pushed
         if dy == 0 // it's a left or right push
         {
-            if !push(map, x+dx, y+dy, dx, dy) return false;
+            if !push(map, x+dx, y, dx, dy) return false;
             map.*[y][x+dx] = map.*[y][x];
             map.*[y][x] = #char ".";
             return true;
