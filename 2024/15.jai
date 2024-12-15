@@ -2,8 +2,7 @@ day15 :: (input: string) -> string, string
 {
     map1 : [SIZE][SIZE]u8;
     map2 : [SIZE][SIZE*2]u8;
-    x1, y1 := 0;
-    x2, y2 := 0;
+    x1, y1, x2, y2 := 0;
 
     for my: 0..SIZE-1
     {
@@ -58,21 +57,8 @@ day15 :: (input: string) -> string, string
 
     part1, part2 := 0;
 
-    for y: 0..SIZE-1 for x: 0..SIZE-1
-    {
-        if map1[y][x] == #char "O"
-        {
-            part1 += 100*y + x;
-        }
-    }
-
-    for y: 0..SIZE-1 for x: 0..SIZE*2-1
-    {
-        if map2[y][x] == #char "["
-        {
-            part2 += 100*y + x;
-        }
-    }
+    for y: 0..SIZE-1 for x: 0..SIZE-1   if map1[y][x] == #char "O" part1 += 100*y + x;
+    for y: 0..SIZE-1 for x: 0..SIZE*2-1 if map2[y][x] == #char "[" part2 += 100*y + x;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -95,8 +81,7 @@ move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         return true;
     }
 
-    if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
-    rx.*, ry.* += dx, dy;
+    if push(map, rx.* + dx, ry.* + dy, dx, dy) rx.*, ry.* += dx, dy;
 }
 
 move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
@@ -128,6 +113,5 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         }
     }
 
-    if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
-    rx.*, ry.* += dx, dy;
+    if push(map, rx.* + dx, ry.* + dy, dx, dy) rx.*, ry.* += dx, dy;
 }
