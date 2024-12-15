@@ -41,15 +41,19 @@ day15 :: (input: string) -> string, string
             case #char "<";
                 move1(*map1, *x1, *y1, -1, +0);
                 move2(*map2, *x2, *y2, -1, +0);
+                dump(map2, x2, y2, input[0]);
             case #char ">";
                 move1(*map1, *x1, *y1, +1, +0);
                 move2(*map2, *x2, *y2, +1, +0);
+                dump(map2, x2, y2, input[0]);
             case #char "^";
                 move1(*map1, *x1, *y1, +0, -1);
                 move2(*map2, *x2, *y2, +0, -1);
+                dump(map2, x2, y2, input[0]);
             case #char "v";
                 move1(*map1, *x1, *y1, +0, +1);
                 move2(*map2, *x2, *y2, +0, +1);
+                dump(map2, x2, y2, input[0]);
         }
 
         advance(*input);
@@ -67,7 +71,7 @@ day15 :: (input: string) -> string, string
 
 SIZE :: 50;
 
-dump :: (map : [SIZE][SIZE*2]u8)
+dump :: (map : [SIZE][SIZE*2]u8, rx: s64, ry: s64, dir: u8)
 {
     for y: 0..SIZE-1
     {
@@ -75,7 +79,8 @@ dump :: (map : [SIZE][SIZE*2]u8)
         {
             c : string = ---;
             c.count = 1;
-            c.data = *map[y][x];
+            if x == rx && y == ry c.data = *dir;
+            else                  c.data = *map[y][x];
             print("%", c);
         }
         print("\n");
@@ -117,6 +122,8 @@ move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
         }
         else // it's an up down push, we need to branch down two paths
         {
+            // TODO: there's a bug in here somewhere, I think when we branch
+            // half of the path will successfully push, even if the other doesn't
             other_x := x + ifx map.*[y][x] == #char "[" then 1 else -1;
             if !push(map,       x, y+dy, dx, dy) return false;
             if !push(map, other_x, y+dy, dx, dy) return false;
