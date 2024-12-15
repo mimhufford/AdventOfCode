@@ -38,7 +38,7 @@ day15 :: (input: string) -> string, string
 
     part1, part2 := 0;
 
-    for my: 0..SIZE-1 for mx: 0..SIZE-1
+    for y: 0..SIZE-1 for x: 0..SIZE-1
     {
         if map[y][x] == #char "O"
         {
