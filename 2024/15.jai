@@ -87,16 +87,47 @@ move1 :: (map: *[SIZE][SIZE]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
     {
         if map.*[y][x] == #char "." return true;
         if map.*[y][x] == #char "#" return false;
+
+        // it's a box, so recurse to see if it can be pushed
         if !push(map, x+dx, y+dy, dx, dy) return false;
         map.*[y+dy][x+dx] = map.*[y][x];
+        map.*[y][x] = #char ".";
         return true;
     }
 
     if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
     rx.*, ry.* += dx, dy;
-    map.*[ry.*][rx.*] = #char ".";
 }
 
 move2 :: (map: *[SIZE][SIZE*2]u8, rx: *s64, ry: *s64, dx: s64, dy: s64)
 {
+    push :: (map: *[SIZE][SIZE*2]u8, x: s64, y: s64, dx: s64, dy: s64) -> bool
+    {
+        if map.*[y][x] == #char "." return true;
+        if map.*[y][x] == #char "#" return false;
+
+        // it's a box, so recurse to see if it can be pushed
+        if dy == 0 // it's a left or right push, we need to look further ahead
+        {
+            // TODO
+            if !push(map, x+dx*2, y+dy, dx, dy) return false;
+            map.*[y][x+dx] = map.*[y][x];
+            map.*[y][x+dx] = map.*[y][x];
+            return true;
+        }
+        else // it's an up down push, we need to branch down two paths
+        {
+            other_x := x + ifx map.*[y][x] == #char "[" then 1 else -1;
+            if !push(map,       x+dx, y+dy, dx, dy) return false;
+            if !push(map, other_x+dx, y+dy, dx, dy) return false;
+            map.*[y+dy][      x] = map.*[y][      x];
+            map.*[y+dy][other_x] = map.*[y][other_x];
+            map.*[y][      x] = #char ".";
+            map.*[y][other_x] = #char ".";
+            return true;
+        }
+    }
+
+    if !push(map, rx.* + dx, ry.* + dy, dx, dy) return;
+    rx.*, ry.* += dx, dy;
 }
