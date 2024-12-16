@@ -10,8 +10,7 @@ day16 :: (input: string) -> string, string
         advance(*input);
     }
 
-    part1 := find_minimum_score();
-    part2 := count_unique_cells(part1);
+    part1, part2 := walk_maze();
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -21,63 +20,6 @@ day16 :: (input: string) -> string, string
 WALL :: -1;
 SIZE :: 141;
 map : [SIZE][SIZE]s64;
-
-// Super slow approach at the moment, but it gets the right answer
-count_unique_cells :: (max_score : s64) -> s64
-{
-    cache : [SIZE][SIZE][4]s64;
-    for cache for it for * it it.* = S64_MAX;
-
-    State :: struct { x, y, d, score : s64; positions : [..]u64; }
-    queue : [..]State;
-    unique_positions : [..]u64;
-
-    item := array_add(*queue);
-    item.x, item.y = 1, SIZE-2;
-
-    while queue
-    {
-        defer
-        {
-            array_free(queue[0].positions);
-            array_unordered_remove_by_index(*queue, 0);
-        }
-
-        using queue[0];
-
-        if score > max_score continue;
-        if cache[y][x][d] < score continue;
-        cache[y][x][d] = score;
-
-        array_add(*positions, (cast(u64)x << 32) | cast(u64)y);
-
-        if x == SIZE-2 && y == 1
-        {
-            for positions array_add_if_unique(*unique_positions, it);
-            continue;
-        }
-
-        for dir, dir_index: []s64.[.[1,0],.[0,1],.[-1,0],.[0,-1]]
-        {
-            if map[y+dir[1]][x+dir[0]] == WALL continue;
-            if abs(d - dir_index) == 2 continue;
-            cost := 1 + ifx dir_index != d then 1000;
-            item := array_add(*queue);
-            item.x = x+dir[0];
-            item.y = y+dir[1];
-            item.d = dir_index;
-            item.score = score + cost;
-            array_add(*item.positions, ..positions);
-        }
-    }
-
-    return unique_positions.count;
-}
-
-// =================================================
-// Start on a faster approach to replace the above
-// =================================================
-
 graph : Table(u64, [4]Edge);
 
 Node :: struct
@@ -90,12 +32,12 @@ Node :: struct
 Edge :: struct
 {
     dest: u64;
-    cost: s64;
+    cost: [..]u64;
     done: bool;
     best: s64;
 }
 
-find_minimum_score :: () -> s64
+walk_maze :: () -> s64, s64
 {
     build_graph();
 
@@ -138,23 +80,26 @@ find_minimum_score :: () -> s64
             next.x = next_node.x;
             next.y = next_node.y;
             next.d = it;
-            next.score = score + e.cost + ifx d != it 1000;
+            next.score = score + e.cost.count + ifx d != it 1000;
             array_add(*next.edges, ..edges);
             array_add(*next.edges, node_edges.data + it);
         }
     }
 
+    used_nodes : [..]u64;
     used_edges : [..]*Edge;
     for paths
     {
         if it.score > best_score continue;
         for it.edges array_add_if_unique(*used_edges, it);
     }
-    total_used := 0;
-    for used_edges total_used += it.cost;
-    print("%\n", total_used);
+    for used_edges
+    {
+        for it.cost array_add_if_unique(*used_nodes, it);
+    }
+    print("%\n", used_nodes.count);
 
-    return best_score;
+    return best_score, used_nodes.count + 1;
 }
 
 build_graph :: () -> s64
@@ -190,7 +135,7 @@ build_graph :: () -> s64
             while true
             {
                 x, y += dir[0], dir[1];
-                edges.*[d].cost += 1;
+                array_add(*edges.*[d].cost, Node.{x=x,y=y}.hash);;
 
                 // intersection
                 if map[y+dir[1]][x+dir[0]] == WALL || map[y+l[1]][x+l[0]] != WALL || map[y+r[1]][x+r[0]] != WALL
@@ -208,23 +153,4 @@ build_graph :: () -> s64
     }
 
     return 0;
-}
-
-dump_graph :: ()
-{
-    for graph
-    {
-        n : Node;
-        n.hash = it_index;
-        print("%:\n", n);
-
-        for it
-        {
-            dir :: string.["R", "D", "L", "U"];
-            if it.dest == 0 continue;
-            d : Node;
-            d.hash = it.dest;
-            print("- %, %, %\n", dir[it_index], it.cost, d);
-        }
-    }
 }
