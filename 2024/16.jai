@@ -29,7 +29,7 @@ Edge :: struct
 count_cells :: (best_score: s64) -> s64
 {
     paths : [..] struct { score: s64; edges: [..]*Edge; };
-    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
+    queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     i := 0;
@@ -41,8 +41,7 @@ count_cells :: (best_score: s64) -> s64
 
         if score > best_score continue;
 
-        node := Node.{x = x, y = y};
-        node_edges := table_find_pointer(*graph, node.hash);
+        node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
         assert(node_edges != null);
 
         if node_edges.*[d].best < score continue;
@@ -50,7 +49,7 @@ count_cells :: (best_score: s64) -> s64
 
         if x == SIZE-2 && y == 1
         {
-            array_add(*paths, .{score = score, edges = edges});
+            array_add(*paths, .{score, edges});
             continue;
         }
 
@@ -95,8 +94,7 @@ walk_graph :: () -> s64
 
         if score >= best_score continue;
 
-        node := Node.{x = x, y = y};
-        node_edges := table_find_pointer(*graph, node.hash);
+        node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
         assert(node_edges != null);
 
         if node_edges.*[d].best <= score continue;
