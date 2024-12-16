@@ -12,8 +12,7 @@ day16 :: (input: string) -> string, string
 
     build_graph();
     part1 := walk_graph();
-    // part2 := count_unique_cells(part1);
-    part2 := 0;
+    part2 := count_unique_cells(part1);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -76,34 +75,6 @@ count_unique_cells :: (max_score : s64) -> s64
     return unique_positions.count;
 }
 
-find_shortest_distance :: () -> s64
-{
-    State :: struct { x, y, d, score : s64; }
-    queue : [..]State;
-
-    array_add(*queue, .{ 1, SIZE-2, 0, 0 });
-    i := 0;
-
-    while i < queue.count
-    {
-        defer i += 1;
-        using queue[i];
-
-        if map[y][x] <= score continue;
-        map[y][x] = score;
-
-        for dir, dir_index: []s64.[.[1,0],.[0,1],.[-1,0],.[0,-1]]
-        {
-            if map[y+dir[1]][x+dir[0]] == WALL continue;
-            if abs(d - dir_index) == 2 continue;
-            cost := 1 + ifx dir_index != d then 1000;
-            array_add(*queue, .{ x+dir[0], y+dir[1], dir_index, score + cost });
-        }
-    }
-
-    return map[1][SIZE-2];
-}
-
 // =================================================
 // Start on a faster approach to replace the above
 // =================================================
@@ -122,6 +93,7 @@ Edge :: struct
     dest: u64;
     cost: s64;
     done: bool;
+    best: s64;
 }
 
 walk_graph :: () -> s64
@@ -139,21 +111,23 @@ walk_graph :: () -> s64
 
         if score > best_score continue;
 
+        node := Node.{x = x, y = y};
+        edges := table_find_pointer(*graph, node.hash);
+        assert(edges != null);
+
+        if edges.*[d].best < score continue;
+        edges.*[d].best = score;
+
         if x == SIZE-2 && y == 1
         {
             best_score = min(best_score, score);
             continue;
         }
 
-        node := Node.{x = x, y = y};
-        edges := table_find_pointer(*graph, node.hash);
-        assert(edges != null);
-
         for 0..3
         {
             e := edges.*[it];
-            next : Node;
-            next.hash = e.dest;
+            next := Node.{hash = e.dest};
             if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
             array_add(*queue, .{ next.x, next.y, it, score + e.cost + ifx d != it 1000 });
@@ -182,6 +156,7 @@ build_graph :: () -> s64
         {
             if edges.*[d].done continue;
             edges.*[d].done = true;
+            edges.*[d].best = S64_MAX;
 
             x, y := node.x, node.y;
 
