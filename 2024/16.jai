@@ -10,7 +10,9 @@ day16 :: (input: string) -> string, string
         advance(*input);
     }
 
-    part1, part2 := walk_maze();
+    build_graph();
+    part1 := walk_maze();
+    part2 := count_cells(part1);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -37,13 +39,9 @@ Edge :: struct
     best: s64;
 }
 
-walk_maze :: () -> s64, s64
+count_cells :: (best_score: s64) -> s64
 {
-    build_graph();
-
     paths : [..] struct { score: s64; edges: [..]*Edge; };
-
-    best_score := S64_MAX;
     queue : [..]struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
@@ -65,7 +63,6 @@ walk_maze :: () -> s64, s64
 
         if x == SIZE-2 && y == 1
         {
-            best_score = min(best_score, score);
             array_add(*paths, .{score = score, edges = edges});
             continue;
         }
@@ -93,7 +90,48 @@ walk_maze :: () -> s64, s64
         for it.edges for it.cost array_add_if_unique(*used_nodes, it);
     }
 
-    return best_score, used_nodes.count + 1;
+    return used_nodes.count + 1;
+}
+
+walk_maze :: () -> s64
+{
+    best_score := S64_MAX;
+    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
+    array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
+
+    i := 0;
+
+    while i < queue.count
+    {
+        using curr := queue[i];
+        i += 1;
+
+        if score >= best_score continue;
+
+        node := Node.{x = x, y = y};
+        node_edges := table_find_pointer(*graph, node.hash);
+        assert(node_edges != null);
+
+        if node_edges.*[d].best <= score continue;
+        node_edges.*[d].best = score;
+
+        if x == SIZE-2 && y == 1
+        {
+            best_score = min(best_score, score);
+            continue;
+        }
+
+        for 0..3
+        {
+            e := node_edges.*[it];
+            next_node := Node.{hash = e.dest};
+            if e.dest == 0 continue; // nothing in this direction
+            if abs(d - it) == 2 continue; // don't go backwards
+            array_add(*queue, .{ next_node.x, next_node.y, it, score + e.cost.count + ifx d != it 1000 });
+        }
+    }
+
+    return best_score;
 }
 
 build_graph :: () -> s64
