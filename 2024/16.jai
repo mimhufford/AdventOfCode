@@ -1,17 +1,7 @@
 day16 :: (input: string) -> string, string
 {
-    for y: 0..SIZE-1
-    {
-        for x: 0..SIZE-1
-        {
-            map[y][x] = ifx input[0] == #char "#" then WALL else S64_MAX;
-            advance(*input);
-        }   
-        advance(*input);
-    }
-
-    build_graph();
-    part1 := walk_maze();
+    build_graph(input);
+    part1 := walk_graph();
     part2 := count_cells(part1);
 
     return tprint("%", part1), tprint("%", part2);
@@ -19,9 +9,7 @@ day16 :: (input: string) -> string, string
 
 #scope_file
 
-WALL :: -1;
 SIZE :: 141;
-map : [SIZE][SIZE]s64;
 graph : Table(u64, [4]Edge);
 
 Node :: struct
@@ -93,7 +81,7 @@ count_cells :: (best_score: s64) -> s64
     return used_nodes.count + 1;
 }
 
-walk_maze :: () -> s64
+walk_graph :: () -> s64
 {
     best_score := S64_MAX;
     queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
@@ -134,7 +122,7 @@ walk_maze :: () -> s64
     return best_score;
 }
 
-build_graph :: () -> s64
+build_graph :: (map: string) -> s64
 {
     init(*graph, 10_000);
     queue : [..]Node;
@@ -157,7 +145,7 @@ build_graph :: () -> s64
 
             x, y := node.x, node.y;
 
-            if map[y+dir[1]][x+dir[0]] == WALL continue;
+            if map[(y+dir[1])*(SIZE+1) + x+dir[0]] == #char "#" continue;
 
             r, l : [2]s32;
             l[0] =  dir[1]; l[1] = -dir[0];
@@ -170,7 +158,9 @@ build_graph :: () -> s64
                 array_add(*edges.*[d].cost, Node.{x=x,y=y}.hash);;
 
                 // intersection
-                if map[y+dir[1]][x+dir[0]] == WALL || map[y+l[1]][x+l[0]] != WALL || map[y+r[1]][x+r[0]] != WALL
+                if map[(y+dir[1])*(SIZE+1) + x+dir[0]] == #char "#"
+                || map[(y+l[1])*(SIZE+1) + x+l[0]] != #char "#"
+                || map[(y+r[1])*(SIZE+1) + x+r[0]] != #char "#"
                 {
                     new_node : Node;
                     new_node.x = x;
