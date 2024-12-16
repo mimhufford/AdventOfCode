@@ -97,7 +97,6 @@ walk_maze :: () -> s64, s64
     {
         for it.cost array_add_if_unique(*used_nodes, it);
     }
-    print("%\n", used_nodes.count);
 
     return best_score, used_nodes.count + 1;
 }
