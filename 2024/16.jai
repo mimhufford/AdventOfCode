@@ -20,7 +20,6 @@ day16 :: (input: string) -> string, string
 #scope_file
 
 WALL :: -1;
-dirs :: []s64.[.[1,0],.[0,1],.[-1,0],.[0,-1]];
 SIZE :: 141;
 map : [SIZE][SIZE]s64;
 
@@ -40,7 +39,7 @@ walk :: (sx: s64, sy: s64, sd: s64, tx: s64, ty: s64)
         if map[y][x] < score continue;
         map[y][x] = score;
 
-        for dir, dir_index: dirs
+        for dir, dir_index: []s64.[.[1,0],.[0,1],.[-1,0],.[0,-1]]
         {
             if map[y+dir[1]][x+dir[0]] == WALL continue;
             cost := 1 + ifx dir_index != d then 1000;
