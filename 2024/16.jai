@@ -33,7 +33,6 @@ count_cells :: (best_score: s64) -> s64
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     i := 0;
-
     while i < queue.count
     {
         using curr := queue[i];
@@ -86,7 +85,6 @@ walk_graph :: () -> s64
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     i := 0;
-
     while i < queue.count
     {
         using curr := queue[i];
