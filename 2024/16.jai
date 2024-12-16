@@ -22,8 +22,8 @@ Node :: struct
 Edge :: struct
 {
     dest: u64;
-    cells: [..]u64;
     best: s64;
+    cells: [..]u64;
 }
 
 count_cells :: (best_score: s64) -> s64
@@ -80,7 +80,7 @@ count_cells :: (best_score: s64) -> s64
 walk_graph :: () -> s64
 {
     best_score := S64_MAX;
-    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
+    queue : [..] struct { x: s32; y: s32; d: s64; score: s64; };
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     i := 0;
@@ -105,10 +105,10 @@ walk_graph :: () -> s64
         for 0..3
         {
             e := node_edges.*[it];
-            next_node := Node.{hash = e.dest};
+            next := Node.{hash = e.dest};
             if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
-            array_add(*queue, .{ next_node.x, next_node.y, it, score + e.cells.count + ifx d != it 1000 });
+            array_add(*queue, .{ next.x, next.y, it, score + e.cells.count + ifx d != it 1000 });
         }
     }
 
