@@ -11,7 +11,7 @@ day16 :: (input: string) -> string, string
     }
 
     part1 := find_minimum_score();
-    part2 := cells_on_paths_with_score(part1);
+    part2 := count_unique_cells(part1);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -95,18 +95,15 @@ Edge :: struct
     best: s64;
 }
 
-cells_on_paths_with_score :: (target: s64) -> s64
-{
-    return 0;
-}
-
 find_minimum_score :: () -> s64
 {
     build_graph();
 
+    paths : [..] struct { score: s64; edges: [..]*Edge; };
+
     best_score := S64_MAX;
-    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
-    array_add(*queue, .{ 1, SIZE-2, 0, 0 });
+    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
+    array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     i := 0;
 
@@ -118,27 +115,44 @@ find_minimum_score :: () -> s64
         if score > best_score continue;
 
         node := Node.{x = x, y = y};
-        edges := table_find_pointer(*graph, node.hash);
-        assert(edges != null);
+        node_edges := table_find_pointer(*graph, node.hash);
+        assert(node_edges != null);
 
-        if edges.*[d].best < score continue;
-        edges.*[d].best = score;
+        if node_edges.*[d].best < score continue;
+        node_edges.*[d].best = score;
 
         if x == SIZE-2 && y == 1
         {
             best_score = min(best_score, score);
+            array_add(*paths, .{score = score, edges = edges});
             continue;
         }
 
         for 0..3
         {
-            e := edges.*[it];
-            next := Node.{hash = e.dest};
+            e := node_edges.*[it];
+            next_node := Node.{hash = e.dest};
             if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
-            array_add(*queue, .{ next.x, next.y, it, score + e.cost + ifx d != it 1000 });
+            next := array_add(*queue);
+            next.x = next_node.x;
+            next.y = next_node.y;
+            next.d = it;
+            next.score = score + e.cost + ifx d != it 1000;
+            array_add(*next.edges, ..edges);
+            array_add(*next.edges, node_edges.data + it);
         }
     }
+
+    used_edges : [..]*Edge;
+    for paths
+    {
+        if it.score > best_score continue;
+        for it.edges array_add_if_unique(*used_edges, it);
+    }
+    total_used := 0;
+    for used_edges total_used += it.cost;
+    print("%\n", total_used);
 
     return best_score;
 }
