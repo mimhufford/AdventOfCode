@@ -22,7 +22,7 @@ Node :: struct
 Edge :: struct
 {
     dest: u64;
-    cost: [..]u64;
+    cells: [..]u64;
     best: s64;
 }
 
@@ -63,20 +63,20 @@ count_cells :: (best_score: s64) -> s64
             next.x = next_node.x;
             next.y = next_node.y;
             next.d = it;
-            next.score = score + e.cost.count + ifx d != it 1000;
+            next.score = score + e.cells.count + ifx d != it 1000;
             array_add(*next.edges, ..edges);
             array_add(*next.edges, node_edges.data + it);
         }
     }
 
-    used_nodes : [..]u64;
+    used_cells : [..]u64;
     for paths
     {
         if it.score > best_score continue;
-        for it.edges for it.cost array_add_if_unique(*used_nodes, it);
+        for it.edges for it.cells array_add_if_unique(*used_cells, it);
     }
 
-    return used_nodes.count + 1;
+    return used_cells.count + 1;
 }
 
 walk_graph :: () -> s64
@@ -112,7 +112,7 @@ walk_graph :: () -> s64
             next_node := Node.{hash = e.dest};
             if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
-            array_add(*queue, .{ next_node.x, next_node.y, it, score + e.cost.count + ifx d != it 1000 });
+            array_add(*queue, .{ next_node.x, next_node.y, it, score + e.cells.count + ifx d != it 1000 });
         }
     }
 
@@ -147,7 +147,7 @@ build_graph :: (map: string) -> s64
             while true // walk until intersection
             {
                 x, y += f[0], f[1];
-                array_add(*edges.*[d].cost, hash);
+                array_add(*edges.*[d].cells, hash);
 
                 if map[(y+f[1])*(SIZE+1) + x+f[0]] == #char "#"
                 || map[(y+l[1])*(SIZE+1) + x+l[0]] != #char "#"
