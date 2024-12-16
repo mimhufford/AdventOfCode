@@ -135,34 +135,31 @@ build_graph :: (map: string) -> s64
 
         edges := find_or_add(*graph, node.hash);
 
-        dirs :: []s32.[.[1,0],.[0,1],.[-1,0],.[0,-1]];
-        for dir, d: dirs
+        for f, d: []s32.[.[1,0],.[0,1],.[-1,0],.[0,-1]]
         {
             if edges.*[d].best == S64_MAX continue;
             edges.*[d].best = S64_MAX;
 
             x, y := node.x, node.y;
 
-            if map[(y+dir[1])*(SIZE+1) + x+dir[0]] == #char "#" continue;
+            if map[(y+f[1])*(SIZE+1) + x+f[0]] == #char "#" continue;
 
             r, l : [2]s32;
-            l[0] =  dir[1]; l[1] = -dir[0];
-            r[0] = -dir[1]; r[1] =  dir[0];
+            l[0] =  f[1]; l[1] = -f[0];
+            r[0] = -f[1]; r[1] =  f[0];
 
             // walk until intersection
             while true
             {
-                x, y += dir[0], dir[1];
+                x, y += f[0], f[1];
                 array_add(*edges.*[d].cost, Node.{x=x,y=y}.hash);;
 
                 // intersection
-                if map[(y+dir[1])*(SIZE+1) + x+dir[0]] == #char "#"
+                if map[(y+f[1])*(SIZE+1) + x+f[0]] == #char "#"
                 || map[(y+l[1])*(SIZE+1) + x+l[0]] != #char "#"
                 || map[(y+r[1])*(SIZE+1) + x+r[0]] != #char "#"
                 {
-                    new_node : Node;
-                    new_node.x = x;
-                    new_node.y = y;
+                    new_node := Node.{x=x, y=y};
                     edges.*[d].dest = new_node.hash;
                     find_or_add(*graph, new_node.hash);
                     array_add(*queue, new_node);
