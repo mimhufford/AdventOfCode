@@ -41,7 +41,6 @@ count_cells :: (best_score: s64) -> s64
         if score > best_score continue;
 
         node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
-        assert(node_edges != null);
 
         if node_edges.*[d].best < score continue;
         node_edges.*[d].best = score;
@@ -93,7 +92,6 @@ walk_graph :: () -> s64
         if score >= best_score continue;
 
         node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
-        assert(node_edges != null);
 
         if node_edges.*[d].best <= score continue;
         node_edges.*[d].best = score;
