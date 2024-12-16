@@ -87,15 +87,10 @@ walk_maze :: () -> s64, s64
     }
 
     used_nodes : [..]u64;
-    used_edges : [..]*Edge;
     for paths
     {
         if it.score > best_score continue;
-        for it.edges array_add_if_unique(*used_edges, it);
-    }
-    for used_edges
-    {
-        for it.cost array_add_if_unique(*used_nodes, it);
+        for it.edges for it.cost array_add_if_unique(*used_nodes, it);
     }
 
     return best_score, used_nodes.count + 1;
