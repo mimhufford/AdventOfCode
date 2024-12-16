@@ -23,7 +23,6 @@ Edge :: struct
 {
     dest: u64;
     cost: [..]u64;
-    done: bool;
     best: s64;
 }
 
@@ -139,8 +138,7 @@ build_graph :: (map: string) -> s64
         dirs :: []s32.[.[1,0],.[0,1],.[-1,0],.[0,-1]];
         for dir, d: dirs
         {
-            if edges.*[d].done continue;
-            edges.*[d].done = true;
+            if edges.*[d].best == S64_MAX continue;
             edges.*[d].best = S64_MAX;
 
             x, y := node.x, node.y;
