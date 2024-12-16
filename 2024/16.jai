@@ -11,8 +11,9 @@ day16 :: (input: string) -> string, string
     }
 
     build_graph();
-    part1 := find_shortest_distance();
-    part2 := count_unique_cells(part1);
+    part1 := walk_graph();
+    // part2 := count_unique_cells(part1);
+    part2 := 0;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -123,15 +124,50 @@ Edge :: struct
     done: bool;
 }
 
+walk_graph :: () -> s64
+{
+    best_score := S64_MAX;
+    queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
+    array_add(*queue, .{ 1, SIZE-2, 0, 0 });
+
+    i := 0;
+
+    while i < queue.count
+    {
+        using curr := queue[i];
+        i += 1;
+
+        if score > best_score continue;
+
+        if x == SIZE-2 && y == 1
+        {
+            best_score = min(best_score, score);
+            continue;
+        }
+
+        node := Node.{x = x, y = y};
+        edges := table_find_pointer(*graph, node.hash);
+        assert(edges != null);
+
+        for 0..3
+        {
+            e := edges.*[it];
+            next : Node;
+            next.hash = e.dest;
+            if e.dest == 0 continue; // nothing in this direction
+            if abs(d - it) == 2 continue; // don't go backwards
+            array_add(*queue, .{ next.x, next.y, it, score + e.cost + ifx d != it 1000 });
+        }
+    }
+
+    return best_score;
+}
+
 build_graph :: () -> s64
 {
     init(*graph, 10_000);
     queue : [..]Node;
-
-    start : Node;
-    start.x = 1;
-    start.y = SIZE-2;
-    array_add(*queue, start);
+    array_add(*queue, .{x = 1, y = SIZE-2 });
 
     i := 0;
     while i < queue.count
