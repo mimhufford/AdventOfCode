@@ -10,9 +10,8 @@ day16 :: (input: string) -> string, string
         advance(*input);
     }
 
-    build_graph();
-    part1 := walk_graph();
-    part2 := count_unique_cells(part1);
+    part1 := find_minimum_score();
+    part2 := cells_on_paths_with_score(part1);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -96,8 +95,15 @@ Edge :: struct
     best: s64;
 }
 
-walk_graph :: () -> s64
+cells_on_paths_with_score :: (target: s64) -> s64
 {
+    return 0;
+}
+
+find_minimum_score :: () -> s64
+{
+    build_graph();
+
     best_score := S64_MAX;
     queue : [..]struct { x: s32; y: s32; d: s64; score: s64; };
     array_add(*queue, .{ 1, SIZE-2, 0, 0 });
