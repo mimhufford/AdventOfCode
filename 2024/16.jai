@@ -10,6 +10,7 @@ day16 :: (input: string) -> string, string
         advance(*input);
     }
 
+    build_graph();
     part1 := find_shortest_distance();
     part2 := count_unique_cells(part1);
 
@@ -124,6 +125,7 @@ Edge :: struct
 
 build_graph :: () -> s64
 {
+    init(*graph, 10_000);
     queue : [..]Node;
 
     start : Node;
@@ -147,7 +149,7 @@ build_graph :: () -> s64
 
             x, y := node.x, node.y;
 
-            if map[y+dir[1]][x+dir[0]] == WALL continue; // wall
+            if map[y+dir[1]][x+dir[0]] == WALL continue;
 
             r, l : [2]s32;
             l[0] =  dir[1]; l[1] = -dir[0];
@@ -172,7 +174,6 @@ build_graph :: () -> s64
                 }
             }
         }
-        
     }
 
     return 0;
