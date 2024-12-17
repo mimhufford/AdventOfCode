@@ -18,8 +18,7 @@ day17 :: (input: string) -> string, string
         if v == 4 return a;
         if v == 5 return b;
         if v == 6 return c;
-        assert(false);
-        return S64_MAX;
+        return 0;
     }
 
     output : String_Builder;
