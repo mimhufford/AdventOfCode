@@ -116,11 +116,13 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //      1,7  =>  b = b ^ 7
     //      5,5  =>  out b%8
     //      3,0  =>  jnz 0
+    //
+    //  Need to work out what the algorithm is and reverse it
 
     a, b, c := 0, 0, 0;
     match_index := 0;
 
-    for a_init: 19040000000..S64_MAX
+    for a_init: 52000000000..S64_MAX
     {
         if a_init % 100_000_000 == 0 print("%\n", a_init);
 
