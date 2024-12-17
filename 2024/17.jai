@@ -33,12 +33,10 @@ interpret :: (rom: []s64, a_init : s64) -> []s64
 
     lit_or_reg :: (v: s64) -> s64 #expand
     {
-        if v == {
-            case 4; return a;
-            case 5; return b;
-            case 6; return c;
-            case;   return v;
-        }
+        if v == 4 return a;
+        if v == 5 return b;
+        if v == 6 return c;
+        return v;
     }
 
     while ip < rom.count
