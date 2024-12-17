@@ -13,7 +13,7 @@ day17 :: (input: string) -> string, string
     }
 
     part1 := interpret(memory, a);
-    part2 := quine_hand_compiled(memory);
+    part2 := 0;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -40,14 +40,14 @@ interpret :: (memory: []s64, a_init : s64) -> string
 
         if memory[ip] ==
         {
-            case 0; a = a / (1 << lit_or_reg(memory[ip+1]));
+            case 0; a = a >> lit_or_reg(memory[ip+1]);
             case 1; b = b ^ memory[ip+1];
             case 2; b = lit_or_reg(memory[ip+1]) % 8;
             case 3; if a != 0 ip = memory[ip+1] - 2;
             case 4; b = b ^ c;
             case 5; append(*output, tprint("%,", lit_or_reg(memory[ip+1]) % 8));
-            case 6; b = a / (1 << lit_or_reg(memory[ip+1]));
-            case 7; c = a / (1 << lit_or_reg(memory[ip+1]));
+            case 6; b = a >> lit_or_reg(memory[ip+1]);
+            case 7; c = a >> lit_or_reg(memory[ip+1]);
         }
 
         ip += 2;
@@ -56,53 +56,6 @@ interpret :: (memory: []s64, a_init : s64) -> string
     result := builder_to_string(*output);
     result.count -= 1;
     return result;
-}
-
-quine_interpretted :: (memory: []s64) -> s64
-{
-    for a_init: 0..S64_MAX
-    {
-        ip, a, b, c, match_index := 0, a_init, 0, 0, 0;
-
-        lit_or_reg :: (v: s64) -> s64 #expand
-        {
-            if v <= 3 return v;
-            if v == 4 return a;
-            if v == 5 return b;
-            if v == 6 return c;
-            return 0;
-        }
-
-        while true
-        {
-            if ip >= memory.count
-            {
-                if match_index == memory.count return a_init;
-                continue a_init;
-            }
-
-            if memory[ip] ==
-            {
-                case 0; a = a / (1 << lit_or_reg(memory[ip+1]));
-                case 1; b = b ^ memory[ip+1];
-                case 2; b = lit_or_reg(memory[ip+1]) % 8;
-                case 3; if a != 0 ip = memory[ip+1] - 2;
-                case 4; b = b ^ c;
-                case 6; b = a / (1 << lit_or_reg(memory[ip+1]));
-                case 7; c = a / (1 << lit_or_reg(memory[ip+1]));
-                case 5;
-                {
-                    value := lit_or_reg(memory[ip+1]) % 8;
-                    if value != memory[match_index] continue a_init;
-                    match_index += 1;
-                }
-            }
-
-            ip += 2;
-        }
-    }
-
-    return 0;
 }
 
 quine_hand_compiled :: (memory: []s64) -> s64
@@ -131,6 +84,9 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //  We get 1 output per 3 bits of a, and the required output is 16 digits,
     //  so a needs to have about 48 bits, so somewhere around 281,474,976,710,656
     //  
+    //  2,4,1,2,7,5,4,5,0,3,1,7,5,5,3,0
+    //
+
 
     a, b, c := 0, 0, 0;
     match_index := 0;
