@@ -42,10 +42,10 @@ interpret :: (memory: []s64, a_init : s64) -> string
         {
             case 0; a = a >> lit_or_reg(memory[ip+1]);
             case 1; b = b ^ memory[ip+1];
-            case 2; b = lit_or_reg(memory[ip+1]) % 8;
+            case 2; b = lit_or_reg(memory[ip+1]) & 7;
             case 3; if a != 0 ip = memory[ip+1] - 2;
             case 4; b = b ^ c;
-            case 5; append(*output, tprint("%,", lit_or_reg(memory[ip+1]) % 8));
+            case 5; append(*output, tprint("%,", lit_or_reg(memory[ip+1]) & 7));
             case 6; b = a >> lit_or_reg(memory[ip+1]);
             case 7; c = a >> lit_or_reg(memory[ip+1]);
         }
