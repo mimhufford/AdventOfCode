@@ -67,11 +67,11 @@ count_cells :: (best_score: s64) -> s64
         }
     }
 
-    used_cells : [..]u64;
+    used_cells : Table(u64, void);
     for paths
     {
         if it.score > best_score continue;
-        for it.edges for it.cells array_add_if_unique(*used_cells, it);
+        for it.edges for it.cells find_or_add(*used_cells, it);
     }
 
     return used_cells.count + 1;
