@@ -124,10 +124,13 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //      b = b ^ 2           if the middle bit is on set b to 0, else 2
     //      c = a / (1 << b)    c is a if the middle bit was on, else it's a/4
     //      b = b ^ c           b is 0 or 2, so b either becomes c, or, 0 or 2
-    //      a = a / 8           shift a down 3 bits
     //      b = b ^ 7           flip the last 3 bits
     //      out b % 8           check the last 3 bits
+    //      a = a / 8           shift a down 3 bits
     //
+    //  We get 1 output per 3 bits of a, and the required output is 16 digits,
+    //  so a needs to have about 48 bits, so somewhere around 281,474,976,710,656
+    //  
 
     a, b, c := 0, 0, 0;
     match_index := 0;
