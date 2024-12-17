@@ -1,5 +1,16 @@
 day17 :: (input: string) -> string, string
 {
+    a, memory := parse_data(input);
+    part1 := interpret(memory, a);
+    part2 := hunt_for_quine(memory);
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+parse_data :: (input: string) -> s64, []s64
+{
     advance(*input, 12);
     a := read_s64(*input);
     memory : [..]s64;
@@ -12,41 +23,8 @@ day17 :: (input: string) -> string, string
         advance(*input);
     }
 
-    part1 := interpret(memory, a);
-    part2 := 0;
-    
-    queue : [..] struct { digits: s64; a_init: s64; };
-    array_add(*queue, .{ 1, 0 });
-    for q: queue
-    {
-        for a: q.a_init..q.a_init+7
-        {
-            result := interpret(memory, a);
-            match := true;
-            for i: 0..q.digits-1
-            {
-                if result[i] != memory[i+16-q.digits]
-                {
-                    match = false;
-                    break;
-                }
-            }
-            if match && q.digits == 16
-            {
-                part2 = a;
-                break q;
-            }
-            if match
-            {
-                array_add(*queue, .{ q.digits + 1, a << 3 });
-            }
-        }
-    }
-
-    return tprint("%", part1), tprint("%", part2);
+    return a, memory;
 }
-
-#scope_file
 
 interpret :: (memory: []s64, a_init : s64) -> []s64
 {
@@ -82,4 +60,33 @@ interpret :: (memory: []s64, a_init : s64) -> []s64
     }
 
     return result;
+}
+
+hunt_for_quine :: (memory: []s64) -> s64
+{
+    queue : [..] struct { digits: s64; a_init: s64; };
+    array_add(*queue, .{ 1, 0 });
+
+    for q: queue
+    {
+        for a: q.a_init..q.a_init+7
+        {
+            result := interpret(memory, a);
+            match := true;
+            for i: 0..q.digits-1
+            {
+                if result[i] != memory[i+16-q.digits]
+                {
+                    match = false;
+                    break;
+                }
+            }
+
+            if !match continue;
+            if q.digits == memory.count return a;
+            array_add(*queue, .{ q.digits + 1, a << 3 });
+        }
+    }
+
+    return 0;
 }
