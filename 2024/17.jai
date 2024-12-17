@@ -110,7 +110,7 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //  Compiling my input by hand gives this:
     //      2,4  =>  b = a % 8
     //      1,2  =>  b = b ^ 2
-    //      7,5  =>  c = a / 2^b
+    //      7,5  =>  c = a / (1 << b)
     //      4,5  =>  b = b ^ c
     //      0,3  =>  a = a / 8
     //      1,7  =>  b = b ^ 7
