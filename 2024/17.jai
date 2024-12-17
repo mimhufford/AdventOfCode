@@ -1,10 +1,10 @@
 day17 :: (input: string) -> string, string
 {
     a, rom := parse_data(input);
-    part1 := make_nice_part_1_output(interpret(rom, a));
+    part1 := interpret(rom, a);
     part2 := hunt_for_quine(rom);
 
-    return tprint("%", part1), tprint("%", part2);
+    return tprint("%", make_nice_part_1_output(part1)), tprint("%", part2);
 }
 
 #scope_file
