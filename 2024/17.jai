@@ -114,19 +114,19 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //      4,5  =>  b = b ^ c
     //      0,3  =>  a = a / 8
     //      1,7  =>  b = b ^ 7
-    //      5,5  =>  out b%8
+    //      5,5  =>  out b % 8
     //      3,0  =>  jnz 0
     //
-    //  Need to work out what the algorithm is and reverse it
+    //  Need to work out what the algorithm is and reverse engineer it
     //
-    //    b = a % 8           take the bottom 3 bits of a
-    //    b = b ^ 2           if the middle bit is on set b to 0, else 2
-    //    c = a / (1 << b)    c is a if the middle bit was on, else it's a/4
-    //    b = b ^ c           b is 0 or 2, so b either becomes c, or, 0 or 2
-    //    a = a / 8           shift a down 3 bits
-    //    b = b ^ 7
-    //    out b%8
-    //    jnz 0
+    //    while a != 0
+    //      b = a % 8           take the bottom 3 bits of a
+    //      b = b ^ 2           if the middle bit is on set b to 0, else 2
+    //      c = a / (1 << b)    c is a if the middle bit was on, else it's a/4
+    //      b = b ^ c           b is 0 or 2, so b either becomes c, or, 0 or 2
+    //      a = a / 8           shift a down 3 bits
+    //      b = b ^ 7           flip the last 3 bits
+    //      out b % 8           check the last 3 bits
     //
 
     a, b, c := 0, 0, 0;
