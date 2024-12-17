@@ -118,17 +118,27 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //      3,0  =>  jnz 0
     //
     //  Need to work out what the algorithm is and reverse it
+    //
+    //    b = a % 8           take the bottom 3 bits of a
+    //    b = b ^ 2           if the middle bit is on set b to 0, else 2
+    //    c = a / (1 << b)    c is a if the middle bit was on, else it's a/4
+    //    b = b ^ c           b is 0 or 2, so b either becomes c, or, 0 or 2
+    //    a = a / 8           shift a down 3 bits
+    //    b = b ^ 7
+    //    out b%8
+    //    jnz 0
+    //
 
     a, b, c := 0, 0, 0;
     match_index := 0;
 
-    for a_init: 59200000000..S64_MAX
+    for a_init: 194500000000..S64_MAX
     {
         if a_init % 100_000_000 == 0 print("%\n", a_init);
 
         ip, a, b, c, match_index := 0, a_init, 0, 0, 0;
 
-        while true
+        while a != 0
         {
             b = a % 8;
             b = b ^ 2;
@@ -138,7 +148,6 @@ quine_hand_compiled :: (memory: []s64) -> s64
             b = b ^ 7;
             if b%8 != memory[match_index] continue a_init;
             match_index += 1;
-            if a == 0 break;
         }
 
         if match_index == memory.count return a_init;
