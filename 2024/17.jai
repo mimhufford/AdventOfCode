@@ -75,7 +75,7 @@ hunt_for_quine :: (memory: []s64) -> s64
             match := true;
             for i: 0..q.digits-1
             {
-                if result[i] != memory[i+16-q.digits]
+                if result[i] != memory[i+memory.count-q.digits]
                 {
                     match = false;
                     break;
