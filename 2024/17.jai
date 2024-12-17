@@ -1,10 +1,10 @@
 day17 :: (input: string) -> string, string
 {
-    advance(*input, 12);  a := read_s64(*input);
-    advance(*input, 12);  b := read_s64(*input);
-    advance(*input, 12);  c := read_s64(*input);
-    advance(*input, 9);  ip := 0;
+    advance(*input, 12);
+    a := read_s64(*input);
     memory : [..]s64;
+    for 1..3 skip_to_next_line(*input);
+    advance(*input, 9);
     
     while input
     {
@@ -13,7 +13,7 @@ day17 :: (input: string) -> string, string
     }
 
     part1 := interpret(memory, a);
-    part2 := 0;
+    part2 := quine_hand_compiled(memory);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -81,17 +81,34 @@ quine_hand_compiled :: (memory: []s64) -> s64
     //      out b % 8           check the last 3 bits
     //      a = a / 8           shift a down 3 bits
     //
-    //  We get 1 output per 3 bits of a, and the required output is 16 digits,
-    //  so a needs to have about 48 bits, so somewhere around 281,474,976,710,656
+    //  We get 1 output per 3 bits of a, and the required output is 16 digits
+    //       0  - 2^3  - 1,  outputs 1 digit 
+    //     2^ 3 - 2^6  - 1,  outputs 2 digits
+    //     2^ 6 - 2^9  - 1,  outputs 3 digits
+    //     2^ 9 - 2^12 - 1,  outputs 4 digits
+    //     2^12 - 2^15 - 1,  outputs 5 digits
+    //     2^15 - 2^18 - 1,  outputs 6 digits
+    //     2^18 - 2^21 - 1,  outputs 7 digits
+    //     2^21 - 2^24 - 1,  outputs 8 digits
+    //     2^24 - 2^27 - 1,  outputs 9 digits
+    //     2^27 - 2^30 - 1,  outputs 10 digits
+    //     2^30 - 2^33 - 1,  outputs 11 digits
+    //     2^33 - 2^36 - 1,  outputs 12 digits
+    //     2^36 - 2^39 - 1,  outputs 13 digits
+    //     2^39 - 2^42 - 1,  outputs 14 digits
+    //     2^42 - 2^45 - 1,  outputs 15 digits
+    //     2^45 - 2^48 - 1,  outputs 16 digits
     //  
+    //  answer is between 35,184,372,088,832
+    //               and 281,474,976,710,656
+    //
     //  2,4,1,2,7,5,4,5,0,3,1,7,5,5,3,0
     //
-
 
     a, b, c := 0, 0, 0;
     match_index := 0;
 
-    for a_init: 194500000000..S64_MAX
+    for a_init: 1<<45..1<<48
     {
         if a_init % 100_000_000 == 0 print("%\n", a_init);
 
