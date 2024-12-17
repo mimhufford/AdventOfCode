@@ -22,26 +22,29 @@ day17 :: (input: string) -> string, string
         return S64_MAX;
     }
 
+    output : String_Builder;
+
     while true
     {
         if ip >= memory.count break;
 
         if memory[ip] ==
         {
-            case 0; a = a / (1 << (lit_or_reg(memory[ip+1]) + 1));
+            case 0; a = a / (1 << lit_or_reg(memory[ip+1]));
             case 1; b = b ^ memory[ip+1];
             case 2; b = lit_or_reg(memory[ip+1]) % 8;
             case 3; if a != 0 ip = memory[ip+1] - 2;
             case 4; b = b ^ c;
-            case 5; print("%,", lit_or_reg(memory[ip+1]) % 8);
-            case 6; b = a / (1 << (lit_or_reg(memory[ip+1]) + 1));
-            case 7; c = a / (1 << (lit_or_reg(memory[ip+1]) + 1));
+            case 5; append(*output, tprint("%,", lit_or_reg(memory[ip+1]) % 8));
+            case 6; b = a / (1 << lit_or_reg(memory[ip+1]));
+            case 7; c = a / (1 << lit_or_reg(memory[ip+1]));
         }
 
         ip += 2;
     }
 
-    part1, part2 := 0;
+    part1 := builder_to_string(*output); part1.count -= 1;
+    part2 := 0;
 
     return tprint("%", part1), tprint("%", part2);
 }
