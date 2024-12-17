@@ -32,11 +32,9 @@ count_cells :: (best_score: s64) -> s64
     queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
-    i := 0;
-    while i < queue.count
+    for queue
     {
-        using curr := queue[i];
-        i += 1;
+        using curr := it;
 
         if score > best_score continue;
 
@@ -83,11 +81,9 @@ walk_graph :: () -> s64
     queue : [..] struct { x: s32; y: s32; d: s64; score: s64; };
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
-    i := 0;
-    while i < queue.count
+    for q: queue
     {
-        using curr := queue[i];
-        i += 1;
+        using curr := q;
 
         if score >= best_score continue;
 
@@ -121,11 +117,9 @@ build_graph :: (map: string) -> s64
     queue : [..]Node;
     array_add(*queue, .{x = 1, y = SIZE-2 });
 
-    i := 0;
-    while i < queue.count
+    for queue
     {
-        node := queue[i];
-        i += 1;
+        node := it;
 
         edges := find_or_add(*graph, node.hash);
 
