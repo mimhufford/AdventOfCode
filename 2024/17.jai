@@ -108,7 +108,7 @@ quine_interpretted :: (memory: []s64) -> s64
 quine_hand_compiled :: (memory: []s64) -> s64
 {
     //  Compiling my input by hand gives this:
-    //      2,4  =>  b = a
+    //      2,4  =>  b = a % 8
     //      1,2  =>  b = b ^ 2
     //      7,5  =>  c = a / 2^b
     //      4,5  =>  b = b ^ c
@@ -122,7 +122,7 @@ quine_hand_compiled :: (memory: []s64) -> s64
     a, b, c := 0, 0, 0;
     match_index := 0;
 
-    for a_init: 52000000000..S64_MAX
+    for a_init: 59200000000..S64_MAX
     {
         if a_init % 100_000_000 == 0 print("%\n", a_init);
 
@@ -130,7 +130,7 @@ quine_hand_compiled :: (memory: []s64) -> s64
 
         while true
         {
-            b = a;
+            b = a % 8;
             b = b ^ 2;
             c = a / (1 << b);
             b = b ^ c;
