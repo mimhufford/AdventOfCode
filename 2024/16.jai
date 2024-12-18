@@ -36,10 +36,7 @@ count_cells :: (best_score: s64) -> s64
     {
         using curr := it;
 
-        if score > best_score continue;
-
         node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
-
         if node_edges.*[d].best < score continue;
         node_edges.*[d].best = score;
 
@@ -51,15 +48,16 @@ count_cells :: (best_score: s64) -> s64
 
         for 0..3
         {
-            e := node_edges.*[it];
-            next_node := Node.{hash = e.dest};
-            if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
+            e := node_edges.*[it];
+            if e.dest == 0 continue; // nothing in this direction
+            next_node := Node.{hash = e.dest};
+            next_score := score + e.cells.count + ifx d != it 1000;
+            if next_score > best_score continue;
             next := array_add(*queue);
-            next.x = next_node.x;
-            next.y = next_node.y;
+            next.x, next.y = next_node.x, next_node.y;
             next.d = it;
-            next.score = score + e.cells.count + ifx d != it 1000;
+            next.score = next_score;
             array_add(*next.edges, ..edges);
             array_add(*next.edges, node_edges.data + it);
         }
@@ -85,26 +83,20 @@ walk_graph :: () -> s64
     {
         using curr := q;
 
-        if score >= best_score continue;
-
         node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
-
         if node_edges.*[d].best <= score continue;
         node_edges.*[d].best = score;
 
-        if x == SIZE-2 && y == 1
-        {
-            best_score = min(best_score, score);
-            continue;
-        }
-
         for 0..3
         {
-            e := node_edges.*[it];
-            next := Node.{hash = e.dest};
-            if e.dest == 0 continue; // nothing in this direction
             if abs(d - it) == 2 continue; // don't go backwards
-            array_add(*queue, .{ next.x, next.y, it, score + e.cells.count + ifx d != it 1000 });
+            e := node_edges.*[it];
+            if e.dest == 0 continue; // nothing in this direction
+            next := Node.{hash = e.dest};
+            next_score := score + e.cells.count + ifx d != it 1000;
+            if next_score >= best_score continue;
+            if next.x == SIZE-2 && next.y == 1 { best_score = min(best_score, next_score); continue; }
+            array_add(*queue, .{ next.x, next.y, it, next_score });
         }
     }
 
