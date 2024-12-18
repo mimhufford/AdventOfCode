@@ -25,9 +25,14 @@ queue : [..] struct { x: s64; y: s64; steps: s64; };
 
 find_first_impossible :: () -> string
 {
-    time := 1024;
-    while true { time += 1; if !find_shortest_path(time) break; }
-    for y: 0..SIZE-1 for x: 0..SIZE-1 if map[y][x] == time-1 return tprint("%,%", x, y);
+    l, r := 1024, 3450;
+    while l <= r
+    {
+        m := (l+r) / 2;
+        if find_shortest_path(m) l = m + 1;
+        else                     r = m - 1;
+    }
+    for y: 0..SIZE-1 for x: 0..SIZE-1 if map[y][x] == l-1 return tprint("%,%", x, y);
     return "";
 }
 
