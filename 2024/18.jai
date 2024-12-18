@@ -1,15 +1,6 @@
 day18 :: (input: string) -> string, string
 {
-    for map for * it it.* = S64_MAX;
-
-    for 0..S64_MAX
-    {
-        x := read_s64(*input); advance(*input);
-        y := read_s64(*input);
-        map[y][x] = it;
-        if !input break;
-    }
-
+    parse_map(input);
     part1 := find_shortest_path(1024);
     part2 := find_first_impossible();
 
@@ -20,26 +11,24 @@ day18 :: (input: string) -> string, string
 
 SIZE :: 71;
 map : [SIZE][SIZE]s64;
-seen : [SIZE][SIZE]bool;
-queue : [..] struct { x: s64; y: s64; steps: s64; };
 
-find_first_impossible :: () -> string
+parse_map :: (input: string)
 {
-    l, r := 1024, 3450;
-    while l <= r
+    for map for * it it.* = S64_MAX;
+
+    for 0..S64_MAX
     {
-        m := (l+r) / 2;
-        if find_shortest_path(m) l = m + 1;
-        else                     r = m - 1;
+        x := read_s64(*input); advance(*input);
+        y := read_s64(*input);
+        map[y][x] = it;
+        if !input break;
     }
-    for y: 0..SIZE-1 for x: 0..SIZE-1 if map[y][x] == l-1 return tprint("%,%", x, y);
-    return "";
 }
 
 find_shortest_path :: (time: s64) -> s64
 {
-    memset(seen.data, 0, SIZE*SIZE);
-    array_reset_keeping_memory(*queue);
+    seen : [SIZE][SIZE]bool;
+    queue : [..] struct { x: s64; y: s64; steps: s64; };
     array_add(*queue, .{ 0, 0, 0 });
 
     for queue
@@ -63,4 +52,17 @@ find_shortest_path :: (time: s64) -> s64
     }
 
     return 0;
+}
+
+find_first_impossible :: () -> string
+{
+    l, r := 1024, 3450;
+    while l <= r
+    {
+        m := (l+r) / 2;
+        if find_shortest_path(m) l = m + 1;
+        else                     r = m - 1;
+    }
+    for y: 0..SIZE-1 for x: 0..SIZE-1 if map[y][x] == l-1 return tprint("%,%", x, y);
+    return "";
 }
