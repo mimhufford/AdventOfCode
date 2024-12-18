@@ -20,6 +20,8 @@ day18 :: (input: string) -> string, string
 
 SIZE :: 71;
 map : [SIZE][SIZE]s64;
+seen : [SIZE][SIZE]bool;
+queue : [..] struct { x: s64; y: s64; steps: s64; };
 
 find_first_impossible :: () -> string
 {
@@ -31,8 +33,8 @@ find_first_impossible :: () -> string
 
 find_shortest_path :: (time: s64) -> s64
 {
-    seen : [SIZE][SIZE]bool;
-    queue : [..] struct { x: s64; y: s64; steps: s64; };
+    memset(seen.data, 0, SIZE*SIZE);
+    array_reset_keeping_memory(*queue);
     array_add(*queue, .{ 0, 0, 0 });
 
     for queue
