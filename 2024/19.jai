@@ -17,8 +17,13 @@ day19 :: (input: string) -> string, string
 
 #scope_file
 
+cache : Table(string, s64);
+
 count_combos :: (design: string, patterns: []string) -> s64
 {
+    cached_result := table_find_pointer(*cache, design);
+    if cached_result return cached_result.*;
+
     if design.count == 0 return 1;
 
     combos := 0;
@@ -31,6 +36,7 @@ count_combos :: (design: string, patterns: []string) -> s64
         }
     }
 
+    table_add(*cache, design, combos);
     return combos;
 }
 
