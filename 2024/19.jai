@@ -7,7 +7,9 @@ day19 :: (input: string) -> string, string
     while input
     {
         design := read_word(*input);
-        part1 += ifx is_possible(design, patterns) 1;
+        combos := count_combos(design, patterns);
+        part1 += ifx combos then 1;
+        part2 += combos;
     }
     
     return tprint("%", part1), tprint("%", part2);
@@ -15,22 +17,21 @@ day19 :: (input: string) -> string, string
 
 #scope_file
 
-is_possible :: (design: string, patterns: []string) -> bool
+count_combos :: (design: string, patterns: []string) -> s64
 {
-    if design.count == 0 return true;
+    combos := 0;
+
+    if design.count == 0 return 1;
 
     for pattern: patterns
     {
         if starts_with(design, pattern)
         {
-            if is_possible(advance(design, pattern.count), patterns)
-            {
-                return true;
-            }
+            combos += count_combos(advance(design, pattern.count), patterns);
         }
     }
 
-    return false;
+    return combos;
 }
 
 parse_patterns :: (s: *string) -> []string
