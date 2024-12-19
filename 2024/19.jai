@@ -19,9 +19,9 @@ day19 :: (input: string) -> string, string
 
 count_combos :: (design: string, patterns: []string) -> s64
 {
-    combos := 0;
-
     if design.count == 0 return 1;
+
+    combos := 0;
 
     for pattern: patterns
     {
