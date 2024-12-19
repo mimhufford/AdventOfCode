@@ -23,14 +23,15 @@ is_possible :: (design: string, patterns: []string) -> bool
     {
         if starts_with(design, pattern)
         {
-            return is_possible(advance(design, pattern.count), patterns);
+            if is_possible(advance(design, pattern.count), patterns)
+            {
+                return true;
+            }
         }
     }
 
     return false;
 }
-
-// 167 too low
 
 parse_patterns :: (s: *string) -> []string
 {
