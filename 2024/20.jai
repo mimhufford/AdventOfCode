@@ -36,6 +36,7 @@ bfs :: (sx: s64, sy: s64, ex: s64, ey: s64, start_to_end: bool)
     {
         using curr := it;
 
+        seen[y][x] = true;
         if start_to_end map[y][x].cost_s2e = steps;
         else            map[y][x].cost_e2s = steps;
 
