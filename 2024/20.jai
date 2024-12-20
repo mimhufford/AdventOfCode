@@ -4,10 +4,12 @@ day20 :: (input: string) -> string, string
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
+        map[y][x] = S64_MAX;
+
         if input[y * (SIZE+1) + x] == {
             case #char "S"; sx, sy = x, y;
             case #char "E"; ex, ey = x, y;
-            case #char "#"; map[y][x].wall = true;
+            case #char "#"; map[y][x] = -1;
         }
     }
 
@@ -20,7 +22,7 @@ day20 :: (input: string) -> string, string
 #scope_file
 
 SIZE :: 141;
-map : [SIZE][SIZE] struct { wall: bool; cost_s2e := S64_MAX; };
+map : [SIZE][SIZE] s64;
 
 count_cheats :: () -> s64, s64
 {
@@ -28,7 +30,7 @@ count_cheats :: () -> s64, s64
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
-        if map[y][x].cost_s2e == S64_MAX continue;
+        if map[y][x] == -1 continue;
 
         for dy: -20..20
         {
@@ -39,8 +41,8 @@ count_cheats :: () -> s64, s64
                 nx, ny := x + dx, y + dy;
                 if nx < 0 || nx >= SIZE continue;
                 if ny < 0 || ny >= SIZE continue;
-                if map[ny][nx].cost_s2e == S64_MAX continue;
-                if map[y][x].cost_s2e - map[ny][nx].cost_s2e - abs(ny - y) - abs(nx - x) < 100 continue;
+                if map[ny][nx] == -1 continue;
+                if map[y][x] - map[ny][nx] - abs(ny - y) - abs(nx - x) < 100 continue;
                 lil_cheats, big_cheats += ifx moves == 2 then 1, 1;
             }
         }
@@ -60,7 +62,7 @@ bfs :: (sx: s64, sy: s64, ex: s64, ey: s64)
         using curr := it;
 
         seen[y][x] = true;
-        map[y][x].cost_s2e = steps;
+        map[y][x] = steps;
 
         if x == ex && y == ey return;
 
@@ -69,7 +71,7 @@ bfs :: (sx: s64, sy: s64, ex: s64, ey: s64)
             nx, ny := x + d[0], y + d[1];
             if nx < 0 || nx >= SIZE continue;
             if ny < 0 || ny >= SIZE continue;
-            if map[ny][nx].wall continue;
+            if map[ny][nx] == -1 continue;
             if seen[ny][nx] continue;
             seen[ny][nx] = true;
             array_add(*queue, .{ nx, ny, steps + 1 });
