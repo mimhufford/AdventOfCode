@@ -1,6 +1,6 @@
 day20 :: (input: string) -> string, string
 {
-    sx, sy, ex, ey : s64;
+    sx, sy : s64;
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
@@ -8,12 +8,11 @@ day20 :: (input: string) -> string, string
 
         if input[y * (SIZE+1) + x] == {
             case #char "S"; sx, sy = x, y;
-            case #char "E"; ex, ey = x, y;
             case #char "#"; map[y][x] = -1;
         }
     }
 
-    bfs(sx, sy, ex, ey);
+    bfs(sx, sy);
     part1, part2 := count_cheats();
 
     return tprint("%", part1), tprint("%", part2);
@@ -48,7 +47,7 @@ count_cheats :: () -> s64, s64
     return lil_cheats, big_cheats;
 }
 
-bfs :: (sx: s64, sy: s64, ex: s64, ey: s64)
+bfs :: (sx: s64, sy: s64)
 {
     seen : [SIZE][SIZE]bool;
     queue : [..] struct { x: s64; y: s64; steps: s64; };
@@ -60,8 +59,6 @@ bfs :: (sx: s64, sy: s64, ex: s64, ey: s64)
 
         seen[y][x] = true;
         map[y][x] = steps;
-
-        if x == ex && y == ey return;
 
         for d: []s32.[.[1,0],.[0,1],.[-1,0],.[0,-1]]
         {
