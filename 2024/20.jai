@@ -14,10 +14,11 @@ day20 :: (input: string) -> string, string
     bfs(sx, sy, ex, ey, start_to_end = true);
     bfs(ex, ey, sx, sy, start_to_end = false);
 
-    print("%\n", map[sy][sx]);
-    print("%\n", map[ey][ex]);
+    baseline_cost := map[ey][ex].cost_s2e;
 
-    part1, part2 := 0;
+    part1 := find_cheats(baseline_cost, 100);
+    part2 := 0;
+
     return tprint("%", part1), tprint("%", part2);
 }
 
@@ -25,6 +26,28 @@ day20 :: (input: string) -> string, string
 
 SIZE :: 141;
 map : [SIZE][SIZE] struct { wall: bool; cost_s2e := S64_MAX; cost_e2s := S64_MAX; };
+
+find_cheats :: (baseline: s64, min_saving: s64) -> s64
+{
+    cheats := 0;
+
+    for y: 0..SIZE-1 for x: 0..SIZE-2
+    {
+        if map[y][x].cost_s2e == S64_MAX continue;
+
+        for d: []s32.[.[2,0],.[0,2],.[-2,0],.[0,-2]]
+        {
+            nx, ny := x + d[0], y + d[1];
+            if nx < 0 || nx >= SIZE continue;
+            if ny < 0 || ny >= SIZE continue;
+            if map[ny][nx].cost_e2s == S64_MAX continue;
+            cost := map[y][x].cost_s2e + map[ny][nx].cost_e2s + 2;
+            if cost < baseline - min_saving then cheats += 1;
+        }
+    }
+
+    return cheats;
+}
 
 bfs :: (sx: s64, sy: s64, ex: s64, ey: s64, start_to_end: bool)
 {
