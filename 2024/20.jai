@@ -23,7 +23,7 @@ day20 :: (input: string) -> string, string
 
 #scope_file
 
-SIZE :: 50;
+SIZE :: 141;
 map : [SIZE][SIZE] struct { wall: bool; cost_s2e := S64_MAX; cost_e2s := S64_MAX; };
 
 bfs :: (sx: s64, sy: s64, ex: s64, ey: s64, start_to_end: bool)
