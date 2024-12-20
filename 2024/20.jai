@@ -17,7 +17,7 @@ day20 :: (input: string) -> string, string
     baseline_cost := map[ey][ex].cost_s2e;
 
     part1 := count_cheats(baseline_cost, 2);
-    part2 := count_cheats(baseline_cost, 20); // 982421 too low
+    part2 := count_cheats(baseline_cost, 20);
 
     return tprint("%", part1), tprint("%", part2);
 }
