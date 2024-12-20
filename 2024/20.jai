@@ -2,7 +2,7 @@ day20 :: (input: string) -> string, string
 {
     sx, sy, ex, ey : s64;
 
-    for y: 0..SIZE-1 for x: 0..SIZE-2
+    for y: 0..SIZE-1 for x: 0..SIZE-1
     {
         if input[y * (SIZE+1) + x] == {
             case #char "S"; sx, sy = x, y;
@@ -16,7 +16,7 @@ day20 :: (input: string) -> string, string
 
     baseline_cost := map[ey][ex].cost_s2e;
 
-    part1 := find_cheats(baseline_cost, 100);
+    part1 := count_cheats(baseline_cost, 100);
     part2 := 0;
 
     return tprint("%", part1), tprint("%", part2);
@@ -27,7 +27,7 @@ day20 :: (input: string) -> string, string
 SIZE :: 141;
 map : [SIZE][SIZE] struct { wall: bool; cost_s2e := S64_MAX; cost_e2s := S64_MAX; };
 
-find_cheats :: (baseline: s64, min_saving: s64) -> s64
+count_cheats :: (baseline: s64, min_saving: s64) -> s64
 {
     cheats := 0;
 
@@ -42,7 +42,7 @@ find_cheats :: (baseline: s64, min_saving: s64) -> s64
             if ny < 0 || ny >= SIZE continue;
             if map[ny][nx].cost_e2s == S64_MAX continue;
             cost := map[y][x].cost_s2e + map[ny][nx].cost_e2s + 2;
-            if cost < baseline - min_saving then cheats += 1;
+            cheats += ifx cost <= baseline - min_saving then 1;
         }
     }
 
@@ -59,7 +59,6 @@ bfs :: (sx: s64, sy: s64, ex: s64, ey: s64, start_to_end: bool)
     {
         using curr := it;
 
-        seen[y][x] = true;
         if start_to_end map[y][x].cost_s2e = steps;
         else            map[y][x].cost_e2s = steps;
 
