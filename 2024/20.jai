@@ -16,8 +16,7 @@ day20 :: (input: string) -> string, string
 
     baseline_cost := map[ey][ex].cost_s2e;
 
-    part1 := count_cheats(baseline_cost, 2);
-    part2 := count_cheats(baseline_cost, 20);
+    part1, part2 := count_cheats(baseline_cost);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -27,31 +26,31 @@ day20 :: (input: string) -> string, string
 SIZE :: 141;
 map : [SIZE][SIZE] struct { wall: bool; cost_s2e := S64_MAX; cost_e2s := S64_MAX; };
 
-count_cheats :: (baseline: s64, search_distance: s64) -> s64
+count_cheats :: (baseline: s64) -> s64, s64
 {
-    cheats := 0;
+    lil_cheats, big_cheats := 0;
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
         if map[y][x].cost_s2e == S64_MAX continue;
 
-        for dy: -search_distance..search_distance
+        for dy: -20..20
         {
-            for dx: -search_distance..search_distance
+            for dx: -20..20
             {
-                cheat_moves := abs(dx) + abs(dy);
-                if cheat_moves > search_distance continue;
+                moves := abs(dx) + abs(dy);
+                if moves > 20 continue;
                 nx, ny := x + dx, y + dy;
                 if nx < 0 || nx >= SIZE continue;
                 if ny < 0 || ny >= SIZE continue;
                 if map[ny][nx].cost_e2s == S64_MAX continue;
-                cost := map[y][x].cost_s2e + map[ny][nx].cost_e2s + cheat_moves;
-                cheats += ifx baseline - cost >= 100 then 1;
+                if baseline - (map[y][x].cost_s2e + map[ny][nx].cost_e2s + moves) < 100 continue;
+                lil_cheats, big_cheats += ifx moves == 2 then 1, 1;
             }
         }
     }
 
-    return cheats;
+    return lil_cheats, big_cheats;
 }
 
 bfs :: (sx: s64, sy: s64, ex: s64, ey: s64, start_to_end: bool)
