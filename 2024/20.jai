@@ -4,11 +4,10 @@ day20 :: (input: string) -> string, string
 
     for y: 0..SIZE-1 for x: 0..SIZE-1
     {
-        map[y][x] = S64_MAX;
-
         if input[y * (SIZE+1) + x] == {
-            case #char "S"; sx, sy = x, y;
             case #char "#"; map[y][x] = -1;
+            case #char "S"; sx, sy = x, y; #through;
+            case; map[y][x] = S64_MAX;
         }
     }
 
