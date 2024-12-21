@@ -68,13 +68,7 @@ enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
         for ways
         {
             print(" - ");
-            for queue[it].moves
-            {
-                s: string;
-                s.data = *it;
-                s.count = 1;
-                print("%", s);
-            }
+            for queue[it].moves print(str(it));
             print("\n");
         }
     }
@@ -136,13 +130,7 @@ enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
         for ways
         {
             print(" - ");
-            for queue[it].moves
-            {
-                s: string;
-                s.data = *it;
-                s.count = 1;
-                print("%", s);
-            }
+            for queue[it].moves print(str(it));
             print("\n");
         }
     }
