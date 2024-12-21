@@ -5,7 +5,7 @@ day21 :: (input: string) -> string, string
     while input
     {
         code := read_word(*input);
-        presses := enter_numpad(code);
+        presses := enter_num_pad(code);
         print("% %\n", code, presses);
         break;
     }
@@ -15,15 +15,16 @@ day21 :: (input: string) -> string, string
     return tprint("%", part1), tprint("%", part2);
 }
 
-key_pos : [128]Vector2;
-key_dir : [128]Vector2;
+#scope_file
 
-enter_numpad :: (code: string, start := #char "A") -> s64
+num_pad, dir_pad : [128]Vector2;
+
+enter_num_pad :: (code: string, start := #char "A") -> s64
 {
     if !code return 0;
 
-    curr_key_pos := key_pos[start];
-    next_key_pos := key_pos[code[0]];
+    curr_key_pos := num_pad[start];
+    next_key_pos := num_pad[code[0]];
     
     diff := next_key_pos - curr_key_pos;
     steps := cast(s64)(abs(diff.x) + abs(diff.y));
@@ -61,7 +62,7 @@ enter_numpad :: (code: string, start := #char "A") -> s64
         }
     }
 
-    #if true
+    #if 1
     {
         print("% to %: % steps, % ways, % queued\n", start - #char "0", code[0] - #char "0", steps, ways.count, queue.count);
         for ways
@@ -78,18 +79,18 @@ enter_numpad :: (code: string, start := #char "A") -> s64
         }
     }
 
-    for ways enter_dirpad(queue[it].moves);
+    for ways enter_dir_pad(queue[it].moves);
 
-    enter_numpad(advance(code), code[0]);
+    enter_num_pad(advance(code), code[0]);
 
     return 1;
 }
 
-enter_dirpad :: (moves: []u8, depth := 2) -> s64
+enter_dir_pad :: (moves: []u8, start := #char "A", depth := 2) -> s64
 {
     if !depth return 0;
 
-    return enter_dirpad(moves, depth - 1);
+    return enter_dir_pad(moves, start, depth - 1);
 }
 
 dir_key :: (d: Vector2) -> u8
@@ -109,28 +110,21 @@ manhattan_distance :: (a: Vector2, b: Vector2) -> s64
 
 init_keys :: ()
 {
-    // keypad
-    key_pos[#char "7"] = .{0, 0};
-    key_pos[#char "8"] = .{1, 0};  // +---+---+---+
-    key_pos[#char "9"] = .{2, 0};  // | 7 | 8 | 9 |
-    key_pos[#char "4"] = .{0, 1};  // +---+---+---+
-    key_pos[#char "5"] = .{1, 1};  // | 4 | 5 | 6 |   favour going right and up
-    key_pos[#char "6"] = .{2, 1};  // +---+---+---+   to avoid landing in the void
-    key_pos[#char "1"] = .{0, 2};  // | 1 | 2 | 3 |
-    key_pos[#char "2"] = .{1, 2};  // +---+---+---+
-    key_pos[#char "3"] = .{2, 2};  //     | 0 | A |
-    key_pos[#char "0"] = .{1, 3};  //     +---+---+
-    key_pos[#char "A"] = .{2, 3};
+    num_pad[#char "7"] = .{0, 0};
+    num_pad[#char "8"] = .{1, 0};  // +---+---+---+
+    num_pad[#char "9"] = .{2, 0};  // | 7 | 8 | 9 |
+    num_pad[#char "4"] = .{0, 1};  // +---+---+---+
+    num_pad[#char "5"] = .{1, 1};  // | 4 | 5 | 6 |   favour going right and up
+    num_pad[#char "6"] = .{2, 1};  // +---+---+---+   to avoid landing in the void
+    num_pad[#char "1"] = .{0, 2};  // | 1 | 2 | 3 |
+    num_pad[#char "2"] = .{1, 2};  // +---+---+---+
+    num_pad[#char "3"] = .{2, 2};  //     | 0 | A |
+    num_pad[#char "0"] = .{1, 3};  //     +---+---+
+    num_pad[#char "A"] = .{2, 3};
 
-    // dirpad
-    key_pos[#char "^"] = .{1, 0};  //     +---+---+
-    key_pos[#char "<"] = .{0, 1};  //     | ^ | A |
-    key_pos[#char "v"] = .{1, 1};  // +---+---+---+   favour going right and down
-    key_pos[#char ">"] = .{2, 1};  // | < | v | > |   to avoid landing in the void
-    key_pos[#char "a"] = .{2, 0};  // +---+---+---+
-
-    key_dir[#char "^"] = .{ 0,-1};
-    key_dir[#char "<"] = .{-1, 0};
-    key_dir[#char "v"] = .{ 0, 1};
-    key_dir[#char ">"] = .{ 1, 0};
+    dir_pad[#char "^"] = .{1, 0};  //     +---+---+
+    dir_pad[#char "<"] = .{0, 1};  //     | ^ | A |
+    dir_pad[#char "v"] = .{1, 1};  // +---+---+---+   favour going right and down
+    dir_pad[#char ">"] = .{2, 1};  // | < | v | > |   to avoid landing in the void
+    dir_pad[#char "A"] = .{2, 0};  // +---+---+---+
 }
