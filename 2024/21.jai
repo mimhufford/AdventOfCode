@@ -67,10 +67,11 @@ enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
         print("% to %: % steps, % ways, % queued\n", str(start), str(code[0]), steps, ways.count, queue.count);
         for ways
         {
-            print(" - ");
+            print(" %) ", it_index+1);
             for queue[it].moves print(str(it));
             print("\n");
         }
+        print("\n");
     }
 
     for ways enter_dir_pad(queue[it].moves);
@@ -129,11 +130,14 @@ enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
         print("% to %: % steps, % ways, % queued\n", str(start), str(moves[0]), steps, ways.count, queue.count);
         for ways
         {
-            print(" - ");
+            print(" %) ", it_index+1);
             for queue[it].moves print(str(it));
             print("\n");
         }
+        print("\n");
     }
+
+    for ways enter_dir_pad(.{queue[it].moves.count - 1, queue[it].moves.data + 1}, queue[it].moves[0], depth - 1);
 
     return 0;
 }
