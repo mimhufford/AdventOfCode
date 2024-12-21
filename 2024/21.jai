@@ -8,9 +8,10 @@ day21 :: (input: string) -> string, string
     {
         code := read_word(*input);
         number := read_s64(*tprint(code));
+        print("%\n====\n", code);
         presses := enter_num_pad(code);
         part1 += number * presses;
-        print("%: %*% = %\n", code, number, presses, number * presses);
+        print("====\n%: %*% = %\n", code, number, presses, number * presses);
         break;
     }
 
@@ -21,77 +22,88 @@ day21 :: (input: string) -> string, string
 
 num_pad, dir_pad : [128]Vector2;
 
-enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
+enter_num_pad :: (keys: string) -> s64
 {
-    if !code return 0;
+    result := 0;
+    curr_key : u8 = #char "A";
 
-    curr_key_pos := num_pad[start];
-    next_key_pos := num_pad[code[0]];
-    
-    diff := next_key_pos - curr_key_pos;
-    steps := cast(s64)(abs(diff.x) + abs(diff.y));
-
-    queue : [..] struct { pos: Vector2; steps: s64; moves: [..]u8; };
-    first := array_add(*queue);
-    first.pos = curr_key_pos;
-
-    ways : [..]s64;
-
-    for queue
+    for next_key: keys
     {
-        if it.pos == next_key_pos { array_add(*it.moves, #char "A"); array_add(*ways, it_index); continue; }
-        if it.steps == steps continue;
+        defer curr_key = next_key;
 
-        curr_item := it;
+        diff := num_pad[next_key] - num_pad[curr_key];
+        max_steps := cast(s64)(abs(diff.x) + abs(diff.y));
 
-        for d: Vector2.[.{1,0},.{0,1},.{-1,0},.{0,-1}]
+        queue : [..] struct { pos: Vector2; steps: s64; keys: [..]u8; };
+        first := array_add(*queue);
+        first.pos = num_pad[curr_key];
+
+        ways : [..]s64;
+
+        for queue
         {
-            next_pos := curr_item.pos + d;
-            
-            // avoid the void
-            if next_pos.x == 0 && next_pos.y == 3 continue;
-            
-            // don't move away from the goal
-            steps_left := steps - curr_item.steps;
-            if manhattan_distance(next_pos, next_key_pos) > steps_left continue;
+            if it.pos == num_pad[next_key]
+            {
+                array_add(*it.keys, #char "A");
+                array_add(*ways, it_index);
+                continue;
+            }
 
-            // all good fam
-            next_item := array_add(*queue);
-            next_item.pos = next_pos;
-            next_item.steps = curr_item.steps + 1;
-            array_add(*next_item.moves, ..curr_item.moves);
-            array_add(*next_item.moves, dir_key(d));
+            if it.steps == max_steps continue;
+
+            curr_item := it;
+
+            for d: Vector2.[.{1,0},.{0,1},.{-1,0},.{0,-1}]
+            {
+                next_pos := curr_item.pos + d;
+                
+                // avoid the void
+                if next_pos.x == 0 && next_pos.y == 3 continue;
+                
+                // don't move away from the goal
+                steps_left := max_steps - curr_item.steps;
+                if manhattan_distance(next_pos, num_pad[next_key]) > steps_left continue;
+
+                // all good fam
+                next_item := array_add(*queue);
+                next_item.pos = next_pos;
+                next_item.steps = curr_item.steps + 1;
+                array_add(*next_item.keys, ..curr_item.keys);
+                array_add(*next_item.keys, dir_key(d));
+            }
         }
+
+        #if 1
+        {
+            print("% to %\n", str(curr_key), str(next_key));
+            for ways
+            {
+                print(" %: ", it_index+1);
+                for queue[it].keys print(str(it));
+                print("\n");
+            }
+        }
+        
+        best := S64_MAX;
+        for ways best = min(best, enter_dir_pad(queue[it].keys));
+        result += best;
     }
 
-    #if 1
-    {
-        print("% to %\n", str(start), str(code[0]));
-        for ways
-        {
-            print(" %: ", it_index+1);
-            for queue[it].moves print(str(it));
-            print("\n");
-        }
-    }
-
-    result := S64_MAX;
-    for ways result = min(result, enter_dir_pad(queue[it].moves));
-    return result + enter_num_pad(advance(code), code[0]);
+    return result;
 }
 
-enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
+enter_dir_pad :: (keys: []u8, start : u8 = #char "A", depth := 2) -> s64
 {
     if !depth return 0;
-    if !moves return 0;
+    if !keys return 0;
 
     curr_key_pos := dir_pad[start];
-    next_key_pos := dir_pad[moves[0]];
+    next_key_pos := dir_pad[keys[0]];
     
     diff := next_key_pos - curr_key_pos;
     steps := cast(s64)(abs(diff.x) + abs(diff.y));
 
-    queue : [..] struct { pos: Vector2; steps: s64; moves: [..]u8; };
+    queue : [..] struct { pos: Vector2; steps: s64; keys: [..]u8; };
     first := array_add(*queue);
     first.pos = curr_key_pos;
 
@@ -119,24 +131,24 @@ enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
             next_item := array_add(*queue);
             next_item.pos = next_pos;
             next_item.steps = curr_item.steps + 1;
-            array_add(*next_item.moves, ..curr_item.moves);
-            array_add(*next_item.moves, dir_key(d));
+            array_add(*next_item.keys, ..curr_item.keys);
+            array_add(*next_item.keys, dir_key(d));
         }
     }
 
     #if 1
     {
-        print("% to %\n", str(start), str(moves[0]));
+        print("% to %\n", str(start), str(keys[0]));
         for ways
         {
             print(" %: ", it_index+1);
-            for queue[it].moves print(str(it));
+            for queue[it].keys print(str(it));
             print("\n");
         }
     }
 
     result := S64_MAX;
-    for ways result = min(result, enter_dir_pad(.{queue[it].moves.count - 1, queue[it].moves.data + 1}, queue[it].moves[0], depth - 1));
+    for ways result = min(result, enter_dir_pad(.{queue[it].keys.count - 1, queue[it].keys.data + 1}, queue[it].keys[0], depth - 1));
     return result;
 }
 
