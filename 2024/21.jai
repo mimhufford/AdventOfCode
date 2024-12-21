@@ -28,14 +28,15 @@ enter_numpad :: (code: string, start := #char "A") -> s64
     diff := next_key_pos - curr_key_pos;
     steps := cast(s64)(abs(diff.x) + abs(diff.y));
 
-    queue : [..] struct { pos: Vector2; steps: s64; };
-    array_add(*queue, .{ curr_key_pos, 0 });
+    queue : [..] struct { pos: Vector2; steps: s64; moves: [..]u8; };
+    first := array_add(*queue);
+    first.pos = curr_key_pos;
 
-    ways := 0;
+    ways : [..]s64;
 
     for queue
     {
-        if it.pos == next_key_pos { ways += 1; continue; }
+        if it.pos == next_key_pos { array_add(*ways, it_index); continue; }
         if it.steps == steps continue;
 
         curr_item := it;
@@ -52,11 +53,30 @@ enter_numpad :: (code: string, start := #char "A") -> s64
             if manhattan_distance(next_pos, next_key_pos) > steps_left continue;
 
             // all good fam
-            array_add(*queue, .{ next_pos, curr_item.steps + 1 });
+            next_item := array_add(*queue);
+            next_item.pos = next_pos;
+            next_item.steps = curr_item.steps + 1;
+            array_add(*next_item.moves, ..curr_item.moves);
+            array_add(*next_item.moves, dir_key(d));
         }
     }
 
-    print("% > %: % steps, % ways, % queued\n", start - #char "0", code[0] - #char "0", steps, ways, queue.count);
+    #if true
+    {
+        print("% to %: % steps, % ways, % queued\n", start - #char "0", code[0] - #char "0", steps, ways.count, queue.count);
+        for ways
+        {
+            print(" - ");
+            for queue[it].moves
+            {
+                s: string;
+                s.data = *it;
+                s.count = 1;
+                print("%", s);
+            }
+            print("\n");
+        }
+    }
 
     enter_numpad(advance(code), code[0]);
 
@@ -65,6 +85,16 @@ enter_numpad :: (code: string, start := #char "A") -> s64
 
 enter_dirpad :: () -> s64
 {
+    return 0;
+}
+
+dir_key :: (d: Vector2) -> u8
+{
+    if d.x == -1 && d.y ==  0 return #char "<";
+    if d.x ==  1 && d.y ==  0 return #char ">";
+    if d.x ==  0 && d.y ==  1 return #char "v";
+    if d.x ==  0 && d.y == -1 return #char "^";
+    assert(false);
     return 0;
 }
 
