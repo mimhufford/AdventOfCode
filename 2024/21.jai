@@ -8,8 +8,8 @@ day21 :: (input: string) -> string, string
     {
         code := read_word(*input);
         number := read_s64(*tprint(code));
-        presses := enter_num_pad(code);
-        part1 += number * presses;
+        part1 += number * enter_num_pad(code, 2);
+        part2 += number * enter_num_pad(code, 26);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -19,7 +19,7 @@ day21 :: (input: string) -> string, string
 
 num_pad, dir_pad : [128]Vector2;
 
-enter_num_pad :: (keys: string) -> s64
+enter_num_pad :: (keys: string, depth: s64) -> s64
 {
     result := 0;
     curr_key : u8 = #char "A";
@@ -71,14 +71,14 @@ enter_num_pad :: (keys: string) -> s64
         }
 
         best := S64_MAX;
-        for ways best = min(best, enter_dir_pad(queue[it].keys));
+        for ways best = min(best, enter_dir_pad(queue[it].keys, depth));
         result += best;
     }
 
     return result;
 }
 
-enter_dir_pad :: (keys: []u8, depth := 2) -> s64
+enter_dir_pad :: (keys: []u8, depth: s64) -> s64
 {
     if !depth return keys.count;
 
