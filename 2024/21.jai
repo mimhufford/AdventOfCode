@@ -36,11 +36,6 @@ enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
 
     for next_key: keys
     {
-        defer curr_key = next_key;
-
-        diff := pos[next_key] - pos[curr_key];
-        max_steps := cast(s64)(abs(diff.x) + abs(diff.y));
-
         queue : [..] struct { pos: Vector2; steps: s64; keys: [..]u8; };
         first := array_add(*queue);
         first.pos = pos[curr_key];
@@ -56,8 +51,6 @@ enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
                 continue;
             }
 
-            if it.steps == max_steps continue;
-
             curr_item := it;
 
             for d: Vector2.[.{1,0},.{0,1},.{-1,0},.{0,-1}]
@@ -68,8 +61,8 @@ enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
                 if next_pos.x == 0 && next_pos.y == 3 continue;
                 
                 // don't move away from the goal
-                steps_left := max_steps - curr_item.steps;
-                if manhattan_distance(next_pos, pos[next_key]) > steps_left continue;
+                if abs(pos[next_key].x - next_pos.x) > abs(pos[next_key].x - curr_item.pos.x) continue;
+                if abs(pos[next_key].y - next_pos.y) > abs(pos[next_key].y - curr_item.pos.y) continue;
 
                 // all good fam
                 next_item := array_add(*queue);
@@ -83,6 +76,8 @@ enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
         best := S64_MAX;
         for ways best = min(best, enter(xx queue[it].keys, depth - 1, dir_pad));
         result += best;
+
+        curr_key = next_key;
     }
 
     find_or_add(find_or_add(*cache, cast(string)keys), depth).* = result;
@@ -96,11 +91,6 @@ dir_key :: (d: Vector2) -> u8
     if d.x ==  0 && d.y ==  1 return #char "v";
     if d.x ==  0 && d.y == -1 return #char "^";
     return 0;
-}
-
-manhattan_distance :: (a: Vector2, b: Vector2) -> s64
-{
-    return cast(s64)(abs(b.x - a.x) + abs(b.y - a.y));
 }
 
 init_keys :: ()
