@@ -20,7 +20,7 @@ day21 :: (input: string) -> string, string
 num_pad, dir_pad : [128]Vector2;
 cache : Table(string, Table(s64, s64));
 
-enter :: (keys: string, depth: s64, pos: []Vector2, void_y : float = 3) -> s64
+enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
 {
     cache_1 := table_find_pointer(*cache, cast(string)keys);
     if cache_1
@@ -65,7 +65,7 @@ enter :: (keys: string, depth: s64, pos: []Vector2, void_y : float = 3) -> s64
                 next_pos := curr_item.pos + d;
                 
                 // avoid the void
-                if next_pos.x == 0 && next_pos.y == void_y continue;
+                if next_pos.x == 0 && next_pos.y == 3 continue;
                 
                 // don't move away from the goal
                 steps_left := max_steps - curr_item.steps;
@@ -81,7 +81,7 @@ enter :: (keys: string, depth: s64, pos: []Vector2, void_y : float = 3) -> s64
         }
 
         best := S64_MAX;
-        for ways best = min(best, enter(xx queue[it].keys, depth - 1, dir_pad, 0));
+        for ways best = min(best, enter(xx queue[it].keys, depth - 1, dir_pad));
         result += best;
     }
 
@@ -117,9 +117,9 @@ init_keys :: ()
     num_pad[#char "0"] = .{1, 3};  //     +---+---+
     num_pad[#char "A"] = .{2, 3};
 
-    dir_pad[#char "^"] = .{1, 0};  //     +---+---+
-    dir_pad[#char "<"] = .{0, 1};  //     | ^ | A |
-    dir_pad[#char "v"] = .{1, 1};  // +---+---+---+
-    dir_pad[#char ">"] = .{2, 1};  // | < | v | > |
-    dir_pad[#char "A"] = .{2, 0};  // +---+---+---+
+    dir_pad[#char "^"] = .{1, 3};  //     +---+---+
+    dir_pad[#char "<"] = .{0, 4};  //     | ^ | A |
+    dir_pad[#char "v"] = .{1, 4};  // +---+---+---+
+    dir_pad[#char ">"] = .{2, 4};  // | < | v | > |
+    dir_pad[#char "A"] = .{2, 3};  // +---+---+---+
 }
