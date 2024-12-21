@@ -9,7 +9,7 @@ day21 :: (input: string) -> string, string
         code := read_word(*input);
         number := read_s64(*tprint(code));
         part1 += number * enter_num_pad(code, 2);
-        part2 += number * enter_num_pad(code, 26);
+        part2 += number * enter_num_pad(code, 25);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -78,8 +78,17 @@ enter_num_pad :: (keys: string, depth: s64) -> s64
     return result;
 }
 
+cache : Table(string, Table(s64, s64));
+
 enter_dir_pad :: (keys: []u8, depth: s64) -> s64
 {
+    cache_1 := table_find_pointer(*cache, cast(string)keys);
+    if cache_1
+    {
+        cache_2 := table_find_pointer(cache_1, depth);
+        if cache_2 return cache_2.*;
+    }
+
     if !depth return keys.count;
 
     result := 0;
@@ -136,6 +145,7 @@ enter_dir_pad :: (keys: []u8, depth: s64) -> s64
         result += best;
     }
 
+    find_or_add(find_or_add(*cache, cast(string)keys), depth).* = result;
     return result;
 }
 
