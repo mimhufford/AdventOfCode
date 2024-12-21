@@ -74,11 +74,9 @@ enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
         print("\n");
     }
 
-    for ways enter_dir_pad(queue[it].moves);
-
-    enter_num_pad(advance(code), code[0]);
-
-    return 1;
+    result := S64_MAX;
+    for ways result = min(result, enter_dir_pad(queue[it].moves));
+    return result + enter_num_pad(advance(code), code[0]);
 }
 
 enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
@@ -137,9 +135,9 @@ enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
         print("\n");
     }
 
-    for ways enter_dir_pad(.{queue[it].moves.count - 1, queue[it].moves.data + 1}, queue[it].moves[0], depth - 1);
-
-    return 0;
+    result := S64_MAX;
+    for ways result = min(result, enter_dir_pad(.{queue[it].moves.count - 1, queue[it].moves.data + 1}, queue[it].moves[0], depth - 1));
+    return result;
 }
 
 // Temporary while debugging
