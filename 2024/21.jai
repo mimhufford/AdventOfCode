@@ -4,13 +4,13 @@ day21 :: (input: string) -> string, string
 
     while input
     {
-        pos := key_positions[#char "A"];
+        pos : u8 = #char "A";
         code := read_word(*input);
         presses := 0;
         for next: code
         {
-            presses += move(pos, key_positions[next]);
-            pos = key_positions[next];
+            presses += move(pos, next);
+            pos = next;
         }
         print("% %\n", code, presses);
     }
@@ -22,7 +22,7 @@ day21 :: (input: string) -> string, string
 
 key_positions : [128]Vector2;
 
-move :: (start: Vector2, end: Vector2) -> s64
+move :: (start: u8, end: u8) -> s64
 {
     return 1;
 }
