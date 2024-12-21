@@ -19,7 +19,7 @@ day21 :: (input: string) -> string, string
 
 num_pad, dir_pad : [128]Vector2;
 
-enter_num_pad :: (code: string, start := #char "A") -> s64
+enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
 {
     if !code return 0;
 
@@ -64,7 +64,7 @@ enter_num_pad :: (code: string, start := #char "A") -> s64
 
     #if 1
     {
-        print("% to %: % steps, % ways, % queued\n", start - #char "0", code[0] - #char "0", steps, ways.count, queue.count);
+        print("% to %: % steps, % ways, % queued\n", str(start), str(code[0]), steps, ways.count, queue.count);
         for ways
         {
             print(" - ");
@@ -86,7 +86,7 @@ enter_num_pad :: (code: string, start := #char "A") -> s64
     return 1;
 }
 
-enter_dir_pad :: (moves: []u8, start := #char "A", depth := 2) -> s64
+enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
 {
     if !depth return 0;
     if !moves return 0;
@@ -132,7 +132,7 @@ enter_dir_pad :: (moves: []u8, start := #char "A", depth := 2) -> s64
 
     #if 1
     {
-        print("% to %: % steps, % ways, % queued\n", start - #char "0", moves[0] - #char "0", steps, ways.count, queue.count);
+        print("% to %: % steps, % ways, % queued\n", str(start), str(moves[0]), steps, ways.count, queue.count);
         for ways
         {
             print(" - ");
@@ -148,6 +148,28 @@ enter_dir_pad :: (moves: []u8, start := #char "A", depth := 2) -> s64
     }
 
     return 0;
+}
+
+// Temporary while debugging
+str :: (c: u8) -> string
+{
+    if c == #char "A" return "A";
+    if c == #char "0" return "0";
+    if c == #char "1" return "1";
+    if c == #char "2" return "2";
+    if c == #char "3" return "3";
+    if c == #char "4" return "4";
+    if c == #char "5" return "5";
+    if c == #char "6" return "6";
+    if c == #char "7" return "7";
+    if c == #char "8" return "8";
+    if c == #char "9" return "9";
+    if c == #char "<" return "<";
+    if c == #char "v" return "v";
+    if c == #char ">" return ">";
+    if c == #char "^" return "^";
+    assert(false);
+    return "";
 }
 
 dir_key :: (d: Vector2) -> u8
