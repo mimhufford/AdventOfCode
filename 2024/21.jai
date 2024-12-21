@@ -2,15 +2,17 @@ day21 :: (input: string) -> string, string
 {
     init_keys();
 
+    part1, part2 := 0;
+    
     while input
     {
         code := read_word(*input);
+        number := read_s64(*tprint(code));
         presses := enter_num_pad(code);
-        print("% %\n", code, presses);
+        part1 += number * presses;
+        print("%: %*% = %\n", code, number, presses, number * presses);
         break;
     }
-
-    part1, part2 := 0;
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -37,7 +39,7 @@ enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
 
     for queue
     {
-        if it.pos == next_key_pos { array_add(*ways, it_index); continue; }
+        if it.pos == next_key_pos { array_add(*it.moves, #char "A"); array_add(*ways, it_index); continue; }
         if it.steps == steps continue;
 
         curr_item := it;
@@ -64,14 +66,13 @@ enter_num_pad :: (code: string, start : u8 = #char "A") -> s64
 
     #if 1
     {
-        print("% to %: % steps, % ways, % queued\n", str(start), str(code[0]), steps, ways.count, queue.count);
+        print("% to %\n", str(start), str(code[0]));
         for ways
         {
-            print(" %) ", it_index+1);
+            print(" %: ", it_index+1);
             for queue[it].moves print(str(it));
             print("\n");
         }
-        print("\n");
     }
 
     result := S64_MAX;
@@ -125,14 +126,13 @@ enter_dir_pad :: (moves: []u8, start : u8 = #char "A", depth := 2) -> s64
 
     #if 1
     {
-        print("% to %: % steps, % ways, % queued\n", str(start), str(moves[0]), steps, ways.count, queue.count);
+        print("% to %\n", str(start), str(moves[0]));
         for ways
         {
-            print(" %) ", it_index+1);
+            print(" %: ", it_index+1);
             for queue[it].moves print(str(it));
             print("\n");
         }
-        print("\n");
     }
 
     result := S64_MAX;
