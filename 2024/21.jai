@@ -22,11 +22,11 @@ cache : Table(string, Table(s64, s64));
 
 enter :: (keys: string, depth: s64, pos: []Vector2) -> s64
 {
-    cache_1 := table_find_pointer(*cache, cast(string)keys);
-    if cache_1
+    cache_keys := table_find_pointer(*cache, cast(string)keys);
+    if cache_keys
     {
-        cache_2 := table_find_pointer(cache_1, depth);
-        if cache_2 return cache_2.*;
+        cache_depths := table_find_pointer(cache_keys, depth);
+        if cache_depths return cache_depths.*;
     }
 
     if !depth return keys.count;
