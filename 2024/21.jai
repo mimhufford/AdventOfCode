@@ -78,14 +78,18 @@ enter_numpad :: (code: string, start := #char "A") -> s64
         }
     }
 
+    for ways enter_dirpad(queue[it].moves);
+
     enter_numpad(advance(code), code[0]);
 
     return 1;
 }
 
-enter_dirpad :: () -> s64
+enter_dirpad :: (moves: []u8, depth := 2) -> s64
 {
-    return 0;
+    if !depth return 0;
+
+    return enter_dirpad(moves, depth - 1);
 }
 
 dir_key :: (d: Vector2) -> u8
