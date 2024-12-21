@@ -6,6 +6,13 @@ day21 :: (input: string) -> string, string
     {
         pos := key_positions[#char "A"];
         code := read_word(*input);
+        presses := 0;
+        for next: code
+        {
+            presses += move(pos, key_positions[next]);
+            pos = key_positions[next];
+        }
+        print("% %\n", code, presses);
     }
 
     part1, part2 := 0;
@@ -14,6 +21,11 @@ day21 :: (input: string) -> string, string
 }
 
 key_positions : [128]Vector2;
+
+move :: (start: Vector2, end: Vector2) -> s64
+{
+    return 1;
+}
 
 init_key_positions :: ()
 {
