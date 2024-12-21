@@ -8,11 +8,8 @@ day21 :: (input: string) -> string, string
     {
         code := read_word(*input);
         number := read_s64(*tprint(code));
-        print("%\n====\n", code);
         presses := enter_num_pad(code);
         part1 += number * presses;
-        print("====\n%: %*% = %\n", code, number, presses, number * presses);
-        break;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -73,17 +70,6 @@ enter_num_pad :: (keys: string) -> s64
             }
         }
 
-        #if 1
-        {
-            print("% to %\n", str(curr_key), str(next_key));
-            for ways
-            {
-                print(" %: ", it_index+1);
-                for queue[it].keys print(str(it));
-                print("\n");
-            }
-        }
-        
         best := S64_MAX;
         for ways best = min(best, enter_dir_pad(queue[it].keys));
         result += best;
@@ -92,86 +78,65 @@ enter_num_pad :: (keys: string) -> s64
     return result;
 }
 
-enter_dir_pad :: (keys: []u8, start : u8 = #char "A", depth := 2) -> s64
+enter_dir_pad :: (keys: []u8, depth := 2) -> s64
 {
-    if !depth return 0;
-    if !keys return 0;
+    if !depth return keys.count;
 
-    curr_key_pos := dir_pad[start];
-    next_key_pos := dir_pad[keys[0]];
-    
-    diff := next_key_pos - curr_key_pos;
-    steps := cast(s64)(abs(diff.x) + abs(diff.y));
+    result := 0;
+    curr_key : u8 = #char "A";
 
-    queue : [..] struct { pos: Vector2; steps: s64; keys: [..]u8; };
-    first := array_add(*queue);
-    first.pos = curr_key_pos;
-
-    ways : [..]s64;
-
-    for queue
+    for next_key: keys
     {
-        if it.pos == next_key_pos { array_add(*ways, it_index); continue; }
-        if it.steps == steps continue;
+        defer curr_key = next_key;
 
-        curr_item := it;
+        diff := dir_pad[next_key] - dir_pad[curr_key];
+        max_steps := cast(s64)(abs(diff.x) + abs(diff.y));
 
-        for d: Vector2.[.{1,0},.{0,1},.{-1,0},.{0,-1}]
+        queue : [..] struct { pos: Vector2; steps: s64; keys: [..]u8; };
+        first := array_add(*queue);
+        first.pos = dir_pad[curr_key];
+
+        ways : [..]s64;
+
+        for queue
         {
-            next_pos := curr_item.pos + d;
-            
-            // avoid the void
-            if next_pos.x == 0 && next_pos.y == 0 continue;
-            
-            // don't move away from the goal
-            steps_left := steps - curr_item.steps;
-            if manhattan_distance(next_pos, next_key_pos) > steps_left continue;
+            if it.pos == dir_pad[next_key]
+            {
+                array_add(*it.keys, #char "A");
+                array_add(*ways, it_index);
+                continue;
+            }
 
-            // all good fam
-            next_item := array_add(*queue);
-            next_item.pos = next_pos;
-            next_item.steps = curr_item.steps + 1;
-            array_add(*next_item.keys, ..curr_item.keys);
-            array_add(*next_item.keys, dir_key(d));
+            if it.steps == max_steps continue;
+
+            curr_item := it;
+
+            for d: Vector2.[.{1,0},.{0,1},.{-1,0},.{0,-1}]
+            {
+                next_pos := curr_item.pos + d;
+                
+                // avoid the void
+                if next_pos.x == 0 && next_pos.y == 0 continue;
+                
+                // don't move away from the goal
+                steps_left := max_steps - curr_item.steps;
+                if manhattan_distance(next_pos, dir_pad[next_key]) > steps_left continue;
+
+                // all good fam
+                next_item := array_add(*queue);
+                next_item.pos = next_pos;
+                next_item.steps = curr_item.steps + 1;
+                array_add(*next_item.keys, ..curr_item.keys);
+                array_add(*next_item.keys, dir_key(d));
+            }
         }
+
+        best := S64_MAX;
+        for ways best = min(best, enter_dir_pad(queue[it].keys, depth - 1));
+        result += best;
     }
 
-    #if 1
-    {
-        print("% to %\n", str(start), str(keys[0]));
-        for ways
-        {
-            print(" %: ", it_index+1);
-            for queue[it].keys print(str(it));
-            print("\n");
-        }
-    }
-
-    result := S64_MAX;
-    for ways result = min(result, enter_dir_pad(.{queue[it].keys.count - 1, queue[it].keys.data + 1}, queue[it].keys[0], depth - 1));
     return result;
-}
-
-// Temporary while debugging
-str :: (c: u8) -> string
-{
-    if c == #char "A" return "A";
-    if c == #char "0" return "0";
-    if c == #char "1" return "1";
-    if c == #char "2" return "2";
-    if c == #char "3" return "3";
-    if c == #char "4" return "4";
-    if c == #char "5" return "5";
-    if c == #char "6" return "6";
-    if c == #char "7" return "7";
-    if c == #char "8" return "8";
-    if c == #char "9" return "9";
-    if c == #char "<" return "<";
-    if c == #char "v" return "v";
-    if c == #char ">" return ">";
-    if c == #char "^" return "^";
-    assert(false);
-    return "";
 }
 
 dir_key :: (d: Vector2) -> u8
