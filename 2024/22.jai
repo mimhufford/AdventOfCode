@@ -16,26 +16,24 @@ seen : [19*19*19*19]bool;
 generate :: (seed: s64) -> s64
 {
     memset(seen.data, 0, 19*19*19*19);
-    value: [2001]s64;
-    diff: [2001]s64;
-    value[0] = seed;
+    val, dif: [4]s64;
+    r := seed;
 
     for 1..2000
     {
-        r := value[it-1];
         r ^= r * 64;   r %= 16777216;
         r ^= r / 32;   r %= 16777216;
         r ^= r * 2048; r %= 16777216;
 
-        value[it] = r;
-        diff[it] = cast(s16)(r % 10 - value[it-1] % 10);
+        dif[0], dif[1], dif[2], dif[3] = dif[1], dif[2], dif[3], r % 10 - val[3] % 10;
+        val[0], val[1], val[2], val[3] = val[1], val[2], val[3], r;
 
         if it > 3
         {
-            seq := diff[it-3] + 9; seq *= 19;
-            seq += diff[it-2] + 9; seq *= 19;
-            seq += diff[it-1] + 9; seq *= 19;
-            seq += diff[it-0] + 9;
+            seq := (dif[0] + 9) * (19 * 19 * 19);
+            seq += (dif[1] + 9) * (19 * 19);
+            seq += (dif[2] + 9) * (19);
+            seq += (dif[3] + 9) * (1);
             if seen[seq] continue;
             seen[seq] = true;
             price_for_seq[seq] += r % 10;
@@ -43,5 +41,5 @@ generate :: (seed: s64) -> s64
         }
     }
 
-    return value[2000];
+    return val[3];
 }
