@@ -10,7 +10,7 @@ day22 :: (input: string) -> string, string
 #scope_file
 
 best_price := 0;
-price_for_seq : [19*19*19*19]s64;
+price_for_seq : [19*19*19*19]u16;
 seen : [19*19*19*19]bool;
 
 generate :: (seed: s64) -> s64
@@ -32,7 +32,7 @@ generate :: (seed: s64) -> s64
             seq := d1*19*19*19 + d2*19*19 + d3*19 + d4;
             if seen[seq] continue;
             seen[seq] = true;
-            price_for_seq[seq] += v4 % 10;
+            price_for_seq[seq] += xx (v4 % 10);
             best_price = max(best_price, price_for_seq[seq]);
         }
     }
