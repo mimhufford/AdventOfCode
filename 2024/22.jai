@@ -9,13 +9,13 @@ day22 :: (input: string) -> string, string
 
 #scope_file
 
-best_price := 0;
+best_price, index := 0;
 price_for_seq : [19*19*19*19]u16;
-seen : [19*19*19*19]bool;
+last_update : [19*19*19*19]u16;
 
 generate :: (seed: s64) -> s64
 {
-    memset(seen.data, 0, 19*19*19*19);
+    index += 1;
     v1, v2, v3, v4 := 0, 0, 0, seed;
     d1, d2, d3, d4 := 0, 0, 0, 0;
 
@@ -23,15 +23,15 @@ generate :: (seed: s64) -> s64
     {
         v1, v2, v3 = v2, v3, v4;
         v4 ^= v4 << 6;  v4 &= 0xFFFFFF;
-        v4 ^= v4 >> 5;  v4 &= 0xFFFFFF;
+        v4 ^= v4 >> 5;
         v4 ^= v4 << 11; v4 &= 0xFFFFFF;
         d1, d2, d3, d4 = d2, d3, d4, (v4 % 10 - v3 % 10) + 9;
 
         if it > 3
         {
             seq := d1*19*19*19 + d2*19*19 + d3*19 + d4;
-            if seen[seq] continue;
-            seen[seq] = true;
+            if last_update[seq] == index continue;
+            last_update[seq] = xx index;
             price_for_seq[seq] += xx (v4 % 10);
             best_price = max(best_price, price_for_seq[seq]);
         }
