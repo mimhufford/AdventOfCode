@@ -1,15 +1,13 @@
 day22 :: (input: string) -> string, string
 {
-    buyers: [..]Buyer;
     part1, part2 := 0;
 
     seq_accum: Table(u64, s64);
 
     while input
     {
-        buyer := array_add(*buyers);
-        buyer.seed = read_s64(*input);
-        generate(buyer);
+        buyer := Buyer.{ seed = read_s64(*input) };
+        generate(*buyer);
         part1 += buyer.value[2000];
         for buyer.seq_to_price
         {
