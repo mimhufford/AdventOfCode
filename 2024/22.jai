@@ -2,8 +2,6 @@ day22 :: (input: string) -> string, string
 {
     part1, part2 := 0;
 
-    seq_accum: Table(u64, s64);
-
     while input
     {
         buyer := Buyer.{ seed = read_s64(*input) };
@@ -11,9 +9,8 @@ day22 :: (input: string) -> string, string
         part1 += buyer.value[2000];
         for buyer.seq_to_price
         {
-            s2p := find_or_add(*seq_accum, it_index);
-            s2p.* += it;
-            part2 = max(part2, s2p.*);
+            seq_to_price[it_index] += it;
+            part2 = max(part2, seq_to_price[it_index]);
         }
     }
 
@@ -22,12 +19,13 @@ day22 :: (input: string) -> string, string
 
 #scope_file
 
+seq_to_price : [19*19*19*19]s64;
 Buyer :: struct
 {
     seed: s64;
     value: [2001]s64;
     diff: [2001]s16;
-    seq_to_price: Table(u64, s64);
+    seq_to_price: Table(s64, s64);
 }
 
 generate :: (b: *Buyer)
@@ -49,12 +47,12 @@ generate :: (b: *Buyer)
 
         if it > 3
         {
-            seq : struct { v: [4]s16; #place v; hash: u64; };
-            seq.v[0] = b.diff[it-3];
-            seq.v[1] = b.diff[it-2];
-            seq.v[2] = b.diff[it-1];
-            seq.v[3] = b.diff[it-0];
-            s2p, new := find_or_add(*b.seq_to_price, seq.hash);
+            key := 0;
+            key += (b.diff[it-3] + 9); key *= 19;
+            key += (b.diff[it-2] + 9); key *= 19;
+            key += (b.diff[it-1] + 9); key *= 19;
+            key += (b.diff[it-0] + 9);
+            s2p, new := find_or_add(*b.seq_to_price, key);
             if new s2p.* = r % 10;
         }
     }
