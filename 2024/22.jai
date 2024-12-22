@@ -1,35 +1,35 @@
 day22 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1 := 0;
 
     while input
     {
         buyer := Buyer.{ seed = read_s64(*input) };
         generate(*buyer);
         part1 += buyer.value[2000];
-        for buyer.seq_to_price
-        {
-            seq_to_price[it_index] += it;
-            part2 = max(part2, seq_to_price[it_index]);
-        }
     }
+
+    part2 := best_price;
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
+best_price := 0;
 seq_to_price : [19*19*19*19]s64;
+seen : [19*19*19*19]bool;
+
 Buyer :: struct
 {
     seed: s64;
     value: [2001]s64;
     diff: [2001]s16;
-    seq_to_price: Table(s64, s64);
 }
 
 generate :: (b: *Buyer)
 {
+    memset(seen.data, 0, 19*19*19*19);
     b.value[0] = b.seed;
 
     for 1..2000
@@ -52,8 +52,10 @@ generate :: (b: *Buyer)
             key += (b.diff[it-2] + 9); key *= 19;
             key += (b.diff[it-1] + 9); key *= 19;
             key += (b.diff[it-0] + 9);
-            s2p, new := find_or_add(*b.seq_to_price, key);
-            if new s2p.* = r % 10;
+            if seen[key] continue;
+            seen[key] = true;
+            seq_to_price[key] += r % 10;
+            best_price = max(best_price, seq_to_price[key]);
         }
     }
 }
