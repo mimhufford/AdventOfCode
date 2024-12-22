@@ -31,13 +31,10 @@ generate :: (seed: s64) -> s64
 
         if it > 3
         {
-            seq := (d1 + 9) * (19 * 19 * 19);
-            seq += (d2 + 9) * (19 * 19);
-            seq += (d3 + 9) * (19);
-            seq += (d4 + 9) * (1);
+            seq := (d1+9) * 19*19*19 + (d2+9) * 19*19 + (d3+9) * 19 + (d4+9);
             if seen[seq] continue;
             seen[seq] = true;
-            price_for_seq[seq] += r % 10;
+            price_for_seq[seq] += v4 % 10;
             best_price = max(best_price, price_for_seq[seq]);
         }
     }
