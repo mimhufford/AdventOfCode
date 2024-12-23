@@ -49,9 +49,9 @@ find_t_triplets :: () -> s64
 
 find_largest_bunch_of_nerds :: () -> s64
 {
-    bron_kerbosch :: (r: [..]s64, _p: [..]s64, _x: [..]s64)
+    bron_kerbosch :: (r: [..]s64, p: [..]s64, _x: [..]s64)
     {
-        if !_p.count && !_x.count
+        if !p.count && !_x.count
         {
             if r.count <= largest_bunch_of_nerds.count return;
             array_reset_keeping_memory(*largest_bunch_of_nerds);
@@ -59,21 +59,19 @@ find_largest_bunch_of_nerds :: () -> s64
             return;
         }
 
-        p : [..]s64; array_add(*p, .._p);
         x : [..]s64; array_add(*x, .._x);
 
-        for v: p
+        for v, i: p
         {
             nr : [..]s64;
             array_add(*nr, ..r);
             array_add(*nr, v);
             np : [..]s64;
-            for p if array_find(connections[v], it) array_add(*np, it);
+            for i..p.count-1 if array_find(connections[v], p[it]) array_add(*np, p[it]);
             nx : [..]s64;
             for x if array_find(connections[v], it) array_add(*nx, it);
             bron_kerbosch(nr, np, nx);
 
-            remove v;
             array_add(*x, v);
         }
     }
@@ -81,6 +79,10 @@ find_largest_bunch_of_nerds :: () -> s64
     r, p, x : [..]s64;
     for connections if it.count array_add(*p, it_index);
     bron_kerbosch(r, p, x);
+
+    // I do the work to create the result string, but I don't want
+    // it in my output, so instead I just return the clique count
+    quick_sort(largest_bunch_of_nerds, i=>i);
 
     return largest_bunch_of_nerds.count;
 }
