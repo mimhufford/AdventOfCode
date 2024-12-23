@@ -13,7 +13,8 @@ day23 :: (input: string) -> string, string
 
     part1, part2 := find_t_triplets(), find_largest_bunch_of_nerds();
 
-    return tprint("%", part1), tprint("%", part2);
+    // output the string length for part 2, the actual result looks bad in my output
+    return tprint("%", part1), tprint("%", part2.count);
 }
 
 #scope_file
@@ -46,7 +47,7 @@ find_t_triplets :: () -> s64
     return triplets.count;
 }
 
-find_largest_bunch_of_nerds :: () -> s64
+find_largest_bunch_of_nerds :: () -> string
 {
     bron_kerbosch :: (r: [..]s64, p: [..]s64, _x: [..]s64)
     {
@@ -76,14 +77,11 @@ find_largest_bunch_of_nerds :: () -> s64
     for computer if it.count array_add(*p, it_index);
     bron_kerbosch(r, p, x);
 
-    // I do the work to create the result string, but I don't want
-    // it in my output, so instead I just return the length of it
     quick_sort(largest_bunch_of_nerds, i=>i);
     sb : String_Builder;
     for largest_bunch_of_nerds append(*sb, tprint("%,", get_str(it)));
     result := builder_to_string(*sb); result.count -= 1;
-
-    return result.count;
+    return result;
 }
 
 id :: (c) => cast(s64)(c[0] - #char "a") * 26 + c[1] - #char "a";
