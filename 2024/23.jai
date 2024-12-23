@@ -77,13 +77,13 @@ find_largest_bunch_of_nerds :: () -> s64
     bron_kerbosch(r, p, x);
 
     // I do the work to create the result string, but I don't want
-    // it in my output, so instead I just return the clique count
+    // it in my output, so instead I just return the length of it
     quick_sort(largest_bunch_of_nerds, i=>i);
     sb : String_Builder;
     for largest_bunch_of_nerds append(*sb, tprint("%,", get_str(it)));
     result := builder_to_string(*sb); result.count -= 1;
 
-    return largest_bunch_of_nerds.count;
+    return result.count;
 }
 
 id :: (c) => cast(s64)(c[0] - #char "a") * 26 + c[1] - #char "a";
