@@ -19,6 +19,7 @@ day23 :: (input: string) -> string, string
 #scope_file
 
 connections : [26*26] [..]s64;
+largest_bunch_of_nerds : [..]s64;
 
 find_t_triplets :: () -> s64
 {
@@ -48,18 +49,18 @@ find_t_triplets :: () -> s64
 
 find_largest_bunch_of_nerds :: () -> s64
 {
-    bron_kerbosch :: (_r: [..]s64, _p: [..]s64, _x: [..]s64)
+    bron_kerbosch :: (r: [..]s64, _p: [..]s64, _x: [..]s64)
     {
-        r : [..]s64; array_add(*r, .._r);
-        p : [..]s64; array_add(*p, .._p);
-        x : [..]s64; array_add(*x, .._x);
-
-        if !p.count && !x.count
+        if !_p.count && !_x.count
         {
-            for r print("% ", get_str(it));
-            print("\n");
+            if r.count <= largest_bunch_of_nerds.count return;
+            array_reset_keeping_memory(*largest_bunch_of_nerds);
+            array_add(*largest_bunch_of_nerds, ..r);
             return;
         }
+
+        p : [..]s64; array_add(*p, .._p);
+        x : [..]s64; array_add(*x, .._x);
 
         for v: p
         {
@@ -81,7 +82,7 @@ find_largest_bunch_of_nerds :: () -> s64
     for connections if it.count array_add(*p, it_index);
     bron_kerbosch(r, p, x);
 
-    return 0;
+    return largest_bunch_of_nerds.count;
 }
 
 get_id :: (computer: string) -> s64
