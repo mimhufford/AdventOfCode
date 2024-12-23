@@ -1,7 +1,5 @@
 day23 :: (input: string) -> string, string
 {
-    connections : [26*26] [..]s64;
-
     while input
     {
         a := input; a.count = 2; advance(*input, 3);
@@ -13,6 +11,17 @@ day23 :: (input: string) -> string, string
         array_add_if_unique(*connections[bi], ai);
     }
 
+    part1, part2 := find_t_triplets(), find_largest_bunch_of_nerds();
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+connections : [26*26] [..]s64;
+
+find_t_triplets :: () -> s64
+{
     triplets : [..]s64;
 
     for t: get_id("ta")..get_id("tz")
@@ -34,12 +43,22 @@ day23 :: (input: string) -> string, string
         }
     }
 
-    part1, part2 := triplets.count, 0;
-
-    return tprint("%", part1), tprint("%", part2);
+    return triplets.count;
 }
 
-#scope_file
+find_largest_bunch_of_nerds :: () -> s64
+{
+    for connections
+    {
+        if !it.count continue;
+
+        print("%: ", get_str(it_index));
+        for it print("% ", get_str(it));
+        print("\n");
+    }
+
+    return 0;
+}
 
 get_id :: (computer: string) -> s64
 {
@@ -51,4 +70,13 @@ get_triplet_id :: (a: s64, b: s64, c: s64) -> s64
     ids := s64.[a, b, c];
     quick_sort(ids, i=>i);
     return ids[0]*26*26*26*26 + ids[1]*26*26 + ids[2];
+}
+
+// Temporary while debugging
+get_str :: (id: s64) -> string
+{
+    r : [2]u8;
+    r[0] = cast(u8)(id / 26 + #char "a");
+    r[1] = cast(u8)(id % 26 + #char "a");
+    return tprint("%", cast(string)r);
 }
