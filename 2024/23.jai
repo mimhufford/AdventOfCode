@@ -2,15 +2,13 @@ day23 :: (input: string) -> string, string
 {
     while input
     {
-        a := input; a.count = 2; advance(*input, 3);
-        b := input; b.count = 2; advance(*input, 3);
-
-        ai, bi := get_id(a), get_id(b);
-        
-        array_add_if_unique(*computer[ai], bi);
-        array_add_if_unique(*computer[bi], ai);
-        connection[ai][bi] = true;
-        connection[bi][ai] = true;
+        a := id(slice(input, 0, 2));
+        b := id(slice(input, 3, 2));
+        array_add_if_unique(*computer[a], b);
+        array_add_if_unique(*computer[b], a);
+        connection[a][b] = true;
+        connection[b][a] = true;
+        skip_to_next_line(*input);
     }
 
     part1, part2 := find_t_triplets(), find_largest_bunch_of_nerds();
@@ -28,7 +26,7 @@ find_t_triplets :: () -> s64
 {
     triplets : [..]s64;
 
-    for t: get_id("ta")..get_id("tz")
+    for t: id("ta")..id("tz")
     {
         if !computer[t].count continue;
 
@@ -88,10 +86,7 @@ find_largest_bunch_of_nerds :: () -> s64
     return largest_bunch_of_nerds.count;
 }
 
-get_id :: (c_name: string) -> s64
-{
-    return cast(s64)(c_name[0] - #char "a") * 26 + cast(s64)(c_name[1] - #char "a");
-}
+id :: (c) => cast(s64)(c[0] - #char "a") * 26 + c[1] - #char "a";
 
 get_triplet_id :: (a: s64, b: s64, c: s64) -> s64
 {
