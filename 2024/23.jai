@@ -83,6 +83,9 @@ find_largest_bunch_of_nerds :: () -> s64
     // I do the work to create the result string, but I don't want
     // it in my output, so instead I just return the clique count
     quick_sort(largest_bunch_of_nerds, i=>i);
+    sb : String_Builder;
+    for largest_bunch_of_nerds append(*sb, tprint("%,", get_str(it)));
+    result := builder_to_string(*sb); result.count -= 1;
 
     return largest_bunch_of_nerds.count;
 }
@@ -99,7 +102,6 @@ get_triplet_id :: (a: s64, b: s64, c: s64) -> s64
     return ids[0]*26*26*26*26 + ids[1]*26*26 + ids[2];
 }
 
-// Temporary while debugging
 get_str :: (id: s64) -> string
 {
     r : [2]u8;
