@@ -13,11 +13,11 @@ day23 :: (input: string) -> string, string
         array_add_if_unique(*connections[bi], ai);
     }
 
-    for * connections
+    for get_id("ta")..get_id("tz")
     {
-        if it.count == 0 continue;
-        print("%: ", cast(string)get_str(it_index));
-        for it.* print("% ", cast(string)get_str(it));
+        if connections[it].count == 0 continue;
+        print("%: ", cast(string)get_str(it));
+        for connections[it] print("% ", cast(string)get_str(it));
         print("\n");
     }
 
@@ -33,6 +33,7 @@ get_id :: (computer: string) -> s64
     return cast(s64)(computer[0] - #char "a") * 26 + cast(s64)(computer[1] - #char "a");
 }
 
+// Temporary while debug visualising
 get_str :: (id: s64) -> [2]u8
 {
     computer : [2]u8;
