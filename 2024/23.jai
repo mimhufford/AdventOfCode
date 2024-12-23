@@ -8,7 +8,7 @@ day23 :: (input: string) -> string, string
         array_add_if_unique(*computer[b], a);
         connection[a][b] = true;
         connection[b][a] = true;
-        skip_to_next_line(*input);
+        advance(*input, 6);
     }
 
     part1, part2 := find_t_triplets(), find_largest_bunch_of_nerds();
