@@ -7,8 +7,10 @@ day23 :: (input: string) -> string, string
 
         ai, bi := get_id(a), get_id(b);
         
-        array_add_if_unique(*connections[ai], bi);
-        array_add_if_unique(*connections[bi], ai);
+        array_add_if_unique(*computer[ai], bi);
+        array_add_if_unique(*computer[bi], ai);
+        connection[ai][bi] = true;
+        connection[bi][ai] = true;
     }
 
     part1, part2 := find_t_triplets(), find_largest_bunch_of_nerds();
@@ -18,7 +20,8 @@ day23 :: (input: string) -> string, string
 
 #scope_file
 
-connections : [26*26] [..]s64;
+computer : [26*26] [..]s64;
+connection : [26*26][26*26]bool;
 largest_bunch_of_nerds : [..]s64;
 
 find_t_triplets :: () -> s64
@@ -27,18 +30,16 @@ find_t_triplets :: () -> s64
 
     for t: get_id("ta")..get_id("tz")
     {
-        if connections[t].count == 0 continue;
+        if !computer[t].count continue;
 
-        for i: 0..connections[t].count-1
+        for i: 0..computer[t].count-1
         {
-            for j: i+1..connections[t].count-1
+            for j: i+1..computer[t].count-1
             {
-                a := connections[t][i];
-                b := connections[t][j];
-                if !array_find(connections[a], t) continue;
-                if !array_find(connections[a], b) continue;
-                if !array_find(connections[b], t) continue;
-                if !array_find(connections[b], a) continue;
+                a, b := computer[t][i], computer[t][j];
+                if !connection[a][t] continue;
+                if !connection[a][b] continue;
+                if !connection[b][t] continue;
                 array_add_if_unique(*triplets, get_triplet_id(t, a, b));
             }
         }
@@ -67,9 +68,9 @@ find_largest_bunch_of_nerds :: () -> s64
             array_add(*nr, ..r);
             array_add(*nr, v);
             np : [..]s64;
-            for i..p.count-1 if array_find(connections[v], p[it]) array_add(*np, p[it]);
+            for i..p.count-1 if connection[v][p[it]] array_add(*np, p[it]);
             nx : [..]s64;
-            for x if array_find(connections[v], it) array_add(*nx, it);
+            for x if connection[v][it] array_add(*nx, it);
             bron_kerbosch(nr, np, nx);
 
             array_add(*x, v);
@@ -77,7 +78,7 @@ find_largest_bunch_of_nerds :: () -> s64
     }
 
     r, p, x : [..]s64;
-    for connections if it.count array_add(*p, it_index);
+    for computer if it.count array_add(*p, it_index);
     bron_kerbosch(r, p, x);
 
     // I do the work to create the result string, but I don't want
@@ -90,9 +91,9 @@ find_largest_bunch_of_nerds :: () -> s64
     return largest_bunch_of_nerds.count;
 }
 
-get_id :: (computer: string) -> s64
+get_id :: (c_name: string) -> s64
 {
-    return cast(s64)(computer[0] - #char "a") * 26 + cast(s64)(computer[1] - #char "a");
+    return cast(s64)(c_name[0] - #char "a") * 26 + cast(s64)(c_name[1] - #char "a");
 }
 
 get_triplet_id :: (a: s64, b: s64, c: s64) -> s64
