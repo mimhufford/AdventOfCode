@@ -48,14 +48,38 @@ find_t_triplets :: () -> s64
 
 find_largest_bunch_of_nerds :: () -> s64
 {
-    for connections
+    bron_kerbosch :: (_r: [..]s64, _p: [..]s64, _x: [..]s64)
     {
-        if !it.count continue;
+        r : [..]s64; array_add(*r, .._r);
+        p : [..]s64; array_add(*p, .._p);
+        x : [..]s64; array_add(*x, .._x);
 
-        print("%: ", get_str(it_index));
-        for it print("% ", get_str(it));
-        print("\n");
+        if !p.count && !x.count
+        {
+            for r print("% ", get_str(it));
+            print("\n");
+            return;
+        }
+
+        for v: p
+        {
+            nr : [..]s64;
+            array_add(*nr, ..r);
+            array_add(*nr, v);
+            np : [..]s64;
+            for p if array_find(connections[v], it) array_add(*np, it);
+            nx : [..]s64;
+            for x if array_find(connections[v], it) array_add(*nx, it);
+            bron_kerbosch(nr, np, nx);
+
+            remove v;
+            array_add(*x, v);
+        }
     }
+
+    r, p, x : [..]s64;
+    for connections if it.count array_add(*p, it_index);
+    bron_kerbosch(r, p, x);
 
     return 0;
 }
