@@ -72,7 +72,6 @@ find_largest_bunch_of_nerds :: () -> s64
             nx : [..]s64;
             for x if connection[v][it] array_add(*nx, it);
             bron_kerbosch(nr, np, nx);
-
             array_add(*x, v);
         }
     }
