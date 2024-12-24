@@ -48,14 +48,12 @@ day24 :: (input: string) -> string, string
     {
         gate := table_find_pointer(*gates, tprint("z%", formatInt(it, minimum_digits=2)));
         if !gate break;
-        part1 |= gate.*.state;
-        part1 <<= 1;
+        if !gate.*.state continue;
+        part1 |= 1 << it;
     }
 
     return tprint("%", part1), tprint("%", part2);
 }
-
-// 7781788678266 too low
 
 #scope_file
 
