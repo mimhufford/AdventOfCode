@@ -6,7 +6,7 @@ day24 :: (input: string) -> string, string
         gate.id = input; gate.id.count = 3; advance(*input, 5);
         gate.state = input[0] - #char "0";  advance(*input, 2);
         gate.done = true;
-        table_add(*gates, gate.id, New(Gate));
+        table_add(*gates, gate.id, gate);
         if input[0] != #char "\n" continue;
         advance(*input);
         break;
@@ -38,6 +38,17 @@ day24 :: (input: string) -> string, string
         gate.*.operand[1] = op2g.*;
 
         array_add(*todo, gate.*);
+    }
+
+    while todo
+    {
+        for g: todo
+        {
+            if !g.operand[0].done continue;
+            if !g.operand[1].done continue;
+            g.done = true;
+            remove g;
+        }
     }
 
     part1, part2 := 0;
