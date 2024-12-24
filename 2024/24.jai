@@ -45,14 +45,13 @@ day24 :: (input: string) -> string, string
 
     for vx: 0..44 for vy: 0..44
     {
-        xv := 1 << vx;
-        yv := 1 << vy;
+        xv, yv := 1 << vx, 1 << vy;
         set_input(x, xv);
         set_input(y, yv);
         result := run_adder();
         if xv + yv != result
         {
-            print("% + % != %\n", xv, yv, result);
+            print("% + % != %  (% %)\n", xv, yv, result, vx, vy);
             break vx;
         }
     }
