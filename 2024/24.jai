@@ -40,21 +40,22 @@ day24 :: (input: string) -> string, string
         array_add(*todo, gate.*);
     }
 
-    while todo
-    {
-        for g: todo
-        {
-            if !g.operand[0].done continue;
-            if !g.operand[1].done continue;
-            g.done = true;
-            remove g;
-        }
-    }
+    while todo for g: todo if resolve(g) remove g;
 
     part1, part2 := 0;
+    
+    for 0..63
+    {
+        gate := table_find_pointer(*gates, tprint("z%", formatInt(it, minimum_digits=2)));
+        if !gate break;
+        part1 |= gate.*.state;
+        part1 <<= 1;
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
+
+// 7781788678266 too low
 
 #scope_file
 
@@ -70,6 +71,19 @@ Gate :: struct
 }
 
 Operator :: enum u8 { NONE; XOR; OR; AND; };
+
+resolve :: (using g: *Gate) -> bool
+{
+    if !operand[0].done return false;
+    if !operand[1].done return false;
+    
+    if      op == .OR  state = operand[0].state | operand[1].state;
+    else if op == .XOR state = operand[0].state ^ operand[1].state;
+    else if op == .AND state = operand[0].state & operand[1].state;
+    
+    done = true;
+    return true;
+}
 
 str_to_op :: (s: string) -> Operator
 {
