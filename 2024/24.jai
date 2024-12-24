@@ -43,17 +43,23 @@ day24 :: (input: string) -> string, string
 
     part1 := run_adder();
 
-    // this is how I worked out which gates were problems for part 2
+    // NOTE: specific to my input
+    swap_gate("hmt", "z18");
+    swap_gate("bfq", "z27");
+    swap_gate("hkh", "z31");
+    swap_gate("fjp", "bng");
+
+    // test all the 1-bit adders now work
     for vx: 0..44 for vy: 0..44
     {
         xv, yv := 1 << vx, 1 << vy;
         set_input(x, xv);
         set_input(y, yv);
         result := run_adder();
-        if xv + yv != result {}
+        assert(xv + yv == result);
     }
 
-    part2 := "done"; // "bfq,bng,fjp,hkh,hmt,z18,z27,z31" but I don't want that in my output
+    part2 := "done"; // I don't want the long csv string in my output
     
     return tprint("%", part1), tprint("%", part2);
 }
@@ -76,6 +82,14 @@ Gate :: struct
 }
 
 Operator :: enum u8 { NONE; XOR; OR; AND; };
+
+swap_gate :: (a: string, b: string)
+{
+    g1 := find_or_add(*gates, a).*;
+    g2 := find_or_add(*gates, b).*;
+    g1.op, g2.op = g2.op, g1.op;
+    g1.operand, g2.operand = g2.operand, g1.operand;
+}
 
 set_input :: (input: [45]*Gate, v: s64)
 {
@@ -122,8 +136,8 @@ str_to_op :: (s: string) -> Operator
 
 /*
 
-This is where I manually organised my input to understand the circuit and then,
-combined with the adding test, I could easily spot mistakes in certain bit adders
+This is where I manually organised my input to understand the circuit and then, by running the
+circuit and adding single bits at a time, I could easily spot mistakes in certain 1-bit adders
 
 x01 XOR y01 -> sgt
 x01 AND y01 -> hqg
