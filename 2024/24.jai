@@ -43,20 +43,17 @@ day24 :: (input: string) -> string, string
 
     part1 := run_adder();
 
+    // this is how I worked out which gates were problems for part 2
     for vx: 0..44 for vy: 0..44
     {
         xv, yv := 1 << vx, 1 << vy;
         set_input(x, xv);
         set_input(y, yv);
         result := run_adder();
-        if xv + yv != result
-        {
-            print("% + % != %  (% %)\n", xv, yv, result, vx, vy);
-            break vx;
-        }
+        if xv + yv != result {}
     }
 
-    part2 := "bfq,hkh,hmt,z18,z27,z31";
+    part2 := "done"; // "bfq,bng,fjp,hkh,hmt,z18,z27,z31" but I don't want that in my output
     
     return tprint("%", part1), tprint("%", part2);
 }
@@ -124,6 +121,9 @@ str_to_op :: (s: string) -> Operator
 }
 
 /*
+
+This is where I manually organised my input to understand the circuit and then,
+combined with the adding test, I could easily spot mistakes in certain bit adders
 
 x01 XOR y01 -> sgt
 x01 AND y01 -> hqg
@@ -197,7 +197,11 @@ fqh XOR ctc -> hkh     these two need swapping
 fqh AND ctc -> rjt
 hkh OR rjt -> qhp
 
-39 is next
+y37 XOR x37 -> ngq
+x37 AND y37 -> kqm
+ngq XOR cgm -> z37
+ngq AND cgm -> vdw
+kqm OR vdw -> vvr
 
 y38 XOR x38 -> crj
 y38 AND x38 -> cwb
@@ -205,8 +209,8 @@ crj XOR vvr -> z38
 vvr AND crj -> mdm
 mdm OR cwb -> hsf
 
-x39 XOR y39 -> fjp
-y39 AND x39 -> bng
+x39 XOR y39 -> fjp     these two need swapping
+y39 AND x39 -> bng     these two need swapping
 hsf XOR bng -> z39
 bng AND hsf -> tkf
 tkf OR fjp -> vbm
@@ -229,7 +233,6 @@ tsw XOR vst -> z25
 npr OR jnh -> fhw
 stg AND trp -> fmk
 ftt AND mcb -> wmd
-ngq AND cgm -> vdw
 kpt AND prr -> rdt
 rqf XOR grt -> z33
 hbq OR twj -> hkt
@@ -240,7 +243,6 @@ jdb OR btb -> kpt
 kvp AND pcv -> jnh
 fff OR pgr -> tmk
 hkt XOR qrn -> z34
-y37 XOR x37 -> ngq
 btw OR gsg -> kvp
 scv XOR mbp -> z20
 y20 XOR x20 -> mbp
@@ -260,7 +262,6 @@ ngj AND pqj -> ckj
 x21 AND y21 -> pgr
 y22 XOR x22 -> svq
 y11 AND x11 -> tst
-kqm OR vdw -> vvr
 y15 XOR x15 -> nhg
 rfw AND qnw -> wvq
 fmk OR dbr -> wnj
@@ -308,7 +309,6 @@ y29 XOR x29 -> ftt
 y24 AND x24 -> krb
 vsd XOR nmb -> z14
 x07 XOR y07 -> fcs
-x37 AND y37 -> kqm
 y10 XOR x10 -> wvn
 nhg XOR prp -> z15
 wgm XOR rfv -> z36
@@ -348,7 +348,6 @@ y35 AND x35 -> kps
 qfw OR pms -> mcb
 y09 AND x09 -> spq
 vsd AND nmb -> csh
-ngq XOR cgm -> z37
 tbg OR jfp -> bkf
 rgt AND dsb -> vtn
 jtb AND bkf -> dmk
@@ -364,7 +363,5 @@ y41 AND x41 -> hrh
 y29 AND x29 -> bsk
 y25 AND x25 -> hcp
 bfq AND mkq -> pms
-
-
 
 */
