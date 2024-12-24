@@ -43,9 +43,21 @@ day24 :: (input: string) -> string, string
 
     part1 := run_adder();
 
-    set_input(x, 1);
-    set_input(y, 1);
-    part2 := run_adder();
+    for vx: 0..44 for vy: 0..44
+    {
+        xv := 1 << vx;
+        yv := 1 << vy;
+        set_input(x, xv);
+        set_input(y, yv);
+        result := run_adder();
+        if xv + yv != result
+        {
+            print("% + % != %\n", xv, yv, result);
+            break vx;
+        }
+    }
+
+    part2 := 0;
     
     return tprint("%", part1), tprint("%", part2);
 }
