@@ -199,6 +199,24 @@ hkh OR rjt -> qhp
 
 39 is next
 
+y38 XOR x38 -> crj
+y38 AND x38 -> cwb
+crj XOR vvr -> z38
+vvr AND crj -> mdm
+mdm OR cwb -> hsf
+
+x39 XOR y39 -> fjp
+y39 AND x39 -> bng
+hsf XOR bng -> z39
+bng AND hsf -> tkf
+tkf OR fjp -> vbm
+
+x40 XOR y40 -> qqb
+y40 AND x40 -> dnr
+vbm XOR qqb -> z40
+vbm AND qqb -> nhq
+dnr OR nhq -> rgt
+
 x14 AND y14 -> smm
 y05 AND x05 -> rkt
 y22 AND x22 -> gsg
@@ -218,7 +236,6 @@ hbq OR twj -> hkt
 rkt OR ckj -> wts
 kmk XOR qvw -> z09
 jwd OR ssg -> cgm
-mdm OR cwb -> hsf
 jdb OR btb -> kpt
 kvp AND pcv -> jnh
 fff OR pgr -> tmk
@@ -242,7 +259,6 @@ wts XOR vrh -> z06
 ngj AND pqj -> ckj
 x21 AND y21 -> pgr
 y22 XOR x22 -> svq
-y39 AND x39 -> bng
 y11 AND x11 -> tst
 kqm OR vdw -> vvr
 y15 XOR x15 -> nhg
@@ -265,10 +281,8 @@ y25 XOR x25 -> tsw
 x34 XOR y34 -> qrn
 y05 XOR x05 -> pqj
 ckp OR wbt -> hdg
-dnr OR nhq -> rgt
 vrj OR cvp -> nvc
 x23 XOR y23 -> pcv
-y40 AND x40 -> dnr
 x13 XOR y13 -> hnt
 y28 XOR x28 -> mkq
 hrh OR vtn -> swn
@@ -280,18 +294,12 @@ qdd OR gck -> rfw
 swp XOR fcs -> z07
 rfv AND wgm -> jwd
 fnd OR scp -> z45
-vbm XOR qqb -> z40
 x13 AND y13 -> mkh
 svq AND tmk -> btw
-hsf XOR bng -> z39
 x32 AND y32 -> nwj
-x40 XOR y40 -> qqb
-y38 AND x38 -> cwb
 fhw XOR nkc -> z24
 kpt XOR prr -> z08
 swn XOR jkm -> z42
-vbm AND qqb -> nhq
-vvr AND crj -> mdm
 mkh OR qdw -> vsd
 x36 AND y36 -> ssg
 csh OR smm -> prp
@@ -324,14 +332,12 @@ pdc XOR gbs -> z21
 vst AND tsw -> jgn
 y15 AND x15 -> wbt
 kvp XOR pcv -> z23
-x39 XOR y39 -> fjp
 x44 XOR y44 -> bcg
 x42 AND y42 -> jfp
 y07 AND x07 -> btb
 tgd AND nvc -> jnn
 nwj OR smg -> grt
 fcs AND swp -> jdb
-crj XOR vvr -> z38
 trw AND wvn -> cvp
 dcp OR dmk -> tfj
 y33 XOR x33 -> rqf
@@ -349,16 +355,13 @@ jtb AND bkf -> dmk
 y42 XOR x42 -> jkm
 x28 AND y28 -> qfw
 wmd OR bsk -> hhd
-bng AND hsf -> tkf
 y09 XOR x09 -> kmk
 qhp XOR vbw -> z32
 hcp OR jgn -> cbj
 y12 AND x12 -> dbr
 y00 AND x00 -> rjr
-y38 XOR x38 -> crj
 y41 AND x41 -> hrh
 y29 AND x29 -> bsk
-tkf OR fjp -> vbm
 y25 AND x25 -> hcp
 bfq AND mkq -> pms
 
