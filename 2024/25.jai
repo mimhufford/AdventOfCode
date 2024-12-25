@@ -12,7 +12,7 @@ day25 :: (input: string) -> string, string
         read_word(*input);
     }
 
-    part1, part2 := 0;
+    part1, part2 := 0, ":)";
 
     for l: locks
     {
