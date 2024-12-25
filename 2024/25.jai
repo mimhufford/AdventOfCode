@@ -5,10 +5,10 @@ day25 :: (input: string) -> string, string
     while input
     {
         top := read_word(*input);
-        schematic : [5]s64;
-        if top[0] == #char "#" schematic = array_add(*locks).*;
-        else                   schematic = array_add(*keys).*;
-        for 1..5 for read_word(*input) if it == #char "#" schematic[it_index] += 1;
+        schematic : *[5]s64;
+        if top[0] == #char "#" schematic = array_add(*locks);
+        else                   schematic = array_add(*keys);
+        for 1..5 for read_word(*input) if it == #char "#" schematic.*[it_index] += 1;
         read_word(*input);
     }
 
