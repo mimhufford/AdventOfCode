@@ -6,6 +6,7 @@ day19 :: (input: string) -> string, string
     while input
     {
         design := read_word(*input);
+        table_reset(*cache);
         combos := count_combos(design, patterns);
         part1 += ifx combos then 1;
         part2 += combos;
@@ -16,12 +17,12 @@ day19 :: (input: string) -> string, string
 
 #scope_file
 
-cache : Table(string, s64);
+cache : Table(s64, s64);
 
 count_combos :: (design: string, patterns: []string) -> s64
 {
     if design.count == 0 return 1;
-    cached_result := table_find_pointer(*cache, design);
+    cached_result := table_find_pointer(*cache, design.count);
     if cached_result return cached_result.*;
 
     combos := 0;
@@ -33,7 +34,7 @@ count_combos :: (design: string, patterns: []string) -> s64
         combos += count_combos(advance(design, pattern.count), patterns);
     }
 
-    table_add(*cache, design, combos);
+    table_add(*cache, design.count, combos);
     return combos;
 }
 
