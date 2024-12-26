@@ -4,6 +4,7 @@ day11 :: (input: string) -> string, string
     
     while input array_add(*stones, read_u64(*input));
 
+    init(*cache, 150_000);
     part1, part2 := 0;
     for stones part1 += blink(it, 25);
     for stones part2 += blink(it, 75);
