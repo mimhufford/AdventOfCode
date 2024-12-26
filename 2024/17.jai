@@ -66,12 +66,13 @@ hunt_for_quine :: (rom: []s64) -> s64
 
     for q: queue
     {
-        for a: q.a_init..q.a_init+7
+        using curr := q;
+        for a: a_init..a_init+7
         {
             out := interpret(rom, a);
-            for i: 0..q.digits-1 if out[i] != rom[i+rom.count-q.digits] continue a;
-            if q.digits == rom.count return a;
-            array_add(*queue, .{ q.digits + 1, a << 3 });
+            for i: 0..digits-1 if out[i] != rom[i+rom.count-digits] continue a;
+            if digits == rom.count return a;
+            array_add(*queue, .{ digits + 1, a << 3 });
         }
     }
 
