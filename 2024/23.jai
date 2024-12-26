@@ -63,17 +63,18 @@ find_largest_bunch_of_nerds :: () -> string
 
         for v, i: p
         {
-            nr, np, nx : [..]s64;
-            array_add(*nr, ..r);
-            array_add(*nr, v);
+            np, nx : [..]s64;
             for i..p.count-1 if connection[v][p[it]] array_add(*np, p[it]);
             for x if connection[v][it] array_add(*nx, it);
+            nr := r;
+            array_add(*nr, v);
             bron_kerbosch(nr, np, nx);
             array_add(*x, v);
         }
     }
 
     r, p, x : [..]s64;
+    array_reserve(*r, 128);
     for computer if it.count array_add(*p, it_index);
     bron_kerbosch(r, p, x);
 
