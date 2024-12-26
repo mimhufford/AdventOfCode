@@ -36,9 +36,11 @@ robots : [..] struct { x: s64; y: s64; dx: s64; dy: s64; };
 
 find_clumped_image :: () -> s64
 {
+    xi, yi := 0;
+
     for 1..10000
     {
-        x, y, spread := 0;
+        x, y, x_spread, y_spread := 0;
 
         for * r: robots
         {
@@ -49,9 +51,24 @@ find_clumped_image :: () -> s64
         
         x, y /= robots.count;
 
-        for * r: robots spread += (r.x-x)*(r.x-x)+(r.y-y)*(r.y-y);
+        for * r: robots
+        {
+            x_spread += (r.x-x)*(r.x-x);
+            y_spread += (r.y-y)*(r.y-y);
+        }
 
-        if spread < 500000 return it;
+        if x_spread < 250_000 xi = it;
+        if y_spread < 250_000 yi = it;
+
+        if xi > 0 && yi > 0
+        {
+            while true
+            {
+                if xi < yi  xi += WIDTH;
+                if yi < xi  yi += HEIGHT;
+                if xi == yi return xi;
+            }
+        }
     }
 
     return -1;
