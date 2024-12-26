@@ -63,9 +63,10 @@ find_largest_bunch_of_nerds :: () -> string
 
         for v, i: p
         {
-            np, nx : [..]s64;
+            np : [..]s64;
             for i..p.count-1 if connection[v][p[it]] array_add(*np, p[it]);
-            for x if connection[v][it] array_add(*nx, it);
+            nx := x;
+            for nx if !connection[v][it] remove it;
             nr := r;
             array_add(*nr, v);
             bron_kerbosch(nr, np, nx);
