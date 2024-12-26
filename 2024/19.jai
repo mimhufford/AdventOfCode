@@ -28,7 +28,8 @@ count_combos :: (design: string, patterns: []string) -> s64
 
     for pattern: patterns
     {
-        if !starts_with(design, pattern) continue;
+        if pattern.count > design.count continue;
+        if memcmp(pattern.data, design.data, pattern.count) continue;
         combos += count_combos(advance(design, pattern.count), patterns);
     }
 
