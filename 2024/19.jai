@@ -1,7 +1,7 @@
 day19 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    parse_patterns(*input);
+    build_pattern_tree(*input);
 
     while input
     {
@@ -17,14 +17,7 @@ day19 :: (input: string) -> string, string
 
 #scope_file
 
-nodes : [..]Node;
-
-Node :: struct
-{
-    next : [26]s64;
-    end := false;
-}
-
+nodes : [..] struct { next : [26]s64; end := false; };
 cache : Table(s64, s64);
 
 count_combos :: (design: string, node_index := 0) -> s64
@@ -48,7 +41,7 @@ count_combos :: (design: string, node_index := 0) -> s64
     return combos;
 }
 
-parse_patterns :: (s: *string)
+build_pattern_tree :: (s: *string)
 {
     array_reserve(*nodes, 1000);
     root := array_add(*nodes);
