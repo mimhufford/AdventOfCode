@@ -1,13 +1,13 @@
 day19 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    patterns := parse_patterns(*input);
+    parse_patterns(*input);
 
     while input
     {
         design := read_word(*input);
         table_reset(*cache);
-        combos := count_combos(design, patterns);
+        combos := count_combos(design);
         part1 += ifx combos then 1;
         part2 += combos;
     }
@@ -17,28 +17,38 @@ day19 :: (input: string) -> string, string
 
 #scope_file
 
+nodes : [..]Node;
+
+Node :: struct
+{
+    next : [26]s64;
+    end := false;
+}
+
 cache : Table(s64, s64);
 
-count_combos :: (design: string, patterns: []string) -> s64
+count_combos :: (design: string, node_index := 0) -> s64
 {
-    if design.count == 0 return 1;
-    cached_result := table_find_pointer(*cache, design.count);
+    key := design.count << 32 | node_index;
+    cached_result := table_find_pointer(*cache, key);
     if cached_result return cached_result.*;
+
+    node := *nodes[node_index];
+
+    if !design.count return ifx node.end then 1;
+
+    c := design[0] - #char "a";
 
     combos := 0;
 
-    for pattern: patterns
-    {
-        if pattern.count > design.count continue;
-        if memcmp(pattern.data, design.data, pattern.count) continue;
-        combos += count_combos(advance(design, pattern.count), patterns);
-    }
+    if node.next[c] combos += count_combos(advance(design), node.next[c]);
+    if node.end     combos += count_combos(design);
 
-    table_add(*cache, design.count, combos);
+    table_add(*cache, key, combos);
     return combos;
 }
 
-parse_patterns :: (s: *string) -> []string
+parse_patterns :: (s: *string)
 {
     patterns : [..]string;
 
@@ -59,6 +69,24 @@ parse_patterns :: (s: *string) -> []string
         advance(s, 2);
     }
 
+    array_reserve(*nodes, 1000);
+    root := array_add(*nodes);
+    
+    for p: patterns
+    {
+        node := root;
+        for char: p
+        {
+            c := char - #char "a";
+            if node.next[c] == 0
+            {
+                _ := array_add(*nodes);
+                node.next[c] = nodes.count - 1;
+            }
+            node = *nodes[node.next[c]];
+        }
+        node.end = true;
+    }
+
     skip_whitespace(s);
-    return patterns;
 }
