@@ -50,42 +50,29 @@ count_combos :: (design: string, node_index := 0) -> s64
 
 parse_patterns :: (s: *string)
 {
-    patterns : [..]string;
+    array_reserve(*nodes, 1000);
+    root := array_add(*nodes);
 
     while true
     {
-        pattern := s.*;
-        pattern.count = 0;
+        node := root;
 
         while s.*[0] != #char "," && s.*[0] != #char "\n"
         {
-            advance(s);
-            pattern.count += 1;
-        }
-
-        array_add(*patterns, pattern);
-
-        if s.*[0] == #char "\n" break;
-        advance(s, 2);
-    }
-
-    array_reserve(*nodes, 1000);
-    root := array_add(*nodes);
-    
-    for p: patterns
-    {
-        node := root;
-        for char: p
-        {
-            c := char - #char "a";
+            c := s.*[0] - #char "a";
             if node.next[c] == 0
             {
                 _ := array_add(*nodes);
                 node.next[c] = nodes.count - 1;
             }
             node = *nodes[node.next[c]];
+            advance(s);
         }
+
         node.end = true;
+
+        if s.*[0] == #char "\n" break;
+        advance(s, 2);
     }
 
     skip_whitespace(s);
