@@ -1,46 +1,96 @@
 day9 :: (input: string) -> string, string
 {
-    part1 := greedy_refrag(input);
-    part2 := actual_defrag(input);
+    part1 := frag_files(input);
+    part2 := pack_files(input);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-actual_defrag :: (input: string) -> s64
+pack_files :: (input: string) -> s64
 {
-    files, gaps : [..]struct { size: s64; index: s64; };
-    index, checksum := 0;
-
-    for 0..input.count-2
+    // parse input data into blocks
+    Block :: struct
     {
-        size := input[it] - #char "0";
-        if size == 0 continue;
-        if it % 2 array_add(*gaps,  .{ size, index });
-        else      array_add(*files, .{ size, index });
-        index += size;
+        id, size, free, index : s64;
+        prev, next : *Block;
     }
 
-    for * < f: files
+    id, index := 0;
+    first, last : *Block;
+
+    while input
     {
-        for * g: gaps
+        block := New(Block);
+        block.id = id;
+        block.index = index;
+        block.size = input[0] - #char "0";
+        if input[1] != #char "\n" block.free = input[1] - #char "0";
+
+        if !first first = block;
+        if last last.next = block;
+        block.prev = last;
+        last = block;
+
+        id += 1;
+        index += block.size + block.free;
+        advance(*input, 2);
+    }
+
+    // track where the last file of each size found a free block so we can start looking from there next time
+    gap_start := *Block.[first, first, first, first, first, first, first, first, first, first];
+
+    // try to move each file
+    file := last;
+    while file
+    {
+        prev := file.prev;
+        defer file = prev;
+
+        gap := gap_start[file.size];
+        if gap.index > file.index continue;
+
+        while gap
         {
-            if g.index >= f.index break;
-            if g.size < f.size continue;
-            f.index = g.index;
-            g.size -= f.size;
-            g.index += f.size;
+            defer gap = gap.next;
+            if gap == file break;
+            if gap.free < file.size continue;
+
+            // we're moving, so extend the free space of the previous block
+            if file.prev  file.prev.free += file.size + file.free;
+
+            // fiddle the pointers to move the block
+            if file.prev  file.prev.next = file.next;
+            if file.next  file.next.prev = file.prev;
+            file.next = gap.next;
+            gap.next.prev = file;
+            gap.next = file;
+            file.prev = gap;
+
+            // set our new free space and stomp over the previous free block
+            file.free = gap.free - file.size;
+            gap.free = 0;
+
+            // update our index
+            file.index = file.prev.index + file.prev.size;
+
+            // track the starting point for gap hunting for this size in future
+            gap_start[file.size] = file;
             break;
         }
-
-        checksum += it_index * f.size * (2 * f.index + f.size - 1) / 2;
     }
 
+    checksum, block := 0, first;
+    while block
+    {
+        for 1..block.size checksum += block.id * (block.index + it - 1);
+        block = block.next;
+    }
     return checksum;
 }
 
-greedy_refrag :: (input: string) -> s64
+frag_files :: (input: string) -> s64
 {
     data := tprint("%", input);
     data.count -= 1;
