@@ -1,8 +1,7 @@
 day16 :: (input: string) -> string, string
 {
     build_graph(input);
-    part1 := walk_graph();
-    part2 := count_cells(part1);
+    part1, part2 := walk_graph();
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -26,11 +25,12 @@ Edge :: struct
     cells: [..]u64;
 }
 
-count_cells :: (best_score: s64) -> s64
+walk_graph :: () -> s64, s64
 {
+    best_score := S64_MAX;
     paths : [..] struct { score: s64; i: s64; };
     queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edge: *Edge; prev := -1; };
-    array_reserve(*queue, 100000);
+    array_reserve(*queue, 250000);
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     for queue
@@ -43,6 +43,7 @@ count_cells :: (best_score: s64) -> s64
 
         if x == SIZE-2 && y == 1
         {
+            best_score = min(best_score, score);
             array_add(*paths, .{score, it_index});
             continue;
         }
@@ -53,56 +54,23 @@ count_cells :: (best_score: s64) -> s64
             e := node_edges.*[it];
             if e.dest == 0 continue; // nothing in this direction
             next_score := score + e.cells.count + ifx d != it 1000;
-            if next_score > best_score continue;
             next_node := Node.{hash = e.dest};
             array_add(*queue, .{next_node.x, next_node.y, it, next_score, node_edges.data+it, it_index});
         }
     }
 
     used_cells : Table(u64, void);
-    for paths
+    for paths if it.score == best_score
     {
-        if it.score > best_score continue;
         curr := it.i;
-        while true
+        while curr > 0
         {
-            if queue[curr].prev < 0 break;
             for queue[curr].edge.cells find_or_add(*used_cells, it);
             curr = queue[curr].prev;
         }
     }
 
-    return used_cells.count + 1;
-}
-
-walk_graph :: () -> s64
-{
-    best_score := S64_MAX;
-    queue : [..] struct { x: s32; y: s32; d: s64; score: s64; };
-    array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
-
-    for q: queue
-    {
-        using curr := q;
-
-        node_edges := table_find_pointer(*graph, Node.{x=x, y=y}.hash);
-        if node_edges.*[d].best <= score continue;
-        node_edges.*[d].best = score;
-
-        for 0..3
-        {
-            if abs(d - it) == 2 continue; // don't go backwards
-            e := node_edges.*[it];
-            if e.dest == 0 continue; // nothing in this direction
-            next := Node.{hash = e.dest};
-            next_score := score + e.cells.count + ifx d != it 1000;
-            if next_score >= best_score continue;
-            if next.x == SIZE-2 && next.y == 1 { best_score = min(best_score, next_score); continue; }
-            array_add(*queue, .{ next.x, next.y, it, next_score });
-        }
-    }
-
-    return best_score;
+    return best_score, used_cells.count + 1;
 }
 
 build_graph :: (map: string) -> s64
