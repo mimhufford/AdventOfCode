@@ -28,8 +28,9 @@ Edge :: struct
 
 count_cells :: (best_score: s64) -> s64
 {
-    paths : [..] struct { score: s64; edges: [..]*Edge; };
-    queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edges: [..]*Edge; };
+    paths : [..] struct { score: s64; i: s64; };
+    queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edge: *Edge; prev := -1; };
+    array_reserve(*queue, 100000);
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
 
     for queue
@@ -42,7 +43,7 @@ count_cells :: (best_score: s64) -> s64
 
         if x == SIZE-2 && y == 1
         {
-            array_add(*paths, .{score, edges});
+            array_add(*paths, .{score, it_index});
             continue;
         }
 
@@ -51,15 +52,10 @@ count_cells :: (best_score: s64) -> s64
             if abs(d - it) == 2 continue; // don't go backwards
             e := node_edges.*[it];
             if e.dest == 0 continue; // nothing in this direction
-            next_node := Node.{hash = e.dest};
             next_score := score + e.cells.count + ifx d != it 1000;
             if next_score > best_score continue;
-            next := array_add(*queue);
-            next.x, next.y = next_node.x, next_node.y;
-            next.d = it;
-            next.score = next_score;
-            array_add(*next.edges, ..edges);
-            array_add(*next.edges, node_edges.data + it);
+            next_node := Node.{hash = e.dest};
+            array_add(*queue, .{next_node.x, next_node.y, it, next_score, node_edges.data+it, it_index});
         }
     }
 
@@ -67,7 +63,13 @@ count_cells :: (best_score: s64) -> s64
     for paths
     {
         if it.score > best_score continue;
-        for it.edges for it.cells find_or_add(*used_cells, it);
+        curr := it.i;
+        while true
+        {
+            if queue[curr].prev < 0 break;
+            for queue[curr].edge.cells find_or_add(*used_cells, it);
+            curr = queue[curr].prev;
+        }
     }
 
     return used_cells.count + 1;
