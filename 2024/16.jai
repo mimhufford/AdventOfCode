@@ -28,7 +28,7 @@ Edge :: struct
 walk_graph :: () -> s64, s64
 {
     best_score := S64_MAX;
-    paths : [..] struct { score: s64; i: s64; };
+    paths : [..]s64;
     queue : [..] struct { x: s32; y: s32; d: s64; score: s64; edge: *Edge; prev := -1; };
     array_reserve(*queue, 250000);
     array_add(*queue, .{ x=1, y=SIZE-2, d=0, score=0 });
@@ -44,7 +44,7 @@ walk_graph :: () -> s64, s64
         if x == SIZE-2 && y == 1
         {
             best_score = min(best_score, score);
-            array_add(*paths, .{score, it_index});
+            array_add(*paths, it_index);
             continue;
         }
 
@@ -60,9 +60,9 @@ walk_graph :: () -> s64, s64
     }
 
     used_cells : Table(u64, void);
-    for paths if it.score == best_score
+    for paths if queue[it].score == best_score
     {
-        curr := it.i;
+        curr := it;
         while curr > 0
         {
             for queue[curr].edge.cells find_or_add(*used_cells, it);
