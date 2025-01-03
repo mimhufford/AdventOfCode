@@ -38,7 +38,7 @@ count_cheats :: () -> s64, s64
             if nx < 0 || nx >= SIZE continue;
             if ny < 0 || ny >= SIZE continue;
             if map[ny][nx] == -1 continue;
-            if map[y][x] - map[ny][nx] - abs(ny - y) - abs(nx - x) < 100 continue;
+            if map[y][x] - map[ny][nx] - moves < 100 continue;
             lil_cheats, big_cheats += ifx moves == 2 then 1, 1;
         }
     }
