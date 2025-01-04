@@ -21,7 +21,6 @@ day23 :: (input: string) -> string, string
 
 computer : [26*26] [..]s64;
 connection : [26*26][26*26]bool;
-largest_bunch_of_nerds : [..]s64;
 
 find_t_triplets :: () -> s64
 {
@@ -49,39 +48,34 @@ find_t_triplets :: () -> s64
 
 find_largest_bunch_of_nerds :: () -> string
 {
-    bron_kerbosch :: (r: [..]s64, p: [..]s64, _x: [..]s64)
+    largest : [..]s64;
+    current : [..]s64;
+    seen    : [26*26]bool;
+
+    for c, id: computer
     {
-        if !p.count && !_x.count
+        if seen[id] continue;
+        seen[id] = true;
+        array_reset_keeping_memory(*current);
+        array_add(*current, id);
+
+        for n: c
         {
-            if r.count <= largest_bunch_of_nerds.count return;
-            array_reset_keeping_memory(*largest_bunch_of_nerds);
-            array_add(*largest_bunch_of_nerds, ..r);
-            return;
+            for current if !connection[n][it] continue n;
+            seen[n] = true;
+            array_add(*current, n);
         }
 
-        x : [..]s64; array_add(*x, .._x);
-
-        for v, i: p
+        if current.count > largest.count
         {
-            np : [..]s64;
-            for i..p.count-1 if connection[v][p[it]] array_add(*np, p[it]);
-            nx := x;
-            for nx if !connection[v][it] remove it;
-            nr := r;
-            array_add(*nr, v);
-            bron_kerbosch(nr, np, nx);
-            array_add(*x, v);
+            array_reset_keeping_memory(*largest);
+            array_add(*largest, ..current);
         }
     }
 
-    r, p, x : [..]s64;
-    array_reserve(*r, 128);
-    for computer if it.count array_add(*p, it_index);
-    bron_kerbosch(r, p, x);
-
-    quick_sort(largest_bunch_of_nerds, i=>i);
+    quick_sort(largest, i=>i);
     sb : String_Builder;
-    for largest_bunch_of_nerds append(*sb, tprint("%,", get_str(it)));
+    for largest append(*sb, tprint("%,", get_str(it)));
     result := builder_to_string(*sb); result.count -= 1;
     return result;
 }
