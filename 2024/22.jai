@@ -6,8 +6,7 @@ day22 :: (input: string) -> string, string
     while input
     {
         index += 1;
-        seed := read_s64(*input);
-        d1, d2, d3, d4, v3, v4 := 0, 0, 0, 0, 0, seed;
+        d1, d2, d3, d4, v3, v4 := 0, 0, 0, 0, 0, read_s64(*input);
 
         for 1..2000
         {
