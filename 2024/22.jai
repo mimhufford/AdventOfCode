@@ -17,8 +17,6 @@ day22 :: (input: string) -> string, string
             v4 ^= v4 << 11; v4 &= 0xFFFFFF;
             d1, d2, d3, d4 = d2, d3, d4, (v4 % 10 - v3 % 10) + 9;
 
-            if it <= 4 continue;
-
             seq := d1*19*19*19 + d2*19*19 + d3*19 + d4;
             if last_update[seq] == index continue;
             last_update[seq] = xx index;
