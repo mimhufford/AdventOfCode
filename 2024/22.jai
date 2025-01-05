@@ -16,12 +16,12 @@ last_update : [19*19*19*19]u16;
 generate :: (seed: s64) -> s64
 {
     index += 1;
-    v1, v2, v3, v4 := 0, 0, 0, seed;
+    v3, v4 := 0, seed;
     d1, d2, d3, d4 := 0, 0, 0, 0;
 
     for 1..2000
     {
-        v1, v2, v3 = v2, v3, v4;
+        v3 = v4;
         v4 ^= v4 << 6;  v4 &= 0xFFFFFF;
         v4 ^= v4 >> 5;
         v4 ^= v4 << 11; v4 &= 0xFFFFFF;
@@ -38,4 +38,37 @@ generate :: (seed: s64) -> s64
     }
 
     return v4;
+}
+
+wip_simd_version :: (data: string) -> s64, s64
+{
+    result := 0;
+
+    while data
+    {
+        mask : s32 = 0xFFFFFF; mask_ptr := *mask;
+        curr : [8]s32; curr_ptr := curr.data;
+        for 0..7 curr[it] = read_s32(*data);
+
+        for 1..2000
+        {
+            #asm AVX, AVX2 {
+                pbroadcastd m:, [mask_ptr];  // broadcast the mask into m
+                movdqu      v:, [curr_ptr];  // load curr into v
+                pslld       t:, v, 6;        // t = v << 6
+                pxor        v, v, t;         // v ^= t
+                pand        v, v, m;         // v &= 0xFFFFFF
+                psrld       t, v, 5;         // t = v >> 5
+                pxor        v, v, t;         // v ^= t
+                pslld       t, v, 11;        // t = v << 11
+                pxor        v, v, t;         // v ^= t
+                pand        v, v, m;         // v &= 0xFFFFFF
+                movdqu      [curr_ptr], v;   // save v back into curr
+            }
+        }
+
+        for curr result += it;
+    }
+    
+    return result, 0;
 }
