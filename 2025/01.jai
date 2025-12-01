@@ -4,11 +4,14 @@ day1 :: (input: string) -> string, string
     position := 50;
 
     while input {
-        dir := input[0] == "R";
+        diff := ifx input[0] == "R" then 1 else -1;
         advance(*input);
         val := read_s64(*input);
-        position += ifx dir then val else -val;
-        position %= 100;
+        for 0..val-1 {
+            position += diff;
+            position %= 100;
+            part2 += ifx position == 0 then 1;
+        }
         part1 += ifx position == 0 then 1;
     }
 
