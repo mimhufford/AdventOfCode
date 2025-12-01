@@ -8,15 +8,12 @@ day1 :: (input: string) -> string, string
         advance(*input);
         val := read_s64(*input);
 
-        for 0..(val % 100)-1 {
-            dial += diff;
-            if dial > 99 dial -= 100;
-            if dial < 00 dial += 100;
-            part2 += ifx dial == 0 then 1;
-        }
+        part2 += ((100 + (diff * dial)) % 100 + val) / 100;
+
+        dial += diff * val;
+        dial %= 100;
 
         part1 += ifx dial == 0 then 1;
-        part2 += val / 100;
     }
 
     return tprint("%", part1), tprint("%", part2);
