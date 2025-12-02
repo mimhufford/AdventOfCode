@@ -23,7 +23,7 @@ day2 :: (input: string) -> string, string
                     }
 
                     if n < lo continue;
-                    if n > hi continue;
+                    if n > hi break;
                     if !array_add_if_unique(*used, n) continue;
 
                     part1 += ifx part_count == 2 then n;
