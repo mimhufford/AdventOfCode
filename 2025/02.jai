@@ -9,21 +9,25 @@ day2 :: (input: string) -> string, string
         if input advance(*input);
     
         for n: lo..hi {
-            // TODO: use maths
-            str := tprint("%", n);
+            digits := floor_log_10(n);
 
-            for div: 2..str.count {
-                if str.count % div continue;
-                a := str;
-                a.count /= div;
+            if digits % 2 == 0 {
+                b := pow_10(digits / 2);
+                left := n / b;
+                right := n % b;
+                if left == right then part1 += n;
+            }
 
-                for part: 2..div {
-                    b := a;
-                    b.data += b.count * (part - 1);
-                    if a != b continue div;
+            for base: 1..digits/2 {
+                if digits % base continue;
+                b := pow_10(base);
+                right := n % b;
+                part := n / b;
+                while part {
+                    if part % b != right continue base;
+                    part /= b;
                 }
 
-                if div == 2 then part1 += n;
                 part2 += n;
                 break;
             }
@@ -31,4 +35,26 @@ day2 :: (input: string) -> string, string
     }
 
     return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+floor_log_10 :: (n: s64) -> s64 {
+    if n < 10 return 1;
+    if n < 100 return 2;
+    if n < 1000 return 3;
+    if n < 10000 return 4;
+    if n < 100000 return 5;
+    if n < 1000000 return 6;
+    if n < 10000000 return 7;
+    if n < 100000000 return 8;
+    if n < 1000000000 return 9;
+    if n < 10000000000 return 10;
+    if n < 100000000000 return 11;
+    if n < 1000000000000 return 12;
+    return 0;
+}
+
+pow_10 :: (n: s64) -> s64 {
+    return s64.[1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000, 1000000000000][n];
 }
