@@ -1,35 +1,33 @@
 day2 :: (input: string) -> string, string
 {
     part1, part2 : s64;
+    used : [..]s64;
 
     while input {
+        array_reset_keeping_memory(*used);
         lo := read_s64(*input);
         advance(*input);
         hi := read_s64(*input);
         if input advance(*input);
-    
-        for n: lo..hi {
-            digits := floor_log_10(n);
 
-            if digits % 2 == 0 {
-                b := pow_10(digits / 2);
-                left := n / b;
-                right := n % b;
-                if left == right then part1 += n;
-            }
+        for digits: floor_log_10(lo)..floor_log_10(hi) {
+            for part_count: 2..digits {
+                if digits % part_count continue;
+                part_size := digits / part_count;
 
-            for base: 1..digits/2 {
-                if digits % base continue;
-                b := pow_10(base);
-                right := n % b;
-                part := n / b;
-                while part {
-                    if part % b != right continue base;
-                    part /= b;
+                for digit: pow_10(part_size - 1)..pow_10(part_size) - 1 {
+                    n := 0;
+                    for 1..part_count {
+                        n *= pow_10(part_size);
+                        n += digit;
+                    }
+                    if n < lo continue;
+                    if n > hi continue;
+                    if !array_add_if_unique(*used, n) continue;
+
+                    if part_count == 2 part1 += n;
+                    part2 += n;
                 }
-
-                part2 += n;
-                break;
             }
         }
     }
