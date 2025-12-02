@@ -8,14 +8,25 @@ day2 :: (input: string) -> string, string
         hi := read_s64(*input);
         if input advance(*input);
     
-        for lo..hi {
+        for n: lo..hi {
             // TODO: use maths
-            str := tprint("%", it);
-            if str.count % 2 continue;
-            a, b := str, str;
-            a.count /= 2;
-            advance(*b, str.count / 2);
-            if a == b then part1 += it;
+            str := tprint("%", n);
+
+            for div: 2..str.count {
+                if str.count % div continue;
+                a := str;
+                a.count /= div;
+
+                for part: 2..div {
+                    b := a;
+                    b.data += b.count * (part - 1);
+                    if a != b continue div;
+                }
+
+                if div == 2 then part1 += n;
+                part2 += n;
+                break;
+            }
         }
     }
 
