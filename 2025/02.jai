@@ -14,8 +14,10 @@ day2 :: (input: string) -> string, string
             for part_count: 2..digit_count {
                 if digit_count % part_count continue;
                 part_size := digit_count / part_count;
+                part_lo := max(pow_10[part_size - 1], lo / pow_10[digit_count - part_size]);
+                part_hi := pow_10[part_size] - 1;
 
-                for part: pow_10[part_size - 1]..pow_10[part_size] - 1 {
+                for part: part_lo..part_hi {
                     n := 0;
                     for 1..part_count {
                         n *= pow_10[part_size];
