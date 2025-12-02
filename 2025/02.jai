@@ -10,22 +10,23 @@ day2 :: (input: string) -> string, string
         hi := read_s64(*input);
         if input advance(*input);
 
-        for digits: floor_log_10(lo)..floor_log_10(hi) {
-            for part_count: 2..digits {
-                if digits % part_count continue;
-                part_size := digits / part_count;
+        for digit_count: floor_log_10(lo)..floor_log_10(hi) {
+            for part_count: 2..digit_count {
+                if digit_count % part_count continue;
+                part_size := digit_count / part_count;
 
-                for digit: pow_10(part_size - 1)..pow_10(part_size) - 1 {
+                for part: pow_10[part_size - 1]..pow_10[part_size] - 1 {
                     n := 0;
                     for 1..part_count {
-                        n *= pow_10(part_size);
-                        n += digit;
+                        n *= pow_10[part_size];
+                        n += part;
                     }
+
                     if n < lo continue;
                     if n > hi continue;
                     if !array_add_if_unique(*used, n) continue;
 
-                    if part_count == 2 part1 += n;
+                    part1 += ifx part_count == 2 then n;
                     part2 += n;
                 }
             }
@@ -53,6 +54,4 @@ floor_log_10 :: (n: s64) -> s64 {
     return 0;
 }
 
-pow_10 :: (n: s64) -> s64 {
-    return s64.[1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000, 1000000000000][n];
-}
+pow_10 :: s64.[1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000, 1000000000000];
