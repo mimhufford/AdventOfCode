@@ -19,32 +19,31 @@ day3 :: (input: string) -> string, string
 largest_joltage :: (bank: string, num_batteries: s64) -> s64 {
     joltage := 0;
 
-    tens_digit  := 0;
-    tens_index  := 0;
-    units_digit := 0;
-    units_index := 0;
-
-    for index: 0..bank.count-2 {
-        if bank[index] - "0" <= tens_digit continue;
-        tens_digit = bank[index] - "0";
-        tens_index = index;
-        if tens_digit == 9 break;
+    digit := 0;
+    index := 0;
+    for 0..bank.count-2 {
+        if bank[it] - "0" <= digit continue;
+        digit = bank[it] - "0";
+        index = it;
+        if digit == 9 break;
     }
 
     joltage *= 10;
-    joltage += tens_digit;
-    advance(*bank, tens_index+1);
+    joltage += digit;
+    advance(*bank, index + 1);
 
-    for index: 0..bank.count-1 {
-        if bank[index] - "0" <= units_digit continue;
-        units_digit = bank[index] - "0";
-        units_index = index;
-        if units_digit == 9 break;
+    digit = 0;
+    index = 0;
+    for 0..bank.count-1 {
+        if bank[it] - "0" <= digit continue;
+        digit = bank[it] - "0";
+        index = it;
+        if digit == 9 break;
     }
 
     joltage *= 10;
-    joltage += units_digit;
-    advance(*bank, units_index+1);
+    joltage += digit;
+    advance(*bank, index + 1);
 
     return joltage;
 }
