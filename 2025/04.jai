@@ -3,7 +3,6 @@ day4 :: (input: string) -> string, string
     part1, part2 : s64;
 
     queue : [..]s64;
-    array_reserve(*queue, 16_384);
 
     for char, index: input {
         if char != "@" then input[index] = 255;
@@ -17,7 +16,8 @@ day4 :: (input: string) -> string, string
         part1 += 1;
     }
 
-    for index: queue {
+    while queue {
+        index := pop(*queue);
         if input[index] > 3 continue;
 
         input[index] = 255;
