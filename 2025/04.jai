@@ -2,6 +2,7 @@ day4 :: (input: string) -> string, string
 {
     part1, part2 : s64;
 
+    SIZE :: 135;
     queue : [..]s64;
 
     for char, index: input {
@@ -10,7 +11,14 @@ day4 :: (input: string) -> string, string
 
     for char, index: input {
         if char == 255 continue;
-        input[index] = get_neighbours(input, index).count.(u8);
+        input[index] = 0;
+        for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
+            n_index := index + diff;
+            if n_index < 0 continue;
+            if n_index >= input.count continue;
+            if input[n_index] == 255 continue;
+            input[index] += 1;
+        }
         if input[index] > 3 continue;
         array_add(*queue, index);
         part1 += 1;
@@ -23,31 +31,15 @@ day4 :: (input: string) -> string, string
         input[index] = 255;
         part2 += 1;
 
-        for get_neighbours(input, index) {
-            input[it] -= 1;
-            if input[it] <= 3 then array_add(*queue, it);
+        for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
+            n_index := index + diff;
+            if n_index < 0 continue;
+            if n_index >= input.count continue;
+            if input[n_index] == 255 continue;
+            input[n_index] -= 1;
+            if input[n_index] <= 3 then array_add(*queue, n_index);
         }
     }
 
     return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-neighbours : [..]s64;
-
-get_neighbours :: inline (input: string, index: s64) -> []s64 {
-    array_reset_keeping_memory(*neighbours);
-
-    SIZE :: 135;
-
-    for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
-        n_index := index + diff;
-        if n_index < 0 continue;
-        if n_index >= input.count continue;
-        if input[n_index] == 255 continue;
-        array_add(*neighbours, n_index);
-    }
-
-    return neighbours;
 }
