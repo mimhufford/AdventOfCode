@@ -6,18 +6,19 @@ day4 :: (input: string) -> string, string
     queue : [..]s64;
 
     for char, index: input {
-        if char != "@" then input[index] = 255;
+        if char == "@" input[index] = 0;
+        else           input[index] = 255;
     }
 
     for char, index: input {
         if char == 255 continue;
-        input[index] = 0;
-        for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
+        for diff: s64.[+1, +SIZE, +SIZE+1, +SIZE+2] {
             n_index := index + diff;
             if n_index < 0 continue;
             if n_index >= input.count continue;
             if input[n_index] == 255 continue;
             input[index] += 1;
+            input[n_index] += 1;
         }
         if input[index] > 3 continue;
         array_add(*queue, index);
