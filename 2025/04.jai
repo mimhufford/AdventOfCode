@@ -41,7 +41,7 @@ get_neighbours :: inline (input: string, index: s64) -> []s64 {
 
     SIZE :: 135;
 
-    for diff: s64.[-1, +1, -SIZE, -SIZE-1, -SIZE-2, +SIZE, +SIZE+1, +SIZE+2] {
+    for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
         n_index := index + diff;
         if n_index < 0 continue;
         if n_index >= input.count continue;
