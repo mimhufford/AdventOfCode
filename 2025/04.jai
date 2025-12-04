@@ -14,8 +14,7 @@ day4 :: (input: string) -> string, string
         if char == 255 continue;
         for diff: s64.[+1, +SIZE, +SIZE+1, +SIZE+2] {
             n_index := index + diff;
-            if n_index < 0 continue;
-            if n_index >= input.count continue;
+            if n_index < 0 || n_index >= input.count continue;
             if input[n_index] == 255 continue;
             input[index] += 1;
             input[n_index] += 1;
@@ -34,8 +33,7 @@ day4 :: (input: string) -> string, string
 
         for diff: s64.[-SIZE-2, -SIZE-1, -SIZE, -1, +1, +SIZE, +SIZE+1, +SIZE+2] {
             n_index := index + diff;
-            if n_index < 0 continue;
-            if n_index >= input.count continue;
+            if n_index < 0 || n_index >= input.count continue;
             if input[n_index] == 255 continue;
             input[n_index] -= 1;
             if input[n_index] <= 3 then array_add(*queue, n_index);
