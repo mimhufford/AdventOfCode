@@ -1,13 +1,18 @@
 day4 :: (input: string) -> string, string
 {
-    part1, part2 : s64;
-    to_remove : [..]s64;
+    part1 := inline scan(input, true);
+    part2 := inline scan(input, false);
 
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+scan :: (input: string, once: bool) -> s64 {
     SIZE :: 135;
-
-    for iteration: 0..S64_MAX {
-        array_reset_keeping_memory(*to_remove);
-
+    total := 0;
+    while true {
+        removed := 0;
         for y: 0..SIZE-1 {
             for x: 0..SIZE-1 {
                 if input[y*(SIZE+1) + x] != "@" continue;
@@ -28,15 +33,12 @@ day4 :: (input: string) -> string, string
                     }
                 }
 
-                array_add(*to_remove, y * (SIZE+1) + x);
-                part1 += ifx iteration == 0 then 1;
-                part2 += 1;
+                if !once then input[y*(SIZE+1) + x] = ".";
+                total += 1;
+                removed += 1;
             }
         }
-
-        if to_remove.count == 0 break;
-        for to_remove input[it] = ".";
+        if once || removed == 0 break;
     }
-
-    return tprint("%", part1), tprint("%", part2);
+    return total;
 }
