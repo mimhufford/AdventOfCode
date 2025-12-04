@@ -3,27 +3,30 @@ day4 :: (input: string) -> string, string
     part1, part2 : s64;
 
     queue : [..]s64;
-    array_reserve(*queue, 32_000);
+    array_reserve(*queue, 16_384);
 
     for char, index: input {
-        if char != "@" continue;
+        if char != "@" then input[index] = 255;
+    }
 
-        neighbours := get_neighbours(input, index);
-        if neighbours.count > 3 continue;
-
+    for char, index: input {
+        if char == 255 continue;
+        input[index] = get_neighbours(input, index).count.(u8);
+        if input[index] > 3 continue;
         array_add(*queue, index);
         part1 += 1;
     }
 
     for index: queue {
-        if input[index] != "@" continue;
+        if input[index] > 3 continue;
 
-        neighbours := get_neighbours(input, index);
-        if neighbours.count > 3 continue;
-
+        input[index] = 255;
         part2 += 1;
-        input[index] = ".";
-        array_add(*queue, ..neighbours);
+
+        for get_neighbours(input, index) {
+            input[it] -= 1;
+            if input[it] <= 3 then array_add(*queue, it);
+        }
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -37,19 +40,13 @@ get_neighbours :: inline (input: string, index: s64) -> []s64 {
     array_reset_keeping_memory(*neighbours);
 
     SIZE :: 135;
-    x := index % (SIZE + 1);
-    y := index / (SIZE + 1);
-    x_min := max(x - 1, 0);
-    x_max := min(x + 1, SIZE-1);
-    y_min := max(y - 1, 0);
-    y_max := min(y + 1, SIZE-1);
 
-    for nx: x_min..x_max {
-        for ny: y_min..y_max {
-            if nx == x && ny == y continue;
-            if input[ny * (SIZE + 1) + nx] != "@" continue;
-            array_add(*neighbours, ny * (SIZE + 1) + nx);
-        }
+    for diff: s64.[-1, +1, -SIZE, -SIZE-1, -SIZE-2, +SIZE, +SIZE+1, +SIZE+2] {
+        n_index := index + diff;
+        if n_index < 0 continue;
+        if n_index >= input.count continue;
+        if input[n_index] == 255 continue;
+        array_add(*neighbours, n_index);
     }
 
     return neighbours;
