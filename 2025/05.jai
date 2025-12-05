@@ -23,7 +23,6 @@ day5 :: (input: string) -> string, string
                 a.hi = max(a.hi, b.hi);
                 remove b;
                 changed = true;
-                break a;
             }
         }
 
