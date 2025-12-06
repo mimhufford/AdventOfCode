@@ -22,9 +22,7 @@ day6 :: (input: string) -> string, string
     }
 
     {
-        data := input;
-        length := read_up_to(*data, "\n").count;
-
+        length := read_up_to(*trim(input), "\n").count;
         op : u8;
         answer := 0;
 
