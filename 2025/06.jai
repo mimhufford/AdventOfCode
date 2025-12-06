@@ -35,20 +35,15 @@ day6 :: (input: string) -> string, string
             if digits[4] == "+" then { op = "+"; answer = 0; }
             if digits[4] == "*" then { op = "*"; answer = 1; }
 
-            blank_column := true;
-            for digits if it != " " then blank_column = false;
-            if blank_column { part2 += answer; continue; }
-
             number := 0;
             for 0..3 if digits[it] != " " {
                 number *= 10;
                 number += (digits[it] - "0").(s64);
             }
 
-            answer = ifx op == "+" then answer + number else answer * number;
+            if number then answer = ifx op == "+" then answer + number else answer * number;
+            if !number || col == length-1 then part2 += answer;
         }
-
-        part2 += answer;
     }
 
     return tprint("%", part1), tprint("%", part2);
