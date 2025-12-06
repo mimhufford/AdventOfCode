@@ -27,9 +27,9 @@ day6 :: (input: string) -> string, string
 
         op : u8;
         answer := 0;
-        digits : [5]u8;
 
         for col: 0..length-1 {
+            digits : [5]u8;
             for 0..4 digits[it] = input[col + (it * (length+1))];
 
             if digits[4] == "+" then { op = "+"; answer = 0; }
