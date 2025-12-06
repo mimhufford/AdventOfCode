@@ -27,47 +27,25 @@ day6 :: (input: string) -> string, string
 
         op : u8;
         answer := 0;
+        digits : [5]u8;
 
         for col: 0..length-1 {
-            d1 := input[col + (0 * (length+1))];
-            d2 := input[col + (1 * (length+1))];
-            d3 := input[col + (2 * (length+1))];
-            d4 := input[col + (3 * (length+1))];
-            ch := input[col + (4 * (length+1))];
+            for 0..4 digits[it] = input[col + (it * (length+1))];
 
-            if d1 == " " && d2 == " " && d3 == " " && d4 == " " && ch == " " {
+            if digits[4] == "+" then { op = "+"; answer = 0; }
+            if digits[4] == "*" then { op = "*"; answer = 1; }
+
+            blank_column := true;
+            for digits if it != " " then blank_column = false;
+            if blank_column {
                 part2 += answer;
                 continue;
             }
 
-            if ch == "+" then { op = "+"; answer = 0; }
-            if ch == "*" then { op = "*"; answer = 1; }
-
             number := 0;
-            seen := false;
-            
-            if d1 != " " {
-                seen = true;
+            for 0..3 if digits[it] != " " {
                 number *= 10;
-                number += (d1 - "0").(s64);
-            }
-
-            if d2 != " " {
-                seen = true;
-                number *= 10;
-                number += (d2 - "0").(s64);
-            }
-
-            if d3 != " " {
-                seen = true;
-                number *= 10;
-                number += (d3 - "0").(s64);
-            }
-
-            if d4 != " " {
-                seen = true;
-                number *= 10;
-                number += (d4 - "0").(s64);
+                number += (digits[it] - "0").(s64);
             }
 
             if op == "+" answer += number;
