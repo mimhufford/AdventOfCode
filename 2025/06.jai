@@ -37,10 +37,7 @@ day6 :: (input: string) -> string, string
 
             blank_column := true;
             for digits if it != " " then blank_column = false;
-            if blank_column {
-                part2 += answer;
-                continue;
-            }
+            if blank_column { part2 += answer; continue; }
 
             number := 0;
             for 0..3 if digits[it] != " " {
@@ -48,8 +45,7 @@ day6 :: (input: string) -> string, string
                 number += (digits[it] - "0").(s64);
             }
 
-            if op == "+" answer += number;
-            else         answer *= number;
+            answer = ifx op == "+" then answer + number else answer * number;
         }
 
         part2 += answer;
