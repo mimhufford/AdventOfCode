@@ -3,12 +3,12 @@ day7 :: (input: string) -> string, string
     part1, part2 : s64;
 
     beams : [150]s64;
-    col, row := 0;
+    col := 0;
 
     for input {
         defer col += 1;
-        if it == "\n"  { col = -1; row += 1; continue; }
         if it == "S"   { beams[col] = 1; continue; }
+        if it == "\n"  { col = -1; continue; }
         if it != "^"   { continue; }
         if !beams[col] { continue; }
         beams[col-1] += beams[col];
