@@ -7,10 +7,9 @@ day7 :: (input: string) -> string, string
 
     for input {
         defer col += 1;
-        if it == "S"   { beams[col] = 1; continue; }
-        if it == "\n"  { col = -1; continue; }
-        if it != "^"   { continue; }
-        if !beams[col] { continue; }
+        if it == "S" { beams[col] = 1; continue; }
+        if it == "\n" { col = -1; continue; }
+        if it != "^" || !beams[col] continue;
         beams[col-1] += beams[col];
         beams[col+1] += beams[col];
         beams[col] = 0;
