@@ -30,8 +30,7 @@ day7 :: (input: string) -> string, string
     }
     
     for col: 0..cols-1 {
-        index := (rows-1) * cols + col;
-        part2 += grid[index];
+        part2 += grid[(rows - 1) * cols + col];
     }
 
     return tprint("%", part1), tprint("%", part2);
