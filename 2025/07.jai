@@ -4,34 +4,22 @@ day7 :: (input: string) -> string, string
 
     cols := read_up_to(*trim(input), "\n").count;
     rows := input.count / cols - 1;
-    grid := NewArray(rows * cols, s64);
+    beams := NewArray(cols, s64);
 
-    for row: 0..rows-1 {
-        for col: 0..cols-1 {
-            char := input[row * (cols + 1) + col];
-            if char == "S" grid[row * cols + col] = 1;
-            if char == "^" grid[row * cols + col] = -1;
-        }
-    }
+    for col: 0..cols-1 if input[col] == "S" then beams[col] = 1;
 
-    for row: 0..rows-2 {
+    for row: 1..rows-2 {
         for col: 0..cols-1 {
-            index := row * cols + col;
-            if grid[index] <= 0 continue;
-            below := index + cols;
-            if grid[below] >= 0 {
-                grid[below] += grid[index];
-            } else {
-                grid[below-1] += grid[index];
-                grid[below+1] += grid[index];
-                part1 += 1;
-            }
+            if beams[col] == 0 continue;
+            if input[row * (cols + 1) + col] != "^" continue;
+            beams[col-1] += beams[col];
+            beams[col+1] += beams[col];
+            beams[col] = 0;
+            part1 += 1;
         }
     }
     
-    for col: 0..cols-1 {
-        part2 += grid[(rows - 1) * cols + col];
-    }
+    for beams part2 += it;
 
     return tprint("%", part1), tprint("%", part2);
 }
