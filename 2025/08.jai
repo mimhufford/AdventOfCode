@@ -29,34 +29,30 @@ day8 :: (input: string) -> string, string
 
     quick_sort(pairs, p => p.distance);
 
-    circuits : [..][..]*Junction;
+    circuits : [..]s64;
 
     for 0..S64_MAX {
         a := pairs[it].a;
         b := pairs[it].b;
 
         if a.circuit == -1 && b.circuit == -1 {
-            c := array_add(*circuits);
-            array_add(c, a);
-            array_add(c, b);
+            array_add(*circuits, 2);
             a.circuit = circuits.count - 1;
             b.circuit = circuits.count - 1;
-            if c.count == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
         } else if a.circuit == -1 {
-            array_add(*circuits[b.circuit], a);
+            circuits[b.circuit] += 1;
             a.circuit = b.circuit;
-            if circuits[b.circuit].count == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            if circuits[b.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
         } else if b.circuit == -1 {
-            array_add(*circuits[a.circuit], b);
+            circuits[a.circuit] += 1;
             b.circuit = a.circuit;
-            if circuits[a.circuit].count == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            if circuits[a.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
         } else if a.circuit != b.circuit {
-            for circuits[a.circuit] {
-                it.circuit = b.circuit;
-                array_add(*circuits[b.circuit], it);
-                remove it;
-            }
-            if circuits[b.circuit].count == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            circuits[b.circuit] += circuits[a.circuit];
+            circuits[a.circuit] = 0;
+            c := a.circuit;
+            for * junctions if it.circuit == c then it.circuit = b.circuit;
+            if circuits[b.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
         }
 
         // if it == 999 {
