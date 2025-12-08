@@ -42,17 +42,17 @@ day8 :: (input: string) -> string, string
         } else if a.circuit == -1 {
             circuits[b.circuit] += 1;
             a.circuit = b.circuit;
-            if circuits[b.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            if circuits[b.circuit] == junctions.count { part2 = a.position.x.(s64) * b.position.x.(s64); break; }            
         } else if b.circuit == -1 {
             circuits[a.circuit] += 1;
             b.circuit = a.circuit;
-            if circuits[a.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            if circuits[a.circuit] == junctions.count { part2 = a.position.x.(s64) * b.position.x.(s64); break; }            
         } else if a.circuit != b.circuit {
             circuits[b.circuit] += circuits[a.circuit];
             circuits[a.circuit] = 0;
             c := a.circuit;
             for * junctions if it.circuit == c then it.circuit = b.circuit;
-            if circuits[b.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
+            if circuits[b.circuit] == junctions.count { part2 = a.position.x.(s64) * b.position.x.(s64); break; }            
         }
 
         if it == 999 {
