@@ -56,13 +56,13 @@ day8 :: (input: string) -> string, string
         }
 
         if it == 999 {
-            biggest : [3]s64;
+            b1, b2, b3: s64;
             for circuits {
-                if it > biggest[0] { biggest[2] = biggest[1]; biggest[1] = biggest[0]; biggest[0] = it; }
-                else if it > biggest[1] { biggest[2] = biggest[1]; biggest[1] = it; }
-                else if it > biggest[2] { biggest[2] = it; }
+                if it > b1 { b1, b2, b3 = it, b1, b2; continue; }
+                if it > b2 { b1, b2, b3 = b1, it, b2; continue; }
+                if it > b3 { b1, b2, b3 = b1, b2, it; continue; }
             }
-            part1 = biggest[0] * biggest[1] * biggest[2];
+            part1 = b1 * b2 * b3;
         }
     }
 
