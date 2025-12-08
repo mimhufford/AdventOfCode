@@ -55,10 +55,15 @@ day8 :: (input: string) -> string, string
             if circuits[b.circuit] == junctions.count { part2 = (a.position.x * b.position.x).(s64); break; }            
         }
 
-        // if it == 999 {
-            // quick_sort(circuits, c => c.count);
-            // part1 = circuits[circuits.count-1].count * circuits[circuits.count-2].count * circuits[circuits.count-3].count;
-        // }
+        if it == 999 {
+            biggest : [3]s64;
+            for circuits {
+                if it > biggest[0] { biggest[2] = biggest[1]; biggest[1] = biggest[0]; biggest[0] = it; }
+                else if it > biggest[1] { biggest[2] = biggest[1]; biggest[1] = it; }
+                else if it > biggest[2] { biggest[2] = it; }
+            }
+            part1 = biggest[0] * biggest[1] * biggest[2];
+        }
     }
 
     return tprint("%", part1), tprint("%", part2);
