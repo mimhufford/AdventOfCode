@@ -26,7 +26,7 @@ day9 :: (input: string) -> string, string
 
             if !point_in_polygon(c, points) continue;
             if !point_in_polygon(d, points) continue;
-            if !rect_in_polygon(a, b, c, d, points) continue;
+            if !rect_in_polygon(a, b, points) continue;
 
             part2 = max(part2, area);
         }
@@ -43,6 +43,6 @@ point_in_polygon :: (p: Point, polygon: []Point) -> bool {
     return false;
 }
 
-rect_in_polygon :: (a: Point, b: Point, c: Point, d: Point, polygon: []Point) -> bool {
+rect_in_polygon :: (a: Point, b: Point, polygon: []Point) -> bool {
     return false;
 }
