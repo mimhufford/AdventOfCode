@@ -61,14 +61,16 @@ day9 :: (input: string) -> string, string
     }
 
     for i: 0..points.count-1 {
+        p1 := points[i];
+        x1 := table_find_pointer(*x_lookup, p1.x).*;
+        y1 := table_find_pointer(*y_lookup, p1.y).*;
+
         for j: i+1..points.count-1 {
-            p1, p2 := points[i], points[j];
+            p2 := points[j];
             area := (abs(p1.x - p2.x) + 1) * (abs(p1.y - p2.y) + 1);
             part1 = max(part1, area);
 
             if area > part2 {
-                x1 := table_find_pointer(*x_lookup, p1.x).*;
-                y1 := table_find_pointer(*y_lookup, p1.y).*;
                 x2 := table_find_pointer(*x_lookup, p2.x).*;
                 y2 := table_find_pointer(*y_lookup, p2.y).*;
                 l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
