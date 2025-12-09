@@ -2,40 +2,85 @@ day9 :: (input: string) -> string, string
 {
     part1, part2 : s64;
 
-    points : [..] struct { x, y : s64; };
+    Point :: struct { x, y : s64; }
+
+    points : [..]Point;
+    xs, ys : [..]s64;
     array_reserve(*points, 500);
+    array_reserve(*xs, 500);
+    array_reserve(*ys, 500);
 
     while input {
         p := array_add(*points);
         p.x = read_s64(*input); advance(*input);
         p.y = read_s64(*input);
+        array_add_if_unique(*xs, p.x);
+        array_add_if_unique(*ys, p.y);
+    }
+
+    quick_sort(xs, n => n);
+    quick_sort(ys, n => n);
+
+    x_lookup : Table(s64, s64);
+    y_lookup : Table(s64, s64);
+
+    for xs table_add(*x_lookup, it, it_index+1);
+    for ys table_add(*y_lookup, it, it_index+1);
+
+    grid := NewArray((xs.count+2) * (ys.count+2), u8);
+
+    for * grid it.* = ".";
+
+    for 0..points.count-1 {
+        p1 := points[it];
+        p2 := points[(it+1)%points.count];
+        x1 := table_find_pointer(*x_lookup, p1.x).*;
+        y1 := table_find_pointer(*y_lookup, p1.y).*;
+        x2 := table_find_pointer(*x_lookup, p2.x).*;
+        y2 := table_find_pointer(*y_lookup, p2.y).*;
+        l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
+        for y: t..b {
+            for x: l..r {
+                grid[y * (xs.count+2) + x] = "#";
+            }
+        }
+    }
+
+    queue : [..]Point;
+    array_add(*queue, .{0, 0});
+
+    while queue {
+        p := pop(*queue);
+        if grid[p.y * (xs.count+2) + p.x] == "_" continue;
+        grid[p.y * (xs.count+2) + p.x] = "_";
+        
+        if p.x > 0          && grid[p.y * (xs.count+2) + (p.x - 1)] == "." array_add(*queue, .{p.x-1, p.y});
+        if p.x < xs.count+1 && grid[p.y * (xs.count+2) + (p.x + 1)] == "." array_add(*queue, .{p.x+1, p.y});
+        if p.y > 0          && grid[(p.y - 1) * (xs.count+2) + p.x] == "." array_add(*queue, .{p.x, p.y-1});
+        if p.y < ys.count+1 && grid[(p.y + 1) * (xs.count+2) + p.x] == "." array_add(*queue, .{p.x, p.y+1});
     }
 
     for i: 0..points.count-1 {
         for j: i+1..points.count-1 {
-            a, b := points[i], points[j];
-            area := (abs(a.x - b.x) + 1) * (abs(a.y - b.y) + 1);
+            p1, p2 := points[i], points[j];
+            area := (abs(p1.x - p2.x) + 1) * (abs(p1.y - p2.y) + 1);
             part1 = max(part1, area);
 
-            if area < part2 continue;
-            if a.x == b.x || a.y == b.y continue;
+            if area > part2 {
+                x1 := table_find_pointer(*x_lookup, p1.x).*;
+                y1 := table_find_pointer(*y_lookup, p1.y).*;
+                x2 := table_find_pointer(*x_lookup, p2.x).*;
+                y2 := table_find_pointer(*y_lookup, p2.y).*;
+                l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
 
-            left   := min(a.x, b.x);
-            right  := max(a.x, b.x);
-            top    := min(a.y, b.y);
-            bottom := max(a.y, b.y);
+                for y: t..b {
+                    for x: l..r {
+                        if grid[y * (xs.count+2) + x] == "_" continue j;
+                    }
+                }
 
-            for 0..points.count-1 {
-                l1 := points[it];
-                l2 := points[(it + 1) % points.count];
-                if l1.x <= left   && l2.x <= left   continue;
-                if l1.x >= right  && l2.x >= right  continue;
-                if l1.y <= top    && l2.y <= top    continue;
-                if l1.y >= bottom && l2.y >= bottom continue;
-                continue j;
+                part2 = area;
             }
-
-            part2 = max(part2, area);
         }
     }
 
