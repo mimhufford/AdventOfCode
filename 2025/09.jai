@@ -39,11 +39,7 @@ day9 :: (input: string) -> string, string
         x2 := table_find_pointer(*x_lookup, p2.x).*;
         y2 := table_find_pointer(*y_lookup, p2.y).*;
         l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
-        for y: t..b {
-            for x: l..r {
-                grid[y * (xs.count+2) + x] = "#";
-            }
-        }
+        for y: t..b for x: l..r grid[y * (xs.count+2) + x] = "#";
     }
 
     queue : [..]Point;
@@ -70,19 +66,15 @@ day9 :: (input: string) -> string, string
             area := (abs(p1.x - p2.x) + 1) * (abs(p1.y - p2.y) + 1);
             part1 = max(part1, area);
 
-            if area > part2 {
-                x2 := table_find_pointer(*x_lookup, p2.x).*;
-                y2 := table_find_pointer(*y_lookup, p2.y).*;
-                l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
+            if p1.x == p2.x || p1.y == p2.y || area <= part2 continue;
 
-                for y: t..b {
-                    for x: l..r {
-                        if grid[y * (xs.count+2) + x] == "_" continue j;
-                    }
-                }
+            x2 := table_find_pointer(*x_lookup, p2.x).*;
+            y2 := table_find_pointer(*y_lookup, p2.y).*;
+            l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
 
-                part2 = area;
-            }
+            for y: t..b for x: l..r if grid[y * (xs.count+2) + x] == "_" continue j;
+
+            part2 = area;
         }
     }
 
