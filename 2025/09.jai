@@ -21,14 +21,9 @@ day9 :: (input: string) -> string, string
                 continue;
             }
 
-            c := Point.{a.x, b.y};
-            d := Point.{b.x, a.y};
-
-            if !point_in_polygon(c, points) continue;
-            if !point_in_polygon(d, points) continue;
-            if !rect_in_polygon(a, b, points) continue;
-
-            part2 = max(part2, area);
+            if rect_in_polygon(a, b, points) {
+                part2 = max(part2, area);
+            }
         }
     }
 
@@ -39,10 +34,21 @@ day9 :: (input: string) -> string, string
 
 Point :: struct { x, y : s64; }
 
-point_in_polygon :: (p: Point, polygon: []Point) -> bool {
-    return false;
-}
+rect_in_polygon :: (corner1: Point, corner2: Point, points: []Point) -> bool {
+    left   := min(corner1.x, corner2.x);
+    right  := max(corner1.x, corner2.x);
+    top    := min(corner1.y, corner2.y);
+    bottom := max(corner1.y, corner2.y);
 
-rect_in_polygon :: (a: Point, b: Point, polygon: []Point) -> bool {
-    return false;
+    for 0..points.count-1 {
+        a := points[it];
+        b := points[(it + 1) % points.count];
+        if a.x <= left   && b.x <= left   continue;
+        if a.x >= right  && b.x >= right  continue;
+        if a.y <= top    && b.y <= top    continue;
+        if a.y >= bottom && b.y >= bottom continue;
+        return false;
+    }
+
+    return true;
 }
