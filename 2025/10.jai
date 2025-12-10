@@ -56,6 +56,22 @@ Machine :: struct {
     debug_buttons : [..]string;  // TODO: delete
 }
 
-fewest_presses :: (m: Machine, state := cast(u16, 0), presses := 0) -> s64 {
-    return 1;
+fewest_presses :: (m: Machine) -> s64 {
+    State :: struct {
+        lights : u16;
+        presses : u16;
+    }
+
+    q : [..]State;
+    array_add(*q, .{});
+
+    for i: 0..S64_MAX {
+        if q[i].lights == m.goal return q[i].presses;
+
+        for b: m.buttons {
+            array_add(*q, .{q[i].lights ^ b, q[i].presses + 1});
+        }
+    }
+
+    return 0;
 }
