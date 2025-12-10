@@ -6,8 +6,8 @@ day10 :: (input: string) -> string, string
 
     // TODO: delete
     if false for m: machines {
-        for 0..m.buttons.count-1 {
-            print("% - %\n", formatInt(m.buttons[it], base=2, minimum_digits=10), m.debug_buttons[it]);
+        for 0..m.button_masks.count-1 {
+            print("% - %\n", formatInt(m.button_masks[it], base=2, minimum_digits=10), m.debug_buttons[it]);
         }
     }
 
@@ -23,7 +23,8 @@ day10 :: (input: string) -> string, string
 
 Machine :: struct {
     light_goal : u16;
-    buttons : [..]u16;
+    button_masks : [..]u16;
+    button_indices : [..][..]s64;
     joltage : string; // TODO: part 2...
     debug_buttons : [..]string;  // TODO: delete
 }
@@ -40,7 +41,7 @@ fewest_light_presses :: (m: Machine) -> s64 {
         if table_find_pointer(*seen, state.lights) continue;
         table_add(*seen, state.lights, state.presses);
 
-        for b: m.buttons array_add(*queue, .{state.lights ^ b, state.presses + 1});
+        for b: m.button_masks array_add(*queue, .{state.lights ^ b, state.presses + 1});
     }
 
     return 0;
@@ -70,7 +71,7 @@ parse_machines :: (input: string) -> []Machine {
             array_add(*m.debug_buttons, read_up_to(*input, ")"));
             advance(*input, 2); // skip ") "
             str := m.debug_buttons[m.debug_buttons.count-1];
-            button := array_add(*m.buttons);
+            button := array_add(*m.button_masks);
             while str {
                 index := read_u16(*str);
                 button.* |= cast(u16, 1) << index;
