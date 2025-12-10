@@ -5,7 +5,7 @@ day10 :: (input: string) -> string, string
     Machine :: struct {
         goal : u16;
         buttons : [..]u16;
-        joltage : string;
+        joltage : string; // TODO: part 2...
 
         debug_goal : string;         // TODO: delete
         debug_buttons : [..]string;  // TODO: delete
