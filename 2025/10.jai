@@ -3,10 +3,12 @@ day10 :: (input: string) -> string, string
     part1, part2 : s64;
 
     Machine :: struct {
-        debug_goal : string;
         goal : u16;
-        buttons : [..]string;
+        buttons : [..]u16;
         joltage : string;
+
+        debug_goal : string;         // TODO: delete
+        debug_buttons : [..]string;  // TODO: delete
     }
 
     machines : [..]Machine;
@@ -24,16 +26,27 @@ day10 :: (input: string) -> string, string
         while true {
             if input[0] != "(" break;
             advance(*input); // skip "("
-            array_add(*m.buttons, read_up_to(*input, ")"));
+            array_add(*m.debug_buttons, read_up_to(*input, ")"));
             advance(*input, 2); // skip ") "
+            str := m.debug_buttons[m.debug_buttons.count-1];
+            button := array_add(*m.buttons);
+            while str {
+                index := read_u16(*str);
+                button.* |= cast(u16, 1) << index;
+                if str advance(*str);
+            }
         }
         advance(*input); // skip "{"
         m.joltage = read_up_to(*input, "}");
         advance(*input, 2); // skip "}\n"
     }
 
-    for m: machines {
+    // TODO: delete
+    if false for m: machines {
         print("% - %\n", formatInt(m.goal, base=2, minimum_digits=10), m.debug_goal);
+        for 0..m.buttons.count-1 {
+            print("% - %\n", formatInt(m.buttons[it], base=2, minimum_digits=10), m.debug_buttons[it]);
+        }
     }
 
     return tprint("%", part1), tprint("%", part2);
