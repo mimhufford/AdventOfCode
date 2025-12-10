@@ -7,11 +7,11 @@ day10 :: (input: string) -> string, string
     while input {
         m := array_add(*machines);
         advance(*input); // skip "["
-        m.debug_goal = read_up_to(*input, "]");
-        for i: 0..m.debug_goal.count-1 {
-            index := m.debug_goal.count - i - 1;
-            if m.debug_goal[index] != "#" continue;
-            m.goal |= cast(u16, 1) << index;
+        light_goal := read_up_to(*input, "]");
+        for i: 0..light_goal.count-1 {
+            index := light_goal.count - i - 1;
+            if light_goal[index] != "#" continue;
+            m.light_goal |= cast(u16, 1) << index;
         }
         advance(*input, 2); // skip "] "
         while true {
@@ -34,13 +34,12 @@ day10 :: (input: string) -> string, string
 
     // TODO: delete
     if false for m: machines {
-        print("% - %\n", formatInt(m.goal, base=2, minimum_digits=10), m.debug_goal);
         for 0..m.buttons.count-1 {
             print("% - %\n", formatInt(m.buttons[it], base=2, minimum_digits=10), m.debug_buttons[it]);
         }
     }
 
-    for machines part1 += fewest_presses(it);
+    for machines part1 += fewest_light_presses(it);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -48,22 +47,20 @@ day10 :: (input: string) -> string, string
 #scope_file
 
 Machine :: struct {
-    goal : u16;
+    light_goal : u16;
     buttons : [..]u16;
     joltage : string; // TODO: part 2...
-
-    debug_goal : string;         // TODO: delete
     debug_buttons : [..]string;  // TODO: delete
 }
 
-fewest_presses :: (m: Machine) -> s64 {
+fewest_light_presses :: (m: Machine) -> s64 {
     seen : Table(u16, u16);
     queue : [..] struct { lights : u16; presses : u16; };
     array_add(*queue, .{});
 
     for i: 0..S64_MAX {
         state := queue[i];
-        if state.lights == m.goal return state.presses;
+        if state.lights == m.light_goal return state.presses;
 
         if table_find_pointer(*seen, state.lights) continue;
         table_add(*seen, state.lights, state.presses);
