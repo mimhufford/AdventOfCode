@@ -2,6 +2,56 @@ day10 :: (input: string) -> string, string
 {
     part1, part2 : s64;
 
+    machines := parse_machines(input);
+
+    // TODO: delete
+    if false for m: machines {
+        for 0..m.buttons.count-1 {
+            print("% - %\n", formatInt(m.buttons[it], base=2, minimum_digits=10), m.debug_buttons[it]);
+        }
+    }
+
+    for machines {
+        part1 += fewest_light_presses(it);
+        part2 += fewest_count_presses(it);
+    }
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+Machine :: struct {
+    light_goal : u16;
+    buttons : [..]u16;
+    joltage : string; // TODO: part 2...
+    debug_buttons : [..]string;  // TODO: delete
+}
+
+fewest_light_presses :: (m: Machine) -> s64 {
+    seen : Table(u16, u16);
+    queue : [..] struct { lights : u16; presses : u16; };
+    array_add(*queue, .{});
+
+    for i: 0..S64_MAX {
+        state := queue[i];
+        if state.lights == m.light_goal return state.presses;
+
+        if table_find_pointer(*seen, state.lights) continue;
+        table_add(*seen, state.lights, state.presses);
+
+        for b: m.buttons array_add(*queue, .{state.lights ^ b, state.presses + 1});
+    }
+
+    return 0;
+}
+
+fewest_count_presses :: (m: Machine) -> s64 {
+    // TODO
+    return 1;
+}
+
+parse_machines :: (input: string) -> []Machine {
     machines : [..]Machine;
 
     while input {
@@ -32,41 +82,5 @@ day10 :: (input: string) -> string, string
         advance(*input, 2); // skip "}\n"
     }
 
-    // TODO: delete
-    if false for m: machines {
-        for 0..m.buttons.count-1 {
-            print("% - %\n", formatInt(m.buttons[it], base=2, minimum_digits=10), m.debug_buttons[it]);
-        }
-    }
-
-    for machines part1 += fewest_light_presses(it);
-
-    return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-Machine :: struct {
-    light_goal : u16;
-    buttons : [..]u16;
-    joltage : string; // TODO: part 2...
-    debug_buttons : [..]string;  // TODO: delete
-}
-
-fewest_light_presses :: (m: Machine) -> s64 {
-    seen : Table(u16, u16);
-    queue : [..] struct { lights : u16; presses : u16; };
-    array_add(*queue, .{});
-
-    for i: 0..S64_MAX {
-        state := queue[i];
-        if state.lights == m.light_goal return state.presses;
-
-        if table_find_pointer(*seen, state.lights) continue;
-        table_add(*seen, state.lights, state.presses);
-
-        for b: m.buttons array_add(*queue, .{state.lights ^ b, state.presses + 1});
-    }
-
-    return 0;
+    return machines;
 }
