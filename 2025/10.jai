@@ -6,7 +6,7 @@ day10 :: (input: string) -> string, string
 
     for machines {
         part1 += fewest_light_presses(it);
-        part2 += fewest_count_presses(it);
+        // part2 += fewest_count_presses(it);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -18,7 +18,7 @@ Machine :: struct {
     light_goal : u16;
     button_masks : [..]u16;
     button_indices : [..][..]s64;
-    joltages : [..]u16;
+    joltages : [..]s16;
 }
 
 fewest_light_presses :: (m: Machine) -> s64 {
@@ -49,9 +49,35 @@ fewest_light_presses :: (m: Machine) -> s64 {
     return 0;
 }
 
+best := S64_MAX;
+
 fewest_count_presses :: (m: Machine) -> s64 {
-    // TODO
-    return 1;
+
+    internal :: (j: []s16, bs: [..][..]s64, count := 0) {
+        if count >= best return;
+
+        done := true;
+        for j if it > 0 { done = false; break; }
+        if done { 
+            best = count;
+            return;
+        }
+
+        for b: bs {
+            max_presses : s16 = 999;
+            for i: b max_presses = min(max_presses, j[i]);
+
+            for < presses: 1..max_presses {
+                new_j := array_copy(j);
+                for i: b new_j[i] -= presses;
+                internal(new_j, bs, count + presses);
+            }
+        }
+    }
+
+    best = S64_MAX;
+    internal(m.joltages, m.button_indices);
+    return best;
 }
 
 parse_machines :: (input: string) -> []Machine {
@@ -88,7 +114,7 @@ parse_machines :: (input: string) -> []Machine {
         // joltages
         advance(*input); // skip "{"
         while input[0] != "}" {
-            array_add(*m.joltages, read_u16(*input));
+            array_add(*m.joltages, read_s16(*input));
             if input[0] == "," advance(*input);
         }
         advance(*input, 2); // skip "}\n"
