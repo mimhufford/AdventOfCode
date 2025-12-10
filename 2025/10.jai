@@ -18,7 +18,7 @@ Machine :: struct {
     light_goal : u16;
     button_masks : [..]u16;
     button_indices : [..][..]s64;
-    joltage : string; // TODO: part 2...
+    joltages : [..]u16;
 }
 
 fewest_light_presses :: (m: Machine) -> s64 {
@@ -78,7 +78,11 @@ parse_machines :: (input: string) -> []Machine {
 
         // joltages
         advance(*input); // skip "{"
-        m.joltage = read_up_to(*input, "}");
+        str := read_up_to(*input, "}");
+        while str {
+            array_add(*m.joltages, read_u16(*str));
+            if str advance(*str);
+        }
         advance(*input, 2); // skip "}\n"
     }
 
