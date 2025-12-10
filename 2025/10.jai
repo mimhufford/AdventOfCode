@@ -2,15 +2,6 @@ day10 :: (input: string) -> string, string
 {
     part1, part2 : s64;
 
-    Machine :: struct {
-        goal : u16;
-        buttons : [..]u16;
-        joltage : string; // TODO: part 2...
-
-        debug_goal : string;         // TODO: delete
-        debug_buttons : [..]string;  // TODO: delete
-    }
-
     machines : [..]Machine;
 
     while input {
@@ -49,5 +40,22 @@ day10 :: (input: string) -> string, string
         }
     }
 
+    for machines part1 += fewest_presses(it);
+
     return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+Machine :: struct {
+    goal : u16;
+    buttons : [..]u16;
+    joltage : string; // TODO: part 2...
+
+    debug_goal : string;         // TODO: delete
+    debug_buttons : [..]string;  // TODO: delete
+}
+
+fewest_presses :: (m: Machine, state := cast(u16, 0), presses := 0) -> s64 {
+    return 1;
 }
