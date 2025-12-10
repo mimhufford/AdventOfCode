@@ -74,24 +74,22 @@ parse_machines :: (input: string) -> []Machine {
         while true {
             if input[0] != "(" break;
             advance(*input); // skip "("
-            str := read_up_to(*input, ")");
-            advance(*input, 2); // skip ") "
             mask := array_add(*m.button_masks);
             indices := array_add(*m.button_indices);
-            while str {
-                index := read_u16(*str);
+            while input[0] != ")" {
+                index := read_u16(*input);
                 mask.* |= cast(u16, 1) << index;
                 array_add(indices, index);
-                if str advance(*str);
+                if input[0] == "," advance(*input);
             }
+            advance(*input, 2); // skip ") "
         }
 
         // joltages
         advance(*input); // skip "{"
-        str := read_up_to(*input, "}");
-        while str {
-            array_add(*m.joltages, read_u16(*str));
-            if str advance(*str);
+        while input[0] != "}" {
+            array_add(*m.joltages, read_u16(*input));
+            if input[0] == "," advance(*input);
         }
         advance(*input, 2); // skip "}\n"
     }
