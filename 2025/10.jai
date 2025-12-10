@@ -22,18 +22,28 @@ Machine :: struct {
 }
 
 fewest_light_presses :: (m: Machine) -> s64 {
-    seen : Table(u16, u16);
-    queue : [..] struct { lights : u16; presses : u16; };
-    array_add(*queue, .{});
+    // It's toggling, so we only need to press each button once
+    // Go through bit combinations in increasing number of bits
+    // Press any button whose bit is set, then check the result
+    // e.g. for 3 buttons try 001, 010, 100, 011, 101, 110, 111
+    for presses: 1..m.button_masks.count {
+        x := cast(u16, 1) << presses - 1;
 
-    for i: 0..S64_MAX {
-        state := queue[i];
-        if state.lights == m.light_goal return state.presses;
+        while x < cast(u16, 1) << m.button_masks.count {
+            lights : u16;
 
-        if table_find_pointer(*seen, state.lights) continue;
-        table_add(*seen, state.lights, state.presses);
+            for 0..m.button_masks.count-1 {
+                if x & (cast(u16, 1) << it) == 0 continue;
+                lights ^= m.button_masks[it];
+            }
 
-        for b: m.button_masks array_add(*queue, .{state.lights ^ b, state.presses + 1});
+            if lights == m.light_goal return presses;
+
+            // "gosper's hack"
+            u := x & (~x + 1);
+            v := x + u;
+            x = v + (((v ^ x) / u) >> 2);
+        }
     }
 
     return 0;
