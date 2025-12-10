@@ -57,20 +57,18 @@ Machine :: struct {
 }
 
 fewest_presses :: (m: Machine) -> s64 {
-    State :: struct {
-        lights : u16;
-        presses : u16;
-    }
-
-    q : [..]State;
-    array_add(*q, .{});
+    seen : Table(u16, u16);
+    queue : [..] struct { lights : u16; presses : u16; };
+    array_add(*queue, .{});
 
     for i: 0..S64_MAX {
-        if q[i].lights == m.goal return q[i].presses;
+        state := queue[i];
+        if state.lights == m.goal return state.presses;
 
-        for b: m.buttons {
-            array_add(*q, .{q[i].lights ^ b, q[i].presses + 1});
-        }
+        if table_find_pointer(*seen, state.lights) continue;
+        table_add(*seen, state.lights, state.presses);
+
+        for b: m.buttons array_add(*queue, .{state.lights ^ b, state.presses + 1});
     }
 
     return 0;
