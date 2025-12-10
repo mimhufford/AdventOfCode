@@ -4,13 +4,6 @@ day10 :: (input: string) -> string, string
 
     machines := parse_machines(input);
 
-    // TODO: delete
-    if false for m: machines {
-        for 0..m.button_masks.count-1 {
-            print("% - %\n", formatInt(m.button_masks[it], base=2, minimum_digits=10), m.debug_buttons[it]);
-        }
-    }
-
     for machines {
         part1 += fewest_light_presses(it);
         part2 += fewest_count_presses(it);
@@ -26,7 +19,6 @@ Machine :: struct {
     button_masks : [..]u16;
     button_indices : [..][..]s64;
     joltage : string; // TODO: part 2...
-    debug_buttons : [..]string;  // TODO: delete
 }
 
 fewest_light_presses :: (m: Machine) -> s64 {
@@ -57,6 +49,8 @@ parse_machines :: (input: string) -> []Machine {
 
     while input {
         m := array_add(*machines);
+
+        // light indicators
         advance(*input); // skip "["
         light_goal := read_up_to(*input, "]");
         for i: 0..light_goal.count-1 {
@@ -65,19 +59,24 @@ parse_machines :: (input: string) -> []Machine {
             m.light_goal |= cast(u16, 1) << index;
         }
         advance(*input, 2); // skip "] "
+
+        // buttons
         while true {
             if input[0] != "(" break;
             advance(*input); // skip "("
-            array_add(*m.debug_buttons, read_up_to(*input, ")"));
+            str := read_up_to(*input, ")");
             advance(*input, 2); // skip ") "
-            str := m.debug_buttons[m.debug_buttons.count-1];
-            button := array_add(*m.button_masks);
+            mask := array_add(*m.button_masks);
+            indices := array_add(*m.button_indices);
             while str {
                 index := read_u16(*str);
-                button.* |= cast(u16, 1) << index;
+                mask.* |= cast(u16, 1) << index;
+                array_add(indices, index);
                 if str advance(*str);
             }
         }
+
+        // joltages
         advance(*input); // skip "{"
         m.joltage = read_up_to(*input, "}");
         advance(*input, 2); // skip "}\n"
