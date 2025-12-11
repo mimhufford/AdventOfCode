@@ -14,10 +14,14 @@ day10 :: (input: string) -> string, string
 
 #scope_file
 
+Button :: struct {
+    mask: u16;
+    indices: [..]s64;
+}
+
 Machine :: struct {
     light_goal : u16;
-    button_masks : [..]u16;
-    button_indices : [..][..]s64;
+    buttons : [..]Button;
     joltages : [..]s16;
 }
 
@@ -26,15 +30,15 @@ fewest_light_presses :: (m: Machine) -> s64 {
     // Go through bit combinations in increasing number of bits
     // Press any button whose bit is set, then check the result
     // e.g. for 3 buttons try 001, 010, 100, 011, 101, 110, 111
-    for presses: 1..m.button_masks.count {
+    for presses: 1..m.buttons.count {
         x := cast(u16, 1) << presses - 1;
 
-        while x < cast(u16, 1) << m.button_masks.count {
+        while x < cast(u16, 1) << m.buttons.count {
             lights : u16;
 
-            for 0..m.button_masks.count-1 {
+            for 0..m.buttons.count-1 {
                 if x & (cast(u16, 1) << it) == 0 continue;
-                lights ^= m.button_masks[it];
+                lights ^= m.buttons[it].mask;
             }
 
             if lights == m.light_goal return presses;
@@ -53,7 +57,7 @@ best := S64_MAX;
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    internal :: (j: []s16, bs: [..][..]s64, count := 0) {
+    internal :: (j: []s16, bs: [..]Button, count := 0) {
         if count >= best return;
 
         done := true;
@@ -63,20 +67,41 @@ fewest_count_presses :: (m: Machine) -> s64 {
             return;
         }
 
+        // press buttons that reduce the least referenced remaining joltage first
+        references : [16]s8;
+        for b: bs { for i: b.indices { references[i] += 1; } }
+            
+        least_value := 999;
+        least_index := 999;
+        for references {
+            if it && it < least_value && j[it_index] {
+                least_index = it_index;
+                least_value = it;
+            }
+        }
+
+        // TODO
+
+        // print("%\n", j);
+        // print("%\n", bs);
+        // print("%\n", references);
+        // print("%\n", least_index);
+        // print("======\n");
+
         for b: bs {
             max_presses : s16 = 999;
-            for i: b max_presses = min(max_presses, j[i]);
+            for i: b.indices max_presses = min(max_presses, j[i]);
 
             for < presses: 1..max_presses {
                 new_j := array_copy(j);
-                for i: b new_j[i] -= presses;
+                for i: b.indices new_j[i] -= presses;
                 internal(new_j, bs, count + presses);
             }
         }
     }
 
     best = S64_MAX;
-    internal(m.joltages, m.button_indices);
+    internal(m.joltages, m.buttons);
     return best;
 }
 
@@ -100,12 +125,11 @@ parse_machines :: (input: string) -> []Machine {
         while true {
             if input[0] != "(" break;
             advance(*input); // skip "("
-            mask := array_add(*m.button_masks);
-            indices := array_add(*m.button_indices);
+            button := array_add(*m.buttons);
             while input[0] != ")" {
                 index := read_u16(*input);
-                mask.* |= cast(u16, 1) << index;
-                array_add(indices, index);
+                button.mask |= cast(u16, 1) << index;
+                array_add(*button.indices, index);
                 if input[0] == "," advance(*input);
             }
             advance(*input, 2); // skip ") "
