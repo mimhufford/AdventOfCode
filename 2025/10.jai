@@ -79,23 +79,34 @@ fewest_count_presses :: (m: Machine) -> s64 {
                 least_value = it;
             }
         }
-
-        // TODO
-
-        // print("%\n", j);
-        // print("%\n", bs);
-        // print("%\n", references);
-        // print("%\n", least_index);
-        // print("======\n");
+    
+        // TODO: make this into a bit mask to avoid creating new arrays
+        press_now : [..]Button;
+        press_later : [..]Button;
 
         for b: bs {
+            target := ifx array_find(b.indices, least_index) then *press_now else *press_later;
+            array_add(target, b);
+        }
+
+        // print("%\n", j);
+        // print("%\n", least_index);
+        // print("%\n", press_now);
+        // print("%\n", press_later);
+        // print("======\n");
+
+        // TODO: work out combinations of button presses for press_now
+        //       for each combo:
+        //           press so that joltage is now 0 (without making others negative)
+        //           recurse with new joltages and press_later buttons      
+        for b: press_now {
             max_presses : s16 = 999;
             for i: b.indices max_presses = min(max_presses, j[i]);
 
             for < presses: 1..max_presses {
                 new_j := array_copy(j);
                 for i: b.indices new_j[i] -= presses;
-                internal(new_j, bs, count + presses);
+                internal(new_j, press_later, count + presses);
             }
         }
     }
