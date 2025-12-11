@@ -29,29 +29,21 @@ count_paths :: (start: *Device, end: *Device) -> s64 {
 parse_devices :: (input: string) -> Table(string, Device) {
     devices : Table(string, Device);
 
-    while input {
-        id := read_up_to(*input, ":");
-        advance(*input); // skip ":""
-
-        device := find_or_add(*devices, id);
-        device.id = id;
-
-        while input[0] != "\n" {
-            advance(*input); // skip " "
-            output_id := input;
-            output_id.count = 3;
-            advance(*input, 3);
-            
-            output_device := find_or_add(*devices, output_id);
-            output_device.id = output_id;
-            array_add(*device.output_ids, output_id);
-        }
-        advance(*input); // skip "\n"
+    for line: split(input, "\n") {
+        if !line continue;
+        ok, id, outs := split_from_left(line, ": ");
+        find_or_add(*devices, id).id = id;
+        for oid: split(outs, " ") find_or_add(*devices, oid).id = oid;
     }
 
-    for * d: devices {
-        for output_id: d.output_ids {
-            array_add(*d.output_devices, table_find_pointer(*devices, output_id));
+    for line: split(input, "\n") {
+        if !line continue;
+        ok, id, outs := split_from_left(line, ": ");
+        d := find_or_add(*devices, id);
+        for oid: split(outs, " ") {
+            od := find_or_add(*devices, oid);
+            array_add(*d.output_devices, od);
+            array_add(*d.output_ids, oid);
         }
     }
 
