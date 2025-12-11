@@ -6,7 +6,11 @@ day11 :: (input: string) -> string, string
 
     you := table_find_pointer(*devices, "you");
     out := table_find_pointer(*devices, "out");
-    part1 = count_paths(you, out);
+    svr := table_find_pointer(*devices, "svr");
+
+    part1 = count_paths(you, out, check = false);
+    table_reset(*cache);
+    part2 = count_paths(svr, out, check = true);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -19,10 +23,32 @@ Device :: struct {
     output_ids: [..]string;
 }
 
-count_paths :: (start: *Device, end: *Device) -> s64 {
-    if start == end return 1;
+cache : Table(u32, s64);
+
+count_paths :: (start: *Device, end: *Device, fft := false, dac := false, check := false) -> s64 {
+    if start == end {
+        if check return ifx fft && dac then 1 else 0;
+        return 1;
+    }
+
+    key : u32;
+    key |= (start.id[0].(u32) << 0);
+    key |= (start.id[1].(u32) << 8);
+    key |= (start.id[2].(u32) << 16);
+    key |= ifx check && fft then (cast(u32, 1) << 25);
+    key |= ifx check && dac then (cast(u32, 1) << 26);
+
+    cached_result := table_find_pointer(*cache, key);
+    if cached_result return cached_result.*;
+
     paths := 0;
-    for start.output_devices paths += count_paths(it, end);
+    
+    for start.output_devices {
+        paths += count_paths(it, end, fft || it.id == "fft", dac || it.id == "dac", check);
+    }
+
+    table_add(*cache, key, paths);
+    
     return paths;
 }
 
