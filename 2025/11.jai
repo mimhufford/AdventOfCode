@@ -65,9 +65,9 @@ parse_devices :: (input: string) -> Table(string, Device) {
     for line: split(input, "\n") {
         if !line continue;
         ok, id, outs := split_from_left(line, ": ");
-        d := find_or_add(*devices, id);
+        d := table_find_pointer(*devices, id);
         for oid: split(outs, " ") {
-            od := find_or_add(*devices, oid);
+            od := table_find_pointer(*devices, oid);
             array_add(*d.output_devices, od);
             array_add(*d.output_ids, oid);
         }
