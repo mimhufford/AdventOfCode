@@ -84,10 +84,11 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
             for index: 0..m.buttons.count-1 {
                 if press_mask & (1 << index) == 0 continue;
-                for m.buttons[index].indices new_joltages[it] -= 1;
+                for m.buttons[index].indices {
+                    new_joltages[it] -= 1;
+                    if new_joltages[it] < 0 continue press_mask;
+                }
             }
-
-            for new_joltages if it < 0 continue press_mask;
 
             for * new_joltages it.* /= 2;
 
