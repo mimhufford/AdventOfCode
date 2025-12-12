@@ -55,7 +55,11 @@ fewest_light_presses :: (m: Machine) -> s64 {
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    inner :: (m: Machine, joltages: []s16) -> s64 {
+    inner :: (m: Machine, joltages: []s16, cache: *Table(string, s64)) -> s64 {
+        key := tprint("%", joltages);
+        cached_result := table_find_pointer(cache, key);
+        if cached_result return cached_result.*;
+
         done := true;
         for joltages if it { done = false; break; }
         if done return 0;
@@ -92,13 +96,17 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
             for * new_joltages it.* /= 2;
 
-            best = min(best, popcount(press_mask) + 2 * inner(m, new_joltages));
+            best = min(best, popcount(press_mask) + 2 * inner(m, new_joltages, cache));
         }
 
+        table_add(cache, key, best);
         return best;
     }
 
-    return inner(m, m.joltages);
+    cache : Table(string, s64);
+    result := inner(m, m.joltages, *cache);
+    deinit(*cache);
+    return result;
 }
 
 parse_machines :: (input: string) -> []Machine {
