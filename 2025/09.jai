@@ -58,8 +58,9 @@ day9 :: (input: string) -> string, string
     }
 
     for i: 0..points.count-1 {
+        p1 := points[i];
         for j: i+1..points.count-1 {
-            p1, p2 := points[i], points[j];
+            p2 := points[j];
             area := (abs(xs[p1.x-1] - xs[p2.x-1]) + 1) * (abs(ys[p1.y-1] - ys[p2.y-1]) + 1);
             part1 = max(part1, area);
 
