@@ -72,7 +72,7 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
         combinations := 1 << m.buttons.count;
 
-        best := S64_MAX;
+        best := 1_000_000;
 
         for press_mask: 0..combinations-1 {
             parity : u16;
