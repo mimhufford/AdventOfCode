@@ -27,9 +27,9 @@ day9 :: (input: string) -> string, string
     for xs table_add(*x_lookup, it, it_index+1);
     for ys table_add(*y_lookup, it, it_index+1);
 
-    grid := NewArray((xs.count+2) * (ys.count+2), u8);
+    grid := NewArray((xs.count+2) * (ys.count+2), s64);
 
-    for * grid it.* = ".";
+    for * grid it.* = 1;
 
     for * points {
         it.x = table_find_pointer(*x_lookup, it.x).*;
@@ -40,7 +40,7 @@ day9 :: (input: string) -> string, string
         p1 := points[it];
         p2 := points[(it+1)%points.count];
         l, r, t, b := min(p1.x, p2.x), max(p1.x, p2.x), min(p1.y, p2.y), max(p1.y, p2.y);
-        for y: t..b for x: l..r grid[y * (xs.count+2) + x] = "#";
+        for y: t..b for x: l..r grid[y * (xs.count+2) + x] = 2;
     }
 
     queue : [..]Point;
@@ -48,15 +48,29 @@ day9 :: (input: string) -> string, string
 
     while queue {
         p := pop(*queue);
-        if grid[p.y * (xs.count+2) + p.x] == "_" continue;
-        grid[p.y * (xs.count+2) + p.x] = "_";
+        if grid[p.y * (xs.count+2) + p.x] == 0 continue;
+        grid[p.y * (xs.count+2) + p.x] = 0;
         
-        if p.x > 0          && grid[p.y * (xs.count+2) + (p.x - 1)] == "." array_add(*queue, .{p.x-1, p.y});
-        if p.x < xs.count+1 && grid[p.y * (xs.count+2) + (p.x + 1)] == "." array_add(*queue, .{p.x+1, p.y});
-        if p.y > 0          && grid[(p.y - 1) * (xs.count+2) + p.x] == "." array_add(*queue, .{p.x, p.y-1});
-        if p.y < ys.count+1 && grid[(p.y + 1) * (xs.count+2) + p.x] == "." array_add(*queue, .{p.x, p.y+1});
+        if p.x > 0          && grid[p.y * (xs.count+2) + (p.x - 1)] == 1 array_add(*queue, .{p.x-1, p.y});
+        if p.x < xs.count+1 && grid[p.y * (xs.count+2) + (p.x + 1)] == 1 array_add(*queue, .{p.x+1, p.y});
+        if p.y > 0          && grid[(p.y - 1) * (xs.count+2) + p.x] == 1 array_add(*queue, .{p.x, p.y-1});
+        if p.y < ys.count+1 && grid[(p.y + 1) * (xs.count+2) + p.x] == 1 array_add(*queue, .{p.x, p.y+1});
     }
 
+    for * grid if it.* == 2 then it.* = 1;
+
+    for y: 0..ys.count+1 {
+        for x: 0..xs.count+1 {
+            if x > 0 grid[y * (xs.count+2) + x] += grid[y * (xs.count+2) + (x-1)];
+        }
+    }
+
+    for y: 0..ys.count+1 {
+        for x: 0..xs.count+1 {
+            if y > 0 grid[y * (xs.count+2) + x] += grid[(y-1) * (xs.count+2) + x];
+        }
+    }
+    
     for i: 0..points.count-1 {
         p1 := points[i];
         for j: i+1..points.count-1 {
@@ -68,7 +82,15 @@ day9 :: (input: string) -> string, string
 
             l, r, t, b := min(p1.x, p2.x), max(p1.x, p2.x), min(p1.y, p2.y), max(p1.y, p2.y);
 
-            for y: t..b for x: l..r if grid[y * (xs.count+2) + x] == "_" continue j;
+            tl := grid[(t-1) * (xs.count+2) + (l-1)];
+            tr := grid[(t-1) * (xs.count+2) + (r+0)];
+            bl := grid[(b+0) * (xs.count+2) + (l-1)];
+            br := grid[(b+0) * (xs.count+2) + (r+0)];
+
+            actual   := tl + br - tr - bl;
+            expected := (b-t+1) * (r-l+1);
+
+            if actual != expected continue;
 
             part2 = area;
         }
