@@ -6,7 +6,7 @@ day10 :: (input: string) -> string, string
 
     for machines {
         part1 += fewest_light_presses(it);
-        // part2 += fewest_count_presses(it);
+        part2 += fewest_count_presses(it);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -53,67 +53,51 @@ fewest_light_presses :: (m: Machine) -> s64 {
     return 0;
 }
 
-best := S64_MAX;
-
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    internal :: (j: []s16, bs: [..]Button, count := 0) {
-        if count >= best return;
-
+    inner :: (m: Machine, joltages: []s16) -> s64 {
         done := true;
-        for j if it > 0 { done = false; break; }
-        if done { 
-            best = count;
-            return;
+        for joltages if it { done = false; break; }
+        if done return 0;
+
+        goal : u16;
+        for joltage, index: joltages {
+            if joltage % 2 == 0 continue;
+            goal |= cast(u16, 1) << index;
         }
 
-        // press buttons that reduce the least referenced remaining joltage first
-        references : [16]s8;
-        for b: bs { for i: b.indices { references[i] += 1; } }
-            
-        least_value := 999;
-        least_index := 999;
-        for references {
-            if it && it < least_value && j[it_index] {
-                least_index = it_index;
-                least_value = it;
+        combinations := 1 << m.buttons.count;
+
+        best := S64_MAX;
+
+        for press_mask: 0..combinations-1 {
+            parity : u16;
+
+            for index: 0..m.buttons.count-1 {
+                if press_mask & (1 << index) == 0 continue;
+                parity ^= m.buttons[index].mask;
             }
-        }
-    
-        // TODO: make this into a bit mask to avoid creating new arrays
-        press_now : [..]Button;
-        press_later : [..]Button;
 
-        for b: bs {
-            target := ifx array_find(b.indices, least_index) then *press_now else *press_later;
-            array_add(target, b);
-        }
+            if goal != parity continue;
 
-        // print("%\n", j);
-        // print("%\n", least_index);
-        // print("%\n", press_now);
-        // print("%\n", press_later);
-        // print("======\n");
+            new_joltages := array_copy(joltages);
 
-        // TODO: work out combinations of button presses for press_now
-        //       for each combo:
-        //           press so that joltage is now 0 (without making others negative)
-        //           recurse with new joltages and press_later buttons      
-        for b: press_now {
-            max_presses : s16 = 999;
-            for i: b.indices max_presses = min(max_presses, j[i]);
-
-            for < presses: 1..max_presses {
-                new_j := array_copy(j);
-                for i: b.indices new_j[i] -= presses;
-                internal(new_j, press_later, count + presses);
+            for index: 0..m.buttons.count-1 {
+                if press_mask & (1 << index) == 0 continue;
+                for m.buttons[index].indices new_joltages[it] -= 1;
             }
+
+            for new_joltages if it < 0 continue press_mask;
+
+            for * new_joltages it.* /= 2;
+
+            best = min(best, popcount(press_mask) + 2 * inner(m, new_joltages));
         }
+
+        return best;
     }
 
-    best = S64_MAX;
-    internal(m.joltages, m.buttons);
-    return best;
+    return inner(m, m.joltages);
 }
 
 parse_machines :: (input: string) -> []Machine {
