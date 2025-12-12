@@ -58,18 +58,8 @@ day9 :: (input: string) -> string, string
     }
 
     for * grid if it.* == 2 then it.* = 1;
-
-    for y: 0..ys.count+1 {
-        for x: 0..xs.count+1 {
-            if x > 0 grid[y * (xs.count+2) + x] += grid[y * (xs.count+2) + (x-1)];
-        }
-    }
-
-    for y: 0..ys.count+1 {
-        for x: 0..xs.count+1 {
-            if y > 0 grid[y * (xs.count+2) + x] += grid[(y-1) * (xs.count+2) + x];
-        }
-    }
+    for y: 0..ys.count+1 { for x: 1..xs.count+1 { grid[y * (xs.count+2) + x] += grid[y * (xs.count+2) + (x-1)]; } }
+    for y: 1..ys.count+1 { for x: 0..xs.count+1 { grid[y * (xs.count+2) + x] += grid[(y-1) * (xs.count+2) + x]; } }
     
     for i: 0..points.count-1 {
         p1 := points[i];
