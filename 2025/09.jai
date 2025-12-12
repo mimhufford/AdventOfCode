@@ -31,14 +31,15 @@ day9 :: (input: string) -> string, string
 
     for * grid it.* = ".";
 
+    for * points {
+        it.x = table_find_pointer(*x_lookup, it.x).*;
+        it.y = table_find_pointer(*y_lookup, it.y).*;
+    }
+
     for 0..points.count-1 {
         p1 := points[it];
         p2 := points[(it+1)%points.count];
-        x1 := table_find_pointer(*x_lookup, p1.x).*;
-        y1 := table_find_pointer(*y_lookup, p1.y).*;
-        x2 := table_find_pointer(*x_lookup, p2.x).*;
-        y2 := table_find_pointer(*y_lookup, p2.y).*;
-        l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
+        l, r, t, b := min(p1.x, p2.x), max(p1.x, p2.x), min(p1.y, p2.y), max(p1.y, p2.y);
         for y: t..b for x: l..r grid[y * (xs.count+2) + x] = "#";
     }
 
@@ -57,20 +58,14 @@ day9 :: (input: string) -> string, string
     }
 
     for i: 0..points.count-1 {
-        p1 := points[i];
-        x1 := table_find_pointer(*x_lookup, p1.x).*;
-        y1 := table_find_pointer(*y_lookup, p1.y).*;
-
         for j: i+1..points.count-1 {
-            p2 := points[j];
-            area := (abs(p1.x - p2.x) + 1) * (abs(p1.y - p2.y) + 1);
+            p1, p2 := points[i], points[j];
+            area := (abs(xs[p1.x-1] - xs[p2.x-1]) + 1) * (abs(ys[p1.y-1] - ys[p2.y-1]) + 1);
             part1 = max(part1, area);
 
             if p1.x == p2.x || p1.y == p2.y || area <= part2 continue;
 
-            x2 := table_find_pointer(*x_lookup, p2.x).*;
-            y2 := table_find_pointer(*y_lookup, p2.y).*;
-            l, r, t, b := min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2);
+            l, r, t, b := min(p1.x, p2.x), max(p1.x, p2.x), min(p1.y, p2.y), max(p1.y, p2.y);
 
             for y: t..b for x: l..r if grid[y * (xs.count+2) + x] == "_" continue j;
 
