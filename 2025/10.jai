@@ -7,9 +7,13 @@ day10 :: (input: string) -> string, string
     for m: machines {
         part1 += fewest_light_presses(m);
         slow := fewest_count_presses(m);
-        // fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
-        // if slow != fast && fast > 0 assert(false);
-        part2 += slow;
+        fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
+        if slow != fast {
+            print("ERROR: %) % - % vs %\n", it_index, m.joltages, slow, fast);
+        } else {
+            print("OK: %) % - % vs %\n", it_index, m.joltages, slow, fast);
+        }
+        part2 += fast;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -149,7 +153,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
 
     swap_rows :: (a: s64, b: s64) #expand {
         for col: 0..cols-1 swap(*matrix[a * cols + col], *matrix[b * cols + col]);
-    } 
+    }
 
     print_matrix :: () #expand {
         for row: 0..rows-1 {
@@ -184,7 +188,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
             for ci: 0..cols-1 matrix[pivot_row * cols + ci] *= mult;
             break;
         }
-        
+
         if !found_pivot {
             // print("UNABLE TO FIND A PIVOT FOR COL %\n", col);
             continue;
@@ -210,17 +214,15 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         pivot_row += 1;
     }
 
-    for * matrix it.* = floor(it.* + 0.5);
     // print("RREF\n");
     // print_matrix();
-    // print("\n");
 
     // TODO: explain
     found_answer_easily := true;
     for col: 0..cols-2 {
-        col_total := 0;
+        col_total := 0.0;
         for row: 0..rows-1 {
-            value := matrix[row * cols + col].(s64);
+            value := matrix[row * cols + col];
             col_total += value;
             if value < 0 || value > 1 {
                 found_answer_easily = false;
@@ -233,15 +235,150 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
     }
 
     if found_answer_easily {
-        col_total := 0;
-        for row: 0..rows-1 col_total += matrix[row * cols + cols - 1].(s64);
-        return col_total;
+        col_total := 0.0;
+        for row: 0..rows-1 col_total += matrix[row * cols + cols - 1];
+        return col_total.(s64);
     }
 
     // TODO: identify free variables and try values for them
 
-    return 0;
+    free_variables : [..]s64;
+    for col: 0..cols-2 {
+        one_count   := 0;
+        other_count := 0;
+        for row: 0..rows-1 {
+            if matrix[row * cols + col] == 1 { one_count   += 1; continue; }
+            if matrix[row * cols + col] != 0 { other_count += 1; continue; }
+        }
+        if one_count == 1 && other_count == 0 continue;
+        array_add(*free_variables, col);
+    }
+
+    // print("Free variables: %\n", free_variables);
+
+    best := S64_MAX;
+
+    // TODO: I don't know how to work upper bounds on free variables yet
+    for free_press_amount: 0..20 { // TODO: needs to be per free variable
+        press_counts : [..]s64;
+        defer array_free(press_counts);
+
+        // calculate how many presses of each button based on free press amounts
+        for col: 0..cols-2 {
+            if array_find(free_variables, col) {
+                array_add(*press_counts, free_press_amount);
+                continue;
+            }
+
+            pivot_row := 0;
+            for row: 0..rows-1 {
+                if matrix[row * cols + col] == 1 {
+                    pivot_row = row;
+                    break;
+                }
+            }
+
+            target := matrix[pivot_row * cols + cols - 1];
+            presses := target;
+            for free_variables {
+                presses -= free_press_amount * matrix[pivot_row * cols + it];
+            }
+
+            array_add(*press_counts, presses.(s64));
+        }
+
+        // print("%\n", press_counts);
+        total_presses := 0;
+        for press_counts total_presses += it;
+
+        if total_presses >= best continue;
+
+        // check counts are valid
+        for press_counts {
+            if it >= 0 continue;
+            continue free_press_amount;
+        }
+
+        // check solutions
+        for row: 0..rows-1 {
+            expected := matrix[row * cols + cols - 1];
+            actual := 0.0;
+            for col: 0..cols-2 {
+                actual += press_counts[col] * matrix[row * cols + col];
+            }
+            if expected != actual {
+                continue free_press_amount;
+            }
+        }
+
+        best = total_presses;
+    }
+
+    return best;
 }
+
+/*
+
+AUGMENTED
+  0  0  0  0  1  1| 3
+  0  1  0  0  0  1| 5
+  0  0  1  1  1  0| 4
+  1  1  0  1  0  0| 7
+
+RREF
+  a  b  c  d  e  f
+  1  0  0  1  0 -1| 2
+  0  1  0  0  0  1| 5
+  0  0  1  1  0 -1| 1
+  0  0  0  0  1  1| 3
+           ^     ^
+"Free" variables are e and f
+
+Rows in equation form
+  a + d - f = 2
+  b + f     = 5
+  c + d - f = 1
+  e + f     = 3
+
+Rearrange
+  a = 2 - d + f
+  b = 5 - f
+  c = 1 - d + f
+  e = 3 - f
+
+// Plugging in some test values for the free variables at this point
+// allows me to push all the new RREF "buttons" and check it works out
+// but I don't yet have any bounds on the free variables except >= 0...
+  for example:
+  d = 3, f = 2
+  so
+  a = 1, b = 3, c = 0, e = 1
+
+We know buttons press counts are >= 0, so
+  2 - d + f >= 0
+  5 - f     >= 0
+  1 - d + f >= 0
+  3 - f     >= 0
+
+Rearrange
+  d - f <= 2
+  f     <= 5
+  d - f <= 1
+  f     <= 3
+
+  take max so f is 0..5
+
+  d >= 0
+  d <= 2 + f
+  d <= 1 + f
+
+  take max so d is 0..7?
+
+So
+  f is between 0 and ?
+  d is between 0 and ?
+
+*/
 
 parse_machines :: (input: string) -> []Machine {
     machines : [..]Machine;
