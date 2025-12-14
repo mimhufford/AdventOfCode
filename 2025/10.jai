@@ -8,7 +8,6 @@ day10 :: (input: string) -> string, string
         part1 += fewest_light_presses(m);
         part2 += fewest_count_presses(m);
         // part2 += fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
-
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -112,18 +111,18 @@ fewest_count_presses :: (m: Machine) -> s64 {
 }
 
 fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> s64 {
-    print("%\n", m.joltages);
-    for m.buttons print("- %\n", it.indices);
-    print("\n");
+    // print("%\n", m.joltages);
+    // for m.buttons print("- %\n", it.indices);
+    // print("\n");
 
     // create the augmented matrix
     rows := m.joltages.count;
     cols := m.buttons.count + 1;
-    matrix := NewArray(rows * cols, s64);
+    matrix := NewArray(rows * cols, float);
 
     // fill the joltage column
     for row: 0..rows-1 {
-        matrix[row * cols + cols - 1] = m.joltages[row];
+        matrix[row * cols + cols - 1] = m.joltages[row].(float);
     }
 
     // fill the coefficients
@@ -153,8 +152,8 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         print("\n");
     }
 
-    print("AUGMENTED\n");
-    print_matrix();
+    // print("AUGMENTED\n");
+    // print_matrix();
 
     pivot_row := 0;
 
@@ -168,46 +167,42 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         for row: pivot_row..rows-1 {
             if matrix[row * cols + col] == 0 continue;
             found_pivot = true;
-            print("swap r% with r%\n", pivot_row, row);
+            // print("swap r% with r%\n", pivot_row, row);
             swap_rows(pivot_row, row);
-            assert(abs(matrix[pivot_row * cols + col]) == 1);
-            if matrix[pivot_row * cols + col] == -1 {
-                for ci: 0..cols-1 {
-                    matrix[pivot_row * cols + ci] *= -1;
-                }
-            }
+            mult := 1 / matrix[pivot_row * cols + col];
+            for ci: 0..cols-1 matrix[pivot_row * cols + ci] *= mult;
             break;
         }
         
         if !found_pivot {
-            print("UNABLE TO FIND A PIVOT FOR COL %\n", col);
+            // print("UNABLE TO FIND A PIVOT FOR COL %\n", col);
             continue;
         }
 
-        print("TOP ENTRY FOR COL % IS 1\n", col);
-        print_matrix();
+        // print("TOP ENTRY FOR COL % IS 1\n", col);
+        // print_matrix();
 
         // perform row operations to make all other rows in this column 0
         for row: 0..rows-1 {
             if row == pivot_row continue; // don't change the pivot value
             if matrix[row * cols + col] == 0 continue; // nothing to do
-            print("need to change row % for col %\n", row, col);
+            // print("need to change row % for col %\n", row, col);
             value := matrix[row * cols + col];
             for ci: 0..cols-1 {
                 matrix[row * cols + ci] -= value * matrix[pivot_row * cols + ci];
             }
         }
 
-        print("ALL OTHER VALUES 0 FOR COL %\n", col);
-        print_matrix();
+        // print("ALL OTHER VALUES 0 FOR COL %\n", col);
+        // print_matrix();
 
         pivot_row += 1;
     }
 
-    print("FINAL\n");
-    print_matrix();
-
-    print("\n");
+    for * matrix it.* = floor(it.* + 0.5);
+    // print("RREF\n");
+    // print_matrix();
+    // print("\n");
 
     return 0;
 }
