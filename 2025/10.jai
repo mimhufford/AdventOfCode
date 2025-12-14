@@ -6,8 +6,10 @@ day10 :: (input: string) -> string, string
 
     for m: machines {
         part1 += fewest_light_presses(m);
-        part2 += fewest_count_presses(m);
-        // part2 += fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
+        slow := fewest_count_presses(m);
+        // fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
+        // if slow != fast && fast > 0 assert(false);
+        part2 += slow;
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -136,6 +138,15 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         }
     }
 
+    // Before doing any work we can check if any joltage is changed by all
+    // buttons. If it is then the minimum must just be that joltage value.
+    for row: 0..rows-1 {
+        for col: 0..cols-2 {
+            if matrix[row * cols + col] == 0 continue row;
+        }
+        return matrix[row * cols + cols - 1].(s64);
+    }
+
     swap_rows :: (a: s64, b: s64) #expand {
         for col: 0..cols-1 swap(*matrix[a * cols + col], *matrix[b * cols + col]);
     } 
@@ -165,7 +176,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
 
         // make top entry in this column a 1
         for row: pivot_row..rows-1 {
-            if matrix[row * cols + col] == 0 continue;
+            if values_are_close(matrix[row * cols + col], 0) continue;
             found_pivot = true;
             // print("swap r% with r%\n", pivot_row, row);
             swap_rows(pivot_row, row);
@@ -203,6 +214,31 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
     // print("RREF\n");
     // print_matrix();
     // print("\n");
+
+    // TODO: explain
+    found_answer_easily := true;
+    for col: 0..cols-2 {
+        col_total := 0;
+        for row: 0..rows-1 {
+            value := matrix[row * cols + col].(s64);
+            col_total += value;
+            if value < 0 || value > 1 {
+                found_answer_easily = false;
+                break col;
+            }
+        }
+        if col_total == 1 continue;
+        found_answer_easily = false;
+        break;
+    }
+
+    if found_answer_easily {
+        col_total := 0;
+        for row: 0..rows-1 col_total += matrix[row * cols + cols - 1].(s64);
+        return col_total;
+    }
+
+    // TODO: identify free variables and try values for them
 
     return 0;
 }
