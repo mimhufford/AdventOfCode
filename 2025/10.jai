@@ -55,7 +55,7 @@ fewest_light_presses :: (m: Machine) -> s64 {
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    inner :: (m: Machine, button_combo_parities: []u16, joltages: []s16, cache: *Table(u32, s64)) -> s64 {
+    inner :: (m: Machine, parity_to_press_masks: Table(u16, [..]s64), joltages: []s16, cache: *Table(u32, s64)) -> s64 {
         key := get_hash(joltages);
         cached_result := table_find_pointer(cache, key);
         if cached_result return cached_result.*;
@@ -72,9 +72,10 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
         best := 1_000_000;
 
-        for parity, press_mask: button_combo_parities {
-            if goal != parity continue;
-
+        press_masks := table_find_pointer(*parity_to_press_masks, goal);
+        if !press_masks return best;
+        
+        for press_mask: press_masks.* {
             new_joltages := array_copy(joltages);
 
             for index: 0..m.buttons.count-1 {
@@ -87,7 +88,7 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
             for * new_joltages it.* /= 2;
 
-            best = min(best, popcount(press_mask) + 2 * inner(m, button_combo_parities, new_joltages, cache));
+            best = min(best, popcount(press_mask) + 2 * inner(m, parity_to_press_masks, new_joltages, cache));
         }
 
         table_add(cache, key, best);
@@ -96,19 +97,18 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
     // precompute parity masks for each button combo
     combinations := 1 << m.buttons.count;
-    button_combo_parities : [..]u16;
-    array_reserve(*button_combo_parities, combinations);
+    parity_to_press_masks : Table(u16, [..]s64);
     for press_mask: 0..combinations-1 {
-        parity := array_add(*button_combo_parities);
+        parity : u16;
         for index: 0..m.buttons.count-1 {
             if press_mask & (1 << index) == 0 continue;
-            parity.* ^= m.buttons[index].mask;
+            parity ^= m.buttons[index].mask;
         }
+        array_add(find_or_add(*parity_to_press_masks, parity), press_mask);
     }
 
     cache : Table(u32, s64);
-    result := inner(m, button_combo_parities, m.joltages, *cache);
-    deinit(*cache);
+    result := inner(m, parity_to_press_masks, m.joltages, *cache);
     return result;
 }
 
