@@ -3,18 +3,24 @@ day10 :: (input: string) -> string, string
     part1, part2 : s64;
 
     machines := parse_machines(input);
+    
+    wrong := 0;
 
     for m: machines {
         part1 += fewest_light_presses(m);
         slow := fewest_count_presses(m);
-        fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
+        fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m, false);
         if slow != fast {
+            wrong += 1;
             print("ERROR: %) % - % vs %\n", it_index, m.joltages, slow, fast);
+            fewest_count_presses_using_maths_i_dont_fully_understand_yet(m, true);
         } else {
             print("OK: %) % - % vs %\n", it_index, m.joltages, slow, fast);
         }
-        part2 += fast;
+        part2 += slow;
     }
+
+    print("Amount wrong: %\n", wrong);
 
     return tprint("%", part1), tprint("%", part2);
 }
@@ -62,8 +68,8 @@ fewest_light_presses :: (m: Machine) -> s64 {
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    inner :: (m: Machine, joltages: []s16, cache: *Table(string, s64)) -> s64 {
-        key := tprint("%", joltages);
+    inner :: (m: Machine, joltages: []s16, cache: *Table(u32, s64)) -> s64 {
+        key := get_hash(joltages);
         cached_result := table_find_pointer(cache, key);
         if cached_result return cached_result.*;
 
@@ -110,16 +116,18 @@ fewest_count_presses :: (m: Machine) -> s64 {
         return best;
     }
 
-    cache : Table(string, s64);
+    cache : Table(u32, s64);
     result := inner(m, m.joltages, *cache);
     deinit(*cache);
     return result;
 }
 
-fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> s64 {
-    // print("%\n", m.joltages);
-    // for m.buttons print("- %\n", it.indices);
-    // print("\n");
+fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, debug: bool) -> s64 {
+    if debug {
+        print("%\n", m.joltages);
+        for m.buttons print("- %\n", it.indices);
+        print("\n");
+    }
 
     // create the augmented matrix
     rows := m.joltages.count;
@@ -167,8 +175,10 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         print("\n");
     }
 
-    // print("AUGMENTED\n");
-    // print_matrix();
+    if debug {
+        print("AUGMENTED\n");
+        print_matrix();
+    }
 
     pivot_row := 0;
 
@@ -214,8 +224,10 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         pivot_row += 1;
     }
 
-    // print("RREF\n");
-    // print_matrix();
+    if debug {
+        print("RREF\n");
+        print_matrix();
+    }
 
     // TODO: explain
     found_answer_easily := true;
@@ -254,12 +266,12 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         array_add(*free_variables, col);
     }
 
-    // print("Free variables: %\n", free_variables);
+    if debug print("Free variables: %\n", free_variables);
 
     best := S64_MAX;
 
     // TODO: I don't know how to work upper bounds on free variables yet
-    for free_press_amount: 0..20 { // TODO: needs to be per free variable
+    for free_press_amount: 0..40 { // TODO: needs to be per free variable
         press_counts : [..]s64;
         defer array_free(press_counts);
 
@@ -306,7 +318,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
             for col: 0..cols-2 {
                 actual += press_counts[col] * matrix[row * cols + col];
             }
-            if expected != actual {
+            if !values_are_close(expected, actual) {
                 continue free_press_amount;
             }
         }
@@ -314,6 +326,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> 
         best = total_presses;
     }
 
+    if debug print("\n");
     return best;
 }
 
