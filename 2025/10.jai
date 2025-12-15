@@ -6,10 +6,7 @@ day10 :: (input: string) -> string, string
 
     for m: machines {
         part1 += fewest_light_presses(m);
-        slow := fewest_count_presses(m);
-        // fast := fewest_count_presses_using_maths_i_dont_fully_understand_yet(m);
-        // if slow != fast && fast > 0 assert(false);
-        part2 += slow;
+        part2 += fewest_count_presses(m);
     }
 
     return tprint("%", part1), tprint("%", part2);
@@ -58,8 +55,8 @@ fewest_light_presses :: (m: Machine) -> s64 {
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    inner :: (m: Machine, joltages: []s16, cache: *Table(string, s64)) -> s64 {
-        key := tprint("%", joltages);
+    inner :: (m: Machine, button_combo_parities: []u16, joltages: []s16, cache: *Table(u32, s64)) -> s64 {
+        key := get_hash(joltages);
         cached_result := table_find_pointer(cache, key);
         if cached_result return cached_result.*;
 
@@ -73,18 +70,9 @@ fewest_count_presses :: (m: Machine) -> s64 {
             goal |= cast(u16, 1) << index;
         }
 
-        combinations := 1 << m.buttons.count;
-
         best := 1_000_000;
 
-        for press_mask: 0..combinations-1 {
-            parity : u16;
-
-            for index: 0..m.buttons.count-1 {
-                if press_mask & (1 << index) == 0 continue;
-                parity ^= m.buttons[index].mask;
-            }
-
+        for parity, press_mask: button_combo_parities {
             if goal != parity continue;
 
             new_joltages := array_copy(joltages);
@@ -99,148 +87,29 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
             for * new_joltages it.* /= 2;
 
-            best = min(best, popcount(press_mask) + 2 * inner(m, new_joltages, cache));
+            best = min(best, popcount(press_mask) + 2 * inner(m, button_combo_parities, new_joltages, cache));
         }
 
         table_add(cache, key, best);
         return best;
     }
 
-    cache : Table(string, s64);
-    result := inner(m, m.joltages, *cache);
+    // precompute parity masks for each button combo
+    combinations := 1 << m.buttons.count;
+    button_combo_parities : [..]u16;
+    array_reserve(*button_combo_parities, combinations);
+    for press_mask: 0..combinations-1 {
+        parity := array_add(*button_combo_parities);
+        for index: 0..m.buttons.count-1 {
+            if press_mask & (1 << index) == 0 continue;
+            parity.* ^= m.buttons[index].mask;
+        }
+    }
+
+    cache : Table(u32, s64);
+    result := inner(m, button_combo_parities, m.joltages, *cache);
     deinit(*cache);
     return result;
-}
-
-fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine) -> s64 {
-    // print("%\n", m.joltages);
-    // for m.buttons print("- %\n", it.indices);
-    // print("\n");
-
-    // create the augmented matrix
-    rows := m.joltages.count;
-    cols := m.buttons.count + 1;
-    matrix := NewArray(rows * cols, float);
-
-    // fill the joltage column
-    for row: 0..rows-1 {
-        matrix[row * cols + cols - 1] = m.joltages[row].(float);
-    }
-
-    // fill the coefficients
-    for row: 0..rows-1 {
-        for col: 0..cols-2 {
-            for m.buttons[col].indices {
-                if it != row continue;
-                matrix[row * cols + col] = 1;
-                break;
-            }
-        }
-    }
-
-    // Before doing any work we can check if any joltage is changed by all
-    // buttons. If it is then the minimum must just be that joltage value.
-    for row: 0..rows-1 {
-        for col: 0..cols-2 {
-            if matrix[row * cols + col] == 0 continue row;
-        }
-        return matrix[row * cols + cols - 1].(s64);
-    }
-
-    swap_rows :: (a: s64, b: s64) #expand {
-        for col: 0..cols-1 swap(*matrix[a * cols + col], *matrix[b * cols + col]);
-    } 
-
-    print_matrix :: () #expand {
-        for row: 0..rows-1 {
-            for col: 0..cols-2 {
-                value := matrix[row * cols + col];
-                if value >= 0 print("  %", value);
-                else print(" %", value);
-            }
-            print("| %\n", matrix[row * cols + cols - 1]);
-        }
-        print("\n");
-    }
-
-    // print("AUGMENTED\n");
-    // print_matrix();
-
-    pivot_row := 0;
-
-    // apply guass elimination to bring to reduce row echelon form
-    for col: 0..cols-2 {
-        if pivot_row >= rows break;
-
-        found_pivot := false;
-
-        // make top entry in this column a 1
-        for row: pivot_row..rows-1 {
-            if values_are_close(matrix[row * cols + col], 0) continue;
-            found_pivot = true;
-            // print("swap r% with r%\n", pivot_row, row);
-            swap_rows(pivot_row, row);
-            mult := 1 / matrix[pivot_row * cols + col];
-            for ci: 0..cols-1 matrix[pivot_row * cols + ci] *= mult;
-            break;
-        }
-        
-        if !found_pivot {
-            // print("UNABLE TO FIND A PIVOT FOR COL %\n", col);
-            continue;
-        }
-
-        // print("TOP ENTRY FOR COL % IS 1\n", col);
-        // print_matrix();
-
-        // perform row operations to make all other rows in this column 0
-        for row: 0..rows-1 {
-            if row == pivot_row continue; // don't change the pivot value
-            if matrix[row * cols + col] == 0 continue; // nothing to do
-            // print("need to change row % for col %\n", row, col);
-            value := matrix[row * cols + col];
-            for ci: 0..cols-1 {
-                matrix[row * cols + ci] -= value * matrix[pivot_row * cols + ci];
-            }
-        }
-
-        // print("ALL OTHER VALUES 0 FOR COL %\n", col);
-        // print_matrix();
-
-        pivot_row += 1;
-    }
-
-    for * matrix it.* = floor(it.* + 0.5);
-    // print("RREF\n");
-    // print_matrix();
-    // print("\n");
-
-    // TODO: explain
-    found_answer_easily := true;
-    for col: 0..cols-2 {
-        col_total := 0;
-        for row: 0..rows-1 {
-            value := matrix[row * cols + col].(s64);
-            col_total += value;
-            if value < 0 || value > 1 {
-                found_answer_easily = false;
-                break col;
-            }
-        }
-        if col_total == 1 continue;
-        found_answer_easily = false;
-        break;
-    }
-
-    if found_answer_easily {
-        col_total := 0;
-        for row: 0..rows-1 col_total += matrix[row * cols + cols - 1].(s64);
-        return col_total;
-    }
-
-    // TODO: identify free variables and try values for them
-
-    return 0;
 }
 
 parse_machines :: (input: string) -> []Machine {
