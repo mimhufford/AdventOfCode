@@ -252,8 +252,6 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, deb
         return col_total.(s64);
     }
 
-    // TODO: identify free variables and try values for them
-
     free_variables : [..]s64;
     for col: 0..cols-2 {
         one_count   := 0;
