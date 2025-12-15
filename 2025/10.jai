@@ -13,9 +13,9 @@ day10 :: (input: string) -> string, string
         if slow != fast {
             wrong += 1;
             print("ERROR: %) % - % vs %\n", it_index, m.joltages, slow, fast);
-            fewest_count_presses_using_maths_i_dont_fully_understand_yet(m, true);
+            // fewest_count_presses_using_maths_i_dont_fully_understand_yet(m, true);
         } else {
-            print("OK: %) % - % vs %\n", it_index, m.joltages, slow, fast);
+            // print("OK: %) % - % vs %\n", it_index, m.joltages, slow, fast);
         }
         part2 += slow;
     }
@@ -271,14 +271,35 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, deb
     best := S64_MAX;
 
     // TODO: I don't know how to work upper bounds on free variables yet
-    for free_press_amount: 0..40 { // TODO: needs to be per free variable
+    free_variable_press_counts : [..]s64;
+    for free_variables array_add(*free_variable_press_counts, 0);
+    free_variable_press_counts[free_variable_press_counts.count-1] = -1;
+
+    advance :: (fvpc : []s64) -> bool {
+        limit :: 40;
+
+        for < * fvpc {
+            if it.* < limit {
+                it.* += 1;
+                break;
+            } else {
+                it.* = 0;
+            }
+        }
+        
+        return fvpc[0] < limit;
+    }
+
+    while advance(free_variable_press_counts) {
+        if debug print("%\n", free_variable_press_counts);
         press_counts : [..]s64;
         defer array_free(press_counts);
 
         // calculate how many presses of each button based on free press amounts
         for col: 0..cols-2 {
-            if array_find(free_variables, col) {
-                array_add(*press_counts, free_press_amount);
+            found, index := array_find(free_variables, col);
+            if found {
+                array_add(*press_counts, free_variable_press_counts[index]);
                 continue;
             }
 
@@ -293,7 +314,7 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, deb
             target := matrix[pivot_row * cols + cols - 1];
             presses := target;
             for free_variables {
-                presses -= free_press_amount * matrix[pivot_row * cols + it];
+                presses -= free_variable_press_counts[it_index] * matrix[pivot_row * cols + it];
             }
 
             array_add(*press_counts, presses.(s64));
@@ -306,10 +327,13 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, deb
         if total_presses >= best continue;
 
         // check counts are valid
+        valid := true;
         for press_counts {
             if it >= 0 continue;
-            continue free_press_amount;
+            valid = false;
+            break;
         }
+        if !valid continue;
 
         // check solutions
         for row: 0..rows-1 {
@@ -319,9 +343,11 @@ fewest_count_presses_using_maths_i_dont_fully_understand_yet :: (m: Machine, deb
                 actual += press_counts[col] * matrix[row * cols + col];
             }
             if !values_are_close(expected, actual) {
-                continue free_press_amount;
+                valid = false;
+                break;
             }
         }
+        if !valid continue;
 
         best = total_presses;
     }
