@@ -55,7 +55,7 @@ fewest_light_presses :: (m: Machine) -> s64 {
 
 fewest_count_presses :: (m: Machine) -> s64 {
 
-    inner :: (m: Machine, joltages: []s16, cache: *Table(u32, s64)) -> s64 {
+    inner :: (m: Machine, button_combo_parities: []u16, joltages: []s16, cache: *Table(u32, s64)) -> s64 {
         key := get_hash(joltages);
         cached_result := table_find_pointer(cache, key);
         if cached_result return cached_result.*;
@@ -70,18 +70,9 @@ fewest_count_presses :: (m: Machine) -> s64 {
             goal |= cast(u16, 1) << index;
         }
 
-        combinations := 1 << m.buttons.count;
-
         best := 1_000_000;
 
-        for press_mask: 0..combinations-1 {
-            parity : u16;
-
-            for index: 0..m.buttons.count-1 {
-                if press_mask & (1 << index) == 0 continue;
-                parity ^= m.buttons[index].mask;
-            }
-
+        for parity, press_mask: button_combo_parities {
             if goal != parity continue;
 
             new_joltages := array_copy(joltages);
@@ -96,15 +87,27 @@ fewest_count_presses :: (m: Machine) -> s64 {
 
             for * new_joltages it.* /= 2;
 
-            best = min(best, popcount(press_mask) + 2 * inner(m, new_joltages, cache));
+            best = min(best, popcount(press_mask) + 2 * inner(m, button_combo_parities, new_joltages, cache));
         }
 
         table_add(cache, key, best);
         return best;
     }
 
+    // precompute parity masks for each button combo
+    combinations := 1 << m.buttons.count;
+    button_combo_parities : [..]u16;
+    array_reserve(*button_combo_parities, combinations);
+    for press_mask: 0..combinations-1 {
+        parity := array_add(*button_combo_parities);
+        for index: 0..m.buttons.count-1 {
+            if press_mask & (1 << index) == 0 continue;
+            parity.* ^= m.buttons[index].mask;
+        }
+    }
+
     cache : Table(u32, s64);
-    result := inner(m, m.joltages, *cache);
+    result := inner(m, button_combo_parities, m.joltages, *cache);
     deinit(*cache);
     return result;
 }
