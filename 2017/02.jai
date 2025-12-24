@@ -1,34 +1,28 @@
-day2 :: (data: string) -> string, string
+day2 :: (input: string) -> string, string
 {
-    part_1, part_2 := 0;
+    part1, part2 := 0;
 
-    lines := split(data, "\n");
+    lines := split(input, "\n");
     lines.count -= 1;
 
-    for * line: lines
-    {
+    for line: lines {
+        nums : [..]s64;
         lo, hi := S64_MAX, S64_MIN;
 
-        nums : [..]s64;
-
-        while <<line
-        {
-            val := 0;
-            ok := true;
-            val, ok, <<line = string_to_int(<<line);
+        while line {
+            val := read_u16(*line);
             lo = min(lo, val);
             hi = max(hi, val);
             array_add(*nums, val);
         }
 
-        for a: 0..nums.count-1 for b: a+1..nums.count-1
-        {
-            if nums[a] % nums[b] == 0 { part_2 += nums[a] / nums[b]; break a; }
-            if nums[b] % nums[a] == 0 { part_2 += nums[b] / nums[a]; break a; }
+        for a: 0..nums.count-1 for b: a+1..nums.count-1 {
+            if nums[a] % nums[b] == 0 { part2 += nums[a] / nums[b]; break a; }
+            if nums[b] % nums[a] == 0 { part2 += nums[b] / nums[a]; break a; }
         }
 
-        part_1 += hi - lo;
+        part1 += hi - lo;
     }
 
-    return tprint("%", part_1), tprint("%", part_2);
+    return tprint("%", part1), tprint("%", part2);
 }
