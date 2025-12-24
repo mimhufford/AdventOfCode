@@ -2,10 +2,7 @@ day2 :: (input: string) -> string, string
 {
     part1, part2 := 0;
 
-    lines := split(input, "\n");
-    lines.count -= 1;
-
-    for line: lines {
+    for line: split(trim(input), "\n") {
         nums : [..]s64;
         lo, hi := S64_MAX, S64_MIN;
 
