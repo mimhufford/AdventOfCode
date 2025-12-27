@@ -3,7 +3,26 @@ day14 :: (input: string) -> string, string
     part1, part2 := 0;
 
     grid : [128]string;
-    for * grid it.* = hash(input, it_index);
+
+    Row :: struct { dest: *string; input: string; suffix: s64; }
+
+    fill_row :: (group: *Thread_Group, thread: *Thread, work: *void) -> Thread_Continue_Status {
+        using work.(*Row);
+        dest.* = hash(input, suffix);
+        return .CONTINUE;
+    }
+
+    thread_group : Thread_Group;
+    thread_group.logging = false;
+    init(*thread_group, 8, fill_row);
+    start(*thread_group);
+    for * str, id: grid {
+        r := New(Row);
+        r.dest, r.input, r.suffix = str, input, id;
+        add_work(*thread_group, r);
+    }
+    completed := 0;
+    while completed < 128 completed += get_completed_work(*thread_group).count;
 
     queue : [..] struct { r: u8; c: u8; };
     for row: 0..127 {
@@ -12,8 +31,9 @@ day14 :: (input: string) -> string, string
             part2 += 1;
             array_add(*queue, .{row.(u8), col.(u8)});
             while queue {
-                part1 += 1;
                 using pop(*queue);
+                if grid[r][c] == "0" continue;
+                part1 += 1;
                 grid[r][c] = "0";
                 if r < 127 && grid[r+1][c] == "1" array_add(*queue, .{r+1, c});
                 if r > 000 && grid[r-1][c] == "1" array_add(*queue, .{r-1, c});
