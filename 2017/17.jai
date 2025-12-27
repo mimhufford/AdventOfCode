@@ -5,9 +5,9 @@ day17 :: (input: string) -> string, string
     index := 0;
     array_add(*state, 0);
 
-    for 0..2016 {
-        index = (index + steps) % (it + 1);
-        array_insert_at(*state, it + 1, index);
+    for 1..2017 {
+        index = (index + steps) % it;
+        array_insert_at(*state, it, index);
     }
 
     part1 := state[(index + 1) % state.count];
