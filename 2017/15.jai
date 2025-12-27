@@ -10,7 +10,7 @@ day15 :: (input: string) -> string, string
         for 1..amt {
             while true { a = a * 16807 % 2147483647; if a % am == 0 break; }
             while true { b = b * 48271 % 2147483647; if b % bm == 0 break; }
-            result += ifx a & 65535 == b & 65535 then 1;
+            result += ifx a.(u16,no_check) == b.(u16,no_check) then 1;
         }
         return result;
     }
