@@ -5,7 +5,7 @@ day14 :: (input: string) -> string, string
     grid : [128]string;
     for * grid it.* = hash(input, it_index);
 
-    queue : [..] struct {r: u8; c: u8; };
+    queue : [..] struct { r: u8; c: u8; };
     for row: 0..127 {
         for col: 0..127 {
             if grid[row][col] == "0" continue;
