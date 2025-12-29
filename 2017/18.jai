@@ -50,19 +50,19 @@ day18 :: (input: string) -> string, string
     table_add(*b.regs, "p", 1);
 
     run :: (p: *Program) -> bool #expand {
-        value :: (using i: Instruction) -> s64 #expand {
-            return ifx y_type == .VAL then y_val else find_or_add(*p.regs, y_reg).*;
+        y :: (using i: Instruction) -> *s64 #expand {
+            return ifx y_type == .VAL then *y_val else find_or_add(*p.regs, y_reg);
         }
 
         i := instructions[p.ip];
         x := find_or_add(*p.regs, i.x_reg);
 
         if i.type == {
-            case .SET; x.*  = value(i);
-            case .ADD; x.* += value(i);
-            case .MUL; x.* *= value(i);
-            case .MOD; x.* %= value(i);
-            case .JGZ; if x.* > 0 p.ip += value(i) - 1;
+            case .SET; x.*  = y(i).*;
+            case .ADD; x.* += y(i).*;
+            case .MUL; x.* *= y(i).*;
+            case .MOD; x.* %= y(i).*;
+            case .JGZ; if x.* > 0 p.ip += y(i).* - 1;
             case .SND; array_add(*p.snd, x.*);
             case .RCV;
             if p.rcv_i >= p.rcv.*.count return false;
