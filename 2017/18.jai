@@ -10,15 +10,26 @@ day18 :: (input: string) -> string, string
 
     Instruction :: struct {
         type : enum { SND; SET; ADD; MUL; MOD; RCV; JGZ; };
+        x_type, y_type : enum { REG; VAL; };
         x_reg : u8;
-        y_type : enum { REG; VAL; };
         y_reg : u8; // collapse to b: s64 when regs is an array
+        x_val : s64;
         y_val : s64;
     }
 
     instructions : [..]Instruction;
 
     while input {
+        set_x :: () #expand {
+            if input[0] >= "a" && input[0] <= "z" {
+                i.x_type = .REG;
+                i.x_reg = input[0];
+                advance(*input, 2);
+            } else {
+                i.x_type = .VAL;
+                i.x_val = read_s64(*input);
+            }
+        }
         set_y :: () #expand {
             if input[0] >= "a" && input[0] <= "z" {
                 i.y_type = .REG;
@@ -31,59 +42,47 @@ day18 :: (input: string) -> string, string
         }
         i := array_add(*instructions);
         if read_word(*input) == {
-            case "snd"; i.type = .SND; i.x_reg = input[0]; advance(*input, 2);
-            case "rcv"; i.type = .RCV; i.x_reg = input[0]; advance(*input, 2);
-            case "set"; i.type = .SET; i.x_reg = input[0]; advance(*input, 2); set_y();
-            case "add"; i.type = .ADD; i.x_reg = input[0]; advance(*input, 2); set_y();
-            case "mul"; i.type = .MUL; i.x_reg = input[0]; advance(*input, 2); set_y();
-            case "mod"; i.type = .MOD; i.x_reg = input[0]; advance(*input, 2); set_y();
-            case "jgz"; i.type = .JGZ; i.x_reg = input[0]; advance(*input, 2); set_y();
+            case "snd"; i.type = .SND; set_x();
+            case "rcv"; i.type = .RCV; set_x();
+            case "set"; i.type = .SET; set_x(); set_y();
+            case "add"; i.type = .ADD; set_x(); set_y();
+            case "mul"; i.type = .MUL; set_x(); set_y();
+            case "mod"; i.type = .MOD; set_x(); set_y();
+            case "jgz"; i.type = .JGZ; set_x(); set_y();
         }
     }
 
     a, b : Program;
     a.rcv = *b.snd;
     b.rcv = *a.snd;
-    table_add(*a.regs, "1", 1);
-    table_add(*b.regs, "1", 1);
     table_add(*a.regs, "p", 0);
     table_add(*b.regs, "p", 1);
 
     run :: (p: *Program) -> bool #expand {
+        x :: (using i: Instruction) -> *s64 #expand {
+            return ifx x_type == .VAL then *x_val else find_or_add(*p.regs, x_reg);
+        }
         y :: (using i: Instruction) -> *s64 #expand {
             return ifx y_type == .VAL then *y_val else find_or_add(*p.regs, y_reg);
         }
 
         i := instructions[p.ip];
-        x := find_or_add(*p.regs, i.x_reg);
 
         if i.type == {
-            case .SET; x.*  = y(i).*;
-            case .ADD; x.* += y(i).*;
-            case .MUL; x.* *= y(i).*;
-            case .MOD; x.* %= y(i).*;
-            case .JGZ; if x.* > 0 p.ip += y(i).* - 1;
-            case .SND; array_add(*p.snd, x.*);
+            case .SET; x(i).*  = y(i).*;
+            case .ADD; x(i).* += y(i).*;
+            case .MUL; x(i).* *= y(i).*;
+            case .MOD; x(i).* %= y(i).*;
+            case .JGZ; if x(i).* > 0 p.ip += y(i).* - 1;
+            case .SND; array_add(*p.snd, x(i).*);
             case .RCV;
             if p.rcv_i >= p.rcv.*.count return false;
-            x.* = p.rcv.*[p.rcv_i];
+            x(i).* = p.rcv.*[p.rcv_i];
             p.rcv_i += 1;
         }
 
         p.ip += 1;
         return true;
-    }
-
-    print_program :: (p: Program) {
-        print("ip: %\n", p.ip);
-        for p.regs {
-            reg : [1]u8;
-            reg[0] = it_index;
-            print("r%: %\n", reg.(string), it);
-        }
-        print("rci: %\n", p.rcv_i);
-        print("sni: %\n", p.snd);
-        print("snc: %\n\n", p.snd.count);
     }
 
     while run(*a) || run(*b) {}
