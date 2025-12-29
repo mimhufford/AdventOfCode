@@ -2,7 +2,7 @@ day18 :: (input: string) -> string, string
 {
     Program :: struct {
         ip := 0;
-        regs : Table(u8, s64); // change to [26]s64
+        regs : [26]s64;
         snd : [..]s64;
         rcv : *[..]s64;
         rcv_i := 0;
@@ -11,10 +11,7 @@ day18 :: (input: string) -> string, string
     Instruction :: struct {
         type : enum { SND; SET; ADD; MUL; MOD; RCV; JGZ; };
         x_type, y_type : enum { REG; VAL; };
-        x_reg : u8;
-        y_reg : u8; // collapse to b: s64 when regs is an array
-        x_val : s64;
-        y_val : s64;
+        x, y: s64;
     }
 
     instructions : [..]Instruction;
@@ -23,21 +20,21 @@ day18 :: (input: string) -> string, string
         set_x :: () #expand {
             if input[0] >= "a" && input[0] <= "z" {
                 i.x_type = .REG;
-                i.x_reg = input[0];
+                i.x = input[0] - "a";
                 advance(*input, 2);
             } else {
                 i.x_type = .VAL;
-                i.x_val = read_s64(*input);
+                i.x = read_s64(*input);
             }
         }
         set_y :: () #expand {
             if input[0] >= "a" && input[0] <= "z" {
                 i.y_type = .REG;
-                i.y_reg = input[0];
+                i.y = input[0] - "a";
                 advance(*input, 2);
             } else {
                 i.y_type = .VAL;
-                i.y_val = read_s64(*input);
+                i.y = read_s64(*input);
             }
         }
         i := array_add(*instructions);
@@ -55,15 +52,15 @@ day18 :: (input: string) -> string, string
     a, b : Program;
     a.rcv = *b.snd;
     b.rcv = *a.snd;
-    table_add(*a.regs, "p", 0);
-    table_add(*b.regs, "p", 1);
+    a.regs[15] = 0;
+    b.regs[15] = 1;
 
     run :: (p: *Program) -> bool #expand {
         x :: (using i: Instruction) -> *s64 #expand {
-            return ifx x_type == .VAL then *x_val else find_or_add(*p.regs, x_reg);
+            return ifx x_type == .VAL then *x else *p.regs[x];
         }
         y :: (using i: Instruction) -> *s64 #expand {
-            return ifx y_type == .VAL then *y_val else find_or_add(*p.regs, y_reg);
+            return ifx y_type == .VAL then *y else *p.regs[y];
         }
 
         i := instructions[p.ip];
