@@ -17,7 +17,7 @@ day21 :: (input: string) -> string, string
         return count;
     }
 
-    for line, iii: split(trim(input), "\n") {
+    for line: split(trim(input), "\n") {
         parts := split(line, " => ");
         in  := split(parts[0], "/");
         in_on_count := on_count(in);
