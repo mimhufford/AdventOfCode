@@ -35,7 +35,7 @@ day20 :: (input: string) -> string, string
     }
 
     seen : Table(u32, s64);
-    for 0..1000 {
+    for 1..40 {
         for * particles {
             it.hash = get_hash(it.pos);
             entry, new := find_or_add(*seen, it.hash);
