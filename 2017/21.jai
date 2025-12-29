@@ -19,7 +19,7 @@ day21 :: (input: string) -> string, string
 
     for line: split(trim(input), "\n") {
         parts := split(line, " => ");
-        in  := split(parts[0], "/");
+        in := split(parts[0], "/");
         in_on_count := on_count(in);
         out := split(parts[1], "/");
         out_on_count := on_count(out);
