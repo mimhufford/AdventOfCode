@@ -1,105 +1,95 @@
 day18 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
-
-    program := parse_program(input);
-    regs : Table(u8, s64);
-    ip := 0;
-
-    while true {
-        value :: (using i: Instruction) -> s64 #expand {
-            return ifx b_type == .VAL then b_val else find_or_add(*regs, b_reg).*;
-        }
-
-        using i := program[ip];
-        a := find_or_add(*regs, a_reg);
-
-        if type == {
-            case .SND; part1 = a.*;
-            case .SET; a.*  = value(i);
-            case .ADD; a.* += value(i);
-            case .MUL; a.* *= value(i);
-            case .MOD; a.* %= value(i);
-            case .RCV; if a.* != 0 break;
-            case .JGZ; if a.* > 0 ip += value(i) - 1;
-        }
-
-        ip += 1;
+    Program :: struct {
+        ip := 0;
+        regs : Table(u8, s64); // change to [26]s64
+        snd : [..]s64;
+        rcv : *[..]s64;
+        rcv_i := 0;
     }
 
-    ip_a, ip_b := 0;
-    regs_a, regs_b : Table(u8, s64);
-    queue_a, queue_b : [..]s64;
-    table_add(*regs_a, "p", 0);
-    table_add(*regs_b, "p", 1);
-
-    pump :: (ip: *s64, regs: *Table(u8, s64), snd: *[..]s64, rcv: *[..]s64) -> bool #expand {
-        value :: (using i: Instruction) -> s64 #expand {
-            return ifx b_type == .VAL then b_val else find_or_add(regs, b_reg).*;
-        }
-
-        using i := program[ip.*];
-        a := find_or_add(regs, a_reg);
-
-        if type == {
-            case .SET; a.*  = value(i);
-            case .ADD; a.* += value(i);
-            case .MUL; a.* *= value(i);
-            case .MOD; a.* %= value(i);
-            case .JGZ; if a.* > 0 ip.* += value(i) - 1;
-            case .SND; array_insert_at(snd, a.*, 0); find_or_add(regs, " ").* += 1;
-            case .RCV; if rcv.*.count == 0 return true; else a.* = pop(rcv);
-        }
-
-        ip.* += 1;
-        return false;
+    Instruction :: struct {
+        type : enum { SND; SET; ADD; MUL; MOD; RCV; JGZ; };
+        x_reg : u8;
+        y_type : enum { REG; VAL; };
+        y_reg : u8; // collapse to b: s64 when regs is an array
+        y_val : s64;
     }
 
-    while true {
-        a_waiting := pump(*ip_a, *regs_a, *queue_b, *queue_a);
-        b_waiting := pump(*ip_b, *regs_b, *queue_a, *queue_b);
-        print("% % - % % - % %\n", a_waiting, b_waiting, find_or_add(*regs_a, " ").*, find_or_add(*regs_b, " ").*, queue_a.count, queue_b.count);
-        if a_waiting && b_waiting break;
-    };
-
-    return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-Instruction :: struct {
-    type : enum { SND; SET; ADD; MUL; MOD; RCV; JGZ; };
-    a_reg : u8;
-    b_type : enum { REG; VAL; };
-    b_reg : u8;
-    b_val : s64;
-}
-
-parse_program :: (input: string) -> []Instruction {
-    program : [..]Instruction;
+    instructions : [..]Instruction;
 
     while input {
-        set_b :: () #expand {
+        set_y :: () #expand {
             if input[0] >= "a" && input[0] <= "z" {
-                i.b_type = .REG;
-                i.b_reg = input[0];
+                i.y_type = .REG;
+                i.y_reg = input[0];
                 advance(*input, 2);
             } else {
-                i.b_type = .VAL;
-                i.b_val = read_s64(*input);
+                i.y_type = .VAL;
+                i.y_val = read_s64(*input);
             }
         }
-        i := array_add(*program);
+        i := array_add(*instructions);
         if read_word(*input) == {
-            case "snd"; i.type = .SND; i.a_reg = input[0]; advance(*input, 2);
-            case "rcv"; i.type = .RCV; i.a_reg = input[0]; advance(*input, 2);
-            case "set"; i.type = .SET; i.a_reg = input[0]; advance(*input, 2); set_b();
-            case "add"; i.type = .ADD; i.a_reg = input[0]; advance(*input, 2); set_b();
-            case "mul"; i.type = .MUL; i.a_reg = input[0]; advance(*input, 2); set_b();
-            case "mod"; i.type = .MOD; i.a_reg = input[0]; advance(*input, 2); set_b();
-            case "jgz"; i.type = .JGZ; i.a_reg = input[0]; advance(*input, 2); set_b();
+            case "snd"; i.type = .SND; i.x_reg = input[0]; advance(*input, 2);
+            case "rcv"; i.type = .RCV; i.x_reg = input[0]; advance(*input, 2);
+            case "set"; i.type = .SET; i.x_reg = input[0]; advance(*input, 2); set_y();
+            case "add"; i.type = .ADD; i.x_reg = input[0]; advance(*input, 2); set_y();
+            case "mul"; i.type = .MUL; i.x_reg = input[0]; advance(*input, 2); set_y();
+            case "mod"; i.type = .MOD; i.x_reg = input[0]; advance(*input, 2); set_y();
+            case "jgz"; i.type = .JGZ; i.x_reg = input[0]; advance(*input, 2); set_y();
         }
     }
 
-    return program;
+    a, b : Program;
+    a.rcv = *b.snd;
+    b.rcv = *a.snd;
+    table_add(*a.regs, "1", 1);
+    table_add(*b.regs, "1", 1);
+    table_add(*a.regs, "p", 0);
+    table_add(*b.regs, "p", 1);
+
+    run :: (p: *Program) -> bool #expand {
+        value :: (using i: Instruction) -> s64 #expand {
+            return ifx y_type == .VAL then y_val else find_or_add(*p.regs, y_reg).*;
+        }
+
+        i := instructions[p.ip];
+        x := find_or_add(*p.regs, i.x_reg);
+
+        if i.type == {
+            case .SET; x.*  = value(i);
+            case .ADD; x.* += value(i);
+            case .MUL; x.* *= value(i);
+            case .MOD; x.* %= value(i);
+            case .JGZ; if x.* > 0 p.ip += value(i) - 1;
+            case .SND; array_add(*p.snd, x.*);
+            case .RCV;
+            if p.rcv_i >= p.rcv.*.count return false;
+            x.* = p.rcv.*[p.rcv_i];
+            p.rcv_i += 1;
+        }
+
+        p.ip += 1;
+        return true;
+    }
+
+    print_program :: (p: Program) {
+        print("ip: %\n", p.ip);
+        for p.regs {
+            reg : [1]u8;
+            reg[0] = it_index;
+            print("r%: %\n", reg.(string), it);
+        }
+        print("rci: %\n", p.rcv_i);
+        print("sni: %\n", p.snd);
+        print("snc: %\n\n", p.snd.count);
+    }
+
+    while run(*a) || run(*b) {}
+
+    part1 := a.snd[126];
+    part2 := b.snd.count;
+
+    return tprint("%", part1), tprint("%", part2);
 }
