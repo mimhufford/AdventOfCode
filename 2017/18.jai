@@ -46,22 +46,18 @@ day18 :: (input: string) -> string, string
     b.regs[15] = 1;
 
     run :: (p: *Program) -> bool #expand {
-        x :: (using i: Instruction) -> *s64 #expand { return ifx x_type == .VAL then *x else *p.regs[x]; }
-        y :: (using i: Instruction) -> *s64 #expand { return ifx y_type == .VAL then *y else *p.regs[y]; }
-
         i := instructions[p.ip];
+        x := ifx i.x_type == .VAL then *i.x else *p.regs[i.x];
+        y := ifx i.y_type == .VAL then *i.y else *p.regs[i.y];
 
         if i.type == {
-            case .SET; x(i).*  = y(i).*;
-            case .ADD; x(i).* += y(i).*;
-            case .MUL; x(i).* *= y(i).*;
-            case .MOD; x(i).* %= y(i).*;
-            case .JGZ; if x(i).* > 0 p.ip += y(i).* - 1;
-            case .SND; array_add(*p.snd, x(i).*);
-            case .RCV;
-            if p.rcv_i >= p.rcv.*.count return false;
-            x(i).* = p.rcv.*[p.rcv_i];
-            p.rcv_i += 1;
+            case .SET; x.*  = y.*;
+            case .ADD; x.* += y.*;
+            case .MUL; x.* *= y.*;
+            case .MOD; x.* %= y.*;
+            case .JGZ; if x.* > 0 p.ip += y.* - 1;
+            case .SND; array_add(*p.snd, x.*);
+            case .RCV; if p.rcv_i >= p.rcv.*.count return false; x.* = p.rcv.*[p.rcv_i]; p.rcv_i += 1;
         }
 
         p.ip += 1;
