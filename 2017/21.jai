@@ -83,6 +83,5 @@ day21 :: (input: string) -> string, string
         curr, next = next, curr;
     }
 
-
     return tprint("%", part1), tprint("%", part2);
 }
