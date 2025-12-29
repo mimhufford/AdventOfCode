@@ -53,8 +53,8 @@ day21 :: (input: string) -> string, string
                     array_add(entry, get_hash(string.[slice(out[2], 0, 2), slice(out[3], 0, 2)]));
                     array_add(entry, get_hash(string.[slice(out[2], 2, 2), slice(out[3], 2, 2)]));
                 }
-
             }
+
             if in[0].count == 2 {
                 in[0][0], in[0][1] = in[0][1], in[0][0]; 
                 in[1][0], in[1][1] = in[1][1], in[1][0];
