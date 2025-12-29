@@ -52,7 +52,7 @@ day18 :: (input: string) -> string, string
         i := instructions[p.ip];
 
         if i.type == {
-            case .SET; t(i).*  = y(i).*;
+            case .SET; x(i).*  = y(i).*;
             case .ADD; x(i).* += y(i).*;
             case .MUL; x(i).* *= y(i).*;
             case .MOD; x(i).* %= y(i).*;
