@@ -78,7 +78,7 @@ day21 :: (input: string) -> string, string
             entry.* = 0;
         }
 
-        if it == 6  for mult, hash: next part1 += mult * table_find_pointer(*counts, hash).*;
+        if it == 5  for mult, hash: next part1 += mult * table_find_pointer(*counts, hash).*;
         if it == 18 for mult, hash: next part2 += mult * table_find_pointer(*counts, hash).*;
         curr, next = next, curr;
     }
