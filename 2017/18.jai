@@ -27,6 +27,41 @@ day18 :: (input: string) -> string, string
         ip += 1;
     }
 
+    ip_a, ip_b := 0;
+    regs_a, regs_b : Table(u8, s64);
+    queue_a, queue_b : [..]s64;
+    table_add(*regs_a, "p", 0);
+    table_add(*regs_b, "p", 1);
+
+    pump :: (ip: *s64, regs: *Table(u8, s64), snd: *[..]s64, rcv: *[..]s64) -> bool #expand {
+        value :: (using i: Instruction) -> s64 #expand {
+            return ifx b_type == .VAL then b_val else find_or_add(regs, b_reg).*;
+        }
+
+        using i := program[ip.*];
+        a := find_or_add(regs, a_reg);
+
+        if type == {
+            case .SET; a.*  = value(i);
+            case .ADD; a.* += value(i);
+            case .MUL; a.* *= value(i);
+            case .MOD; a.* %= value(i);
+            case .JGZ; if a.* > 0 ip.* += value(i) - 1;
+            case .SND; array_insert_at(snd, a.*, 0); find_or_add(regs, " ").* += 1;
+            case .RCV; if rcv.*.count == 0 return true; else a.* = pop(rcv);
+        }
+
+        ip.* += 1;
+        return false;
+    }
+
+    while true {
+        a_waiting := pump(*ip_a, *regs_a, *queue_b, *queue_a);
+        b_waiting := pump(*ip_b, *regs_b, *queue_a, *queue_b);
+        print("% % - % % - % %\n", a_waiting, b_waiting, find_or_add(*regs_a, " ").*, find_or_add(*regs_b, " ").*, queue_a.count, queue_b.count);
+        if a_waiting && b_waiting break;
+    };
+
     return tprint("%", part1), tprint("%", part2);
 }
 
