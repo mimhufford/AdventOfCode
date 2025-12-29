@@ -17,35 +17,25 @@ day18 :: (input: string) -> string, string
     instructions : [..]Instruction;
 
     while input {
-        set_x :: () #expand {
+        set :: (type: *type_of(Instruction.x_type), val: *s64) #expand {
             if input[0] >= "a" && input[0] <= "z" {
-                i.x_type = .REG;
-                i.x = input[0] - "a";
+                type.* = .REG;
+                val.* = input[0] - "a";
                 advance(*input, 2);
             } else {
-                i.x_type = .VAL;
-                i.x = read_s64(*input);
-            }
-        }
-        set_y :: () #expand {
-            if input[0] >= "a" && input[0] <= "z" {
-                i.y_type = .REG;
-                i.y = input[0] - "a";
-                advance(*input, 2);
-            } else {
-                i.y_type = .VAL;
-                i.y = read_s64(*input);
+                type.* = .VAL;
+                val.* = read_s64(*input);
             }
         }
         i := array_add(*instructions);
         if read_word(*input) == {
-            case "snd"; i.type = .SND; set_x();
-            case "rcv"; i.type = .RCV; set_x();
-            case "set"; i.type = .SET; set_x(); set_y();
-            case "add"; i.type = .ADD; set_x(); set_y();
-            case "mul"; i.type = .MUL; set_x(); set_y();
-            case "mod"; i.type = .MOD; set_x(); set_y();
-            case "jgz"; i.type = .JGZ; set_x(); set_y();
+            case "snd"; i.type = .SND; set(*i.x_type, *i.x);
+            case "rcv"; i.type = .RCV; set(*i.x_type, *i.x);
+            case "set"; i.type = .SET; set(*i.x_type, *i.x); set(*i.y_type, *i.y);
+            case "add"; i.type = .ADD; set(*i.x_type, *i.x); set(*i.y_type, *i.y);
+            case "mul"; i.type = .MUL; set(*i.x_type, *i.x); set(*i.y_type, *i.y);
+            case "mod"; i.type = .MOD; set(*i.x_type, *i.x); set(*i.y_type, *i.y);
+            case "jgz"; i.type = .JGZ; set(*i.x_type, *i.x); set(*i.y_type, *i.y);
         }
     }
 
@@ -56,17 +46,13 @@ day18 :: (input: string) -> string, string
     b.regs[15] = 1;
 
     run :: (p: *Program) -> bool #expand {
-        x :: (using i: Instruction) -> *s64 #expand {
-            return ifx x_type == .VAL then *x else *p.regs[x];
-        }
-        y :: (using i: Instruction) -> *s64 #expand {
-            return ifx y_type == .VAL then *y else *p.regs[y];
-        }
+        x :: (using i: Instruction) -> *s64 #expand { return ifx x_type == .VAL then *x else *p.regs[x]; }
+        y :: (using i: Instruction) -> *s64 #expand { return ifx y_type == .VAL then *y else *p.regs[y]; }
 
         i := instructions[p.ip];
 
         if i.type == {
-            case .SET; x(i).*  = y(i).*;
+            case .SET; t(i).*  = y(i).*;
             case .ADD; x(i).* += y(i).*;
             case .MUL; x(i).* *= y(i).*;
             case .MOD; x(i).* %= y(i).*;
