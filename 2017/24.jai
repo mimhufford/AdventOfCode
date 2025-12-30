@@ -13,15 +13,7 @@ day24 :: (input: string) -> string, string
 
     routes : [..]Route;
     array_reserve(*routes, 750_000);
-
-    for components {
-        if it.a != 0 && it.b != 0 continue;
-        r := array_add(*routes);
-        r.used = 1 << it_index;
-        r.next = ifx it.a == 0 then it.b else it.a;
-        r.strength = it.strength;
-        r.length = it.length;
-    }
+    array_add(*routes);
 
     longest := 0;
     index := 0;
