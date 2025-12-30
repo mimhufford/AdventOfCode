@@ -4,7 +4,45 @@ day24 :: (input: string) -> string, string
     
     components := get_optimised_components(input);
 
-    for components print("%\n", it);
+    Route :: struct {
+        used: s64;
+        next: s32;
+        strength: s32;
+        length: s32;
+    }
+
+    routes : [..]Route;
+    array_reserve(*routes, 750_000);
+
+    for components {
+        if it.a != 0 && it.b != 0 continue;
+        r := array_add(*routes);
+        r.used = 1 << it_index;
+        r.next = ifx it.a == 0 then it.b else it.a;
+        r.strength = it.strength;
+        r.length = it.length;
+    }
+
+    longest := 0;
+    index := 0;
+    while index < routes.count {
+        r := routes[index];
+        for c, ci: components {
+            if (1 << ci) & r.used continue;
+            if c.a != r.next && c.b != r.next continue;
+            n := array_add(*routes);
+            n.used = r.used | (1 << ci);
+            n.next = ifx c.a == r.next then c.b else c.a;
+            n.strength = r.strength + c.strength;
+            n.length = r.length + c.length;
+            part1 = max(part1, n.strength);
+            if n.length >= longest {
+                longest = n.length;
+                part2 = max(part2, n.strength);
+            }
+        }
+        index += 1;
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
