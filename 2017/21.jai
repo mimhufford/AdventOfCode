@@ -65,29 +65,29 @@ day21 :: (input: string) -> string, string
         }
     }
 
-    curr: [..]u32;
-    next: [..]u32;
-    step_counts : [..]s64;
-    array_add(*curr, get_hash(split(".#./..#/###", "/")));
-    array_add(*step_counts, 5);
+    curr, next: Table(u32, s64); // pattern_hash to how many we have
+    results : [..]s64;
+    table_add(*curr, get_hash(split(".#./..#/###", "/")), 1);
+    array_add(*results, 5);
 
     for 1..6 {
         step_1_count, step_2_count, step_3_count := 0;
-        for curr {
+        for * multiplier, hash: curr {
+            if multiplier.* == 0 continue;
+
             // step 1: go from 3x3 to 4x4
-            two_by_twos := table_find_pointer(*transformations, it).*;
-            assert(two_by_twos.count == 4);
-            for two_by_twos step_1_count += table_find_pointer(*counts, it).*;
+            two_by_twos := table_find_pointer(*transformations, hash).*;
+            for two_by_twos {
+                step_1_count += multiplier.* * table_find_pointer(*counts, it).*;
+            }
 
             // step 2: go from 4x4 (4 2x2s) to 6x6 (4 3x3s)
             three_by_threes : [4]u32;
             for two_by_twos {
-                three_by_three := table_find_pointer(*transformations, it).*;
-                assert(three_by_three.count == 1);
-                three_by_threes[it_index] = three_by_three[0];
+                three_by_threes[it_index] = table_find_pointer(*transformations, it).*[0];
             }
             for three_by_threes {
-                step_2_count += table_find_pointer(*counts, it).*;
+                step_2_count += multiplier.* * table_find_pointer(*counts, it).*;
             }
 
             // step 3: convert 6x6 (4 3x3s) to 6x6 (9 2x2), then go to 9x9 (9 3x3s)
@@ -107,17 +107,18 @@ day21 :: (input: string) -> string, string
             px9x22[8] = string.[slice(p33[3][1], 1, 2), slice(p33[3][2], 1, 2)];
             for px9x22 {
                 h33 := table_find_pointer(*transformations, get_hash(it)).*[0];
-                step_3_count += table_find_pointer(*counts, h33).*;
-                array_add(*next, h33);
+                step_3_count += multiplier.* * table_find_pointer(*counts, h33).*;
+                find_or_add(*next, h33).* += multiplier.*;
             }
+
+            multiplier.* = 0;
         }
 
-        array_add(*step_counts, step_1_count);
-        array_add(*step_counts, step_2_count);
-        array_add(*step_counts, step_3_count);
-        array_reset_keeping_memory(*curr);
+        array_add(*results, step_1_count);
+        array_add(*results, step_2_count);
+        array_add(*results, step_3_count);
         curr, next = next, curr;
     }
 
-    return tprint("%", step_counts[5]), tprint("%", step_counts[18]);
+    return tprint("%", results[5]), tprint("%", results[18]);
 }
