@@ -106,9 +106,7 @@ day21 :: (input: string) -> string, string
             multiplier.* = 0;
         }
 
-        array_add(*results, step_1_count);
-        array_add(*results, step_2_count);
-        array_add(*results, step_3_count);
+        array_add(*results, step_1_count, step_2_count, step_3_count);
         curr, next = next, curr;
     }
 
