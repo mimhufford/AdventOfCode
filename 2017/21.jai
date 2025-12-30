@@ -95,42 +95,21 @@ day21 :: (input: string) -> string, string
             for three_by_threes {
                 p33[it_index] = table_find_pointer(*patterns, it).*;
             }
-            tl := string.[slice(p33[0][0], 0, 2), slice(p33[0][1], 0, 2)];
-            tm := string.[u8.[p33[0][0][2],p33[1][0][0]].(string), u8.[p33[0][1][2],p33[1][1][0]].(string)];
-            tr := string.[slice(p33[1][0], 1, 2), slice(p33[1][1], 1, 2)];
-            ml := string.[slice(p33[0][2], 0, 2), slice(p33[2][0], 0, 2)];
-            mm := string.[u8.[p33[0][2][2],p33[1][2][0]].(string), u8.[p33[2][0][2],p33[3][0][0]].(string)];
-            mr := string.[slice(p33[1][2], 1, 2), slice(p33[3][0], 1, 2)];
-            bl := string.[slice(p33[2][1], 0, 2), slice(p33[2][2], 0, 2)];
-            bm := string.[u8.[p33[2][1][2],p33[3][1][0]].(string), u8.[p33[2][2][2],p33[3][2][0]].(string)];
-            br := string.[slice(p33[3][1], 1, 2), slice(p33[3][2], 1, 2)];
-            tl3 := table_find_pointer(*transformations, get_hash(tl)).*[0];
-            tm3 := table_find_pointer(*transformations, get_hash(tm)).*[0];
-            tr3 := table_find_pointer(*transformations, get_hash(tr)).*[0];
-            ml3 := table_find_pointer(*transformations, get_hash(ml)).*[0];
-            mm3 := table_find_pointer(*transformations, get_hash(mm)).*[0];
-            mr3 := table_find_pointer(*transformations, get_hash(mr)).*[0];
-            bl3 := table_find_pointer(*transformations, get_hash(bl)).*[0];
-            bm3 := table_find_pointer(*transformations, get_hash(bm)).*[0];
-            br3 := table_find_pointer(*transformations, get_hash(br)).*[0];
-            step_3_count += table_find_pointer(*counts, tl3).*;
-            step_3_count += table_find_pointer(*counts, tm3).*;
-            step_3_count += table_find_pointer(*counts, tr3).*;
-            step_3_count += table_find_pointer(*counts, ml3).*;
-            step_3_count += table_find_pointer(*counts, mm3).*;
-            step_3_count += table_find_pointer(*counts, mr3).*;
-            step_3_count += table_find_pointer(*counts, bl3).*;
-            step_3_count += table_find_pointer(*counts, bm3).*;
-            step_3_count += table_find_pointer(*counts, br3).*;
-            array_add(*next, tl3);
-            array_add(*next, tm3);
-            array_add(*next, tr3);
-            array_add(*next, ml3);
-            array_add(*next, mm3);
-            array_add(*next, mr3);
-            array_add(*next, bl3);
-            array_add(*next, bm3);
-            array_add(*next, br3);
+            px9x22 : [9][]string;
+            px9x22[0] = string.[slice(p33[0][0], 0, 2), slice(p33[0][1], 0, 2)];
+            px9x22[1] = string.[u8.[p33[0][0][2],p33[1][0][0]].(string), u8.[p33[0][1][2],p33[1][1][0]].(string)];
+            px9x22[2] = string.[slice(p33[1][0], 1, 2), slice(p33[1][1], 1, 2)];
+            px9x22[3] = string.[slice(p33[0][2], 0, 2), slice(p33[2][0], 0, 2)];
+            px9x22[4] = string.[u8.[p33[0][2][2],p33[1][2][0]].(string), u8.[p33[2][0][2],p33[3][0][0]].(string)];
+            px9x22[5] = string.[slice(p33[1][2], 1, 2), slice(p33[3][0], 1, 2)];
+            px9x22[6] = string.[slice(p33[2][1], 0, 2), slice(p33[2][2], 0, 2)];
+            px9x22[7] = string.[u8.[p33[2][1][2],p33[3][1][0]].(string), u8.[p33[2][2][2],p33[3][2][0]].(string)];
+            px9x22[8] = string.[slice(p33[3][1], 1, 2), slice(p33[3][2], 1, 2)];
+            for px9x22 {
+                h33 := table_find_pointer(*transformations, get_hash(it)).*[0];
+                step_3_count += table_find_pointer(*counts, h33).*;
+                array_add(*next, h33);
+            }
         }
 
         array_add(*step_counts, step_1_count);
