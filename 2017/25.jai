@@ -1,6 +1,6 @@
 day25 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1 := 0;
 
     advance(*input, 15);
     state := input[0] - "A";
