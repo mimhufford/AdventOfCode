@@ -75,36 +75,29 @@ day21 :: (input: string) -> string, string
         for * multiplier, hash: curr {
             if multiplier.* == 0 continue;
 
-            // step 1: go from 3x3 to 4x4
-            two_by_twos := table_find_pointer(*transformations, hash).*;
-            for two_by_twos {
+            hx4x33 : [4]u32;
+            hx4x22 := table_find_pointer(*transformations, hash).*;
+            for hx4x22 {
                 step_1_count += multiplier.* * table_find_pointer(*counts, it).*;
+                hx4x33[it_index] = table_find_pointer(*transformations, it).*[0];
             }
 
-            // step 2: go from 4x4 (4 2x2s) to 6x6 (4 3x3s)
-            three_by_threes : [4]u32;
-            for two_by_twos {
-                three_by_threes[it_index] = table_find_pointer(*transformations, it).*[0];
-            }
-            for three_by_threes {
+            px4x33 : [4][]string;
+            for hx4x33 {
                 step_2_count += multiplier.* * table_find_pointer(*counts, it).*;
+                px4x33[it_index] = table_find_pointer(*patterns, it).*;
             }
 
-            // step 3: convert 6x6 (4 3x3s) to 6x6 (9 2x2), then go to 9x9 (9 3x3s)
-            p33 : [4][]string;
-            for three_by_threes {
-                p33[it_index] = table_find_pointer(*patterns, it).*;
-            }
             px9x22 : [9][]string;
-            px9x22[0] = string.[slice(p33[0][0], 0, 2), slice(p33[0][1], 0, 2)];
-            px9x22[1] = string.[u8.[p33[0][0][2],p33[1][0][0]].(string), u8.[p33[0][1][2],p33[1][1][0]].(string)];
-            px9x22[2] = string.[slice(p33[1][0], 1, 2), slice(p33[1][1], 1, 2)];
-            px9x22[3] = string.[slice(p33[0][2], 0, 2), slice(p33[2][0], 0, 2)];
-            px9x22[4] = string.[u8.[p33[0][2][2],p33[1][2][0]].(string), u8.[p33[2][0][2],p33[3][0][0]].(string)];
-            px9x22[5] = string.[slice(p33[1][2], 1, 2), slice(p33[3][0], 1, 2)];
-            px9x22[6] = string.[slice(p33[2][1], 0, 2), slice(p33[2][2], 0, 2)];
-            px9x22[7] = string.[u8.[p33[2][1][2],p33[3][1][0]].(string), u8.[p33[2][2][2],p33[3][2][0]].(string)];
-            px9x22[8] = string.[slice(p33[3][1], 1, 2), slice(p33[3][2], 1, 2)];
+            px9x22[0] = string.[slice(px4x33[0][0], 0, 2), slice(px4x33[0][1], 0, 2)];
+            px9x22[1] = string.[u8.[px4x33[0][0][2],px4x33[1][0][0]].(string), u8.[px4x33[0][1][2],px4x33[1][1][0]].(string)];
+            px9x22[2] = string.[slice(px4x33[1][0], 1, 2), slice(px4x33[1][1], 1, 2)];
+            px9x22[3] = string.[slice(px4x33[0][2], 0, 2), slice(px4x33[2][0], 0, 2)];
+            px9x22[4] = string.[u8.[px4x33[0][2][2],px4x33[1][2][0]].(string), u8.[px4x33[2][0][2],px4x33[3][0][0]].(string)];
+            px9x22[5] = string.[slice(px4x33[1][2], 1, 2), slice(px4x33[3][0], 1, 2)];
+            px9x22[6] = string.[slice(px4x33[2][1], 0, 2), slice(px4x33[2][2], 0, 2)];
+            px9x22[7] = string.[u8.[px4x33[2][1][2],px4x33[3][1][0]].(string), u8.[px4x33[2][2][2],px4x33[3][2][0]].(string)];
+            px9x22[8] = string.[slice(px4x33[3][1], 1, 2), slice(px4x33[3][2], 1, 2)];
             for px9x22 {
                 h33 := table_find_pointer(*transformations, get_hash(it)).*[0];
                 step_3_count += multiplier.* * table_find_pointer(*counts, h33).*;
