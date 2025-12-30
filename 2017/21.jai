@@ -76,8 +76,7 @@ day21 :: (input: string) -> string, string
             if multiplier.* == 0 continue;
 
             hx4x33 : [4]u32;
-            hx4x22 := table_find_pointer(*transformations, hash).*;
-            for hx4x22 {
+            for table_find_pointer(*transformations, hash).* {
                 step_1_count += multiplier.* * table_find_pointer(*counts, it).*;
                 hx4x33[it_index] = table_find_pointer(*transformations, it).*[0];
             }
