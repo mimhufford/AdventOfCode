@@ -39,19 +39,20 @@ day25 :: (input: string) -> string, string
     tape : [10000]u8;
 
     for 1..steps {
+        part1 -= tape[index];
         using states[state];
         if tape[index] {
             tape[index] = w1;
+            part1 += tape[index];
             index += d1;
             state = n1;
         } else {
             tape[index] = w0;
+            part1 += tape[index];
             index += d0;
             state = n0;
         }
     }
-
-    for tape part1 += it;
 
     return tprint("%", part1), ":)";
 }
