@@ -15,7 +15,7 @@ day5 :: (input: string) -> string, string
         return polymer.count, polymer;
     }
 
-    part1, reduced := react(input);
+    part1, reduced := react(trim(input));
     part2 := S64_MAX;
     for 97..122 part2 = min(part2, react(reduced.(string), it.(u8)));
 
