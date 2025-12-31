@@ -20,12 +20,9 @@ day7 :: (input: string) -> string, string
         break;
     }
 
-    part2 := 0;
-    done : [..]u8; // could be a bitset
+    done := 0;
     workers : [5] struct { id : u8 = 255; finish: s64; };
     for second: 0..S64_MAX {
-        if done.count == 26 { for workers part2 = max(part2, it.finish); break; }
-        
         for w: workers {
             if w.finish != second continue;
             for * steps2 array_unordered_remove_by_value(it, w.id - "A");
@@ -34,15 +31,19 @@ day7 :: (input: string) -> string, string
         for * w: workers {
             if w.finish > second continue;
             for dependants, id: steps2 {
-                if array_find(done, id.(u8) + "A") continue;
+                if done & (1 << id) continue;
                 if dependants.count > 0 continue;
-                array_add(*done, id.(u8) + "A");
                 w.id = id.(u8) + "A";
                 w.finish = id + 1 + second + 60;
+                done |= 1 << id;
+                if done == 1<<26-1 break second;
                 break;
             }
         }
     }
+
+    part2 := 0;
+    for workers part2 = max(part2, it.finish);
 
     return part1.(string), tprint("%", part2);
 }
