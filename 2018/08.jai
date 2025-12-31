@@ -1,29 +1,18 @@
 day8 :: (input: string) -> string, string
 {
-    Node :: struct {
-        children: [..]*Node;
-        metadata: [..]s64;
-        sum, value: s64;
-    };
-
-    parse_node :: (nodes: *[..]Node, input: *string) -> *Node {
-        node := array_add(nodes);
-        children := read_s64(input);
-        metadata := read_s64(input);
-        for 1..children array_add(*node.children, parse_node(nodes, input));
-        for 1..metadata array_add(*node.metadata, read_s64(input));
-        for node.metadata node.sum += it;
-        for node.children node.sum += it.sum;
-        if !children { node.value = node.sum; return node; }
-        for node.metadata if it <= node.children.count
-            node.value += node.children[it-1].value;
-        return node;
+    parse_node :: (input: *string) -> s64, s64 {
+        sum, value := 0;
+        child_count := read_s64(input);
+        meta_count := read_s64(input);
+        metadata, child_values : [..]s64;
+        for 1..child_count { s, v := parse_node(input); array_add(*child_values, v); sum += s; }
+        for 1..meta_count { m := read_s64(input); sum += m; array_add(*metadata, m); }
+        if !child_count { value = sum; return sum, value; }
+        for metadata if it <= child_count value += child_values[it-1];
+        return sum, value;
     }
 
-    nodes : [..]Node;
-    array_reserve(*nodes, 5000);
-    root := parse_node(*nodes, *input);
-    part1, part2 := root.sum, root.value;
+    part1, part2 := parse_node(*input);
 
     return tprint("%", part1), tprint("%", part2);
 }
