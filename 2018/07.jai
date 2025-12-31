@@ -24,24 +24,15 @@ day7 :: (input: string) -> string, string
     done : [..]u8; // could be a bitset
     workers : [5] struct { id : u8 = 255; finish: s64; };
     for second: 0..S64_MAX {
-        part2 = second;
-
-        if done.count == 26 {
-            all_finished := true;
-            for workers if it.finish > second all_finished = false;
-            if all_finished break;
-        }
+        if done.count == 26 { for workers part2 = max(part2, it.finish); break; }
         
-        // remove id from all dependancy lists
         for w: workers {
             if w.finish != second continue;
             for * steps2 array_unordered_remove_by_value(it, w.id - "A");
         }
 
-        // look for new jobs
         for * w: workers {
             if w.finish > second continue;
-
             for dependants, id: steps2 {
                 if array_find(done, id.(u8) + "A") continue;
                 if dependants.count > 0 continue;
