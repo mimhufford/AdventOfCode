@@ -2,21 +2,14 @@ day5 :: (input: string) -> string, string
 {
     react :: (input: string, ignore: u8 = 0) -> s64, []u8 {
         polymer : [..]u8;
+        array_reserve(*polymer, input.count);
 
-        for input {
-            if it == ignore continue;
-            if it + 32 == ignore continue;
-            array_add(*polymer, it);
-        }
-
-        for < 0..polymer.count-2 {
-            a, b := polymer[it], polymer[it+1];
-            if a ^ b != 32 continue;
-
-            for i : it..polymer.count-3 {
-                polymer[i] = polymer[i+2];
-            }
-            polymer.count -= 2;
+        for curr: input {
+            if curr == ignore continue;
+            if curr + 32 == ignore continue;
+            if polymer.count == 0 { array_add(*polymer, curr); continue; }
+            if curr ^ peek(polymer) == 32 { pop(*polymer); continue; }
+            array_add(*polymer, curr);
         }
 
         return polymer.count, polymer;
