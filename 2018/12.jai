@@ -9,11 +9,9 @@ day12 :: (input: string) -> string, string
     rules : [..]Rule;
 
     while input {
-        r := array_add(*rules);
-        r.in = slice(input, 0, 5);
-        advance(*input, 9);
-        r.out = input[0];
-        advance(*input, 2);
+        in := slice(input, 0, 5); advance(*input, 9);
+        out := input[0];          advance(*input, 2);
+        if out == "#" array_add(*rules, {in, out});
     }
 
     step :: (state: string, rules: []Rule) -> string {
