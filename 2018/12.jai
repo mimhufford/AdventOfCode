@@ -35,5 +35,8 @@ day12 :: (input: string) -> string, string
     for 1..20 state = step(state, rules);
     for state if it == "#" part1 += it_index - 42;
 
+    for 21..200 state = step(state, rules);
+    for state if it == "#" part2 += it_index + 49999999398;
+
     return tprint("%", part1), tprint("%", part2);
 }
