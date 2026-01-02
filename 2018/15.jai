@@ -14,9 +14,10 @@ day15 :: (input: string) -> string, string
 
     for map print("%\n", it.(string));
 
-    V2 :: struct { x, y: s8; }
-    seen, targets : [..]V2;
-    queue : [..] struct { x, y: s8; steps: s16; };
+    id :: (x: s64, y: s64) -> s64 { return y * 32 + x; }
+    seen, targets : [32*32]u8;
+    BFS :: struct { x, y: s8; steps := S16_MAX; }
+    queue : [..]BFS;
 
     get_adjacent_enemy :: (u: *Unit) -> *Unit #expand {
         enemy: *Unit;
@@ -41,34 +42,50 @@ day15 :: (input: string) -> string, string
         // each unit takes a turn
         for * u: units {
             if u.h <= 0 continue;
-            array_reset_keeping_memory(*seen);
-            array_reset_keeping_memory(*queue);
-            array_reset_keeping_memory(*targets);
 
             // check if already next to an enemy
             enemy := get_adjacent_enemy(u);
 
             // if not next to an enemy try to move closer to an enemy
             if enemy == null {
+                array_reset_keeping_memory(*queue);
+                for * seen it.* = 0;
+                for * targets it.* = 0;
+
                 // find all open cells which are adjacent to an enemy
                 for * e: units {
                     if e.team == u.team continue;
                     if e.h <= 0 continue;
-                    if map[e.y-1][e.x] == "." array_add(*targets, {e.x, e.y-1});
-                    if map[e.y+1][e.x] == "." array_add(*targets, {e.x, e.y+1});
-                    if map[e.y][e.x-1] == "." array_add(*targets, {e.x-1, e.y});
-                    if map[e.y][e.x+1] == "." array_add(*targets, {e.x+1, e.y});
+                    if map[e.y-1][e.x] == "." targets[id(e.x, e.y-1)] = 1;
+                    if map[e.y+1][e.x] == "." targets[id(e.x, e.y+1)] = 1;
+                    if map[e.y][e.x-1] == "." targets[id(e.x-1, e.y)] = 1;
+                    if map[e.y][e.x+1] == "." targets[id(e.x+1, e.y)] = 1;
                 }
 
-                // bfs until we hit something from the target collection
+                // bfs to get closest open cell
+                chosen : BFS;
                 array_add(*queue, {u.x, u.y, 0});
                 for c: queue {
-                    if map[c.y][c.x] != "." continue;
-                    // check if it's in the target collection
-                    // keep track of min steps reading order just like with finding an enemy
-                    // add to seen collection
+                    if c.steps > chosen.steps continue;
+                    if c.steps && map[c.y][c.x] != "." continue;
                     // seen and targets needs to be a fast lookup, use a [1024]u8
+                    if seen[id(c.x, c.y)] continue c;
+                    seen[id(c.x, c.y)] = 1;
+                    array_add(*queue, {c.x + 1, c.y, c.steps + 1});
+                    array_add(*queue, {c.x - 1, c.y, c.steps + 1});
+                    array_add(*queue, {c.x, c.y + 1, c.steps + 1});
+                    array_add(*queue, {c.x, c.y - 1, c.steps + 1});
+                    // seen and targets needs to be a fast lookup, use a [1024]u8
+                    if !targets[id(c.x, c.y)] continue;
+                    if c.steps < chosen.steps { chosen = c; continue; }
+                    assert(chosen.steps == c.steps);
+                    if chosen.y < c.y { continue; }
+                    if chosen.y > c.y { chosen = c; continue; }
+                    if chosen.x > c.x { chosen = c; continue; }
                 }
+
+                print("% chose %\n", u.*, chosen);
+                // TODO: step towards chosen
             }
 
             // update enemy if we didn't already have one
@@ -77,8 +94,6 @@ day15 :: (input: string) -> string, string
             // if we're next to an enemy now, attack
             if enemy {
             }
-
-            break;
         }
 
         // remove any dead units
