@@ -35,6 +35,32 @@ day15 :: (input: string) -> string, string
         return enemy;
     }
 
+    get_best_target :: (x: s8, y: s8) -> BFS #expand {
+        array_reset_keeping_memory(*queue);
+        for * seen it.* = 0;
+
+        chosen : BFS;
+        array_add(*queue, {x, y, 0});
+        for c: queue {
+            if c.steps > chosen.steps continue;
+            if c.steps && map[c.y][c.x] != "." continue;
+            if seen[id(c.x, c.y)] continue c;
+            seen[id(c.x, c.y)] = 1;
+            array_add(*queue, {c.x + 1, c.y, c.steps + 1});
+            array_add(*queue, {c.x - 1, c.y, c.steps + 1});
+            array_add(*queue, {c.x, c.y + 1, c.steps + 1});
+            array_add(*queue, {c.x, c.y - 1, c.steps + 1});
+            if !targets[id(c.x, c.y)] continue;
+            if c.steps < chosen.steps { chosen = c; continue; }
+            assert(chosen.steps == c.steps);
+            if chosen.y < c.y { continue; }
+            if chosen.y > c.y { chosen = c; continue; }
+            if chosen.x > c.x { chosen = c; continue; }
+        }
+
+        return chosen;
+    }
+
     for 1..1 {
         // put into correct turn order
         quick_sort(units, (a, b) => ifx a.y == b.y then a.x - b.x else a.y - b.y);
@@ -48,11 +74,8 @@ day15 :: (input: string) -> string, string
 
             // if not next to an enemy try to move closer to an enemy
             if enemy == null {
-                array_reset_keeping_memory(*queue);
-                for * seen it.* = 0;
+                // mark all open cells which are adjacent to an enemy
                 for * targets it.* = 0;
-
-                // find all open cells which are adjacent to an enemy
                 for * e: units {
                     if e.team == u.team continue;
                     if e.h <= 0 continue;
@@ -63,28 +86,22 @@ day15 :: (input: string) -> string, string
                 }
 
                 // bfs to get closest open cell
-                chosen : BFS;
-                array_add(*queue, {u.x, u.y, 0});
-                for c: queue {
-                    if c.steps > chosen.steps continue;
-                    if c.steps && map[c.y][c.x] != "." continue;
-                    // seen and targets needs to be a fast lookup, use a [1024]u8
-                    if seen[id(c.x, c.y)] continue c;
-                    seen[id(c.x, c.y)] = 1;
-                    array_add(*queue, {c.x + 1, c.y, c.steps + 1});
-                    array_add(*queue, {c.x - 1, c.y, c.steps + 1});
-                    array_add(*queue, {c.x, c.y + 1, c.steps + 1});
-                    array_add(*queue, {c.x, c.y - 1, c.steps + 1});
-                    // seen and targets needs to be a fast lookup, use a [1024]u8
-                    if !targets[id(c.x, c.y)] continue;
-                    if c.steps < chosen.steps { chosen = c; continue; }
-                    assert(chosen.steps == c.steps);
-                    if chosen.y < c.y { continue; }
-                    if chosen.y > c.y { chosen = c; continue; }
-                    if chosen.x > c.x { chosen = c; continue; }
-                }
+                enemy_adj := get_best_target(u.x, u.y);
+                assert(enemy_adj.steps < S16_MAX);
+                print("% chose %", u.*, enemy_adj);
 
-                print("% chose %\n", u.*, chosen);
+                // mark all open cells which are adjacent to the unit
+                for * targets it.* = 0;
+                if map[u.y-1][u.x] == "." targets[id(u.x, u.y-1)] = 1;
+                if map[u.y+1][u.x] == "." targets[id(u.x, u.y+1)] = 1;
+                if map[u.y][u.x-1] == "." targets[id(u.x-1, u.y)] = 1;
+                if map[u.y][u.x+1] == "." targets[id(u.x+1, u.y)] = 1;
+
+                // bfs to get closest open cell
+                unit_adj := get_best_target(enemy_adj.x, enemy_adj.y);
+                assert(unit_adj.steps < S16_MAX);
+                print(" step %\n", unit_adj);
+
                 // TODO: step towards chosen
             }
 
