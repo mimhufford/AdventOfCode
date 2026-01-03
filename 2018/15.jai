@@ -62,7 +62,7 @@ day15 :: (input: string) -> string, string
         return chosen;
     }
 
-    for 1..1 {
+    for round: 1..S64_MAX {
         // put into correct turn order
         quick_sort(units, (a, b) => ifx a.y == b.y then a.x - b.x else a.y - b.y);
 
@@ -113,14 +113,25 @@ day15 :: (input: string) -> string, string
             enemy = ifx enemy then enemy else get_adjacent_enemy(u);
 
             // if we're next to an enemy now, attack
-            if enemy {
-            }
+            if !enemy continue;
+            enemy.h -= u.a;
         }
 
         // remove any dead units
-        for units if it.h <= 0 remove it;
+        for units if it.h <= 0 { map[it.y][it.x] = "."; remove it; }
 
         for map print("%\n", it.(string));
+
+        // check for done
+        gob, elf := false;
+        for units gob, elf |= it.team == "G", it.team == "E";
+        if gob && elf continue;
+
+        total_hp := 0;
+        for units total_hp += it.h;
+        part1 += round * total_hp;
+        print("% %\n", round, total_hp);
+        break;
     }
 
     return tprint("%", part1), tprint("%", part2);
