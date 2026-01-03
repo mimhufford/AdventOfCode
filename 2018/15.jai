@@ -1,14 +1,26 @@
 day15 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1 := do_battle(input);
+    part2 := 0;
+    for a: 4..S64_MAX {
+        part2 = do_battle(input, a);
+        if part2 break;
+    }
 
-    Unit :: struct { x, y: s8; team: u8; a, h := 3, 200; }
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+do_battle :: (input: string, a := 3) -> s64 {
+    Unit :: struct { x, y: s8; team: u8; a, h: s64; }
     units : [..]Unit;
     map : [32][32]u8;
 
     for y: 0..31 for x: 0..31 {
         c := input[y * 33 + x];
-        if c == "G" || c == "E" array_add(*units, {x = x.(s8), y = y.(s8), team = c});
+        if c == "G" array_add(*units, {x = x.(s8), y = y.(s8), team = c, a = 3, h = 200});
+        if c == "E" array_add(*units, {x = x.(s8), y = y.(s8), team = c, a = a, h = 200});
         map[y][x] = c;
     }
 
@@ -109,6 +121,7 @@ day15 :: (input: string) -> string, string
             // if we're next to an enemy now, attack
             if !enemy continue;
             enemy.h -= u.a;
+            if a > 3 && enemy.team == "E" && enemy.h <= 0 return 0;
             if enemy.h <= 0 map[enemy.y][enemy.x] = ".";
         }
 
@@ -118,13 +131,12 @@ day15 :: (input: string) -> string, string
         // check for done
         gob, elf := false;
         for units gob, elf |= it.team == "G", it.team == "E";
-            if !gob || !elf {   
+        if !gob || !elf {   
             total_hp := 0;
             for units total_hp += it.h;
-            part1 += round * total_hp;
-            break;
+            return round * total_hp;
         }
     }
 
-    return tprint("%", part1), tprint("%", part2);
+    return 0;
 }
