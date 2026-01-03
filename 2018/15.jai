@@ -46,11 +46,10 @@ day15 :: (input: string) -> string, string
             if c.steps && map[c.y][c.x] != "." continue;
             if seen[id(c.x, c.y)] continue c;
             seen[id(c.x, c.y)] = 1;
-            // TODO: check seen before add to avoid saturating the queue with duplicate crap
-            array_add(*queue, {c.x + 1, c.y, c.steps + 1});
-            array_add(*queue, {c.x - 1, c.y, c.steps + 1});
-            array_add(*queue, {c.x, c.y + 1, c.steps + 1});
-            array_add(*queue, {c.x, c.y - 1, c.steps + 1});
+            if !seen[id(c.x + 1, c.y)] array_add(*queue, {c.x + 1, c.y, c.steps + 1});
+            if !seen[id(c.x - 1, c.y)] array_add(*queue, {c.x - 1, c.y, c.steps + 1});
+            if !seen[id(c.x, c.y + 1)] array_add(*queue, {c.x, c.y + 1, c.steps + 1});
+            if !seen[id(c.x, c.y - 1)] array_add(*queue, {c.x, c.y - 1, c.steps + 1});
             if !targets[id(c.x, c.y)] continue;
             if c.steps < chosen.steps { chosen = c; continue; }
             assert(chosen.steps == c.steps);
@@ -121,6 +120,7 @@ day15 :: (input: string) -> string, string
         for units if it.h <= 0 { map[it.y][it.x] = "."; remove it; }
 
         for map print("%\n", it.(string));
+        for units print("%\n", it.h);
 
         // check for done
         gob, elf := false;
