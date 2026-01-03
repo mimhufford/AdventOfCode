@@ -114,10 +114,11 @@ day15 :: (input: string) -> string, string
             // if we're next to an enemy now, attack
             if !enemy continue;
             enemy.h -= u.a;
+            if enemy.h <= 0 map[enemy.y][enemy.x] = ".";
         }
 
         // remove any dead units
-        for units if it.h <= 0 { map[it.y][it.x] = "."; remove it; }
+        for units if it.h <= 0 remove it;
 
         for map print("%\n", it.(string));
         for units print("%\n", it.h);
