@@ -46,6 +46,7 @@ day15 :: (input: string) -> string, string
             if c.steps && map[c.y][c.x] != "." continue;
             if seen[id(c.x, c.y)] continue c;
             seen[id(c.x, c.y)] = 1;
+            // TODO: check seen before add to avoid saturating the queue with duplicate crap
             array_add(*queue, {c.x + 1, c.y, c.steps + 1});
             array_add(*queue, {c.x - 1, c.y, c.steps + 1});
             array_add(*queue, {c.x, c.y + 1, c.steps + 1});
@@ -87,7 +88,7 @@ day15 :: (input: string) -> string, string
 
                 // bfs to get closest open cell
                 enemy_adj := get_best_target(u.x, u.y);
-                assert(enemy_adj.steps < S16_MAX);
+                if enemy_adj.steps == S16_MAX continue;
                 print("% chose %", u.*, enemy_adj);
 
                 // mark all open cells which are adjacent to the unit
@@ -102,7 +103,10 @@ day15 :: (input: string) -> string, string
                 assert(unit_adj.steps < S16_MAX);
                 print(" step %\n", unit_adj);
 
-                // TODO: step towards chosen
+                // step towards chosen
+                map[u.y][u.x] = ".";
+                u.y, u.x = unit_adj.y, unit_adj.x;
+                map[u.y][u.x] = u.team;
             }
 
             // update enemy if we didn't already have one
@@ -115,6 +119,8 @@ day15 :: (input: string) -> string, string
 
         // remove any dead units
         for units if it.h <= 0 remove it;
+
+        for map print("%\n", it.(string));
     }
 
     return tprint("%", part1), tprint("%", part2);
