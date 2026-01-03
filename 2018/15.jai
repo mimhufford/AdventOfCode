@@ -12,8 +12,6 @@ day15 :: (input: string) -> string, string
         map[y][x] = c;
     }
 
-    for map print("%\n", it.(string));
-
     id :: (x: s64, y: s64) -> s64 { return y * 32 + x; }
     seen, targets : [32*32]u8;
     BFS :: struct { x, y: s8; steps := S16_MAX; }
@@ -61,7 +59,7 @@ day15 :: (input: string) -> string, string
         return chosen;
     }
 
-    for round: 1..S64_MAX {
+    for round: 0..S64_MAX {
         // put into correct turn order
         quick_sort(units, (a, b) => ifx a.y == b.y then a.x - b.x else a.y - b.y);
 
@@ -88,7 +86,6 @@ day15 :: (input: string) -> string, string
                 // bfs to get closest open cell
                 enemy_adj := get_best_target(u.x, u.y);
                 if enemy_adj.steps == S16_MAX continue;
-                print("% chose %", u.*, enemy_adj);
 
                 // mark all open cells which are adjacent to the unit
                 for * targets it.* = 0;
@@ -99,8 +96,6 @@ day15 :: (input: string) -> string, string
 
                 // bfs to get closest open cell
                 unit_adj := get_best_target(enemy_adj.x, enemy_adj.y);
-                assert(unit_adj.steps < S16_MAX);
-                print(" step %\n", unit_adj);
 
                 // step towards chosen
                 map[u.y][u.x] = ".";
@@ -120,19 +115,15 @@ day15 :: (input: string) -> string, string
         // remove any dead units
         for units if it.h <= 0 remove it;
 
-        for map print("%\n", it.(string));
-        for units print("%\n", it.h);
-
         // check for done
         gob, elf := false;
         for units gob, elf |= it.team == "G", it.team == "E";
-        if gob && elf continue;
-
-        total_hp := 0;
-        for units total_hp += it.h;
-        part1 += round * total_hp;
-        print("% %\n", round, total_hp);
-        break;
+            if !gob || !elf {   
+            total_hp := 0;
+            for units total_hp += it.h;
+            part1 += round * total_hp;
+            break;
+        }
     }
 
     return tprint("%", part1), tprint("%", part2);
