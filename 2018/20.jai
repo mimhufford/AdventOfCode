@@ -13,8 +13,8 @@ day20 :: (input: string) -> string, string
             case "S"; y += 1; steps += 1; map[y*SIZE+x] = min(map[y*SIZE+x], steps); 
             case "W"; x -= 1; steps += 1; map[y*SIZE+x] = min(map[y*SIZE+x], steps); 
             case "("; array_add(*stack, { x, y, steps });
-            case ")"; it := pop(*stack);            x, y, steps = it.x, it.y, it.steps;
-            case "|"; it := stack[stack.count - 1]; x, y, steps = it.x, it.y, it.steps;
+            case ")"; it := pop(*stack); x, y, steps = it.x, it.y, it.steps;
+            case "|"; it := peek(stack); x, y, steps = it.x, it.y, it.steps;
         }
     }
 
