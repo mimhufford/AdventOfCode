@@ -60,13 +60,12 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
             g.effective_power = g.damage * g.units;
             units_before_attack := g.target.units;
             g.target.units -= calculate_damage(g, g.target) / g.target.hp;
-            g.target.units = max(0, g.target.units);
             any_change |= g.target.units != units_before_attack;
         }
 
         t1_units, t2_units := 0;
-        for t1 t1_units += it.units;
-        for t2 t2_units += it.units;
+        for t1 { if it.units <= 0 remove it; else t1_units += it.units; }
+        for t2 { if it.units <= 0 remove it; else t2_units += it.units; }
         if t1_units <= 0 return t2_units, false;
         if t2_units <= 0 return t1_units, true;
         if !any_change return 0, false;
