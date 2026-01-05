@@ -46,8 +46,6 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
         // PHASE 1: Select Targets
         for t1 it.effective_power = it.damage * it.units;
         for t2 it.effective_power = it.damage * it.units;
-        quick_sort(t1, sort_ep_initiative);
-        quick_sort(t2, sort_ep_initiative);
         select_targets(t1, t2);
         select_targets(t2, t1);
 
@@ -79,6 +77,7 @@ calculate_damage :: (a: *Group, d: *Group) -> s64 {
 }
 
 select_targets :: (t1: []*Group, t2: []*Group) {
+    quick_sort(t1, sort_ep_initiative);
     for t1 it.target = null;
     for t2 it.targetted = false;
 
