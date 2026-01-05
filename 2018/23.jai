@@ -13,8 +13,7 @@ day23 :: (input: string) -> string, string
         b.z = read_s64(*input); advance(*input, 5);
         b.r = read_s64(*input);
         if b.r <= strongest_r continue;
-        strongest_r = b.r;
-        strongest_i = bots.count - 1;
+        strongest_r, strongest_i = b.r, bots.count - 1;
     }
 
     strongest := bots[strongest_i];
@@ -23,32 +22,40 @@ day23 :: (input: string) -> string, string
         part1 += ifx distance <= strongest.r then 1; 
     }
 
-    Cube :: struct { x, y, z, r: s64; }
+    curr, next : [..] struct { x, y, z, count: s64; r := 1<<32; };
+    array_add(*curr);
+    for pass: 0..32 {
+        most := 0;
+        while curr {
+            c := pop(*curr);
 
-    print :: (c: Cube) {
-        x0, x1 := c.x - c.r >> 1, c.x + c.r >> 1;
-        y0, y1 := c.y - c.r >> 1, c.y + c.r >> 1;
-        z0, z1 := c.z - c.r >> 1, c.z + c.r >> 1;
-        print("% %, % %, % %\n", x0,x1,y0,y1,z0,z1);
-    }
+            offset := s64.[-(c.r>>2), c.r>>2];
 
-    divide :: (c: Cube) {
-        if c.r == 1 return;
+            for z: offset for y: offset for x: offset {
+                n := array_add(*next);
+                n.r = c.r >> 1;
+                n.x, n.y, n.z = c.x+x, c.y+y, c.z+z;
 
-        offset := s64.[-(c.r>>2), c.r>>2];
+                x0, x1 := n.x - n.r >> 1, n.x + n.r >> 1;
+                y0, y1 := n.y - n.r >> 1, n.y + n.r >> 1;
+                z0, z1 := n.z - n.r >> 1, n.z + n.r >> 1;
 
-        for z: offset for y: offset for x: offset {
-            n := c;
-            n.r >>= 1;
-            n.x, n.y, n.z += x, y, z;
-            print(n);
+                for b: bots {
+                    x := min(x1, max(b.x, x0));
+                    y := min(y1, max(b.y, y0));
+                    z := min(z1, max(b.z, z0));
+                    d := abs(x - b.x) + abs(y - b.y) + abs(z - b.z);
+                    n.count += ifx d <= b.r then 1;
+                }
+                most = max(most, n.count);
+            }
         }
+
+        part2 = S64_MAX;
+        for next if it.count < most remove it;
+        for next part2 = min(part2, abs(it.x) + abs(it.y) + abs(it.z));
+        curr, next = next, curr;
     }
-
-    c0 := Cube.{0, 0, 0, 1<<5};
-
-    print(c0);
-    divide(c0);
 
     return tprint("%", part1), tprint("%", part2);
 }
