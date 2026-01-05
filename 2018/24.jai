@@ -2,11 +2,45 @@ day24 :: (input: string) -> string, string
 {
     part1, part2 := 0;
 
-    Group :: struct {
-        units, hp, initiative : s64;
-        damage, immune, weak  : [5]s64;
-    }
+    t1, t2 := generate_teams(input);
 
+    part1 = do_battle(t1, t2);
+
+    return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+Group :: struct {
+    units, hp, initiative : s64;
+    damage, immune, weak  : [5]s64;
+}
+
+do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
+    t1 : [..]Group; array_add(*t1, .._t1);
+    t2 : [..]Group; array_add(*t2, .._t2);
+
+    for * t1 for *it.damage if it.* then it.* += boost;
+
+    // TODO
+    print("%\n%\n", t1, t2);
+
+    t1_units, t2_units := 0;
+    for t1 t1_units += it.units;
+    for t2 t2_units += it.units;
+    return max(t1_units, t2_units), t1_units > t2_units;
+}
+
+type_to_index :: (t: string) -> s64 {
+    if t == "radiation"   return 0;
+    if t == "bludgeoning" return 1;
+    if t == "fire"        return 2;
+    if t == "slashing"    return 3;
+    if t == "cold"        return 4;
+    return -1;
+}
+
+generate_teams :: (input: string) -> []Group, []Group {
     t1, t2 : [..]Group;
 
     for team_info, team_id: split(trim(input), "\n\n") {
@@ -40,16 +74,5 @@ day24 :: (input: string) -> string, string
         }
     }
 
-    return tprint("%", part1), tprint("%", part2);
-}
-
-#scope_file
-
-type_to_index :: (t: string) -> s64 {
-    if t == "radiation"   return 0;
-    if t == "bludgeoning" return 1;
-    if t == "fire"        return 2;
-    if t == "slashing"    return 3;
-    if t == "cold"        return 4;
-    return -1;
+    return t1, t2;
 }
