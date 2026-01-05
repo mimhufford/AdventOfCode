@@ -29,28 +29,27 @@ Group :: struct {
 }
 
 do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
-    t1 : [..]Group; array_add(*t1, .._t1);
-    t2 : [..]Group; array_add(*t2, .._t2);
-    for * t1 it.damage += boost;
+    __t1 : [..]Group; array_add(*__t1, .._t1);
+    __t2 : [..]Group; array_add(*__t2, .._t2);
+    t1 : [..]*Group; for * __t1 array_add(*t1, it);
+    t2 : [..]*Group; for * __t2 array_add(*t2, it);
+    for t1 it.damage += boost;
 
     all : [..]*Group;
+    for t1 array_add(*all, it);
+    for t2 array_add(*all, it);
+    quick_sort(all, g => -g.initiative);
 
     while true {
         any_change := false;
 
         // PHASE 1: Select Targets
-        for * t1 it.effective_power = it.damage * it.units;
-        for * t2 it.effective_power = it.damage * it.units;
+        for t1 it.effective_power = it.damage * it.units;
+        for t2 it.effective_power = it.damage * it.units;
         quick_sort(t1, sort_ep_initiative);
         quick_sort(t2, sort_ep_initiative);
         select_targets(t1, t2);
         select_targets(t2, t1);
-
-        // TODO: this is silly
-        array_reset_keeping_memory(*all);
-        for * t1 array_add(*all, it);
-        for * t2 array_add(*all, it);
-        quick_sort(all, g => -g.initiative);
 
         // PHASE 2: Attack
         for g: all {
@@ -79,17 +78,17 @@ calculate_damage :: (a: *Group, d: *Group) -> s64 {
     return a.effective_power;
 }
 
-select_targets :: (t1: []Group, t2: []Group) {
-    for * t1 it.target = null;
-    for * t2 it.targetted = false;
+select_targets :: (t1: []*Group, t2: []*Group) {
+    for t1 it.target = null;
+    for t2 it.targetted = false;
 
-    for * g: t1 {
+    for g: t1 {
         if g.units <= 0 continue;
 
         best_target : *Group;
         best_damage, best_ep, best_initiative : s64;
 
-        for * e: t2 {
+        for e: t2 {
             if e.targetted  continue;
             if e.units <= 0 continue;
             potential_damage := calculate_damage(g, e);
@@ -109,7 +108,7 @@ select_targets :: (t1: []Group, t2: []Group) {
     }
 }
 
-sort_ep_initiative :: (a: Group, b: Group) -> s64 {
+sort_ep_initiative :: (a: *Group, b: *Group) -> s64 {
     if a.effective_power > b.effective_power return -1;
     if a.effective_power < b.effective_power return +1;
     if a.initiative > b.initiative return -1;
