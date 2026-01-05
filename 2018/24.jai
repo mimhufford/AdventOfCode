@@ -6,6 +6,14 @@ day24 :: (input: string) -> string, string
 
     part1 = do_battle(t1, t2);
 
+    // TODO: binary search
+    for boost: 1..S64_MAX {
+        units, win := do_battle(t1, t2, boost);
+        if !win continue;
+        part2 = units;
+        break;
+    }
+
     return tprint("%", part1), tprint("%", part2);
 }
 
@@ -29,6 +37,8 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
     all : [..]*Group;
 
     while true {
+        any_change := false;
+
         // PHASE 1: Select Targets
         for * t1 it.effective_power = it.damage * it.units;
         for * t2 it.effective_power = it.damage * it.units;
@@ -48,7 +58,10 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
             if g.target == null continue;
             if g.units <= 0 continue;
             g.effective_power = g.damage * g.units;
+            units_before_attack := g.target.units;
             g.target.units -= calculate_damage(g, g.target) / g.target.hp;
+            g.target.units = max(0, g.target.units);
+            any_change |= g.target.units != units_before_attack;
         }
 
         t1_units, t2_units := 0;
@@ -56,6 +69,7 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
         for t2 t2_units += it.units;
         if t1_units <= 0 return t2_units, false;
         if t2_units <= 0 return t1_units, true;
+        if !any_change return 0, false;
     }
 
     return 0, false;
