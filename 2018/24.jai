@@ -80,6 +80,7 @@ select_targets :: (t1: []Group, t2: []Group) {
             if e.units <= 0 continue;
             potential_damage := calculate_damage(g, e);
             if potential_damage <= g.target_damage continue;
+            if g.target g.target.targetted = false;
             g.target = e;
             g.target_damage = potential_damage;
             e.targetted = true;
