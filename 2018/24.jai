@@ -17,7 +17,6 @@ Group :: struct {
     
     effective_power : s64;
     target : *Group;
-    target_damage : s64;
     targetted : bool;
 }
 
@@ -27,9 +26,6 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
     for * t1 for *it.damage if it.* then it.* += boost;
 
     all : [..]*Group;
-    for * t1 array_add(*all, it);
-    for * t2 array_add(*all, it);
-    quick_sort(all, g => -g.initiative);
 
     while true {
         // PHASE 1: Select Targets
@@ -40,11 +36,19 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
         select_targets(t1, t2);
         select_targets(t2, t1);
 
+        // TODO: this is silly
+        array_reset_keeping_memory(*all);
+        for * t1 array_add(*all, it);
+        for * t2 array_add(*all, it);
+        quick_sort(all, g => -g.initiative);
+
         // PHASE 2: Attack
         for g: all {
             if g.target == null continue;
             if g.units <= 0 continue;
-            g.target.units -= g.target_damage / g.target.hp;
+            update_effective_power(t1);
+            update_effective_power(t2);
+            g.target.units -= calculate_damage(g, g.target) / g.target.hp;
         }
 
         t1_units, t2_units := 0;
@@ -71,20 +75,31 @@ calculate_damage :: (a: *Group, d: *Group) -> s64 {
 }
 
 select_targets :: (t1: []Group, t2: []Group) {
-    for * t1 { it.target = null; it.target_damage = 0; }
-    for * t2 { it.targetted = false; }
+    for * t1 it.target = null;
+    for * t2 it.targetted = false;
 
     for * g: t1 {
         if g.units <= 0 continue;
+
+        best_target : *Group;
+        best_damage, best_ep, best_initiative : s64;
+
         for * e: t2 {
             if e.targetted  continue;
             if e.units <= 0 continue;
             potential_damage := calculate_damage(g, e);
-            if potential_damage <= g.target_damage continue;
-            if g.target g.target.targetted = false;
-            g.target = e;
-            g.target_damage = potential_damage;
-            e.targetted = true;
+            if potential_damage < best_damage continue;
+            if potential_damage == best_damage && e.effective_power < best_ep continue;
+            if potential_damage == best_damage && e.effective_power == best_ep && e.initiative < best_initiative continue;
+            best_target = e;
+            best_damage = potential_damage;
+            best_ep = e.effective_power;
+            best_initiative = e.initiative;
+        }
+
+        if best_target && best_damage {
+            g.target = best_target;
+            g.target.targetted = true;
         }
     }
 }
