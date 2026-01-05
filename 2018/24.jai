@@ -13,7 +13,7 @@ day24 :: (input: string) -> string, string
 
 Group :: struct {
     units, hp, initiative : s64;
-    damage, immune, weak  : [5]s64;
+    damage, immune, weak  : [5]s64; // TODO: split damage into damage s64 and damage type s64
     
     effective_power : s64;
     target : *Group;
@@ -33,10 +33,10 @@ do_battle :: (_t1: []Group, _t2: []Group, boost := 0) -> s64, bool {
 
     while true {
         // PHASE 1: Select Targets
-        quick_sort(t1, sort_ep_initiative);
-        quick_sort(t2, sort_ep_initiative);
         update_effective_power(t1);
         update_effective_power(t2);
+        quick_sort(t1, sort_ep_initiative);
+        quick_sort(t2, sort_ep_initiative);
         select_targets(t1, t2);
         select_targets(t2, t1);
 
