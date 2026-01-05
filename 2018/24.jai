@@ -6,12 +6,11 @@ day24 :: (input: string) -> string, string
 
     part1 = do_battle(t1, t2);
 
-    // TODO: binary search
-    for boost: 1..S64_MAX {
-        units, win := do_battle(t1, t2, boost);
-        if !win continue;
-        part2 = units;
-        break;
+    l, r := 1, 1000;
+    while l + 1 < r {
+        m := l + (r - l) / 2;
+        units, win := do_battle(t1, t2, m);
+        if !win { l = m; } else { r = m; part2 = units; } 
     }
 
     return tprint("%", part1), tprint("%", part2);
