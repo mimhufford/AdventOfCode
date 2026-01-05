@@ -4,7 +4,7 @@ day22 :: (input: string) -> string, string
     advance(*input, 7); depth := read_s64(*input);
     advance(*input, 8); tx := read_s64(*input);
     advance(*input);    ty := read_s64(*input);
-    w, h := tx + 30, ty + 200;
+    w, h := tx + 100, ty + 100;
     map := NewArray(w*h, struct { type: s64; best: [3]s64; });
 
     for y: 0..h-1 for x: 0..w-1 {
@@ -16,7 +16,6 @@ day22 :: (input: string) -> string, string
     for * map { it.type %= 3; for * it.best it.* = S64_MAX; }
     for y: 0..ty for x: 0..tx part1 += map[y*w+x].type;
 
-    State :: struct { x: s64; y: s64; t: s8; steps: s64; }
     queue : [..]State;
     array_add(*queue, { x = 0, y = 0, t = 1, steps = 0});
 
@@ -26,7 +25,7 @@ day22 :: (input: string) -> string, string
     // 2 narrow = 0 or 1
 
     while queue {
-        using curr := pop(*queue);
+        using curr := extract_min(*queue);
         cell := *map[y*w+x];
         if cell.best[t] <= steps continue;
         cell.best[t] = steps;
@@ -51,4 +50,30 @@ day22 :: (input: string) -> string, string
     part2 = map[ty*w+tx].best[1];
 
     return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+State :: struct { x: s64; y: s64; t: s8; steps: s64; }
+
+min_heap :: (a: []State, i: s64) {
+    minimum := i; 
+
+    l := 2 * i + 1; 
+    if (l < a.count && a[l].steps < a[minimum].steps) minimum = l;
+
+    r := 2 * i + 2; 
+    if (r < a.count && a[r].steps < a[minimum].steps) minimum = r;
+
+    if (minimum == i) return;
+
+    swap(*a[i], *a[minimum]);
+    min_heap(a, minimum);
+}
+
+extract_min :: (a: *[]State) -> State {
+    value := a.*[0];
+    array_unordered_remove_by_index(a, 0);
+    min_heap(a.*, 0);
+    return value;
 }
