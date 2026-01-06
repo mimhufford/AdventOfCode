@@ -25,17 +25,11 @@ day16 :: (input: string) -> string, string
     for * op_to_instruction array_add(it, ..instructions);
 
     while true {
-        before : [4]s64; advance(*input, 9);
-        before[0] = read_s64(*input); advance(*input, 2);
-        before[1] = read_s64(*input); advance(*input, 2);
-        before[2] = read_s64(*input); advance(*input, 2);
-        before[3] = read_s64(*input); advance(*input, 2);
-        o, a, b, c := read_u8(*input), read_u8(*input), read_u8(*input), read_u8(*input);
-        actual : [4]s64; advance(*input, 9);
-        actual[0] = read_s64(*input); advance(*input, 2);
-        actual[1] = read_s64(*input); advance(*input, 2);
-        actual[2] = read_s64(*input); advance(*input, 2);
-        actual[3] = read_s64(*input); advance(*input, 3);
+        before, actual : [4]s64;
+        for * before it.* = get(s64, *input);
+        o, a, b, c := get(u8, *input), get(u8, *input), get(u8, *input), get(u8, *input);
+        for * actual it.* = get(s64, *input);
+        advance(*input, 3);
 
         for i: op_to_instruction[o] {
             r := before;
@@ -66,10 +60,9 @@ day16 :: (input: string) -> string, string
         break;
     }
 
-    advance(*input, 2);
     registers : [4]s64;
     while input {
-        o, a, b, c := read_u8(*input), read_u8(*input), read_u8(*input), read_u8(*input);
+        o, a, b, c := get(u8, *input), get(u8, *input), get(u8, *input), get(u8, *input);
         op_to_instruction[o][0](registers, a, b, c);
     }
     part2 = registers[0];
