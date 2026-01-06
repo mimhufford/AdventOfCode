@@ -7,10 +7,8 @@ day6 :: (input: string) -> string, string
 
     while input {
         c := array_add(*coords);
-        c.x = read_s32(*input);
-        advance(*input, 2);
-        c.y = read_s32(*input);
-
+        c.x = get(s32, *input);
+        c.y = get(s32, *input);
         xmin, ymin = min(xmin, c.x), min(ymin, c.y);
         xmax, ymax = max(xmax, c.x), max(ymax, c.y);
     }
