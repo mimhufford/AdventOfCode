@@ -8,11 +8,11 @@ day3 :: (input: string) -> string, string
     map : Table(u64, [..]s64);
 
     while input {
-        advance(*input, 1); id := read_s64(*input);
-        advance(*input, 2); cx := read_s64(*input);
-        advance(*input, 1); cy := read_s64(*input);
-        advance(*input, 2); cw := read_s64(*input);
-        advance(*input, 1); ch := read_s64(*input);
+        id := get(s64, *input);
+        cx := get(s64, *input);
+        cy := get(s64, *input);
+        cw := get(s64, *input);
+        ch := get(s64, *input);
 
         array_add(*ids, id);
 
