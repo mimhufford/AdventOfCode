@@ -1,10 +1,11 @@
 day7 :: (input: string) -> string, string
 {
     Computer :: struct {
-        ram : []s64;
-        in  : [..]s64;
-        ip  : s64;
-        out : s64;
+        ram  : []s64;
+        in   : [..]s64;
+        ip   : s64;
+        out  : s64;
+        done : bool;
     }
 
     run :: (using c: *Computer) {
@@ -18,13 +19,13 @@ day7 :: (input: string) -> string, string
             if op == {
                 case 1; ram[ram[ip+3]] = val(m1, 1) + val(m2, 2); ip += 4;
                 case 2; ram[ram[ip+3]] = val(m1, 1) * val(m2, 2); ip += 4;
-                case 3; ram[ram[ip+1]] = pop(*in); ip += 2;
-                case 4; out = val(m1, 1); ip += 2;
+                case 3; if in.count { ram[ram[ip+1]] = pop(*in); ip += 2; } else return;
+                case 4; out = val(m1, 1); ip += 2; return;
                 case 5; ip = ifx val(m1, 1) != 0 then val(m2, 2) else ip + 3;
                 case 6; ip = ifx val(m1, 1) == 0 then val(m2, 2) else ip + 3;
                 case 7; ram[ram[ip+3]] = ifx val(m1, 1)  < val(m2, 2) then 1; ip += 4;
                 case 8; ram[ram[ip+3]] = ifx val(m1, 1) == val(m2, 2) then 1; ip += 4;
-                case 99; break;
+                case 99; done = true; return;
             }
         }
     }
@@ -44,6 +45,27 @@ day7 :: (input: string) -> string, string
     }
 
     part2 := 0;
+    for * settings it.* += 5;
+    for :permutations settings {
+        amp : [5]Computer;
+        for * amp it.ram = array_copy(ram);
+
+        array_add(*amp[0].in, 0,          it[0]); run(*amp[0]);
+        array_add(*amp[1].in, amp[0].out, it[1]); run(*amp[1]);
+        array_add(*amp[2].in, amp[1].out, it[2]); run(*amp[2]);
+        array_add(*amp[3].in, amp[2].out, it[3]); run(*amp[3]);
+        array_add(*amp[4].in, amp[3].out, it[4]); run(*amp[4]);
+
+        while !amp[4].done {
+            array_add(*amp[0].in, amp[4].out); run(*amp[0]);
+            array_add(*amp[1].in, amp[0].out); run(*amp[1]);
+            array_add(*amp[2].in, amp[1].out); run(*amp[2]);
+            array_add(*amp[3].in, amp[2].out); run(*amp[3]);
+            array_add(*amp[4].in, amp[3].out); run(*amp[4]);
+        }
+
+        part2 = max(part2, amp[4].out);
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
