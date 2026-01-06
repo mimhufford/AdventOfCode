@@ -6,12 +6,11 @@ day23 :: (input: string) -> string, string
     strongest_r, strongest_i := 0;
 
     while input {
-        advance(*input, 5);
         b := array_add(*bots);
-        b.x = read_s64(*input); advance(*input);
-        b.y = read_s64(*input); advance(*input);
-        b.z = read_s64(*input); advance(*input, 5);
-        b.r = read_s64(*input);
+        b.x = get(s64, *input);
+        b.y = get(s64, *input);
+        b.z = get(s64, *input);
+        b.r = get(s64, *input);
         if b.r <= strongest_r continue;
         strongest_r, strongest_i = b.r, bots.count - 1;
     }
