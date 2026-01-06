@@ -1,9 +1,8 @@
 day9 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    players := read_s64(*input);
-    advance(*input, 30);
-    rounds := read_s64(*input);
+    players := get(s64, *input);
+    rounds  := get(s64, *input);
 
     Marble :: struct { i: s64; p, n: *Marble; }
     scores := NewArray(players, s64);
