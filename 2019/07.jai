@@ -8,6 +8,10 @@ day7 :: (input: string) -> string, string
         done : bool;
     }
 
+    reset :: (using c: *Computer) {
+        in.count, ip, out, done = 0, 0, 0, false;
+    }
+
     run :: (using c: *Computer) {
         while true {
             val :: (mode: s64, i: s64) -> s64 #expand {
@@ -35,21 +39,22 @@ day7 :: (input: string) -> string, string
 
     part1 := 0;
     settings : [..]s64; for 0..4 array_add(*settings, it);
+    amp : [5]Computer;
+    for * amp it.ram = array_copy(ram);
     for :permutations settings {
-        a := Computer.{ram = array_copy(ram)}; array_add(*a.in, 0,     it[0]); run(*a);
-        b := Computer.{ram = array_copy(ram)}; array_add(*b.in, a.out, it[1]); run(*b);
-        c := Computer.{ram = array_copy(ram)}; array_add(*c.in, b.out, it[2]); run(*c);
-        d := Computer.{ram = array_copy(ram)}; array_add(*d.in, c.out, it[3]); run(*d);
-        e := Computer.{ram = array_copy(ram)}; array_add(*e.in, d.out, it[4]); run(*e);
-        part1 = max(part1, e.out);
+        for * amp reset(it);
+        array_add(*amp[0].in, 0,          it[0]); run(*amp[0]);
+        array_add(*amp[1].in, amp[0].out, it[1]); run(*amp[1]);
+        array_add(*amp[2].in, amp[1].out, it[2]); run(*amp[2]);
+        array_add(*amp[3].in, amp[2].out, it[3]); run(*amp[3]);
+        array_add(*amp[4].in, amp[3].out, it[4]); run(*amp[4]);
+        part1 = max(part1, amp[4].out);
     }
 
     part2 := 0;
     for * settings it.* += 5;
     for :permutations settings {
-        amp : [5]Computer;
-        for * amp it.ram = array_copy(ram);
-
+        for * amp reset(it);
         array_add(*amp[0].in, 0,          it[0]); run(*amp[0]);
         array_add(*amp[1].in, amp[0].out, it[1]); run(*amp[1]);
         array_add(*amp[2].in, amp[1].out, it[2]); run(*amp[2]);
