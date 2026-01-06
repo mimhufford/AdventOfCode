@@ -8,9 +8,9 @@ day17 :: (input: string) -> string, string
 
     while input {
         x0, x1, y0, y1, x_or_y := 0, 0, 0, 0, input[0];
-        advance(*input, 2); x0 = read_s64(*input); x1 = x0;
-        advance(*input, 4); y0 = read_s64(*input);
-        advance(*input, 2); y1 = read_s64(*input);
+        x0 = get(s64, *input); x1 = x0;
+        y0 = get(s64, *input);
+        y1 = get(s64, *input);
         if x_or_y == "y" x0, x1, y0, y1 = y0, y1, x0, x1;
 
         x_min, x_max = min(x_min, x0-1), max(x_max, x1+1);
