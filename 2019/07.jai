@@ -1,8 +1,13 @@
 day7 :: (input: string) -> string, string
 {
-    run :: (ram: []s64, in: []s64) -> s64 {
-        ip, out := 0;
+    Computer :: struct {
+        ram : []s64;
+        in  : [..]s64;
+        ip  : s64;
+        out : s64;
+    }
 
+    run :: (using c: *Computer) {
         while true {
             val :: (mode: s64, i: s64) -> s64 #expand {
                 return ifx mode then ram[ip+i] else ram[ram[ip+i]];
@@ -22,8 +27,6 @@ day7 :: (input: string) -> string, string
                 case 99; break;
             }
         }
-
-        return out;
     }
 
     ram : [..]s64;
@@ -32,12 +35,12 @@ day7 :: (input: string) -> string, string
     part1 := 0;
     settings : [..]s64; for 0..4 array_add(*settings, it);
     for :permutations settings {
-        a := run(array_copy(ram), s64.[0, it[0]]);
-        b := run(array_copy(ram), s64.[a, it[1]]);
-        c := run(array_copy(ram), s64.[b, it[2]]);
-        d := run(array_copy(ram), s64.[c, it[3]]);
-        e := run(array_copy(ram), s64.[d, it[4]]);
-        part1 = max(part1, e);
+        a := Computer.{ram = array_copy(ram)}; array_add(*a.in, 0,     it[0]); run(*a);
+        b := Computer.{ram = array_copy(ram)}; array_add(*b.in, a.out, it[1]); run(*b);
+        c := Computer.{ram = array_copy(ram)}; array_add(*c.in, b.out, it[2]); run(*c);
+        d := Computer.{ram = array_copy(ram)}; array_add(*d.in, c.out, it[3]); run(*d);
+        e := Computer.{ram = array_copy(ram)}; array_add(*e.in, d.out, it[4]); run(*e);
+        part1 = max(part1, e.out);
     }
 
     part2 := 0;
@@ -49,21 +52,17 @@ day7 :: (input: string) -> string, string
 
 permutations :: (n: *[..]s64, body: Code, flags: For_Flags) #expand
 {
-    `it, `it_index := n.*, 0;
+    `it, `it_index, j := n.*, 0, 0;
+    arr := NewArray(n.count, s64);
 
     #insert body;
     `it_index += 1;
 
-    arr := NewArray(n.count, s64);
-
-    j := 0;
     while j < n.count {
         if arr[j] < j {
             swap(n.data + ifx j % 2 then arr[j], n.data + j);
-
             #insert body;
             `it_index += 1;
-
             arr[j] += 1;
             j = 0;
         } else {
