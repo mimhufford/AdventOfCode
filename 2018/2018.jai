@@ -1,18 +1,22 @@
 main :: () {
     #insert #run generate_days();
 
-    results : [..]Day;
-    array_reserve(*results, 25);
+    total_time : Apollo_Time;
 
     for days {
-        day := array_add(*results);
         input := read_entire_file(tprint("input/%.txt", formatInt(it_index + 1, minimum_digits=2)));
         start := current_time_monotonic();
-        day.part1, day.part2 = it(input);
-        day.duration = current_time_monotonic() - start;
+        part1, part2 := it(input);
+        duration := current_time_monotonic() - start;
+        total_time += duration;
+        print("Day %: %ms - %\n",
+            formatInt(it_index + 1, minimum_digits=2),
+            tprint("%", formatFloat(0.001 * to_microseconds(duration), width=7, trailing_width=3, zero_removal=.NO)),
+            tprint("% - %", part1, part2)
+        );
     }
 
-    output_results(results);
+    print("\nTotal time: %ms\n", to_milliseconds(total_time));
 }
 
 read_up_to :: (s: *string, end: u8) -> string {
@@ -23,11 +27,6 @@ read_up_to :: (s: *string, end: u8) -> string {
 
 is_whitespace :: (c: u8) -> bool {
     return c == " " || c == "\n" || c == "\r" || c == "\t";
-}
-
-skip_to_next_line :: (s: *string) {
-    while s.count && s.data[0] != #char "\n" advance(s);
-    if s.count advance(s);
 }
 
 get :: ($T: Type, s: *string) -> T {
@@ -81,31 +80,8 @@ gcd :: (a: s64, b: s64) -> s64 { if b return gcd(b, a % b); return a; }
 
 #scope_file
 
-output_results :: (results : []Day) {
-    total_time : Apollo_Time;
-
-    for results {
-        total_time += it.duration;
-
-        print("Day %: %ms - %\n",
-            formatInt(it_index + 1, minimum_digits=2),
-            tprint("%", formatFloat(0.001 * to_microseconds(it.duration), width=7, trailing_width=3, zero_removal=.NO)),
-            tprint("% - %", it.part1, it.part2)
-        );
-    }
-
-    print("\nTotal time: %ms\n", to_milliseconds(total_time));
-}
-
-Day :: struct {
-    proc : (string) -> string, string;
-    part1, part2 : string;
-    duration : Apollo_Time;
-}
-
 generate_days :: () -> string {
-    day_procs  : String_Builder;
-    file_loads : String_Builder;
+    day_procs, file_loads : String_Builder;
 
     append(*day_procs, "days := #type (string) -> (string, string).[");
     for 1..25 {
