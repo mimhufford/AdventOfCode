@@ -1,9 +1,9 @@
 day22 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    advance(*input, 7); depth := read_s64(*input);
-    advance(*input, 8); tx := read_s64(*input);
-    advance(*input);    ty := read_s64(*input);
+    depth := get(s64, *input);
+    tx := get(s64, *input);
+    ty := get(s64, *input);
     w, h := tx + 100, ty + 100;
     map := NewArray(w*h, struct { type: s64; best: [3]s64; });
 
