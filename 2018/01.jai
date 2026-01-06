@@ -8,7 +8,7 @@ day1 :: (input: string) -> string, string
 
     while input {
         if input[0] == "+" advance(*input);
-        array_add(*changes, read_s64(*input));
+        array_add(*changes, get(s64, *input));
         frequency += changes[changes.count-1];
         find_or_add(*seen, frequency).* += 1;
     }
