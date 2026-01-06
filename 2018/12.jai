@@ -3,7 +3,7 @@ day12 :: (input: string) -> string, string
     part1, part2 := 0;
 
     advance(*input, 15);
-    initial := read_word(*input);
+    initial := get(string, *input);
 
     Rule :: struct { in: string; out: u8; }
     rules : [..]Rule;
