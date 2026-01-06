@@ -6,10 +6,10 @@ day25 :: (input: string) -> string, string
 
     while input {
         p := array_add(*points);
-        p.x = read_s64(*input); advance(*input);
-        p.y = read_s64(*input); advance(*input);
-        p.z = read_s64(*input); advance(*input);
-        p.w = read_s64(*input);
+        p.x = get(s64, *input);
+        p.y = get(s64, *input);
+        p.z = get(s64, *input);
+        p.w = get(s64, *input);
     }
 
     while points {
