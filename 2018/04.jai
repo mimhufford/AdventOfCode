@@ -8,9 +8,9 @@ day4 :: (input: string) -> string, string
 
     for lines {
         advance(*it, 15);
-        minute := read_s64(*it);
+        minute := get(s64, *it);
         if it[2] == {
-            case "G"; advance(*it, 9); id = read_s64(*it);
+            case "G"; advance(*it, 9); id = get(s64, *it);
             case "f"; start = minute;
             case "w"; g := find_or_add(*guards, id); for start..minute-1 g.*[it] += 1;
         }
