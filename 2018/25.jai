@@ -14,7 +14,6 @@ day25 :: (input: string) -> string, string
 
     while points {
         part1 += 1;
-        array_reset_keeping_memory(*queue);
         array_add(*queue, pop(*points));
         while queue {
             c := pop(*queue);
