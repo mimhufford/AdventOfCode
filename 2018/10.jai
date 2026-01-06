@@ -5,10 +5,10 @@ day10 :: (input: string) -> string, string
     u, d := 0;
     while input {
         p := array_add(*points);
-        advance(*input, 10); skip_whitespace(*input); p.px = read_s64(*input);
-        advance(*input, 2);  skip_whitespace(*input); p.py = read_s64(*input);
-        advance(*input, 12); skip_whitespace(*input); p.vx = read_s64(*input);
-        advance(*input, 2);  skip_whitespace(*input); p.vy = read_s64(*input);
+        p.px = get(s64, *input);
+        p.py = get(s64, *input);
+        p.vx = get(s64, *input);
+        p.vy = get(s64, *input);
         advance(*input, 2);
         if p.py < 0 u = points.count - 1;
         if p.py > 0 d = points.count - 1;
