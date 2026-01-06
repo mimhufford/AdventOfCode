@@ -1,6 +1,6 @@
 day11 :: (input: string) -> string, string
 {
-    serial := read_s64(*input);
+    serial := get(s64, *input);
     grid : [301][301]s64;
 
     for y: 1..300 {
