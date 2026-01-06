@@ -1,8 +1,7 @@
 day21 :: (input: string) -> string, string
 {
-    lines := split(input, "\n");
-    read_word(*lines[8]);
-    seed := read_s64(*lines[8]);
+    for 1..22 get(s64, *input);
+    seed := get(s64, *input);
     part1, part2 := 0;
     b, c, last := 0, 0, S64_MAX;
     seen : Table(s64, u8);
