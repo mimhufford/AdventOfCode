@@ -1,7 +1,7 @@
 day14 :: (input: string) -> string, string
 {
     part1, part2 := 0;
-    key := read_s64(*input);
+    key := get(s64, *input);
     e0, e1, last10 := 0, 1, 0;
     scores : [..]u8;
     array_reserve(*scores, 25_000_000);
