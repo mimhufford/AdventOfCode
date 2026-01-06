@@ -132,29 +132,27 @@ generate_teams :: (input: string) -> []Group, []Group {
             if line[0] == "I" continue;
 
             g := array_add(ifx team_id == 0 then *t1 else *t2);
-            g.units = read_s64(*line); advance(*line, 16);
-            g.hp    = read_s64(*line); advance(*line, 11);
+            g.units = get(s64, *line);
+            g.hp    = get(s64, *line);
+            advance(*line, 11);
 
             if line[0] == "(" {
                 modifiers := read_up_to(*line, ")");
                 advance(*modifiers);
                 for split(modifiers, ";") {
                     section := trim(it);
-                    modifier := read_word(*section);
+                    modifier := get(string, *section);
                     advance(*section, 3);
                     for type: split(section, ", ") {
                         if modifier == "immune" g.immune[type_to_index(type)] = 1;
                         if modifier == "weak"     g.weak[type_to_index(type)] = 1;
                     }
                 }
-                advance(*line, 2);
             }
 
-            advance(*line, 25);
-            g.damage = read_s64(*line);
-            g.damage_type = type_to_index(read_word(*line));
-            advance(*line, 21);
-            g.initiative = read_s64(*line);
+            g.damage = get(s64, *line);
+            g.damage_type = type_to_index(get(string, *line));
+            g.initiative = get(s64, *line);
         }
     }
 
