@@ -1,15 +1,11 @@
 day19 :: (input: string) -> string, string
 {
-    program : [..]u8;
-    advance(*input, 6);
-    while input {
-        read_word(*input);
-        read_u8(*input);
-        array_add(*program, read_u8(*input));
-        read_u8(*input);
-    }
+    for 1..65 get(u8, *input);
+    a := get(u8, *input);
+    for 1..5 get(u8, *input);
+    b := get(u8, *input);
 
-    base := 22 * program[21] + program[23];
+    base := 22 * a + b;
 
     sum_factors :: (n: s64) -> s64 {
         result := 1 + n;
