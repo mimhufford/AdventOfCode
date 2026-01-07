@@ -54,13 +54,7 @@ day7 :: (input: string) -> string, string
     part2 := 0;
     for * settings it.* += 5;
     for :permutations settings {
-        for * amp reset(it);
-        array_add(*amp[0].in, 0,          it[0]); run(*amp[0]);
-        array_add(*amp[1].in, amp[0].out, it[1]); run(*amp[1]);
-        array_add(*amp[2].in, amp[1].out, it[2]); run(*amp[2]);
-        array_add(*amp[3].in, amp[2].out, it[3]); run(*amp[3]);
-        array_add(*amp[4].in, amp[3].out, it[4]); run(*amp[4]);
-
+        for * a, id: amp { reset(a); array_add(*a.in, it[id]); run(a); }
         while !amp[4].done {
             array_add(*amp[0].in, amp[4].out); run(*amp[0]);
             array_add(*amp[1].in, amp[0].out); run(*amp[1]);
@@ -68,7 +62,6 @@ day7 :: (input: string) -> string, string
             array_add(*amp[3].in, amp[2].out); run(*amp[3]);
             array_add(*amp[4].in, amp[3].out); run(*amp[4]);
         }
-
         part2 = max(part2, amp[4].out);
     }
 
