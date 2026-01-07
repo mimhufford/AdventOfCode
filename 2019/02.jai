@@ -18,9 +18,10 @@ day2 :: (input: string) -> string, string
     part1 := run(12, 2, array_copy(ram));
     part2 := 0;
     
-    for noun: 0..99 for verb: 0..99 {
+    for < noun: 0..99 for < verb: 0..99 {
         if run(noun, verb, array_copy(ram)) != 19690720 continue;
         part2 = 100 * noun + verb;
+        break noun;
     }
 
     return tprint("%", part1), tprint("%", part2);
