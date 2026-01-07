@@ -16,14 +16,11 @@ day9 :: (input: string) -> string, string
         }
         array_add(*in, input);
         while true {
-            op := ram[ip] % 100;
-            m1 := ram[ip] / 100 % 10;
-            m2 := ram[ip] / 1000 % 10;
-            m3 := ram[ip] / 10000 % 10;
+            m1, m2, m3 := ram[ip]/100 % 10, ram[ip]/1000 % 10, ram[ip]/10000 % 10;
             a := ifx m1 == 0 then ram[ip + 1] else ifx m1 == 1 then ip + 1 else rb + ram[ip + 1];
             b := ifx m2 == 0 then ram[ip + 2] else ifx m2 == 1 then ip + 2 else rb + ram[ip + 2];
             c := ifx m3 == 0 then ram[ip + 3] else ifx m3 == 1 then ip + 3 else rb + ram[ip + 3];
-            if op == {
+            if ram[ip] % 100 == {
                 case 1; ram[c] = ram[a] + ram[b]; ip += 4;
                 case 2; ram[c] = ram[a] * ram[b]; ip += 4;
                 case 3; if (in.count == 0) return; ram[a] = pop(*in); ip += 2;
