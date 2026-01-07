@@ -1,0 +1,35 @@
+day12 :: (input: string) -> string, string
+{
+    part1, part2 := 0;
+
+    moons : [..] struct { x, y, z, vx, vy, vz: s64; };
+
+    while input {
+        m := array_add(*moons);
+        m.x = get(s64, *input);
+        m.y = get(s64, *input);
+        m.z = get(s64, *input);
+        advance(*input, 2);
+    }
+
+    for 1..1000 {
+        for i: 0..moons.count-1 {
+            a := *moons[i];
+            for j: i+1..moons.count-1 {
+                b := *moons[j];
+                a.vx += ifx a.x < b.x then 1 else ifx a.x > b.x then -1;
+                b.vx += ifx b.x < a.x then 1 else ifx b.x > a.x then -1;
+                a.vy += ifx a.y < b.y then 1 else ifx a.y > b.y then -1;
+                b.vy += ifx b.y < a.y then 1 else ifx b.y > a.y then -1;
+                a.vz += ifx a.z < b.z then 1 else ifx a.z > b.z then -1;
+                b.vz += ifx b.z < a.z then 1 else ifx b.z > a.z then -1;
+            }
+        }
+
+        for * m: moons m.x, m.y, m.z += m.vx, m.vy, m.vz;
+    }
+
+    for m: moons part1 += (abs(m.x) + abs(m.y) + abs(m.z)) * (abs(m.vx) + abs(m.vy) + abs(m.vz));
+
+    return tprint("%", part1), tprint("%", part2);
+}
