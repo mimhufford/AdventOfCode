@@ -27,5 +27,3 @@ day13 :: (input: string) -> string, string
 
     return tprint("%", part1), tprint("%", part2);
 }
-
-#scope_file #load "intcode.jai";
