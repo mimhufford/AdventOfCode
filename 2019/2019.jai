@@ -64,6 +64,7 @@ get :: ($T: Type, s: *string) -> T {
 lcm :: (a: s64, b: s64) -> s64 { return a / gcd(a, b) * b; }
 gcd :: (a: s64, b: s64) -> s64 { if b return gcd(b, a % b); return a; }
 
+#load "intcode.jai";
 #import "File";
 #import "Sort";
 #import "Math";
