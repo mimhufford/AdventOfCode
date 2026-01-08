@@ -7,7 +7,9 @@ day15 :: (input: string) -> string, string
 
     V2 :: struct { x, y: s32; }
     map : [41][41] enum { NONE; FREE; WALL; GOAL; };
-    p := V2.{21,21};
+    start :: V2.{21,21};
+    oxygen : V2;
+    p := start;
     dir := 1;
 
     for step: 1..S64_MAX {
@@ -19,9 +21,9 @@ day15 :: (input: string) -> string, string
             if pop(*c.out) == {
                 case 0; map[p.y+delta[dir].y][p.x+delta[dir].x] = .WALL; dir = left[dir];
                 case 1; p.x, p.y += delta[dir].x, delta[dir].y; map[p.y][p.x] = .FREE;
-                case 2; p.x, p.y += delta[dir].x, delta[dir].y; map[p.y][p.x] = .GOAL;
+                case 2; p.x, p.y += delta[dir].x, delta[dir].y; map[p.y][p.x] = .GOAL; oxygen = p;
             }
-            if step > 1 && p.x == 21 && p.y == 21 break;
+            if step > 1 && p.x == start.x && p.y == start.y break;
         }
 
         move();
