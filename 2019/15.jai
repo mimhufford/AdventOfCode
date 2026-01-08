@@ -7,25 +7,20 @@ day15 :: (input: string) -> string, string
 
     V2 :: struct { x, y: s32; }
     map : [41][41] enum { NONE; FREE; WALL; GOAL; };
-    delta :: V2.[{},{0,-1},{0,1},{-1,0},{1,0}];
-    left  :: s64.[0, 3, 4, 2, 1];
-    right :: s64.[0, 4, 3, 1, 2];
-    dir := 1;
     p := V2.{21,21};
+    dir := 1;
 
     for step: 1..S64_MAX {
+        delta :: V2.[{},{0,-1},{0,1},{-1,0},{1,0}];
+        left  :: s64.[0, 3, 4, 2, 1];
+        right :: s64.[0, 4, 3, 1, 2];
         move :: () #expand {
             run(c, dir);
-            s := pop(*c.out);
-
-            if s == 0 {
-                map[p.y+delta[dir].y][p.x+delta[dir].x] = .WALL;
-                dir = left[dir];
-            } else {
-                p.x, p.y += delta[dir].x, delta[dir].y;
-                map[p.y][p.x] = ifx s == 1 then .FREE else .GOAL;
+            if pop(*c.out) == {
+                case 0; map[p.y+delta[dir].y][p.x+delta[dir].x] = .WALL; dir = left[dir];
+                case 1; p.x, p.y += delta[dir].x, delta[dir].y; map[p.y][p.x] = .FREE;
+                case 2; p.x, p.y += delta[dir].x, delta[dir].y; map[p.y][p.x] = .GOAL;
             }
-
             if step > 1 && p.x == 21 && p.y == 21 break;
         }
 
