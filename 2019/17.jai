@@ -48,7 +48,7 @@ day17 :: (input: string) -> string, string
         if map[py+dy][px+dx] != "#" {
             try :: (tdx: s64, tdy: s64, turn: u8) #expand {
                 if map[py+tdy][px+tdx] == "#" {
-                    array_add(*path, turn, ",");
+                    array_add(*path, turn);
                     dx, dy = tdx, tdy;
                     continue;
                 }
@@ -60,11 +60,13 @@ day17 :: (input: string) -> string, string
         
         run : u8 = 0;
         while map[py+dy][px+dx] == "#" run, px, py += 1, dx, dy;
-        if run > 9 array_add(*path, run / 10 + "0", ",");
-        array_add(*path, run % 10 + "0", ",");
+        if run > 9 array_add(*path, run / 10 + "0");
+        array_add(*path, run % 10 + "0");
     }
 
     path.count -= 1;
+
+    print("%\n", path.(string));
 
     return tprint("%", part1), tprint("%", part2);
 }
