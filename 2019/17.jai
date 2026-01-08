@@ -46,27 +46,22 @@ day17 :: (input: string) -> string, string
 
     while true {
         if map[py+dy][px+dx] != "#" {
-            ldx, ldy := +dy, -dx;
-            if map[py+ldy][px+ldx] == "#" {
-                array_add(*path, "L", ",");
-                dx, dy = ldx, ldy;
-                continue;
+            try :: (tdx: s64, tdy: s64, turn: u8) #expand {
+                if map[py+tdy][px+tdx] == "#" {
+                    array_add(*path, turn, ",");
+                    dx, dy = tdx, tdy;
+                    continue;
+                }
             }
-            
-            rdx, rdy := -dy, +dx;
-            if map[py+rdy][px+rdx] == "#" {
-                array_add(*path, "R", ",");
-                dx, dy = rdx, rdy;
-                continue;
-            }
-        
+            try(+dy, -dx, "L");
+            try(-dy, +dx, "R");
             break;
-        } else {
-            run : u8 = 0;
-            while map[py+dy][px+dx] == "#" run, px, py += 1, dx, dy;
-            if run > 9 array_add(*path, run / 10 + "0", ",");
-            array_add(*path, run % 10 + "0", ",");
         }
+        
+        run : u8 = 0;
+        while map[py+dy][px+dx] == "#" run, px, py += 1, dx, dy;
+        if run > 9 array_add(*path, run / 10 + "0", ",");
+        array_add(*path, run % 10 + "0", ",");
     }
 
     path.count -= 1;
