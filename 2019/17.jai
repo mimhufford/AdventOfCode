@@ -64,8 +64,6 @@ day17 :: (input: string) -> string, string
         array_add(*path, run % 10 + "0");
     }
 
-    path.count -= 1;
-
     print("%\n", path.(string));
 
     return tprint("%", part1), tprint("%", part2);
