@@ -7,12 +7,14 @@ day17 :: (input: string) -> string, string
     c := computer(ram);
     run(c);
 
-    map : [27][63]u8;
-    x, y := 0;
+    map : [29][65]u8;
+    x, y := 1;
+
+    for y: 0..map.count-1 for x: 0..map[0].count-1 map[y][x] = "_"; // temp
 
     for c.out {
         if it.(u8) == {
-            case "\n"; x = 0; y += 1;
+            case "\n"; x = 1; y += 1;
             case; map[y][x] = it.(u8); x += 1;
         }
     }
@@ -27,6 +29,49 @@ day17 :: (input: string) -> string, string
             part1 += x * y;
         }
     }
+
+    px, py := 0;
+    dx, dy := 0;
+
+    for y: 0..map.count-1 {
+        for x: 0..map[0].count-1 {
+            if map[y][x] == {
+                case "^"; px, py = x, y; dx, dy =  0, -1; break y;
+                case "v"; px, py = x, y; dx, dy =  0, +1; break y;
+                case "<"; px, py = x, y; dx, dy = -1,  0; break y;
+                case ">"; px, py = x, y; dx, dy = +1,  0; break y;
+            }
+        }
+    }
+
+    path : [..]u8;
+
+    while true {
+        if map[py+dy][px+dx] != "#" {
+            ldx, ldy := +dy, -dx;
+            if map[py+ldy][px+ldx] == "#" {
+                array_add(*path, "L", ",");
+                dx, dy = ldx, ldy;
+                continue;
+            }
+            
+            rdx, rdy := -dy, +dx;
+            if map[py+rdy][px+rdx] == "#" {
+                array_add(*path, "R", ",");
+                dx, dy = rdx, rdy;
+                continue;
+            }
+        
+            break;
+        } else {
+            run : u8 = 0;
+            while map[py+dy][px+dx] == "#" run, px, py += 1, dx, dy;
+            if run > 9 array_add(*path, run / 10 + "0", ",");
+            array_add(*path, run % 10 + "0", ",");
+        }
+    }
+
+    path.count -= 1;
 
     return tprint("%", part1), tprint("%", part2);
 }
