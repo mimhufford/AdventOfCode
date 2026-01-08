@@ -9,14 +9,12 @@ day16 :: (input: string) -> string, string
 
     for 1..100 {
         for o: 0..signal.count-1 {
-            start, end := o, 2 * o;
             for run: 0..S64_MAX {
+                start := o + run*(2*o+2);
+                end := min(2*o + run*(2*o+2), signal.count - 1);
+                if start >= signal.count break;
                 mult := ifx run % 2 then cast(s16, -1) else cast(s16, 1);
-                for i: start..end {
-                    if i >= signal.count break run;
-                    output[o] += mult * signal[i];
-                }
-                start, end += 2 * o + 2;
+                for start..end output[o] += mult * signal[it];
             }
             output[o] = abs(output[o]) % 10;
         }
