@@ -10,8 +10,6 @@ day17 :: (input: string) -> string, string
     map : [29][65]u8;
     x, y := 1;
 
-    for y: 0..map.count-1 for x: 0..map[0].count-1 map[y][x] = "_"; // temp
-
     for c.out {
         if it.(u8) == {
             case "\n"; x = 1; y += 1;
