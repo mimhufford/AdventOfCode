@@ -7,21 +7,45 @@ day15 :: (input: string) -> string, string
 
     V2 :: struct { x, y: s32; }
     map : [41][41] enum { NONE; FREE; WALL; GOAL; };
+    delta :: V2.[{},{0,-1},{0,1},{-1,0},{1,0}];
+    left  :: s64.[0, 3, 4, 2, 1];
+    right :: s64.[0, 4, 3, 1, 2];
+    dir := 1;
     p := V2.{21,21};
 
-    // IDEA : use 1 computer and do a wall following algorithm
-    // IDEA : work out which memory stores x and y, and fuck with it to do a BFS 
-    for 1..1000000 {
-        // north 1, south 2, west 3, east 4
-        delta :: V2.[{0,-1},{0,1},{-1,0},{1,0}];
-        dir := (random_get() % 4 + 1).(s64);
-        d := delta[dir-1];
+    for 1..2000 {
+        // move forward
         run(c, dir);
-        if pop(*c.out) == {
-            case 0; map[p.y+d.y][p.x+d.x] = .WALL;
-            case 1; p.x, p.y += d.x, d.y; map[p.y][p.x] = .FREE;
-            case 2; p.x, p.y += d.x, d.y; map[p.y][p.x] = .GOAL;
+        d := delta[dir];
+        s := pop(*c.out);
+
+        // if we hit a wall turn left and loop again
+        if s == 0 {
+            map[p.y+d.y][p.x+d.x] = .WALL;
+            dir = left[dir];
+            continue;
         }
+        
+        // we moved forward
+        p.x, p.y += d.x, d.y;
+        map[p.y][p.x] = ifx s == 1 then .FREE else .GOAL;
+
+        // do a tentative right movement to see what happens
+        dir = right[dir];
+        run(c, dir);
+        d = delta[dir];
+        s = pop(*c.out);
+
+        // if we hit a wall
+        if s == 0 {
+            map[p.y+d.y][p.x+d.x] = .WALL;
+            dir = left[dir];
+            continue;
+        }
+
+        // we moved forward
+        p.x, p.y += d.x, d.y;
+        map[p.y][p.x] = ifx s == 1 then .FREE else .GOAL;
     }
 
     for y: 0..40 {
