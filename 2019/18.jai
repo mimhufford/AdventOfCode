@@ -39,10 +39,11 @@ day18 :: (input: string) -> string, string
                     doors |= cast(u32, 1) << (cell - "A");
                 } else if cell == "@" {
                     edges[26][key-"a"].steps = c.steps;
-                    edges[26][key-"a"].doors = doors;
+                    edges[26][key-"a"].doors = doors & ~(cast(u32, 1) << (key-"a"));
                 } else if cell >= "a" && cell <= "z" {
                     edges[key-"a"][cell-"a"].steps = c.steps;
                     edges[key-"a"][cell-"a"].doors = doors;
+                    doors |= cast(u32, 1) << (cell - "a");
                 }
 
                 array_add(*queue, { c.x+1, c.y, c.steps + 1, doors });
