@@ -39,10 +39,12 @@ day18 :: (input: string) -> string, string
                     doors |= cast(u32, 1) << (cell - "A");
                 } else if cell == "@" {
                     edges[26][key-"a"].steps = c.steps;
+                    // don't block ourselves from being collected by the robot
                     edges[26][key-"a"].doors = doors & ~(cast(u32, 1) << (key-"a"));
                 } else if cell >= "a" && cell <= "z" {
                     edges[key-"a"][cell-"a"].steps = c.steps;
                     edges[key-"a"][cell-"a"].doors = doors;
+                    // treat keys as doors so we only consider direct neighbours
                     doors |= cast(u32, 1) << (cell - "a");
                 }
 
