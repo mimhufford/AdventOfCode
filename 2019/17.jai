@@ -4,7 +4,7 @@ day17 :: (input: string) -> string, string
     
     ram : [..]s64;
     while input array_add(*ram, get(s64, *input));
-    c := computer(ram);
+    c := computer(array_copy(ram));
     run(c);
 
     map : [29][65]u8;
@@ -64,7 +64,7 @@ day17 :: (input: string) -> string, string
         array_add(*path, run % 10 + "0");
     }
 
-    print("%\n", path.(string));
+    // print("%\n", path.(string));
 
     // L8R12R12R10R10R12R10L8R12R12R10R10R12R10L10R10L6L10R10L6R10R12R10L8R12R12R10R10R12R10L10R10L6
     // A          R10R12R10A          R10R12R10L10R10L6L10R10L6R10R12R10A          R10R12R10L10R10L6
@@ -91,10 +91,20 @@ day17 :: (input: string) -> string, string
                 best_length = length;
                 best_index = i;
                 best_total = total;
-                print("Found % repeats of '%' = %\n", repeats.count, chunk, total);
+                // print("Found % repeats of '%' = %\n", repeats.count, chunk, total);
             }
         }
     }
+
+    c = computer(ram);
+    reset(c);
+    c.ram[0] = 2;
+    in : [..]s64;
+    for < "A,B,A,B,C,C,B,A,B,C\nL,8,R,12,R,12,R,10\nR,10,R,12,R,10\nL,10,R,10,L,6\nn\n" {
+        array_add(*in, it);
+    }
+    run(c, .. in);
+    part2 = peek(c.out);
 
     return tprint("%", part1), tprint("%", part2);
 }
