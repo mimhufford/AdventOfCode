@@ -96,6 +96,8 @@ day17 :: (input: string) -> string, string
         }
     }
 
+    // TODO: calculate the input
+
     c = computer(ram);
     reset(c);
     c.ram[0] = 2;
