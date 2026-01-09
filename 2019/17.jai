@@ -66,5 +66,35 @@ day17 :: (input: string) -> string, string
 
     print("%\n", path.(string));
 
+    // L8R12R12R10R10R12R10L8R12R12R10R10R12R10L10R10L6L10R10L6R10R12R10L8R12R12R10R10R12R10L10R10L6
+    // A          R10R12R10A          R10R12R10L10R10L6L10R10L6R10R12R10A          R10R12R10L10R10L6
+    // A          B        A          B        L10R10L6L10R10L6B        A          B        L10R10L6
+    // A          B        A          B        C       C       B        A          B        C       
+
+    best_length := 0;
+    best_index  := 0;
+    best_total  := 0;
+    repeats : [..]s64;
+
+    for length: 7..9 {
+        for i: 0..path.count-length {
+            array_reset_keeping_memory(*repeats);
+            chunk := slice(path.(string), i, length);
+            repeat := find_index_from_left(path.(string), chunk, i + length);
+            while repeat != -1 {
+                array_add(*repeats, repeat);
+                repeat = find_index_from_left(path.(string), chunk, repeat + length);
+            }
+            if repeats.count {
+                total := (repeats.count + 1) * length;
+                if total <= best_total continue;
+                best_length = length;
+                best_index = i;
+                best_total = total;
+                print("Found % repeats of '%' = %\n", repeats.count, chunk, total);
+            }
+        }
+    }
+
     return tprint("%", part1), tprint("%", part2);
 }
