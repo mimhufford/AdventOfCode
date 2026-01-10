@@ -8,7 +8,7 @@ day18 :: (input: string) -> string, string
         }
     }
 
-    part1 := solve(map);
+    part1 := solve(map, 0, 80, 0, 80);
 
     for y: 39..41 for x: 39..41 {
         ifx y == 40 || x == 40 {
@@ -18,26 +18,38 @@ day18 :: (input: string) -> string, string
         } 
     }
     
-    part2 := 0;
+    part2 := solve(map, 00, 40, 00, 40);
+    part2 += solve(map, 00, 40, 40, 80);
+    part2 += solve(map, 40, 80, 00, 40);
+    part2 += solve(map, 40, 80, 40, 80);
 
     return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
 
-solve :: (map: [][81]u8) -> s64 {
-    edges : [27][27] struct { steps : u16; doors : u32; }; // 0-25 are keys, 26 is bot
+solve :: (map: [][81]u8, x0: s64, x1: s64, y0: s64, y1: s64) -> s64 {
+    goal : u32;
+    for y: y0..y1 {
+        for x: x0..x1 {
+            key := map[y][x];
+            if key > "z" continue;
+            if key < "a" continue;
+            goal |= cast(u32, 1) << (key - "a");
+        }
+    }
     
+    edges : [27][27] struct { steps : u16; doors : u32; }; // 0-25 are keys, 26 is bot
     { // cache fewest steps between keys, and between bot + keys
         queue : [..] struct { x: s32; y: s32; steps: u16; doors: u32; };
         seen : [81][81]bool;
-        for y: 0..80 {
-            for x: 0..80 {
+        for y: y0..y1 {
+            for x: x0..x1 {
                 key := map[y][x];
                 if key > "z" continue;
                 if key < "a" continue;
 
-                for y: 0..80 for x: 0..80 seen[y][x] = false;
+                for y: y0..y1 for x: x0..x1 seen[y][x] = false;
                 array_reset_keeping_memory(*queue);
                 array_add(*queue, {x=x.(s32), y=y.(s32)});
 
@@ -48,7 +60,7 @@ solve :: (map: [][81]u8) -> s64 {
                     if cell == "#" continue;
                     doors := c.doors;
                     if cell >= "A" && cell <= "Z" {
-                        doors |= cast(u32, 1) << (cell - "A");
+                        doors |= (cast(u32, 1) << (cell - "A")) & goal;
                     } else if cell == "@" {
                         edges[26][key-"a"].steps = c.steps;
                         // don't block ourselves from being collected by the robot
@@ -70,7 +82,6 @@ solve :: (map: [][81]u8) -> s64 {
     }
 
     shortest := S64_MAX;
-
     { // DFS + cache from bot to all keys
         best : Table(u64, s64);
         queue : [..] struct { node: s32; keys: u32; steps: u16; #overlay(node) hash: u64; };
@@ -79,7 +90,7 @@ solve :: (map: [][81]u8) -> s64 {
         while queue {
             c := pop(*queue);
 
-            if c.keys == 0b11111111111111111111111111 {
+            if c.keys == goal {
                 shortest = min(shortest, c.steps);
                 continue;
             }
@@ -95,6 +106,8 @@ solve :: (map: [][81]u8) -> s64 {
                 if got continue; // don't go back to one we've already got
 
                 e := edges[c.node][other];
+
+                if e.steps == 0 continue; // 0 distance means in another quadrant
 
                 blocked := e.doors & ~c.keys;
                 if blocked continue; // don't visit keys behind locked doors
