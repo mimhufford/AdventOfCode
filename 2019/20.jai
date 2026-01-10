@@ -27,13 +27,13 @@ day20 :: (input: string) -> string, string
     }
 
     seen : [200][200]bool;
-    queue : [..] struct { x: s16; y: s16; steps: s64; };
+    queue : [..] struct { x: s16; y: s16; depth: s32; steps: s64; #overlay(x) hash: u64; };
     edges : Table(u32, [..] struct { pos: V2; steps: s64; });
 
     bfs_portal :: (id: string, x: s16, y: s16) #expand {
         for y: 0..seen.count-1 for x: 0..seen[y].count-1 seen[y][x] = false;
         array_reset_keeping_memory(*queue);
-        array_add(*queue, {x, y, 0});
+        array_add(*queue, {x=x, y=y});
 
         for c: queue {
             if seen[c.y][c.x] continue;
@@ -46,10 +46,10 @@ day20 :: (input: string) -> string, string
                 array_add(find_or_add(*edges, V2.{x, y}.hash), { {other_x, other_y}, c.steps-1 });
             }
             if cell == "." {
-                array_add(*queue, { c.x+1, c.y, c.steps + 1 });
-                array_add(*queue, { c.x-1, c.y, c.steps + 1 });
-                array_add(*queue, { c.x, c.y+1, c.steps + 1 });
-                array_add(*queue, { c.x, c.y-1, c.steps + 1 });
+                array_add(*queue, { x = c.x+1, y= c.y,   steps = c.steps + 1 });
+                array_add(*queue, { x = c.x-1, y= c.y,   steps = c.steps + 1 });
+                array_add(*queue, { x = c.x,   y= c.y+1, steps = c.steps + 1 });
+                array_add(*queue, { x = c.x,   y= c.y-1, steps = c.steps + 1 });
             }
         }
     }
@@ -62,8 +62,8 @@ day20 :: (input: string) -> string, string
     }
 
     array_reset_keeping_memory(*queue);
-    array_add(*queue, { aa.x, aa.y, 0 });
-    cache : Table(u32, s64);
+    array_add(*queue, { aa.x, aa.y, 0, 0 });
+    cache : Table(u64, s64);
     while queue {
         c := pop(*queue);
 
@@ -71,13 +71,13 @@ day20 :: (input: string) -> string, string
             part1 = min(part1, c.steps);
         }
 
-        pos := V2.{c.x, c.y};
-        best, new := find_or_add(*cache, pos.hash);
+        best, new := find_or_add(*cache, c.hash);
         if !new && best.* <= c.steps continue;
         best.* = c.steps;
 
+        pos := V2.{c.x, c.y};
         for table_find_pointer(*edges, pos.hash).* {
-            array_add(*queue, { it.pos.x, it.pos.y, c.steps + it.steps });
+            array_add(*queue, { it.pos.x, it.pos.y, 0, c.steps + it.steps });
         }
     }
 
