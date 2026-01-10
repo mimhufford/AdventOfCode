@@ -1,8 +1,8 @@
 day20 :: (input: string) -> string, string
 {
-    part1, part2 := 0;
+    part1, part2 := S64_MAX;
 
-    V2 :: struct { x, y: s32; #overlay(x) hash: s64; }
+    V2 :: struct { x, y: s32; #overlay(x) hash: u64; }
     portals : Table(string, [..]V2);
 
     get_portal :: (x: s64, y: s64) -> bool, string, s64, s64 #expand {
@@ -28,7 +28,7 @@ day20 :: (input: string) -> string, string
 
     seen : [200][200]bool;
     queue : [..] struct { x: s32; y: s32; steps: s64; };
-    edges : Table(s64, [..] struct { pos: V2; steps: s64; });
+    edges : Table(u64, [..] struct { pos: V2; steps: s64; });
 
     bfs_portal :: (id: string, x: s64, y: s64) #expand {
         for y: 0..seen.count-1 for x: 0..seen[y].count-1 seen[y][x] = false;
@@ -43,7 +43,7 @@ day20 :: (input: string) -> string, string
             if cell >= "A" && cell <= "Z" {
                 if c.steps == 1 continue;
                 ok, other_id, other_x, other_y := get_portal(c.x, c.y);
-                array_add(find_or_add(*edges, V2.{x.(s32), y.(s32)}.hash), { {other_x.(s32), other_y.(s32)}, c.steps });
+                array_add(find_or_add(*edges, V2.{x.(s32), y.(s32)}.hash), { {other_x.(s32), other_y.(s32)}, c.steps-1 });
             }
             if cell == "." {
                 array_add(*queue, { c.x+1, c.y, c.steps + 1 });
@@ -61,12 +61,25 @@ day20 :: (input: string) -> string, string
         array_add(find_or_add(*edges, locations[1].hash), { locations[0], 1 });
     }
 
-    for edges {
-        start := V2.{hash = it_index};
-        print("% - %\n", start, it);
-    }
+    array_reset_keeping_memory(*queue);
+    array_add(*queue, { aa.x, aa.y, 0 });
+    cache : Table(u64, s64);
+    while queue {
+        c := pop(*queue);
 
-    print("TODO: shortest path from % to %\n", aa, zz);
+        if c.x == zz.x && c.y == zz.y {
+            part1 = min(part1, c.steps);
+        }
+
+        pos := V2.{c.x, c.y};
+        best, new := find_or_add(*cache, pos.hash);
+        if !new && best.* <= c.steps continue;
+        best.* = c.steps;
+
+        for table_find_pointer(*edges, pos.hash).* {
+            array_add(*queue, { it.pos.x, it.pos.y, c.steps + it.steps });
+        }
+    }
 
     return tprint("%", part1), tprint("%", part2);
 }
