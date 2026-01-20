@@ -77,18 +77,15 @@ day20 :: (input: string) -> string, string
 
             pos := V2.{c.x, c.y};
             for table_find_pointer(*edges, pos.hash).* {
-                new_depth : s32 = 0;
-                if depth {
-                    new_depth = c.depth + it.depth_delta;
-                    if new_depth < 0 continue;
-                }
+                new_depth := c.depth + ifx depth then it.depth_delta;
+                if new_depth < 0 continue;
                 array_add(*queue, { it.pos.x, it.pos.y, new_depth, c.steps + it.steps });
             }
         }
     }
 
-    part1 := solve(false);
-    part2 := solve(true);
+    part1 := solve(depth = false);
+    part2 := solve(depth = true);
 
     return tprint("%", part1), tprint("%", part2);
 }
