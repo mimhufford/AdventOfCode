@@ -1,7 +1,5 @@
 day20 :: (input: string) -> string, string
 {
-    part1, part2 := S64_MAX;
-
     V2 :: struct { x, y: s16; #overlay(x) hash: u32; }
     portals : Table(string, [..]V2);
 
@@ -27,8 +25,8 @@ day20 :: (input: string) -> string, string
     }
 
     seen : [200][200]bool;
-    queue : [..] struct { x: s16; y: s16; depth: s32; steps: s64; #overlay(x) hash: u64; };
-    edges : Table(u32, [..] struct { pos: V2; steps: s64; });
+    queue : [..]State;
+    edges : Table(u32, [..] struct { pos: V2; steps: s64; depth_delta: s8; });
 
     bfs_portal :: (id: string, x: s16, y: s16) #expand {
         for y: 0..seen.count-1 for x: 0..seen[y].count-1 seen[y][x] = false;
@@ -43,7 +41,7 @@ day20 :: (input: string) -> string, string
             if cell >= "A" && cell <= "Z" {
                 if c.steps == 1 continue;
                 ok, other_id, other_x, other_y := get_portal(c.x, c.y);
-                array_add(find_or_add(*edges, V2.{x, y}.hash), { {other_x, other_y}, c.steps-1 });
+                array_add(find_or_add(*edges, V2.{x, y}.hash), { {other_x, other_y}, c.steps-1, 0 });
             }
             if cell == "." {
                 array_add(*queue, { x = c.x+1, y= c.y,   steps = c.steps + 1 });
@@ -57,29 +55,66 @@ day20 :: (input: string) -> string, string
     for locations, id: portals {
         for locations bfs_portal(id, it.x, it.y);
         if locations.count == 1 continue;
-        array_add(find_or_add(*edges, locations[0].hash), { locations[1], 1 });
-        array_add(find_or_add(*edges, locations[1].hash), { locations[0], 1 });
+        is_inner :: (using pos: V2) -> bool { return x > 10 && x < 100 && y > 10 && y < 100; }
+        array_add(find_or_add(*edges, locations[0].hash), { locations[1], 1, ifx is_inner(locations[0]) then cast(s8, 1) else cast(s8, -1) });
+        array_add(find_or_add(*edges, locations[1].hash), { locations[0], 1, ifx is_inner(locations[1]) then cast(s8, 1) else cast(s8, -1) });
     }
 
-    array_reset_keeping_memory(*queue);
-    array_add(*queue, { aa.x, aa.y, 0, 0 });
     cache : Table(u64, s64);
-    while queue {
-        c := pop(*queue);
 
-        if c.x == zz.x && c.y == zz.y {
-            part1 = min(part1, c.steps);
-        }
+    solve :: (depth: bool) -> s64 #expand {
+        array_reset_keeping_memory(*queue);
+        array_add(*queue, { aa.x, aa.y, 0, 0 });
+        table_reset(*cache);
+        while queue {
+            c := extract_min(*queue);
 
-        best, new := find_or_add(*cache, c.hash);
-        if !new && best.* <= c.steps continue;
-        best.* = c.steps;
+            if c.x == zz.x && c.y == zz.y && c.depth == 0 return c.steps;
 
-        pos := V2.{c.x, c.y};
-        for table_find_pointer(*edges, pos.hash).* {
-            array_add(*queue, { it.pos.x, it.pos.y, 0, c.steps + it.steps });
+            best, new := find_or_add(*cache, c.hash);
+            if !new && best.* <= c.steps continue;
+            best.* = c.steps;
+
+            pos := V2.{c.x, c.y};
+            for table_find_pointer(*edges, pos.hash).* {
+                new_depth : s32 = 0;
+                if depth {
+                    new_depth = c.depth + it.depth_delta;
+                    if new_depth < 0 continue;
+                }
+                array_add(*queue, { it.pos.x, it.pos.y, new_depth, c.steps + it.steps });
+            }
         }
     }
+
+    part1 := solve(false);
+    part2 := solve(true);
 
     return tprint("%", part1), tprint("%", part2);
+}
+
+#scope_file
+
+State :: struct { x: s16; y: s16; depth: s32; steps: s64; #overlay(x) hash: u64; }
+
+min_heap :: (a: []State, i: s64) {
+    minimum := i; 
+
+    l := 2 * i + 1; 
+    if (l < a.count && a[l].steps < a[minimum].steps) minimum = l;
+
+    r := 2 * i + 2; 
+    if (r < a.count && a[r].steps < a[minimum].steps) minimum = r;
+
+    if (minimum == i) return;
+
+    swap(*a[i], *a[minimum]);
+    min_heap(a, minimum);
+}
+
+extract_min :: (a: *[]State) -> State {
+    value := a.*[0];
+    array_unordered_remove_by_index(a, 0);
+    min_heap(a.*, 0);
+    return value;
 }
