@@ -105,7 +105,7 @@ day17 :: (input: string) -> string, string
     for < "A,B,A,B,C,C,B,A,B,C\nL,8,R,12,R,12,R,10\nR,10,R,12,R,10\nL,10,R,10,L,6\nn\n" {
         array_add(*in, it);
     }
-    run(c, .. in);
+    run(c, ..in);
     part2 = peek(c.out);
 
     return tprint("%", part1), tprint("%", part2);
