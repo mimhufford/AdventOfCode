@@ -5,11 +5,11 @@ day5 :: (input: string) -> string, string
 
     c1 := computer(array_copy(ram));
     run(c1, 1);
-    part1 := peek(c1.out);
+    part1 := pop_back(*c1.out);
 
     c2 := computer(array_copy(ram));
     run(c2, 5);
-    part2 := peek(c2.out);
+    part2 := pop_back(*c2.out);
 
     return tprint("%", part1), tprint("%", part2);
 }
