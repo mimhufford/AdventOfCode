@@ -10,10 +10,11 @@ day17 :: (input: string) -> string, string
     map : [29][65]u8;
     x, y := 1;
 
-    for c.out {
-        if it.(u8) == {
+    while c.out.count {
+        cell := pop_front(*c.out).(u8);
+        if cell == {
             case "\n"; x = 1; y += 1;
-            case; map[y][x] = it.(u8); x += 1;
+            case; map[y][x] = cell; x += 1;
         }
     }
 
@@ -24,7 +25,7 @@ day17 :: (input: string) -> string, string
             if map[y-1][x  ] != "#" continue;
             if map[y  ][x+1] != "#" continue;
             if map[y  ][x-1] != "#" continue;
-            part1 += x * y;
+            part1 += (x-1) * (y-1);
         }
     }
 
@@ -102,11 +103,13 @@ day17 :: (input: string) -> string, string
     reset(c);
     c.ram[0] = 2;
     in : [..]s64;
-    for < "A,B,A,B,C,C,B,A,B,C\nL,8,R,12,R,12,R,10\nR,10,R,12,R,10\nL,10,R,10,L,6\nn\n" {
-        array_add(*in, it);
-    }
+    for "A,B,A,B,C,C,B,A,B,C\n" array_add(*in, it);
+    for "L,8,R,12,R,12,R,10\n"  array_add(*in, it);
+    for "R,10,R,12,R,10\n"      array_add(*in, it);
+    for "L,10,R,10,L,6\n"       array_add(*in, it);
+    for "n\n"                   array_add(*in, it);
     run(c, ..in);
-    part2 = peek(c.out);
+    part2 = pop_back(*c.out);
 
     return tprint("%", part1), tprint("%", part2);
 }
