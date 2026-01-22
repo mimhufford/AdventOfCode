@@ -15,12 +15,11 @@ day11 :: (input: string) -> string, string
         while !c.done {
             cell := find_or_add(*map, pos.hash);
             run(c, cell.*);
-            cell.* = c.out[0].(u8);
-            if c.out[1] then dx, dy = -dy, dx; else dx, dy = dy, -dx;
+            cell.* = pop_front(*c.out).(u8);
+            if pop_front(*c.out) then dx, dy = -dy, dx; else dx, dy = dy, -dx;
             pos.x, pos.y += dx, dy;
             x0, x1 = min(x0, pos.x), max(x1, pos.x);
             y0, y1 = min(y0, pos.y), max(y1, pos.y);
-            c.out.count = 0;
         }
 
         return map.count, x0, x1, y0, y1;
