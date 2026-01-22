@@ -7,8 +7,12 @@ day13 :: (input: string) -> string, string
     
     while !c.done {
         run(c);
-        for 0..(c.out.count-1)/3  part1 += ifx c.out[it*3+2] == 2 then 1;
-        if c.done break;
+        while c.out.count {
+            x := pop_front(*c.out);
+            y := pop_front(*c.out);
+            t := pop_front(*c.out);
+            part1 += ifx t == 2 then 1;
+        }
     }
 
     reset(c);
@@ -17,12 +21,14 @@ day13 :: (input: string) -> string, string
 
     while !c.done {
         run(c, ifx ball < paddle then -1 else ifx ball > paddle then 1);
-        for 0..(c.out.count-1)/3 {
-            if c.out[it*3+2] ==  4 then ball   = c.out[it*3+0];
-            if c.out[it*3+2] ==  3 then paddle = c.out[it*3+0];
-            if c.out[it*3+0] == -1 then part2  = c.out[it*3+2];
+        while c.out.count {
+            x := pop_front(*c.out);
+            y := pop_front(*c.out);
+            t := pop_front(*c.out);
+            if t ==  4 then ball   = x;
+            if t ==  3 then paddle = x;
+            if x == -1 then part2  = t;
         }
-        c.out.count = 0;
     }
 
     return tprint("%", part1), tprint("%", part2);
