@@ -9,8 +9,8 @@ day19 :: (input: string) -> string, string
     inside :: (x: s64, y: s64) -> bool #expand {
         for ram c.ram[it_index] = it;
         reset(c);
-        run(c, y, x);
-        return pop(*c.out) == 1;
+        run(c, x, y);
+        return pop_front(*c.out) == 1;
     }
 
     width_at_y_49, first_x_at_y_49 := 0;
