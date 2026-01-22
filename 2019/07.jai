@@ -3,18 +3,19 @@ day7 :: (input: string) -> string, string
     ram : [..]s64;
     while input array_add(*ram, get(s64, *input));
 
-    part1 := 0;
-    settings : [..]s64; for 0..4 array_add(*settings, it);
     amp : [5]*Computer;
     for * amp it.* = computer(array_copy(ram));
+
+    part1 := 0;
+    settings : [..]s64; for 0..4 array_add(*settings, it);
     for :permutations p: settings {
         for amp reset(it);
-        run(amp[0], 0,             p[0]);
-        run(amp[1], amp[0].out[0], p[1]);
-        run(amp[2], amp[1].out[0], p[2]);
-        run(amp[3], amp[2].out[0], p[3]);
-        run(amp[4], amp[3].out[0], p[4]);
-        part1 = max(part1, amp[4].out[0]);
+        run(amp[0], p[0], 0);
+        run(amp[1], p[1], pop_front(*amp[0].out));
+        run(amp[2], p[2], pop_front(*amp[1].out));
+        run(amp[3], p[3], pop_front(*amp[2].out));
+        run(amp[4], p[4], pop_front(*amp[3].out));
+        part1 = max(part1, pop_front(*amp[4].out));
     }
 
     part2 := 0;
@@ -22,13 +23,13 @@ day7 :: (input: string) -> string, string
     for :permutations p: settings {
         for a, id: amp { reset(a); run(a, p[id]); }
         while !amp[4].done {
-            run(amp[0], ifx amp[4].out then amp[4].out[0]); amp[4].out.count = 0;
-            run(amp[1], amp[0].out[0]);                     amp[0].out.count = 0;
-            run(amp[2], amp[1].out[0]);                     amp[1].out.count = 0;
-            run(amp[3], amp[2].out[0]);                     amp[2].out.count = 0;
-            run(amp[4], amp[3].out[0]);                     amp[3].out.count = 0;
+            run(amp[0], ifx amp[4].out.count then pop_front(*amp[4].out));
+            run(amp[1], pop_front(*amp[0].out));
+            run(amp[2], pop_front(*amp[1].out));
+            run(amp[3], pop_front(*amp[2].out));
+            run(amp[4], pop_front(*amp[3].out));
         }
-        part2 = max(part2, amp[4].out[0]);
+        part2 = max(part2, pop_front(*amp[4].out));
     }
 
     return tprint("%", part1), tprint("%", part2);
