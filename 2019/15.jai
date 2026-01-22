@@ -17,7 +17,7 @@ day15 :: (input: string) -> string, string
         right :: s64.[0, 4, 3, 1, 2];
         move :: () #expand {
             run(c, dir);
-            if pop(*c.out) == {
+            if pop_front(*c.out) == {
                 case 0; map[p.y+delta[dir].y][p.x+delta[dir].x] = S64_MAX; dir = left[dir];
                 case 1; p.x, p.y += delta[dir].x, delta[dir].y;
                 case 2; p.x, p.y += delta[dir].x, delta[dir].y; oxygen = p;
