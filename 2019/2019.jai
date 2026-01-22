@@ -70,6 +70,7 @@ gcd :: (a: s64, b: s64) -> s64 { if b return gcd(b, a % b); return a; }
 #import "Math";
 #import "Hash";
 #import "Basic";
+#import "Queue";
 #import "String";
 #import "Thread";
 #import "Random";
