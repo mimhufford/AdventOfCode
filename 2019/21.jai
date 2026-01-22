@@ -7,15 +7,30 @@ day21 :: (input: string) -> string, string
     c := computer(array_copy(ram));
 
     in : [..]s64;
-    for < "NOT A J\nNOT J J\nAND B J\nAND C J\nNOT J J\nAND D J\nWALK\n" { array_add(*in, it); }
+    for "NOT A J\n" array_add(*in, it);
+    for "NOT J J\n" array_add(*in, it);
+    for "AND B J\n" array_add(*in, it);
+    for "AND C J\n" array_add(*in, it);
+    for "NOT J J\n" array_add(*in, it);
+    for "AND D J\n" array_add(*in, it);
+    for "WALK\n"    array_add(*in, it);
     run(c, ..in);
-    part1 = peek(c.out);
+    part1 = pop_back(*c.out);
 
     array_reset_keeping_memory(*in);
-    for < "NOT A J\nNOT J J\nAND B J\nAND C J\nNOT J J\nAND D J\nOR E T\nOR H T\nAND T J\nRUN\n" { array_add(*in, it); }
+    for "NOT A J\n" array_add(*in, it);
+    for "NOT J J\n" array_add(*in, it);
+    for "AND B J\n" array_add(*in, it);
+    for "AND C J\n" array_add(*in, it);
+    for "NOT J J\n" array_add(*in, it);
+    for "AND D J\n" array_add(*in, it);
+    for "OR E T\n"  array_add(*in, it);
+    for "OR H T\n"  array_add(*in, it);
+    for "AND T J\n" array_add(*in, it);
+    for "RUN\n"     array_add(*in, it);
     c = computer(ram);
     run(c, ..in);
-    part2 = peek(c.out);
+    part2 = pop_back(*c.out);
 
     return tprint("%", part1), tprint("%", part2);
 }
