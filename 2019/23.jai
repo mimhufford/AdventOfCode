@@ -15,6 +15,7 @@ day23 :: (input: string) -> string, string
     while true {
         idle := true;
         for c: computers {
+            if c.in.count then run(c); else run(c, -1);
             while c.out.count {
                 idle = false;
                 id, x, y := pop_front(*c.out), pop_front(*c.out), pop_front(*c.out);
@@ -34,8 +35,6 @@ day23 :: (input: string) -> string, string
             push_back(*computers[0].in, nat_x);
             push_back(*computers[0].in, nat_y);
         }
-
-        for c: computers if c.in.count then run(c); else run(c, -1);
     }
 
     return tprint("%", part1), tprint("%", part2);
