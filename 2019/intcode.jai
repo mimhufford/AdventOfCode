@@ -5,11 +5,13 @@ Computer :: struct {
     rb   : s64;
     out  : Queue(s64);
     done : bool;
+    size : s64;
 }
 
 computer :: (ram: []s64) -> *Computer {
     c := New(Computer);
     c.ram = ram;
+    c.size = ram.count + 3000;
     reset(c);
     return c;
 }
@@ -18,7 +20,7 @@ reset :: (using c: *Computer) {
     ip, rb, done = 0, 0, false;
     reset_keeping_memory(*in);
     reset_keeping_memory(*out);
-    array_resize(*ram, 1024*1024);
+    array_resize(*ram, size);
 }
 
 run :: (using c: *Computer, inputs : ..s64) {
