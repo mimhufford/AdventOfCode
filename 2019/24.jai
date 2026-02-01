@@ -4,7 +4,7 @@ day24 :: (input: string) -> string, string
 
     state := 0;
     seen : Table(s64, u8);
-    layer, next_layer : [401]s64;
+    layer, next_layer : [403]s64;
 
     i := 0;
     for c: input {
@@ -12,7 +12,7 @@ day24 :: (input: string) -> string, string
         defer i += 1;
         if c == "." continue;
         state      |= 1 << i;
-        layer[200] |= 1 << i;
+        layer[201] |= 1 << i;
     }
 
     while true {
@@ -30,7 +30,7 @@ day24 :: (input: string) -> string, string
     }
 
     for step: 0..199 {
-        for l: 200-step..200+step {
+        for l: 201-step-1..201+step+1 {
             inner := layer[l + 1];
             level := layer[l];
             outer := layer[l - 1];
