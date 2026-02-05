@@ -52,7 +52,7 @@ append_num :: (_v: u64) #expand
 // - removes concept of chunks becuase we don't need it for this
 // - only returns first 32 bits of digest without slow string manipulation
 
-md5 :: (input: string) -> u32 #must {
+md5 :: (input: string) -> u32 {
     // pad size to nearest 512 bits, plus make sure there is
     // room for 64 bits at the end to include the original size
     pad  := 64 - (input.count + 8) % 64;
@@ -84,6 +84,18 @@ md5 :: (input: string) -> u32 #must {
     d0 : u32 = 0x10325476;
 
     A, B, C, D := a0, b0, c0, d0;
+
+    commit_pass :: (g: u32) #expand {
+        // grab the relevant 32 bits from the original input
+        word := << ((cast(*u32)`data.data) + g);
+
+        // apply this section of data
+        `F += `A + K[`it] + word;
+        `A = `D;
+        `D = `C;
+        `C = `B;
+        `B += `F <<< s[`it];
+    }
     
     // 64 passes, split into 16s to avoid branching
     for 0..cast(u32)15 {
@@ -101,18 +113,6 @@ md5 :: (input: string) -> u32 #must {
     for 48..cast(u32)63 {
         F := C ^ (B | (~D));
         commit_pass((it*7) % 16);
-    }
-
-    commit_pass :: (g: u32) #expand {
-    // grab the relevant 32 bits from the original input
-    word := << ((cast(*u32)`data.data) + g);
-
-    // apply this section of data
-    `F += `A + K[`it] + word;
-    `A = `D;
-    `D = `C;
-    `C = `B;
-    `B += `F <<< s[`it];
     }
 
     a0 += A;
