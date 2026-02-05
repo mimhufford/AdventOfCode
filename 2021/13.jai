@@ -36,7 +36,7 @@ do_fold :: (f: V2) #expand
     {
         if p.x < f.x || p.y < f.y continue;
         
-        np := <<p;
+        np := p.*;
         if f.x  np.x = f.x*2 - np.x;
         if f.y  np.y = f.y*2 - np.y;
 
