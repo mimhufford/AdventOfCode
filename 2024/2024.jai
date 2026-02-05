@@ -49,7 +49,7 @@ read_s64 :: s => read_number(s64, s);
 
 read_word :: (s: *string) -> string
 {
-    word := <<s;
+    word := s.*;
     word.count = 0;
 
     while s.count && !is_whitespace(s.data[0])
@@ -65,7 +65,7 @@ read_word :: (s: *string) -> string
 
 read_up_to :: (s: *string, end: u8) -> string
 {
-    result := <<s;
+    result := s.*;
     result.count = 0;
 
     while s.count && s.data[0] != end
