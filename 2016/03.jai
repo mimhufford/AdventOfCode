@@ -8,9 +8,14 @@ day3 :: (data: string) -> string, string
     valid_rows := 0;
     valid_cols := 0;
 
+    valid :: (a: float, b: float, c: float) -> int
+    {
+        return xx (a+b > c && a+c > b && b+c > a);
+    }
+
     for * lines
     {
-        <<it = trim_left(<<it);
+        it.* = trim_left(it.*);
         t : Vector3;
         t.x = xx next_u16(it);
         t.y = xx next_u16(it);
@@ -32,9 +37,4 @@ day3 :: (data: string) -> string, string
     }
 
     return tprint("%", valid_rows), tprint("%", valid_cols);
-
-    valid :: (a: float, b: float, c: float) -> int
-    {
-        return xx (a+b > c && a+c > b && b+c > a);
-    }
 }
