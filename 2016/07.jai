@@ -6,13 +6,34 @@ day7 :: (data: string) -> string, string
     supports_tls := 0;
     supports_ssl := 0;
 
-    for lines
+    tls_check :: (s: string) -> bool
     {
-        supports_tls += xx tls_check(it);
-        supports_ssl += xx ssl_check(it);
-    }
+        currently_inside := false;
+        contains_abba_inside := false;
+        contains_abba_outside := false;
 
-    return tprint("%", supports_tls), tprint("%", supports_ssl);
+        for i: 0..s.count-4
+        {
+            a := s[i+0];
+            b := s[i+1];
+            c := s[i+2];
+            d := s[i+3];
+
+            if a == #char "[" || b == #char "[" || c == #char "[" || d == #char "["
+                currently_inside = true;
+            
+            if a == #char "]" || b == #char "]" || c == #char "]" || d == #char "]"
+                currently_inside = false;
+
+            if a == d && b == c && a != b
+            {
+                contains_abba_inside  |=  currently_inside;
+                contains_abba_outside |= !currently_inside;
+            }
+        }
+
+        return contains_abba_outside && !contains_abba_inside;
+    }
 
     ssl_check :: (s: string) -> bool
     {
@@ -56,32 +77,11 @@ day7 :: (data: string) -> string, string
         return false;
     }
 
-    tls_check :: (s: string) -> bool
+    for lines
     {
-        currently_inside := false;
-        contains_abba_inside := false;
-        contains_abba_outside := false;
-
-        for i: 0..s.count-4
-        {
-            a := s[i+0];
-            b := s[i+1];
-            c := s[i+2];
-            d := s[i+3];
-
-            if a == #char "[" || b == #char "[" || c == #char "[" || d == #char "["
-                currently_inside = true;
-            
-            if a == #char "]" || b == #char "]" || c == #char "]" || d == #char "]"
-                currently_inside = false;
-
-            if a == d && b == c && a != b
-            {
-                contains_abba_inside  |=  currently_inside;
-                contains_abba_outside |= !currently_inside;
-            }
-        }
-
-        return contains_abba_outside && !contains_abba_inside;
+        supports_tls += xx tls_check(it);
+        supports_ssl += xx ssl_check(it);
     }
+
+    return tprint("%", supports_tls), tprint("%", supports_ssl);
 }
