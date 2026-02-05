@@ -7,6 +7,20 @@ day10 :: (data: string) -> string, string
     lines := split(data, "\n");
     lines.count -= 1;
 
+    read_num :: (s: *string) -> int
+    {
+        num := 0;
+
+        while s.data[0] >= #char "0" && s.data[0] <= #char "9"
+        {
+            num *= 10;
+            num += s.data[0] - #char "0";
+            advance(s, 1);
+        }
+
+        return num;
+    }
+
     for line: lines
     {
         if line[0] == #char "b"
@@ -61,7 +75,7 @@ day10 :: (data: string) -> string, string
             if bots[move[0]].count == 2
             {
                 lo, hi := bots[move[0]][0], bots[move[0]][1];
-                if lo > hi Swap(*lo, *hi);
+                if lo > hi swap(*lo, *hi);
                 if lo == 17 && hi == 61 part_1 = move[0];
                 if move[1] >= 0 array_add(*bots[move[1]], lo); else outputs[move[3]] = lo;
                 if move[2] >= 0 array_add(*bots[move[2]], hi); else outputs[move[4]] = hi;
@@ -72,18 +86,4 @@ day10 :: (data: string) -> string, string
     }
 
     return tprint("%", part_1), tprint("%", outputs[0]*outputs[1]*outputs[2]);
-
-    read_num :: (s: *string) -> int
-    {
-        num := 0;
-
-        while s.data[0] >= #char "0" && s.data[0] <= #char "9"
-        {
-            num *= 10;
-            num += s.data[0] - #char "0";
-            advance(s, 1);
-        }
-
-        return num;
-    }
 }
