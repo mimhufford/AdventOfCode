@@ -89,19 +89,6 @@ Cube :: struct
 
 read_cube :: (s: *string) -> Cube
 {
-    c : Cube;
-
-    if s.data[1] == #char "n" c.value = 1;
-    advance(s, ifx c.value then 5 else 6);
-    c.x_min = read_num(); advance(s, 2);
-    c.x_max = read_num(); advance(s, 3);
-    c.y_min = read_num(); advance(s, 2);
-    c.y_max = read_num(); advance(s, 3);
-    c.z_min = read_num(); advance(s, 2);
-    c.z_max = read_num(); advance(s, 1);
-
-    return c;
-
     read_num :: () -> s32 #expand
     {
         neg := false;
@@ -115,4 +102,17 @@ read_cube :: (s: *string) -> Cube
         }
         return ifx neg then -num else num;
     }
+
+    c : Cube;
+
+    if s.data[1] == #char "n" c.value = 1;
+    advance(s, ifx c.value then 5 else 6);
+    c.x_min = read_num(); advance(s, 2);
+    c.x_max = read_num(); advance(s, 3);
+    c.y_min = read_num(); advance(s, 2);
+    c.y_max = read_num(); advance(s, 3);
+    c.z_min = read_num(); advance(s, 2);
+    c.z_max = read_num(); advance(s, 1);
+
+    return c;
 }
