@@ -2,7 +2,7 @@ day6 :: (data : string) -> string, string
 {
     counts : [9]u64;
 
-    while data.count  counts[next_u8(*data)] += 1;
+    while data.count  counts[get(u8, *data)] += 1;
 
     for 1..80 do_one_day();
     part1 : u64; for counts part1 += it;
