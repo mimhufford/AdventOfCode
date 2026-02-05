@@ -91,7 +91,7 @@ parse_nodes :: (input: string) -> *Node, *Node, []*Node
 {
     find_or_add :: (nodes: *[..]*Node, name: string) -> *Node
     {
-        for <<nodes if it.name == name return it;
+        for nodes.* if it.name == name return it;
 
         node := New(Node);
         node.name = name;
