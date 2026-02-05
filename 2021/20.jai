@@ -1,19 +1,5 @@
 day20 :: (data : string) -> string, string
 {
-    algorithm := read_algorithm(*data);
-    canvas, backer, dim := read_canvas(*data);
-
-    next := backer;
-    prev := canvas;
-
-    for 1..2 zoom_and_enhance(it);
-    part_1 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_1 += 1;
-
-    for 3..50 zoom_and_enhance(it);
-    part_2 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_2 += 1;
-
-    return tprint("%", part_1), tprint("%", part_2);
-
     zoom_and_enhance :: (generation: int) #expand
     {
         min := offset-generation-1;
@@ -39,8 +25,22 @@ day20 :: (data : string) -> string, string
         }
 
         memset(prev.data, xx(generation % 2 == 0), size*size);
-        next, prev = swap(next, prev);
+        swap(*next, *prev);
     }
+
+    algorithm := read_algorithm(*data);
+    canvas, backer, dim := read_canvas(*data);
+
+    next := backer;
+    prev := canvas;
+
+    for 1..2 zoom_and_enhance(it);
+    part_1 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_1 += 1;
+
+    for 3..50 zoom_and_enhance(it);
+    part_2 := 0; for y: 0..size-1 for x: 0..size-1 if prev[y][x] part_2 += 1;
+
+    return tprint("%", part_1), tprint("%", part_2);
 }
 
 offset :: 52;
