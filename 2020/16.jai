@@ -74,8 +74,9 @@ day16 :: (input: string) -> string, string
         for matches
         {
             if it.count != 1 continue;
-            if it[0] < 6 part2 *= ticket[it_index];
-            for * m: matches array_unordered_remove_by_value(m, it[0]);
+            val := it[0];
+            if val < 6 part2 *= ticket[it_index];
+            for * m: matches array_unordered_remove_by_value(m, val);
             break;
         }
     }
