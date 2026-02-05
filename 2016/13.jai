@@ -21,8 +21,8 @@ explore_50_steps :: (id: s64, x : s64 = 1, y : s64 = 1, steps : s64 = 0)
 
     hash := x << 32 | y;
     prev := table_find_pointer(*seen, hash);
-    if prev && <<prev < steps return;
-    if prev { <<prev = steps; }
+    if prev && prev.* < steps return;
+    if prev { prev.* = steps; }
     else table_add(*seen, hash, steps);
 
     explore_50_steps(id, x+1, y, steps + 1);
@@ -37,8 +37,8 @@ steps_to :: (id: s64, tx: s64, ty: s64, x : s64 = 1, y : s64 = 1, steps : s64 = 
 
     hash := x << 32 | y;
     prev := table_find_pointer(*seen, hash);
-    if prev && <<prev < steps return S64_MAX;
-    if prev { <<prev = steps; }
+    if prev && prev.* < steps return S64_MAX;
+    if prev { prev.* = steps; }
     else table_add(*seen, hash, steps);
 
     if x < 0 || y < 0 return S64_MAX;
