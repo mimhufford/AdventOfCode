@@ -27,7 +27,7 @@ day17 :: (input: string) -> string, string
 
             if previous
             {
-                value := <<previous;
+                value := previous.*;
                 prev_top := cast(s32)(value & 0xFFFFFFFF);
                 prev_idx := cast(s32)(value >> 32);
                 cycle_growth = top - prev_top;
@@ -105,8 +105,7 @@ day17 :: (input: string) -> string, string
 Position :: struct
 {
     x, y : s32;
-    #place x;
-    hash : u64;
+    #overlay(x) hash : u64;
 }
 
 Shape :: struct
