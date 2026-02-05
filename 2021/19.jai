@@ -151,10 +151,10 @@ add_new_beacons :: (sauron: *Scanner, s: *Scanner)
     {
         for * sauron_beacon: sauron.beacons
         {
-            if <<s_beacon == <<sauron_beacon continue s_beacon;
+            if s_beacon.* == sauron_beacon.* continue s_beacon;
         }
 
-        array_add(*sauron.beacons, <<s_beacon);
+        array_add(*sauron.beacons, s_beacon.*);
     }
 }
 
@@ -166,7 +166,7 @@ enough_matches :: (sauron: *Scanner, s: *Scanner) -> bool
     {
         for * sauron_beacon: sauron.beacons
         {
-            if <<s_beacon == <<sauron_beacon
+            if s_beacon.* == sauron_beacon.*
             {
                 count += 1;
                 break;
@@ -192,8 +192,8 @@ find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [..][4]int
             match : [4]int;
             match[0] = s_indexes[0];
             match[1] = s_indexes[1];
-            match[2] = (<<sauron_indexes)[0];
-            match[3] = (<<sauron_indexes)[1];
+            match[2] = sauron_indexes.*[0];
+            match[3] = sauron_indexes.*[1];
             array_add(*matches, match);
         }
     }
@@ -204,14 +204,14 @@ find_beacons_to_match_on :: (sauron: *Scanner, s: *Scanner) -> [..][4]int
 offset_scanner :: (s: *Scanner, offset: Vector3)
 {
     s.position = offset;
-    for * s.beacons { <<it += offset; }
+    for * s.beacons { it.* += offset; }
 }
 
 reorient_scanner :: (s: *Scanner, orientation: int)
 {
     for * d: s.beacons
     {
-        s := <<d;
+        s := d.*;
 
         if orientation ==
         {
@@ -245,20 +245,6 @@ reorient_scanner :: (s: *Scanner, orientation: int)
 
 read_scanner :: (s: *string) -> Scanner
 {
-    scanner : Scanner;
-
-    while s.data[0] != #char "\n" advance(s, 1);
-    advance(s, 1);
-
-    while s.count && s.data[0] != #char "\n"
-    {
-        array_add(*scanner.beacons, make_vector3(read_num(), read_num(), read_num()));
-    }
-
-    if s.count advance(s, 1);
-
-    return scanner;
-
     read_num :: () -> float #expand
     {
         num : float;
@@ -281,4 +267,18 @@ read_scanner :: (s: *string) -> Scanner
 
         return ifx neg then -num else num;
     }
+
+    scanner : Scanner;
+
+    while s.data[0] != #char "\n" advance(s, 1);
+    advance(s, 1);
+
+    while s.count && s.data[0] != #char "\n"
+    {
+        array_add(*scanner.beacons, {read_num(), read_num(), read_num()});
+    }
+
+    if s.count advance(s, 1);
+
+    return scanner;
 }
