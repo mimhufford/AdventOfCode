@@ -19,13 +19,27 @@ day22 :: (data: string) -> string, string
 
 play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent: s64 = 0)
 {
+    do_effects :: (s: *State)
+    {
+        if s.e1 {                s.e1 -= 1; }
+        if s.e2 { s.boss -= 3;   s.e2 -= 1; }
+        if s.e3 { s.mana += 101; s.e3 -= 1; }
+    }
+
+    do_boss_turn :: (s: *State) #expand
+    {
+        armour : s16 = xx ifx s.e1 then 7 else 0;
+        do_effects(s);
+        s.health -= `boss_damage - armour;
+    }
+
     s := prev_state;
 
     if hard s.health -= 1;
 
     do_effects(*s);
 
-    if s.boss <= 0 { if spent < <<best { <<best = spent; } return; }
+    if s.boss <= 0 { if spent < best.* { best.* = spent; } return; }
     if s.health <= 0 return;
 
     if s.mana >= 53
@@ -69,20 +83,6 @@ play_game :: (prev_state: State, boss_damage: s16, hard: bool, best: *s64, spent
         do_boss_turn(*ns);
         play_game(ns, boss_damage, hard, best, 229 + spent);
     }
-
-    do_effects :: (s: *State)
-    {
-        if s.e1 {                s.e1 -= 1; }
-        if s.e2 { s.boss -= 3;   s.e2 -= 1; }
-        if s.e3 { s.mana += 101; s.e3 -= 1; }
-    }
-
-    do_boss_turn :: (s: *State) #expand
-    {
-        armour : s16 = xx ifx s.e1 then 7 else 0;
-        do_effects(s);
-        s.health -= `boss_damage - armour;
-    }
 }
 
 State :: struct
@@ -94,6 +94,5 @@ State :: struct
     e2 : u8;
     e3 : u8;
     
-    #place health;
-    hash : u64;
+    #overlay (health) hash : u64;
 }
