@@ -3,7 +3,7 @@ day17 :: (data: string) -> string, string
     containers : [..]s64;
     litres :: 150;
 
-    while data.count array_add(*containers, next_s64(*data));
+    while data.count array_add(*containers, get(s64, *data));
 
     combinations := 0;
     counts : [100]s64;
