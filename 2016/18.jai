@@ -1,10 +1,5 @@
 day18 :: (data: string) -> string, string
 {
-    part_1 := do_steps(data, 40);
-    part_2 := do_steps(data, 400000);
-
-    return tprint("%", part_1), tprint("%", part_2);
-    
     do_steps :: (s: string, n: int) -> int
     {
         buffer : [2][..]u8;
@@ -34,4 +29,9 @@ day18 :: (data: string) -> string, string
 
         return safe;
     }
+
+    part_1 := do_steps(data, 40);
+    part_2 := do_steps(data, 400000);
+
+    return tprint("%", part_1), tprint("%", part_2);
 }
