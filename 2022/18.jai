@@ -64,6 +64,6 @@ Pos :: struct
     x: u8;
     y: u8;
     z: u8;
-    #place x;
-    hash: u32;
+    _: u8;
+    #overlay(x) hash: u32;
 }
