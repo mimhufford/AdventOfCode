@@ -61,7 +61,7 @@ parse_valves :: (s: string) -> []*Valve, [16][16]s64
 {
     add_or_find :: (name: string, valves: *[..]*Valve) -> *Valve
     {
-        for <<valves if it.name == name return it;
+        for valves.* if it.name == name return it;
         valve := New(Valve);
         valve.name = name;
         array_add(valves, valve);
@@ -101,7 +101,7 @@ parse_valves :: (s: string) -> []*Valve, [16][16]s64
     // generate the full distance matrix
     size := valves.count;
     dist := NewArray(size * size, s64);
-    for *dist { <<it = S64_MAX; }
+    for * dist { it.* = S64_MAX; }
     for 0..size-1 dist[it*size + it] = 0;
     for v, i1: valves
     {
