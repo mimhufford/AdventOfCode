@@ -1,7 +1,7 @@
 day24 :: (data: string) -> string, string
 {
     weights : [..]u64;
-    while data.count array_add(*weights, next_u64(*data));
+    while data.count array_add(*weights, get(u64, *data));
     total : u64 = 0; for weights total += it;
     goal_3, goal_4 := total/3, total/4;
     best_3, best_4 := U64_MAX;
