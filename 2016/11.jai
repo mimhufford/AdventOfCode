@@ -3,51 +3,14 @@ day11 :: (data: string) -> string, string
     state_1, state_2: State;
     best_1, best_2:= U64_MAX;
 
-    // todo: parse input
-    array_add(*index_to_item, "ag"); add(*state_1, 0, 0);
-    array_add(*index_to_item, "ac"); add(*state_1, 0, 1);
-    array_add(*index_to_item, "bg"); add(*state_1, 1, 2);
-    array_add(*index_to_item, "cg"); add(*state_1, 1, 3);
-    array_add(*index_to_item, "dg"); add(*state_1, 1, 4);
-    array_add(*index_to_item, "eg"); add(*state_1, 1, 5);
-    array_add(*index_to_item, "bc"); add(*state_1, 2, 6);
-    array_add(*index_to_item, "cc"); add(*state_1, 2, 7);
-    array_add(*index_to_item, "dc"); add(*state_1, 2, 8);
-    array_add(*index_to_item, "ec"); add(*state_1, 2, 9);
-
-    solve(state_1, *best_1);
-
-    array_reset(*index_to_item);
-    table_reset(*seen);
-
-    // todo: parse input
-    array_add(*index_to_item, "ag"); add(*state_2, 0, 0);
-    array_add(*index_to_item, "ac"); add(*state_2, 0, 1);
-    array_add(*index_to_item, "bg"); add(*state_2, 1, 2);
-    array_add(*index_to_item, "cg"); add(*state_2, 1, 3);
-    array_add(*index_to_item, "dg"); add(*state_2, 1, 4);
-    array_add(*index_to_item, "eg"); add(*state_2, 1, 5);
-    array_add(*index_to_item, "bc"); add(*state_2, 2, 6);
-    array_add(*index_to_item, "cc"); add(*state_2, 2, 7);
-    array_add(*index_to_item, "dc"); add(*state_2, 2, 8);
-    array_add(*index_to_item, "ec"); add(*state_2, 2, 9);
-    array_add(*index_to_item, "fc"); add(*state_2, 0, 10);
-    array_add(*index_to_item, "fg"); add(*state_2, 0, 11);
-    array_add(*index_to_item, "gc"); add(*state_2, 0, 12);
-    array_add(*index_to_item, "gg"); add(*state_2, 0, 13);
-
-    solve(state_2, *best_2);
-
-    return tprint("%", best_1), tprint("%", best_2);
-
     solve :: (s: State, best: *u64, current_floor: u8 = 0, moves: u64 = 0)
     {
         // if floor 4 has all the items, maybe update best, and stop
         if s.floor[0] == 0 && s.floor[1] == 0 && s.floor[2] == 0
         {
-            if <<best > moves
+            if best.* > moves
             {
-                <<best = moves;
+                best.* = moves;
             }
             return;
         } 
@@ -59,10 +22,10 @@ day11 :: (data: string) -> string, string
         prev := table_find_pointer(*seen, compressed_state);
 
         // if seen this state before and we're at more moves, stop
-        if prev && <<prev <= moves return;
+        if prev && prev.* <= moves return;
 
         // update seen states with new info
-        if prev { <<prev = moves; }
+        if prev { prev.* = moves; }
         else table_add(*seen, compressed_state, moves);
 
         // calculate all possible combos of moving items up and recurse
@@ -137,6 +100,43 @@ day11 :: (data: string) -> string, string
             }
         }
     }
+
+    // todo: parse input
+    array_add(*index_to_item, "ag"); add(*state_1, 0, 0);
+    array_add(*index_to_item, "ac"); add(*state_1, 0, 1);
+    array_add(*index_to_item, "bg"); add(*state_1, 1, 2);
+    array_add(*index_to_item, "cg"); add(*state_1, 1, 3);
+    array_add(*index_to_item, "dg"); add(*state_1, 1, 4);
+    array_add(*index_to_item, "eg"); add(*state_1, 1, 5);
+    array_add(*index_to_item, "bc"); add(*state_1, 2, 6);
+    array_add(*index_to_item, "cc"); add(*state_1, 2, 7);
+    array_add(*index_to_item, "dc"); add(*state_1, 2, 8);
+    array_add(*index_to_item, "ec"); add(*state_1, 2, 9);
+
+    solve(state_1, *best_1);
+
+    array_reset(*index_to_item);
+    table_reset(*seen);
+
+    // todo: parse input
+    array_add(*index_to_item, "ag"); add(*state_2, 0, 0);
+    array_add(*index_to_item, "ac"); add(*state_2, 0, 1);
+    array_add(*index_to_item, "bg"); add(*state_2, 1, 2);
+    array_add(*index_to_item, "cg"); add(*state_2, 1, 3);
+    array_add(*index_to_item, "dg"); add(*state_2, 1, 4);
+    array_add(*index_to_item, "eg"); add(*state_2, 1, 5);
+    array_add(*index_to_item, "bc"); add(*state_2, 2, 6);
+    array_add(*index_to_item, "cc"); add(*state_2, 2, 7);
+    array_add(*index_to_item, "dc"); add(*state_2, 2, 8);
+    array_add(*index_to_item, "ec"); add(*state_2, 2, 9);
+    array_add(*index_to_item, "fc"); add(*state_2, 0, 10);
+    array_add(*index_to_item, "fg"); add(*state_2, 0, 11);
+    array_add(*index_to_item, "gc"); add(*state_2, 0, 12);
+    array_add(*index_to_item, "gg"); add(*state_2, 0, 13);
+
+    solve(state_2, *best_2);
+
+    return tprint("%", best_1), tprint("%", best_2);
 }
 
 index_to_item : [..]string;
