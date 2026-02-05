@@ -73,20 +73,6 @@ Sue :: struct
 
 read_sue :: (s: *string) -> Sue
 {
-    sue : Sue;
-
-    while s.data[0] != #char ":" advance(s, 1);
-    advance(s, 2);
-
-    read_stat();
-    advance(s, 2);
-    read_stat();
-    advance(s, 2);
-    read_stat();
-    advance(s, 1);
-
-    return sue;
-
     read_stat :: () #expand
     {
         if s.data[0] ==
@@ -117,4 +103,18 @@ read_sue :: (s: *string) -> Sue
         }
         return num;
     }
+
+    sue : Sue;
+
+    while s.data[0] != #char ":" advance(s, 1);
+    advance(s, 2);
+
+    read_stat();
+    advance(s, 2);
+    read_stat();
+    advance(s, 2);
+    read_stat();
+    advance(s, 1);
+
+    return sue;
 }
