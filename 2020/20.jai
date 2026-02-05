@@ -207,8 +207,8 @@ is_match :: (a: *Tile, b: *Tile, ae: Edge, be: Edge) -> bool
     
     array_add(*a.neighbours, b);
     array_add(*b.neighbours, a);
-    <<a_used = true;
-    <<b_used = true;
+    a_used.* = true;
+    b_used.* = true;
     return true;
 }
 
