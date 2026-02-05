@@ -24,6 +24,26 @@ parse_instructions :: (s: string) -> []Instruction
     lines := split(s, "\n");
     lines.count -= 1;
 
+    val_or_reg :: () -> s64, bool #expand
+    {
+        if `line[0] >= #char "a" && `line[0] <= #char "d"
+        {
+            val := `line[0] - #char "a";
+            advance(*`line, 2);
+            return val, false;
+        }
+
+        val : s64;
+        while `line[0] >= #char "0" && `line[0] <= #char "9"
+        {
+            val *= 10;
+            val += `line[0] - #char "0";
+            advance(*`line, 1);
+        }
+        advance(*`line, 1);
+        return val, true;
+    }
+
     for line: lines
     {
         i : Instruction;
@@ -55,26 +75,6 @@ parse_instructions :: (s: string) -> []Instruction
     }
 
     return instructions;
-
-    val_or_reg :: () -> s64, bool #expand
-    {
-        if `line[0] >= #char "a" && `line[0] <= #char "d"
-        {
-            val := `line[0] - #char "a";
-            advance(*`line, 2);
-            return val, false;
-        }
-
-        val : s64;
-        while `line[0] >= #char "0" && `line[0] <= #char "9"
-        {
-            val *= 10;
-            val += `line[0] - #char "0";
-            advance(*`line, 1);
-        }
-        advance(*`line, 1);
-        return val, true;
-    }
 }
 
 run :: (instructions: []Instruction, c: s64) -> s64
