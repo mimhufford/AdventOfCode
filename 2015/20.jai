@@ -5,7 +5,7 @@ day20 :: (data: string) -> string, string
     solve :: (limit: u32, multiplier: u32) -> s64 #expand
     {
         input := data;
-        min_presents := next_u32(*input);
+        min_presents := get(u32, *input);
         memset(houses.data, 0, houses.count * size_of(type_of(houses[0])));
 
         for e: 1..houses.count-1
