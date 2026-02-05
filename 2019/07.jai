@@ -37,6 +37,7 @@ day7 :: (input: string) -> string, string
 
 #scope_file
 
+// TODO: pull this out to a common module :permutations:
 permutations :: (n: *[..]s64, body: Code, flags: For_Flags) #expand
 {
     `it, `it_index, i, a := n.*, 0, 0, NewArray(n.count, s64);
