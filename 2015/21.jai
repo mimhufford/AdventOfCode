@@ -1,9 +1,9 @@
 day21 :: (data: string) -> string, string
 {
     advance(*data, 12);
-    bh := next_s16(*data);
-    bd := next_s16(*data);
-    ba := next_s16(*data);
+    bh := get(s16, *data);
+    bd := get(s16, *data);
+    ba := get(s16, *data);
 
     cheapest_win := S16_MAX;
     dearest_lose := S16_MIN;
