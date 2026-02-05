@@ -9,7 +9,7 @@ day19 :: (input: string) -> string, string
     {
         state : State;
 
-        for * highest_geode_count_so_far { <<it = 0; }
+        for * highest_geode_count_so_far { it.* = 0; }
 
         // find out max costs, we don't need to make more robots for this type if we already collect this amount per minute
         b.max_ore_cost      = max(b.ore, b.clay, b.obsidian[0], b.geode[0]);
