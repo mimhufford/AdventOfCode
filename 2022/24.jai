@@ -15,8 +15,7 @@ State :: struct
 {
     x, y   : u16;
     minute : u32;
-    #place x;
-    hash   : u64;
+    #overlay(x) hash : u64;
 }
 
 history : Table(u64, u8);
@@ -98,11 +97,11 @@ generate_map_for_each_cycle :: (input: string) -> [..][..][..]u8, u16, u16, u16,
         {
             for prev_col, x: prev_row
             {
-                if prev_col & X then (<<time)[ y ][ x ] |= X;
-                if prev_col & L { if x > 1   then (<<time)[ y ][x-1] |= L; else (<<time)[ y ][w-2] |= L; }
-                if prev_col & R { if x < w-2 then (<<time)[ y ][x+1] |= R; else (<<time)[ y ][ 1 ] |= R; }
-                if prev_col & U { if y > 1   then (<<time)[y-1][ x ] |= U; else (<<time)[h-2][ x ] |= U; }
-                if prev_col & D { if y < h-2 then (<<time)[y+1][ x ] |= D; else (<<time)[ 1 ][ x ] |= D; }
+                if prev_col & X then time.*[y][x] |= X;
+                if prev_col & L { if x > 1   then time.*[ y ][x-1] |= L; else time.*[ y ][w-2] |= L; }
+                if prev_col & R { if x < w-2 then time.*[ y ][x+1] |= R; else time.*[ y ][ 1 ] |= R; }
+                if prev_col & U { if y > 1   then time.*[y-1][ x ] |= U; else time.*[h-2][ x ] |= U; }
+                if prev_col & D { if y < h-2 then time.*[y+1][ x ] |= D; else time.*[ 1 ][ x ] |= D; }
             }
         }
     }
