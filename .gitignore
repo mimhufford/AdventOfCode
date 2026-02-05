@@ -9,3 +9,6 @@ obj
 *.exe
 *.pdb
 *.png
+
+# ignore executables
+20[0-9][0-9]
