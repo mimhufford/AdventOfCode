@@ -51,9 +51,9 @@ grow :: (pairs : Table, rules : Table)
         if !count continue;
 
         r := table_find_pointer(*rules, pair);
-        <<table_find_pointer(*pairs, pair) -= count;
-        <<table_find_pointer(*pairs, (<<r)[0]) += count;
-        <<table_find_pointer(*pairs, (<<r)[1]) += count;
+        table_find_pointer(*pairs, pair).* -= count;
+        table_find_pointer(*pairs, r.*[0]).* += count;
+        table_find_pointer(*pairs, r.*[1]).* += count;
     }
 }
 
