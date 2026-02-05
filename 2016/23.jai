@@ -27,6 +27,32 @@ parse_instructions :: (s: string) -> []Instruction
     lines := split(s, "\n");
     lines.count -= 1;
 
+    val_or_reg :: () -> s64, bool #expand
+    {
+        if `line[0] >= #char "a" && `line[0] <= #char "d"
+        {
+            val := `line[0] - #char "a";
+            if `line.count > 1 advance(*`line, 2);
+            return val, false;
+        }
+
+        val : s64;
+        mul : s64 = 1;
+        if `line[0] == #char "-"
+        {
+            mul = -1;
+            advance(*`line, 1);
+        }
+        while `line.count && `line[0] >= #char "0" && `line[0] <= #char "9"
+        {
+            val *= 10;
+            val += `line[0] - #char "0";
+            advance(*`line, 1);
+        }
+        if `line.count advance(*`line, 1);
+        return mul*val, true;
+    }
+
     for line: lines
     {
         i : Instruction;
@@ -60,32 +86,6 @@ parse_instructions :: (s: string) -> []Instruction
     }
 
     return instructions;
-
-    val_or_reg :: () -> s64, bool #expand
-    {
-        if `line[0] >= #char "a" && `line[0] <= #char "d"
-        {
-            val := `line[0] - #char "a";
-            if `line.count > 1 advance(*`line, 2);
-            return val, false;
-        }
-
-        val : s64;
-        mul : s64 = 1;
-        if `line[0] == #char "-"
-        {
-            mul = -1;
-            advance(*`line, 1);
-        }
-        while `line.count && `line[0] >= #char "0" && `line[0] <= #char "9"
-        {
-            val *= 10;
-            val += `line[0] - #char "0";
-            advance(*`line, 1);
-        }
-        if `line.count advance(*`line, 1);
-        return mul*val, true;
-    }
 }
 
 run :: (instructions: []Instruction, a: int) -> s64
