@@ -7,7 +7,7 @@ day23 :: (input: string) -> string, string
 
     for elves
     {
-        <<find_or_add(*curr, it.pos.hash) += 1;
+        find_or_add(*curr, it.pos.hash).* += 1;
     }
 
     empty_10 := 0;
@@ -22,7 +22,7 @@ day23 :: (input: string) -> string, string
         for * e: elves
         {
             e.next = calculate_next_move(e, curr, round);
-            <<find_or_add(*next, e.next.hash) += 1;
+            find_or_add(*next, e.next.hash).* += 1;
             if !e.happy  all_happy = false;
         }
 
@@ -34,10 +34,10 @@ day23 :: (input: string) -> string, string
 
         for * e: elves
         {
-            if <<table_find_pointer(*next, e.next.hash) > 1 continue;
-            <<table_find_pointer(*curr, e.pos.hash) -= 1;
+            if table_find_pointer(*next, e.next.hash).* > 1 continue;
+            table_find_pointer(*curr, e.pos.hash).* -= 1;
             e.pos = e.next;
-            <<find_or_add(*curr, e.pos.hash) += 1;
+            find_or_add(*curr, e.pos.hash).* += 1;
         }
 
         if round == 10 empty_10 = calculate_empty_cells(curr, elves);
@@ -51,8 +51,7 @@ day23 :: (input: string) -> string, string
 V2 :: struct
 {
     x, y : s32;
-    #place x;
-    hash : s64;
+    #overlay(x) hash : s64;
 }
 
 operator + :: (a: V2, b: V2) -> V2 { r := a; r.x += b.x; r.y += b.y; return r; }
@@ -86,7 +85,7 @@ calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
     for dir: neighbours
     {
         cell := table_find_pointer(*map, (e.pos + dir).hash);
-        if cell && <<cell
+        if cell && cell.*
         {
             e.happy = false;
             break;
@@ -102,7 +101,7 @@ calculate_next_move :: (e: *Elf, map: Table(s64, u8), round: s64) -> V2
         for dir: move
         {
             cell := table_find_pointer(*map, (e.pos + dir).hash);
-            if cell && <<cell
+            if cell && cell.*
             {
                 continue i;
             }
