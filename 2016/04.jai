@@ -45,8 +45,8 @@ day4 :: (data: string) -> string, string
         {
             if freq[i] < freq[i+1]
             {
-                Swap(*freq[i], *freq[i+1]);
-                Swap(*alphabet[i], *alphabet[i+1]);
+                swap(*freq[i], *freq[i+1]);
+                swap(*alphabet[i], *alphabet[i+1]);
             }
         }
 
