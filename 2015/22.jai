@@ -1,8 +1,8 @@
 day22 :: (data: string) -> string, string
 {
     advance(*data, 12);
-    boss_health := next_u8(*data);
-    boss_damage := next_s16(*data);
+    boss_health := get(u8, *data);
+    boss_damage := get(s16, *data);
 
     initial_state : State;
     initial_state.health = 50;
