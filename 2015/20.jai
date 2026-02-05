@@ -2,11 +2,10 @@ houses : [1_000_000]u32;
 
 day20 :: (data: string) -> string, string
 {
-    return tprint("%", solve(U32_MAX, 10)), tprint("%", solve(50, 11));
-
-    solve :: (limit: u32, multiplier: u32) -> s64
+    solve :: (limit: u32, multiplier: u32) -> s64 #expand
     {
-        min_presents : u32 : 36000000;
+        input := data;
+        min_presents := next_u32(*input);
         memset(houses.data, 0, houses.count * size_of(type_of(houses[0])));
 
         for e: 1..houses.count-1
@@ -24,4 +23,6 @@ day20 :: (data: string) -> string, string
 
         return 0;
     }
+
+    return tprint("%", solve(U32_MAX, 10)), tprint("%", solve(50, 11));
 }
