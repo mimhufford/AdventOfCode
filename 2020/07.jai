@@ -82,7 +82,7 @@ count_contents :: (bag: *Bag) -> s16
 find_or_make_bag :: (bags: *Table(string, *Bag), id: string) -> *Bag
 {
     found_bag := table_find_pointer(bags, id);
-    if found_bag return <<found_bag;
+    if found_bag return found_bag.*;
     bag := New(Bag);
     table_add(bags, id, bag);
     return bag;
