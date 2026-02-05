@@ -42,11 +42,11 @@ explore :: (places : Table, place : string, shortest : *u16, longest : *u16)
         array_add(*visited, place);
         if visited.count == places.count
         { 
-            if (distance < <<shortest) { <<shortest = distance; }
-            if (distance > <<longest)  { <<longest  = distance; }
+            if (distance < shortest.*) { shortest.* = distance; }
+            if (distance > longest.*)  { longest.*  = distance; }
             return;
         }
-        edges := <<table_find_pointer(*places, place);
+        edges := table_find_pointer(*places, place).*;
         for edges impl(places, it.place, visited, shortest, longest, distance + it.dist);
     }
     
