@@ -15,7 +15,7 @@ Node :: struct
 {
     x: s32;
     y: s32;
-    #place x; hash: u64;
+    #overlay(x) hash: u64;
 }
 
 Edge :: struct
