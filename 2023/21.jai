@@ -56,6 +56,5 @@ day21 :: (input: string) -> string, string
 Point :: struct
 {
     x, y: s16;
-    #place x;
-    hash: u32;
+    #overlay(x) hash: u32;
 }
