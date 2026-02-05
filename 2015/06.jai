@@ -1,8 +1,8 @@
 day6 :: (input: string) -> string, string {
     lines := split(input, "\n");
 
-    grid1 : * [1000] int = alloc(size_of(int) * 1000 * 1000);
-    grid2 : * [1000] int = alloc(size_of(int) * 1000 * 1000);
+    grid1 := NewArray(1000*1000, s64);
+    grid2 := NewArray(1000*1000, s64);
 
     for lines {
         if begins_with(it, "toggle") {
@@ -10,8 +10,8 @@ day6 :: (input: string) -> string, string {
             ax, ay, bx, by := parse_parts(it);
             for x : ax..bx {
                 for y : ay..by {
-                    grid1[y][x] = xx !grid1[y][x];
-                    grid2[y][x] += 2;
+                    grid1[y*1000+x] = xx !grid1[y*1000+x];
+                    grid2[y*1000+x] += 2;
                 }
             }
         } else if begins_with(it, "turn on") {
@@ -19,8 +19,8 @@ day6 :: (input: string) -> string, string {
             ax, ay, bx, by := parse_parts(it);
             for x : ax..bx {
                 for y : ay..by {
-                    grid1[y][x] = 1;
-                    grid2[y][x] += 1;
+                    grid1[y*1000+x] = 1;
+                    grid2[y*1000+x] += 1;
                 }
             }
         } else /* turn off */ {
@@ -28,9 +28,9 @@ day6 :: (input: string) -> string, string {
             ax, ay, bx, by := parse_parts(it);
             for x : ax..bx {
                 for y : ay..by {
-                    grid1[y][x] = 0;
-                    grid2[y][x] -= 1;
-                    if grid2[y][x] < 0 grid2[y][x] = 0;
+                    grid1[y*1000+x] = 0;
+                    grid2[y*1000+x] -= 1;
+                    if grid2[y*1000+x] < 0 grid2[y*1000+x] = 0;
                 }
             }
         }
@@ -41,8 +41,8 @@ day6 :: (input: string) -> string, string {
 
     for x : 0..999 {
         for y : 0..999 {
-            if grid1[y][x]  lit += 1;
-            brightness += grid2[y][x];
+            if grid1[y*1000+x]  lit += 1;
+            brightness += grid2[y*1000+x];
         }
     }
 
