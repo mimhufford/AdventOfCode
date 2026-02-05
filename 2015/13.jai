@@ -30,16 +30,33 @@ day13 :: (data: string) -> string, string
 
 max_happiness :: (people: []string, happiness: Table) -> s64
 {
-    #import "Permute";
-    indexes : [..]int;
-    for people array_add(*indexes, it_index);
-    order : []int = indexes;
-    rounds := permutation_count(xx order.count, xx order.count) / xx people.count;
-    best := S64_MIN;
-    for 1..rounds
+    // TODO: pull this out to a common module :permutations:
+    permutations :: (n: *[..]s64, body: Code, flags: For_Flags) #expand
     {
-        order = permutation(order);
+        `it, `it_index, i, a := n.*, 0, 0, NewArray(n.count, s64);
 
+        #insert body;
+        it_index += 1;
+
+        while i < n.count {
+            if a[i] < i {
+                swap(n.data + ifx i % 2 then a[i], n.data + i);
+                #insert body;
+                it_index += 1;
+                a[i] += 1;
+                i = 0;
+            } else {
+                a[i] = 0;
+                i += 1;
+            }
+        }
+    }
+    
+    indexes : [..]s64;
+    for people array_add(*indexes, it_index);
+    best := S64_MIN;
+
+    for :permutations order: indexes {
         total := 0;
 
         for i: 0..order.count-1
@@ -47,8 +64,8 @@ max_happiness :: (people: []string, happiness: Table) -> s64
             l := people[order[(i-1+order.count) % order.count]];
             m := people[order[i]];
             r := people[order[(i+1) % order.count]];
-            ml := <<table_find_pointer(table_find_pointer(happiness, m), l);
-            mr := <<table_find_pointer(table_find_pointer(happiness, m), r);
+            ml := table_find_pointer(table_find_pointer(*happiness, m), l).*;
+            mr := table_find_pointer(table_find_pointer(*happiness, m), r).*;
             total += ml + mr;
         }
 
