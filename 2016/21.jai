@@ -174,13 +174,13 @@ permute :: (current : [] u8)
     while current[j] > current[j+1] j -= 1;
     while current[j] > current[k]   k -= 1;
 
-    Swap(*current[j], *current[k]);
+    swap(*current[j], *current[k]);
 
     r := current.count-1;
     s := j+1;
 
     while r > s {
-        Swap(*current[r], *current[s]);
+        swap(*current[r], *current[s]);
         r -= 1;
         s += 1;
     }
