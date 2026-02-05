@@ -74,8 +74,7 @@ Position :: struct
     x : u8;
     y : u8;
     
-    #place x;
-    hash : u16;
+    #overlay(x) hash : u16;
 }
 
 distance :: (order: []u8, distances: [8][8]int, back_to_0 : bool) -> int
@@ -98,13 +97,13 @@ permute :: (current : []$T)
     while current[j] > current[j+1] j -= 1;
     while current[j] > current[k]   k -= 1;
 
-    Swap(*current[j], *current[k]);
+    swap(*current[j], *current[k]);
 
     r := current.count-1;
     s := j+1;
 
     while r > s {
-        Swap(*current[r], *current[s]);
+        swap(*current[r], *current[s]);
         r -= 1;
         s += 1;
     }
