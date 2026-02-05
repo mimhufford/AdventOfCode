@@ -1,25 +1,5 @@
 day2 :: (data: string) -> string, string
 {
-    keypad1 :: string.[
-        ".....",
-        ".123.",
-        ".456.",
-        ".789.",
-        ".....",
-    ];
-
-    keypad2 :: string.[
-        ".......",
-        "...1...",
-        "..234..",
-        ".56789.",
-        "..ABC..",
-        "...D...",
-        ".......",
-    ];
-
-    return tprint("%", solve(keypad1, data)), tprint("%", solve(keypad2, data));
-
     solve :: (keypad: []string, s: string) -> string
     {
         result : [..]u8;
@@ -45,4 +25,24 @@ day2 :: (data: string) -> string, string
 
         return xx result;
     }
+
+    keypad1 :: string.[
+        ".....",
+        ".123.",
+        ".456.",
+        ".789.",
+        ".....",
+    ];
+
+    keypad2 :: string.[
+        ".......",
+        "...1...",
+        "..234..",
+        ".56789.",
+        "..ABC..",
+        "...D...",
+        ".......",
+    ];
+
+    return tprint("%", solve(keypad1, data)), tprint("%", solve(keypad2, data));
 }
