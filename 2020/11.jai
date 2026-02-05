@@ -2,34 +2,20 @@ day11 :: (input: string) -> string, string
 {
     seats1, seats2 := read_map(*input);
 
-    t1 := thread_create(thread_runner);
-    t2 := thread_create(thread_runner);
-    t1d : Thread_Data; t1d.seats = *seats1; t1d.limit = 4; t1.data = *t1d;
-    t2d : Thread_Data; t2d.seats = *seats2; t2d.limit = 5; t2.data = *t2d;
-    thread_start(t1);
-    thread_start(t2);
-    while !thread_is_done(t1) || !thread_is_done(t2) {}
-    
-    return tprint("%", t1d.result), tprint("%", t2d.result);
+    part1 := 0;
+    t1d := false;
+    while tick(*seats1, 4, t1d) { t1d = !t1d; }
+    for seats1 if it.occupied[0] part1 += 1;
+
+    part2 := 0;
+    t2d := false;
+    while tick(*seats2, 5, t2d) { t2d = !t2d; }
+    for seats2 if it.occupied[0] part2 += 1;
+
+    return tprint("%", part1), tprint("%", part2);
 }
 
 #scope_file
-
-Thread_Data :: struct
-{
-    seats  : *Table(s16, Seat);
-    limit  := 0;
-    result := 0;
-    which  : bool;
-}
-
-thread_runner :: (thread: *Thread) -> s64
-{
-    data : *Thread_Data = thread.data;
-    while tick(data.seats, data.limit, data.which) { data.which = !data.which; }
-    for data.seats if it.occupied[0] data.result += 1;
-    return 0;
-}
 
 Seat :: struct
 {
