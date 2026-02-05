@@ -9,10 +9,11 @@ day5 :: (data : string) -> string, string
     while data.count
     {
         l : Line = ---;
-        l.x0 = next_s64(*data); 
-        l.y0 = next_s64(*data); 
-        l.x1 = next_s64(*data); 
-        l.y1 = next_s64(*data); 
+        l.x0 = get(s64, *data); 
+        l.y0 = get(s64, *data); 
+        advance(*data, 3);
+        l.x1 = get(s64, *data); 
+        l.y1 = get(s64, *data); 
 
         if l.x0 == l.x1 || l.y0 == l.y1  array_add(*orth_lines, l);
         else                             array_add(*diag_lines, l);
