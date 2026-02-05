@@ -5,7 +5,7 @@ day7 :: (data : string) -> string, string
 
     while data.count
     {
-        num := next_s16(*data);
+        num := get(s16, *data);
         array_add(*nums, num);
         total += num;
     }
