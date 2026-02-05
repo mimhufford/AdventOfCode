@@ -16,9 +16,9 @@ parse_obj :: (s: *string) -> s64, s64
 
     while s.data[0] != #char "}"
     {
-        assert(s.data[0] == #char "\"", "%\n", <<s);
+        assert(s.data[0] == #char "\"", "%\n", s.*);
         advance(s, 3); // skip the key "?"
-        assert(s.data[0] == #char ":", "%\n", <<s);
+        assert(s.data[0] == #char ":", "%\n", s.*);
         advance(s, 1); // skip :
         
         if      s.data[0] == #char "{"  total, total_non_red += parse_obj(s);
