@@ -85,7 +85,7 @@ generate_days :: () -> string
         file := tprint("%.jai", formatInt(it, minimum_digits=2));
         if !file_exists(file) continue;
         append(*day_procs, tprint("day%,", it));
-        append(*file_loads, tprint("#load \"../%.jai\";", formatInt(it, minimum_digits=2)));
+        append(*file_loads, tprint("#load \"%.jai\";", formatInt(it, minimum_digits=2)));
     }
     append(*day_procs, "];");
 
@@ -138,7 +138,7 @@ read_s64 :: s => read_number(s64, s);
 
 read_word :: (s: *string) -> string
 {
-    word := <<s;
+    word := s.*;
     word.count = 0;
 
     while s.count && !is_whitespace(s.data[0])
