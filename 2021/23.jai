@@ -7,14 +7,14 @@ day23 :: (data : string) -> string, string
     s1[11] = data[45];  s1[12] = data[47];  s1[13] = data[49];  s1[14] = data[51];         
     s1[15] = #char "A"; s1[16] = #char "B"; s1[17] = #char "C"; s1[18] = #char "D";        
     s1[19] = #char "A"; s1[20] = #char "B"; s1[21] = #char "C"; s1[22] = #char "D";        
-    for * s1 if <<it { <<it -= #char "A" - 1; }
+    for * s1 if it.* { it.* -= #char "A" - 1; }
 
     s2: [23]u8;
     s2[ 7] = data[31];  s2[ 8] = data[33];  s2[ 9] = data[35];  s2[10] = data[37];
     s2[11] = #char "D"; s2[12] = #char "C"; s2[13] = #char "B"; s2[14] = #char "A";
     s2[15] = #char "D"; s2[16] = #char "B"; s2[17] = #char "A"; s2[18] = #char "C";
     s2[19] = data[45];  s2[20] = data[47];  s2[21] = data[49];  s2[22] = data[51];
-    for * s2 if <<it { <<it -= #char "A" - 1; }
+    for * s2 if it.* { it.* -= #char "A" - 1; }
 
     solve(encode(s1));
     part_1 := best;
@@ -42,10 +42,32 @@ goal :: 0b0000000__100_101_110_111__100_101_110_111__100_101_110_111__100_101_11
 
 solve :: (s: u64, cost_so_far: u64 = 0)
 {
+    valid_room_to_hallway :: (src: int, dst: int) -> int #expand
+    {
+        if state[src] == 0 || state[dst] != 0  return 0;
+        if homed_and_not_blocking(src)         return 0;
+        return path_cost(src, dst);
+    }
+
+    valid_hallway_to_room :: (src: int, dst: int) -> int #expand
+    {
+        if state[src] == 0 || state[dst] != 0  return 0;
+        if wrong_room(dst, state[src])         return 0;
+        if room_not_ready(state[src])          return 0;
+        if dst != next_room_pos(state[src])    return 0;
+        return path_cost(src, dst);
+    }
+
+    path_cost :: (s: int, d: int) -> int #expand { if s > d swap(*s, *d); p := paths[s][d]; for p.path if state[it] != 0 return 0; return p.cost; }
+    homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, state[i]) return false; for < rooms[state[i]-1] if it > i && state[it] != state[i] return false; return true; }
+    next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if state[it] == 0 return it; return 0; }
+    room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if state[it] != r && state[it] != 0 return true; return false; }
+    wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
+
     if cost_so_far >= best return;
     prev := table_find_pointer(*seen, s);
-    if prev && cost_so_far >= <<prev return;
-    if prev { <<prev = cost_so_far; }
+    if prev && cost_so_far >= prev.* return;
+    if prev { prev.* = cost_so_far; }
     else table_add(*seen, s, cost_so_far);
 
     if s == goal { best = cost_so_far; return; }
@@ -76,28 +98,6 @@ solve :: (s: u64, cost_so_far: u64 = 0)
             solve(encode(new_state), xx cost + cost_so_far);
         }
     }
-
-    valid_room_to_hallway :: (src: int, dst: int) -> int #expand
-    {
-        if state[src] == 0 || state[dst] != 0  return 0;
-        if homed_and_not_blocking(src)         return 0;
-        return path_cost(src, dst);
-    }
-
-    valid_hallway_to_room :: (src: int, dst: int) -> int #expand
-    {
-        if state[src] == 0 || state[dst] != 0  return 0;
-        if wrong_room(dst, state[src])         return 0;
-        if room_not_ready(state[src])          return 0;
-        if dst != next_room_pos(state[src])    return 0;
-        return path_cost(src, dst);
-    }
-
-    path_cost :: (s: int, d: int) -> int #expand { if s > d s, d = swap(s, d); p := paths[s][d]; for p.path if state[it] != 0 return 0; return p.cost; }
-    homed_and_not_blocking :: (i: int) -> bool #expand { if wrong_room(i, state[i]) return false; for < rooms[state[i]-1] if it > i && state[it] != state[i] return false; return true; }
-    next_room_pos :: (r: u8) -> u8 #expand { for < rooms[r-1] if state[it] == 0 return it; return 0; }
-    room_not_ready :: (r: u8) -> bool #expand { for rooms[r-1] if state[it] != r && state[it] != 0 return true; return false; }
-    wrong_room :: (i: int, r: u8) -> bool #expand { return (((i % 4) + 1) % 4) + 1 != r; }
 }
 
 encode :: (s: [23]u8) -> u64
