@@ -83,25 +83,6 @@ split :: (n: *Number) -> bool
 
 explode :: (n: *Number, d := 0) -> bool
 {
-    if n.v >= 0 return false;
-
-    if d == 4
-    {
-        l := left_of(n);
-        r := right_of(n);
-        if l l.v += n.l.v;
-        if r r.v += n.r.v;
-        n.v = 0;
-        n.l = null;
-        n.r = null;
-        return true;
-    }
-
-    if explode(n.l, d+1) return true;
-    if explode(n.r, d+1) return true;
-
-    return false;
-
     left_of :: (n: *Number) -> *Number
     {
         if !n.p return null;
@@ -121,6 +102,25 @@ explode :: (n: *Number, d := 0) -> bool
         while l.v < 0 l = l.l;
         return l;
     }
+
+    if n.v >= 0 return false;
+
+    if d == 4
+    {
+        l := left_of(n);
+        r := right_of(n);
+        if l l.v += n.l.v;
+        if r r.v += n.r.v;
+        n.v = 0;
+        n.l = null;
+        n.r = null;
+        return true;
+    }
+
+    if explode(n.l, d+1) return true;
+    if explode(n.r, d+1) return true;
+
+    return false;
 }
 
 magnitude :: (n: *Number) -> s64
@@ -131,16 +131,6 @@ magnitude :: (n: *Number) -> s64
 
 parse_snailfish_numbers :: (s: *string) -> [..]*Number
 {
-    nums : [..]*Number;
-
-    while s.count
-    {
-        array_add(*nums, parse_number(s));
-        advance(s, 1); // skip the \n
-    }
-
-    return nums;
-
     parse_number :: (s: *string) -> *Number
     {
         n := New(Number);
@@ -180,4 +170,14 @@ parse_snailfish_numbers :: (s: *string) -> [..]*Number
 
         return n;
     }
+
+    nums : [..]*Number;
+
+    while s.count
+    {
+        array_add(*nums, parse_number(s));
+        advance(s, 1); // skip the \n
+    }
+
+    return nums;
 }
