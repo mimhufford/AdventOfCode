@@ -2,12 +2,12 @@ day9 :: (data : string) -> string, string
 {
     map : [..][..]u8;
 
-    array_add(*map, <<New([..]u8));
+    array_add(*map);
 
     while data.count
     {
         y := map.count;
-        array_add(*map, <<New([..]u8));
+        array_add(*map);
         array_add(*map[y], 9);
         while data.count && data[0] != #char "\n"
         {
@@ -18,7 +18,7 @@ day9 :: (data : string) -> string, string
         advance(*data, 1);
     }
 
-    array_add(*map, <<New([..]u8));
+    array_add(*map);
 
     for 1..map[1].count
     {
