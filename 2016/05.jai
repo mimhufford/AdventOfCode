@@ -57,7 +57,7 @@ append_num :: (_v: u64) #expand
         place := v % 10;
         v     =  v / 10;
         p -= 1;
-        << p  = "0123456789"[place];
+        p.* = "0123456789"[place];
     }
 
     num_chars := end - p;
@@ -69,7 +69,7 @@ append_num :: (_v: u64) #expand
 // - removes concept of chunks becuase we don't need it for this
 // - only returns first 32 bits of digest without slow string manipulation
 
-md5 :: (input: string) -> u32 #must {
+md5 :: (input: string) -> u32 {
     // pad size to nearest 512 bits, plus make sure there is
     // room for 64 bits at the end to include the original size
     pad  := 64 - (input.count + 8) % 64;
@@ -92,7 +92,7 @@ md5 :: (input: string) -> u32 #must {
 
     // write original size (in bits) into last 64 bits    
     dst := cast(*u64) (data.data + size - 8);
-    <<dst = cast(u64) (input.count * 8);
+    dst.* = cast(u64) (input.count * 8);
     
     // set up digest parts
     a0 : u32 = 0x67452301;
@@ -121,7 +121,7 @@ md5 :: (input: string) -> u32 #must {
         }
 
         // grab the relevant 32 bits from the original input
-        word := << ((cast(*u32)data.data) + g);
+        word := ((cast(*u32)data.data) + g).*;
 
         // apply this section of data
         F += A + K[it] + word;
