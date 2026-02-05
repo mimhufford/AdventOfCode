@@ -49,8 +49,6 @@ day24 :: (input: string) -> string, string
     }
 
     part2 := part1;
-    a := *map1;
-    b := *map2;
 
     for 1..100
     {
@@ -59,23 +57,23 @@ day24 :: (input: string) -> string, string
             for y: min_y..max_y
             {
                 n := 0;
-                if a.data[y+0][x+1] n += 1;
-                if a.data[y+0][x-1] n += 1;
-                if a.data[y-1][x+1] n += 1;
-                if a.data[y+1][x-1] n += 1;
-                if a.data[y+1][x+0] n += 1;
-                if a.data[y-1][x+0] n += 1;
+                if map1[y+0][x+1] n += 1;
+                if map1[y+0][x-1] n += 1;
+                if map1[y-1][x+1] n += 1;
+                if map1[y+1][x-1] n += 1;
+                if map1[y+1][x+0] n += 1;
+                if map1[y-1][x+0] n += 1;
                 
-                if a.data[y][x]
+                if map1[y][x]
                 {
                     if n == 0 || n > 2
                     {
-                        b.data[y][x] = false;
+                        map2[y][x] = false;
                         part2 -= 1;
                     }
                     else
                     {
-                        b.data[y][x] = true;
+                        map2[y][x] = true;
                         if      x == min_x min_x -= 1;
                         else if x == max_x max_x += 1;
                         if      y == min_y min_y -= 1;
@@ -86,11 +84,11 @@ day24 :: (input: string) -> string, string
                 {
                     if n != 2
                     {
-                        b.data[y][x] = false;
+                        map2[y][x] = false;
                     }
                     else
                     {
-                        b.data[y][x] = true;
+                        map2[y][x] = true;
                         if      x == min_x min_x -= 1;
                         else if x == max_x max_x += 1;
                         if      y == min_y min_y -= 1;
@@ -101,9 +99,7 @@ day24 :: (input: string) -> string, string
             }
         }
 
-        c := a;
-        a = b;
-        b = c;
+        swap(*map1, *map2);
     }
 
     return tprint("%", part1), tprint("%", part2);
