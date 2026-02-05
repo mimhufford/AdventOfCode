@@ -5,6 +5,10 @@ day18 :: (data: string) -> string, string
     lights_2 := make_bit_array(102*102);
     next     := *lights_1;
     prev     := *lights_2;
+    
+    swap :: () #expand { t := next; next = prev; prev = t; clear_all_bits(next); }
+    set  :: (x: int, y: int)         #expand { set_bit(next, y*102 + x); }
+    get  :: (x: int, y: int) -> bool #expand { return prev.*[y*102 + x]; }
 
     for y: 1..100
     {
@@ -21,10 +25,6 @@ day18 :: (data: string) -> string, string
 
     swap();
 
-    swap :: () #expand { t := next; next = prev; prev = t; clear_all_bits(next); }
-    set  :: (x: int, y: int)         #expand { set_bit(next, y*102 + x); }
-    get  :: (x: int, y: int) -> bool #expand { return (<<prev)[y*102 + x]; }
-    
     state :: (x: int, y: int) -> bool, int #expand
     {
         on := 0;
@@ -57,7 +57,7 @@ day18 :: (data: string) -> string, string
         swap();
     }
 
-    count_1 := 0; for <<prev if it count_1 += 1;
+    count_1 := 0; for prev.* if it count_1 += 1;
 
     clear_all_bits(*lights_1);
     clear_all_bits(*lights_2);
@@ -85,7 +85,7 @@ day18 :: (data: string) -> string, string
         swap();
     }
 
-    count_2 := 0; for <<prev if it count_2 += 1;
+    count_2 := 0; for prev.* if it count_2 += 1;
 
     return tprint("%", count_1), tprint("%", count_2);
 }
