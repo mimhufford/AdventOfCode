@@ -94,7 +94,7 @@ day7 :: (input: string) -> string, string
 
     resolve();
 
-    part_1 := <<table_find_pointer(*power, "a");
+    part_1 := table_find_pointer(*power, "a").*;
     table_reset(*power);
 
     for * gates if it.dest == "b"
@@ -105,7 +105,7 @@ day7 :: (input: string) -> string, string
     
     resolve();
 
-    return tprint("%", part_1), tprint("%", <<table_find_pointer(*power, "a"));
+    return tprint("%", part_1), tprint("%", table_find_pointer(*power, "a").*);
 }
 
 Gate :: struct {
@@ -126,8 +126,8 @@ resolve :: () #expand
 
             src1 := table_find_pointer(*`power, g.src1);
             src2 := table_find_pointer(*`power, g.src2);
-            pow1 := ifx src1 then <<src1 else 0;
-            pow2 := ifx src2 then <<src2 else 0;
+            pow1 := ifx src1 then src1.* else 0;
+            pow2 := ifx src2 then src2.* else 0;
 
             if g.op ==
             {
