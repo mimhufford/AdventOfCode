@@ -154,7 +154,7 @@ scramble :: (instructions: []Instruction, input: string) -> string
         
             case .MOVE;
                 for inst.a..buffer[next].count-2      buffer[next][it] = buffer[next][it+1];
-                for < buffer[next].count-1..inst.b+1  buffer[next][it] = buffer[next][it-1];
+                for < inst.b+1..buffer[next].count-1  buffer[next][it] = buffer[next][it-1];
                 buffer[next][inst.b] = buffer[curr][inst.a];
         }
 
